@@ -1,0 +1,23 @@
+//-----------------------------------------------------------------------
+// <copyright file="IGameServerSubsystem.cs" company="Lost Signal LLC">
+//     Copyright (c) Lost Signal LLC. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace Lost.Networking
+{
+    using System.Threading.Tasks;
+
+    public interface IGameServerSubsystem
+    {
+        void Initialize(GameServer gameServer);
+
+        Task<bool> Run();
+
+        Task Shutdown();
+
+        Task<bool> AllowPlayerToJoin(UserInfo userInfo);
+
+        Task UpdatePlayerInfo(UserInfo userInfo);
+    }
+}

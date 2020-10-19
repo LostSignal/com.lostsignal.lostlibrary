@@ -1,0 +1,18 @@
+﻿{
+    "name": "LostLibrary.Test",
+    "references": [
+        "GUID:db13a9bcb59aac84e894a0084f1124e1",
+        "GUID:0acc523941302664db1f4e527237feb3"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

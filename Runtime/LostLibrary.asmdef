@@ -1,0 +1,74 @@
+{
+    "name": "LostLibrary",
+    "references": [
+        "GUID:9e24947de15b9834991c9d8411ea37cf",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:84651a3751eca9349aac36a66bba901b",
+        "GUID:ff6de30450f3748908ff580f6ec64d9a",
+        "GUID:60bfecf5cb232594891bc622f40d6bed",
+        "GUID:c2c4797f08fb0e049af551d9a49e63e3",
+        "GUID:990bca087afc58b44abfab274b5997a0",
+        "GUID:33b8cd66dd96fb344a4d5704771ac2e2",
+        "GUID:fd3cf217e39d72f45b19ecb8bd8664e2",
+        "GUID:e40ba710768534012815d3193fa296cb",
+        "GUID:61106e8dfb7a4e64a96af0eccfe1209f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [
+        "PS4"
+    ],
+    "allowUnsafeCode": true,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "UnityEngine.Purchasing.dll",
+        "Newtonsoft.Json.dll",
+        "Unity.Analytics.StandardEvents.dll",
+        "Unity.Analytics.Tracker.dll",
+        "Stores.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.ably.ably-dotnet",
+            "expression": "0.0.0",
+            "define": "USING_ABLY"
+        },
+        {
+            "name": "com.unity.analytics",
+            "expression": "0.0.0",
+            "define": "USING_UNITY_ANALYTICS"
+        },
+        {
+            "name": "com.unity.ads",
+            "expression": "0.0.0",
+            "define": "USING_UNITY_ADS"
+        },
+        {
+            "name": "com.unity.purchasing",
+            "expression": "0.0.0",
+            "define": "USING_UNITY_PURCHASING"
+        },
+        {
+            "name": "com.tiinoo.tiinoo",
+            "expression": "0.0.0",
+            "define": "USING_TIINOO"
+        },
+        {
+            "name": "com.revenantx.litenetlib",
+            "expression": "0.0.0",
+            "define": "USING_LITE_NET_LIB"
+        },
+        {
+            "name": "com.unity.xr.management",
+            "expression": "0.0.0",
+            "define": "USING_UNITY_XR"
+        },
+        {
+            "name": "com.placeholder-software.dissonance",
+            "expression": "0.0.0",
+            "define": "USING_DISSONANCE"
+        }
+    ],
+    "noEngineReferences": false
+}

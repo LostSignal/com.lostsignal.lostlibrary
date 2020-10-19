@@ -1,0 +1,514 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5604236082202577671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd730260249ad55478bf6ac833928e85, type: 3}
+  m_Name: GameServerCreator.cs
+  m_EditorClassIdentifier: 
+  text: "//-----------------------------------------------------------------------\n//
+    <copyright file=\"GameServerCreator.cs\" company=\"Lost Signal LLC\">\n//    
+    Copyright (c) Lost Signal LLC. All rights reserved.\n// </copyright>\n//-----------------------------------------------------------------------\n\nusing
+    Lost;\nusing Lost.DissonanceIntegration;\nusing Lost.Networking;\n\npublic static
+    class GameServerCreator\n{\n    public static GameServer Create()\n    {\n       
+    var server = new GameServer(new LiteNetLibServerTransport());\n        server.RegisterSubsystem<UnityGameServerSubsystem>();\n       
+    server.RegisterSubsystem<DissonanceServerSubsystem>();\n        server.RegisterSubsystem<ColorAssignerServerSubsystem>();\n       
+    server.RegisterSubsystem<ValidatePlayFabSessionTicketSubsystem>();\n\n       
+    return server;\n    }\n}\n"
+--- !u!114 &-1806056100067004802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd730260249ad55478bf6ac833928e85, type: 3}
+  m_Name: Program.cs
+  m_EditorClassIdentifier: 
+  text: "//-----------------------------------------------------------------------\n//
+    <copyright file=\"Program.cs\" company=\"Lost Signal LLC\">\n//     Copyright
+    (c) Lost Signal LLC. All rights reserved.\n// </copyright>\n//-----------------------------------------------------------------------\n\nusing
+    System;\nusing System.Collections.Generic;\nusing System.IO;\nusing Lost;\nusing
+    Lost.Networking;\nusing Microsoft.Playfab.Gaming.GSDK.CSharp;\nusing PlayFab;\n\nclass
+    Program\n{\n    private static readonly string ListeningPortKey = \"game_port\";\n   
+    private static readonly string TitleId = \"PF_TITLE_ID\";\n    private static
+    readonly string SecretKey = \"PF_SECRET_KEY\";\n    private static readonly string
+    GSDK = \"GSDK\";\n\n    private static GameServer server = null;\n\n    // Logging\n   
+    private static FileStream FileStream;\n    private static StreamWriter StreamWriter;\n\n   
+    // GSDK\n    private static List<ConnectedPlayer> ConnectedPlayers = new List<ConnectedPlayer>();\n   
+    private static bool IsReadyForPlayers;\n    private static bool IsGSDKEnabled;\n\n   
+    private static void Main(string[] args)\n    {\n        // Making sure Debug.Log,
+    LogError and LogAssert are written to the console and output file\n        UnityEngine.Debug.OnLog
+    += (message) => WriteLine(\"Info: \", message);\n        UnityEngine.Debug.OnLogWarning
+    += (message) => WriteLine(\"Warning: \", message);\n        UnityEngine.Debug.OnLogError
+    += (message) => WriteLine(\"Error: \", message);\n        UnityEngine.Debug.OnLogAssert
+    += (message) => WriteLine(\"Assert: \", message);\n        UnityEngine.Debug.OnLogException
+    += (exception) => WriteLine(\"Exception: \", exception.ToString());\n\n       
+    // Getting the title id and secret key from the commandline\n        string playfabTitleId
+    = Environment.GetEnvironmentVariable(TitleId, EnvironmentVariableTarget.Process);\n       
+    string playfabSecretKey = Environment.GetEnvironmentVariable(SecretKey, EnvironmentVariableTarget.Process);\n       
+    string gsdkEnabled = Environment.GetEnvironmentVariable(GSDK, EnvironmentVariableTarget.Process);\n\n       
+    foreach (var arg in args)\n        {\n            if (string.IsNullOrEmpty(playfabTitleId)
+    && arg.ToUpper().StartsWith(TitleId))\n            {\n                playfabTitleId
+    = arg.Substring(TitleId.Length + 1);\n            }\n            else if (string.IsNullOrEmpty(playfabSecretKey)
+    && arg.ToUpper().StartsWith(SecretKey))\n            {\n                playfabSecretKey
+    = arg.Substring(SecretKey.Length + 1);\n            }\n            else if (string.IsNullOrEmpty(gsdkEnabled)
+    && arg.ToUpper().StartsWith(GSDK))\n            {\n                gsdkEnabled
+    = arg.Substring(GSDK.Length + 1);\n            }\n        }\n\n        if (string.IsNullOrEmpty(playfabTitleId)
+    || string.IsNullOrEmpty(playfabSecretKey))\n        {\n            UnityEngine.Debug.LogError(\"Game
+    Server must have PLAYFAB_TITLE_ID and PLAYFAB_SECRET_KEY environment variables
+    set, or passed in via the command line.\");\n            UnityEngine.Debug.LogError(\"Command
+    Line Example: 'GameServer.exe PF_TITLE_ID=A73F1 PF_SECRET_KEY=ADFKLJAGHUICX94UH87834JF9832BI'\");\n           
+    return;\n        }\n\n        // Checking if \n        IsGSDKEnabled = gsdkEnabled.IsNullOrWhitespace()
+    == false && (gsdkEnabled == \"1\" || gsdkEnabled.ToUpperInvariant() == \"TRUE\");\n\n       
+    // Making sure PlayFab is setup\n        PlayFabSettings.staticSettings.TitleId
+    = playfabTitleId;\n        PlayFabSettings.staticSettings.DeveloperSecretKey
+    = playfabSecretKey;\n\n        ServerSettings settings = IsGSDKEnabled ? GetPlayFabMultiplayerSettings()
+    : GetDebugLocalBuildSettings();\n\n        if (settings == null)\n        {\n           
+    return;\n        }\n\n        UnityEngine.Debug.Log(\"OutputLogFilePath = \"
+    + settings.OutputLogFilePath);\n        UnityEngine.Debug.Log(\"Port = \" + settings.Port);\n\n       
+    // Opening up our filestream\n        FileStream = new FileStream(settings.OutputLogFilePath,
+    FileMode.Create);\n        StreamWriter = new StreamWriter(FileStream);\n\n       
+    try\n        {\n            RunServer(settings);\n        }\n        finally\n       
+    {\n            // Flushing and closing the output to file\n            StreamWriter.Flush();\n           
+    FileStream.Flush();\n            StreamWriter.Close();\n            FileStream.Close();\n       
+    }\n    }\n\n    private static void RunServer(ServerSettings serverSettings)\n   
+    {\n        try\n        {\n            server = GameServerCreator.Create();\n           
+    server.ServerUserConnected += UserConnected;\n            server.ServerUserDisconnected
+    += UserDisconnected;\n\n            // Starting the Game Server\n           
+    if (server.Start(serverSettings.Port) == false)\n            {\n               
+    UnityEngine.Debug.Log(\"The server failed to start! Shutting Down...\");\n               
+    server.Shutdown();\n                return;\n            }\n\n            //
+    Waiting for it to finish starting\n            if (server.IsStarting)\n           
+    {\n                UnityEngine.Debug.Log(\"Waiting for the server to finish Starting.\");\n\n               
+    while (server.IsStarting)\n                {\n                    System.Threading.Thread.Sleep(10);\n               
+    }\n            }\n\n            // Making sure it's running\n            if (server.IsRunning
+    == false)\n            {\n                UnityEngine.Debug.Log(\"The server
+    failed to start running!\");\n            }\n            else\n            {\n               
+    UnityEngine.Debug.Log(\"The server started successfully.\");\n\n               
+    if (IsGSDKEnabled == false)\n                {\n                    UnityEngine.Debug.Log(\"Press
+    key 'q' to manually stop the server...\");\n                }\n            }\n\n           
+    if (server.IsRunning && IsGSDKEnabled)\n            {\n                // NOTE
+    [bgish]: ReadyForPlayers is a blocking call\n                if (GameserverSDK.ReadyForPlayers())\n               
+    {\n                    IsReadyForPlayers = true;\n\n                    if (ConnectedPlayers.Count
+    > 0)\n                    {\n                        UpdateConnectPlayers();\n                   
+    }\n\n                    // After allocation, we can grab the session cookie
+    from the config\n                    IDictionary<string, string> activeConfig
+    = GameserverSDK.getConfigSettings();\n\n                    UnityEngine.Debug.Log($\"GSDK
+    Active Config = {JsonUtil.Serialize(activeConfig)}\");\n\n                   
+    if (activeConfig.TryGetValue(GameserverSDK.SessionCookieKey, out string sessionCookie))\n                   
+    {\n                        UnityEngine.Debug.Log($\"The session cookie from the
+    allocation call is: {sessionCookie}\");\n                    }\n               
+    }\n                else\n                {\n                    // No allocation
+    happened, the server is getting terminated (likely because there are too many
+    already in standing by)\n                    UnityEngine.Debug.LogError(\"Server
+    is getting terminated.\");\n                    server.Shutdown();\n               
+    }\n            }\n\n            DateTime timeWithoutPlayers = DateTime.UtcNow;\n\n           
+    // While running, make sure it's updated and look out for it shutting down\n           
+    while (server.IsRunning)\n            {\n                // checking if user
+    pressed the 'q' key to shutdown server\n                if (IsGSDKEnabled ==
+    false)\n                {\n                    if (Console.KeyAvailable && Console.ReadKey().KeyChar
+    == 'q')\n                    {\n                        UnityEngine.Debug.Log(\"User
+    manually shutting down server...\");\n                        server.Shutdown();\n                       
+    break;\n                    }\n                }\n\n                server.Update();\n               
+    System.Threading.Thread.Sleep(10);\n\n                // Detecting if we should
+    shutdown the server from lack of players\n                if (server.ConnectedUsers.Count
+    != 0)\n                {\n                    timeWithoutPlayers = DateTime.UtcNow;\n               
+    }\n                else if (IsGSDKEnabled && DateTime.UtcNow.Subtract(timeWithoutPlayers).TotalMinutes
+    > 1)\n                {\n                    UnityEngine.Debug.Log(\"We've had
+    no users for 1 minute.  Shutting down the server...\");\n                   
+    server.Shutdown();\n                    break;\n                }\n           
+    }\n        }\n        catch (Exception ex)\n        {\n            UnityEngine.Debug.LogException(ex);\n       
+    }\n\n        // Make sure the server is indeed shutting down\n        server?.Shutdown();\n\n       
+    UnityEngine.Debug.Log(\"Program Terminating...\");\n    }\n\n    private static
+    void WriteLine(string prefix, string message)\n    {\n        string fullMessage
+    = prefix + message;\n        System.Console.WriteLine(fullMessage);\n       
+    StreamWriter?.WriteLine(fullMessage);\n\n        if (IsGSDKEnabled)\n       
+    {\n            GameserverSDK.LogMessage(fullMessage);\n        }\n    }\n\n   
+    private static ServerSettings GetDebugLocalBuildSettings()\n    {\n        return
+    new ServerSettings\n        {\n            OutputLogFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+    \"__LOG_OUTPUT_FILE__\"),\n            Port = __DEBUG_PORT__,\n        };\n   
+    }\n\n    private static ServerSettings GetPlayFabMultiplayerSettings()\n    {\n       
+    try\n        {\n            GameserverSDK.Start();\n        }\n        catch
+    (GSDKInitializationException initEx)\n        {\n            UnityEngine.Debug.LogError(\"Cannot
+    start GSDK. Please make sure the MockAgent is running.\");\n            UnityEngine.Debug.LogError($\"Got
+    Exception: {initEx}\");\n\n            return null;\n        }\n        catch
+    (Exception ex)\n        {\n            UnityEngine.Debug.LogError($\"Got Exception:
+    {ex}\");\n        }\n\n        GameserverSDK.RegisterShutdownCallback(OnShutdown);\n       
+    GameserverSDK.RegisterHealthCallback(IsHealthy);\n        GameserverSDK.RegisterMaintenanceCallback(OnMaintenanceScheduled);\n\n       
+    IDictionary<string, string> initialConfig = GameserverSDK.getConfigSettings();\n\n       
+    UnityEngine.Debug.Log($\"GSDK Initial Config = {JsonUtil.Serialize(initialConfig)}\");\n\n       
+    if (initialConfig?.ContainsKey(ListeningPortKey) == true)\n        {\n           
+    return new ServerSettings\n            {\n                OutputLogFilePath =
+    Path.Combine(initialConfig[GameserverSDK.LogFolderKey], \"GameServerOutput.txt\"),\n               
+    Port = int.Parse(initialConfig[ListeningPortKey]),\n            };\n        }\n       
+    else\n        {\n            UnityEngine.Debug.Log(\n                $\"Cannot
+    find {ListeningPortKey} in GSDK Config Settings. Please make sure the MockAgent
+    is running \" +\n                $\"and that the MultiplayerSettings.json file
+    includes {ListeningPortKey} as a GamePort Name.\");\n\n            return null;\n       
+    }\n    }\n\n    private static bool IsHealthy()\n    {\n        return true;\n   
+    }\n\n    private static void OnMaintenanceScheduled(DateTimeOffset time)\n   
+    {\n        UnityEngine.Debug.Log($\"Maintenance Scheduled at: {time}\");\n   
+    }\n\n    private static void OnShutdown()\n    {\n        UnityEngine.Debug.Log(\"GSDK
+    is Shutting down the server...\");\n        server?.Shutdown();\n    }\n\n   
+    private static void UserConnected(UserInfo userInfo, bool wasReconnect)\n   
+    {\n        string playfabId = userInfo.GetPlayFabId();\n        bool playerAlreadyAdded
+    = false;\n\n        foreach (var player in ConnectedPlayers)\n        {\n           
+    if (player.PlayerId == playfabId)\n            {\n                playerAlreadyAdded
+    = true;\n                break;\n            }\n        }\n\n        if (playerAlreadyAdded
+    == false)\n        {\n            ConnectedPlayers.Add(new ConnectedPlayer(userInfo.GetPlayFabId()));\n           
+    UpdateConnectPlayers();\n        }\n    }\n\n    private static void UserDisconnected(UserInfo
+    userInfo, bool wasConnectionLost)\n    {\n        string playfabId = userInfo.GetPlayFabId();\n       
+    ConnectedPlayer connectedPlayer = null;\n\n        foreach (var player in ConnectedPlayers)\n       
+    {\n            if (player.PlayerId == playfabId)\n            {\n               
+    connectedPlayer = player;\n                break;\n            }\n        }\n\n       
+    if (connectedPlayer != null)\n        {\n            ConnectedPlayers.Remove(connectedPlayer);\n           
+    UpdateConnectPlayers();\n        }\n    }\n\n    private static void UpdateConnectPlayers()\n   
+    {\n        if (IsReadyForPlayers)\n        {\n            GameserverSDK.UpdateConnectedPlayers(ConnectedPlayers);\n       
+    }\n    }\n\n    public class ServerSettings\n    {\n        public string OutputLogFilePath
+    { get; set; }\n\n        public int Port { get; set; }\n\n        public override
+    string ToString()\n        {\n            return $\"Port = {this.Port}, Output
+    Path = {this.OutputLogFilePath}\";\n        }\n    }\n}\n"
+--- !u!114 &-1088746701138814886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd730260249ad55478bf6ac833928e85, type: 3}
+  m_Name: CsProjectFile
+  m_EditorClassIdentifier: 
+  text: "<Project Sdk=\"Microsoft.NET.Sdk\">\n  <PropertyGroup>\n    <OutputType>Exe</OutputType>\n   
+    <TargetFramework>netcoreapp3.1</TargetFramework>\n    <AssemblyName>GameServer</AssemblyName>\n 
+    </PropertyGroup>\n  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Release|AnyCPU'\">\n   
+    <DefineConstants>TRACE__PROJECT_DEFINES__</DefineConstants>\n  </PropertyGroup>\n 
+    <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Debug|AnyCPU'\">\n   
+    <DefineConstants>TRACE__PROJECT_DEFINES__</DefineConstants>\n  </PropertyGroup>\n 
+    <ItemGroup>\n__PROJECT_CODE_DIRECTORIES__\n  </ItemGroup>\n  <ItemGroup>\n__PROJECT_PACKAGES__\n 
+    </ItemGroup>\n</Project>\n"
+--- !u!114 &-832165381203651081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd730260249ad55478bf6ac833928e85, type: 3}
+  m_Name: .gitignore
+  m_EditorClassIdentifier: 
+  text: '
+
+    # ===================================== #
+
+    # Visual Studio / MonoDevelop
+    generated #
+
+    # ===================================== #
+
+    .vs
+
+    obj
+
+    bin
+
+    packages
+
+
+    *.booproj
+
+    *.pidb
+
+    *.sln.DotSettings
+
+    *.suo
+
+    *.svd
+
+    *.tmproj
+
+    *.unityproj
+
+    *.user
+
+    *.userprefs
+
+
+    StyleCop.Cache
+
+    launchSettings.json
+
+
+    #
+    ============ #
+
+    # OS generated #
+
+    # ============ #
+
+
+    .DS_Store
+
+    .DS_Store?
+
+    ._*
+
+    .Spotlight-V100
+
+    .Trashes
+
+    ehthumbs.db
+
+    Thumbs.db
+
+'
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f664badec1b8f954d8297d90639b3c93, type: 3}
+  m_Name: GameServerGenerator
+  m_EditorClassIdentifier: 
+  projectName: GameServer
+  folderPath: ../GameServer
+  csProjectFileContent: {fileID: -1088746701138814886}
+  slnProjectFileContent: {fileID: 6808570200691844607}
+  solutionGuid: A88C2164-5A79-4733-9812-006B74A55BC1
+  csProjectGuid: 818E7FB7-560C-4681-94B2-48CC4196EFA7
+  defines:
+  - USING_LITE_NET_LIB
+  - NCRUNCH
+  - USING_DISSONANCE
+  files:
+  - {fileID: 640321176449472572}
+  - {fileID: -832165381203651081}
+  - {fileID: 2799972190061028147}
+  - {fileID: -1806056100067004802}
+  - {fileID: 3706096239715509391}
+  - {fileID: 1423060673947051158}
+  - {fileID: -5604236082202577671}
+  codeFolders:
+  - folderName: Lost.Common
+    folder: {fileID: 102900000, guid: 82bbc5c666ca8844782b012f7e85bdb3, type: 3}
+  - folderName: Lost.Networking
+    folder: {fileID: 102900000, guid: 24d9040bade94bbfbad9b8ba00e53add, type: 3}
+  - folderName: Dissonance.Runtime
+    folder: {fileID: 102900000, guid: 3e9e762569660d9468739176902cddc7, type: 3}
+  packages:
+  - packageName: com.playfab.csharpgsdk
+    packageVersion: 0.10.200325
+  - packageName: LiteNetLib
+    packageVersion: 0.9.1-beta
+  - packageName: PlayFabAllSDK
+    packageVersion: 1.70.200421
+  - packageName: Newtonsoft.Json
+    packageVersion: 12.0.3
+  customReplaceVariables:
+  - replaceName: __DEBUG_PORT__
+    replaceValue: 7777
+  - replaceName: __LOG_OUTPUT_FILE__
+    replaceValue: GameServerOutput.txt
+--- !u!114 &640321176449472572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd730260249ad55478bf6ac833928e85, type: 3}
+  m_Name: .editorconfig
+  m_EditorClassIdentifier: 
+  text: 'root = true
+
+
+    [*]
+
+    formatter = generic
+
+    disable_auto_format
+    = true
+
+
+    [*.cs]
+
+    formatters = uncrustify, generic
+
+    indent_style =
+    space
+
+    indent_size = 4
+
+    insert_final_newline = true
+
+    charset = utf-8
+
+    end_of_line
+    = lf
+
+    trim_trailing_whitespace = true
+
+'
+--- !u!114 &1423060673947051158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd730260249ad55478bf6ac833928e85, type: 3}
+  m_Name: Package Server.bat
+  m_EditorClassIdentifier: 
+  text: 'del Server.zip
+
+
+    cd .\bin\Release\netcoreapp3.1\publish
+
+    jar -cMf
+    ..\..\..\..\Server.zip *.*
+
+
+    pause
+
+'
+--- !u!114 &2799972190061028147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd730260249ad55478bf6ac833928e85, type: 3}
+  m_Name: .p4ignore
+  m_EditorClassIdentifier: 
+  text: '
+
+    # ===================================== #
+
+    # Visual Studio / MonoDevelop
+    generated #
+
+    # ===================================== #
+
+    .vs
+
+    obj
+
+    bin
+
+    packages
+
+
+    *.booproj
+
+    *.pidb
+
+    *.sln.DotSettings
+
+    *.suo
+
+    *.svd
+
+    *.tmproj
+
+    *.unityproj
+
+    *.user
+
+    *.userprefs
+
+
+    StyleCop.Cache
+
+    launchSettings.json
+
+
+    #
+    ============ #
+
+    # OS generated #
+
+    # ============ #
+
+
+    .DS_Store
+
+    .DS_Store?
+
+    ._*
+
+    .Spotlight-V100
+
+    .Trashes
+
+    ehthumbs.db
+
+    Thumbs.db
+
+'
+--- !u!114 &3706096239715509391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd730260249ad55478bf6ac833928e85, type: 3}
+  m_Name: Properties/PublishProfiles/FolderProfile.pubxml
+  m_EditorClassIdentifier: 
+  text: "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<!--\r\nhttps://go.microsoft.com/fwlink/?LinkID=208121.
+    \r\n-->\r\n<Project ToolsVersion=\"4.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\r\n 
+    <PropertyGroup>\r\n    <Configuration>Release</Configuration>\r\n    <Platform>Any
+    CPU</Platform>\r\n    <PublishDir>bin\\Release\\netcoreapp3.1\\publish\\</PublishDir>\r\n   
+    <PublishProtocol>FileSystem</PublishProtocol>\r\n    <TargetFramework>netcoreapp3.1</TargetFramework>\r\n   
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>\r\n    <SelfContained>true</SelfContained>\r\n   
+    <PublishSingleFile>False</PublishSingleFile>\r\n    <PublishReadyToRun>False</PublishReadyToRun>\r\n   
+    <PublishTrimmed>False</PublishTrimmed>\r\n  </PropertyGroup>\r\n</Project>"
+--- !u!114 &6808570200691844607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd730260249ad55478bf6ac833928e85, type: 3}
+  m_Name: SolutionFile
+  m_EditorClassIdentifier: 
+  text: "\r\nMicrosoft Visual Studio Solution File, Format Version 12.00\r\n# Visual
+    Studio Version 16\r\nVisualStudioVersion = 16.0.29806.167\r\nMinimumVisualStudioVersion
+    = 10.0.40219.1\r\nProject(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"__PROJECT_NAME__\",
+    \"__PROJECT_NAME__.csproj\", \"{__CS_PROJ_GUID__}\"\r\nEndProject\r\nGlobal\r\n\tGlobalSection(SolutionConfigurationPlatforms)
+    = preSolution\r\n\t\tDebug|Any CPU = Debug|Any CPU\r\n\t\tRelease|Any CPU = Release|Any
+    CPU\r\n\tEndGlobalSection\r\n\tGlobalSection(ProjectConfigurationPlatforms) =
+    postSolution\r\n\t\t{__CS_PROJ_GUID__}.Debug|Any CPU.ActiveCfg = Debug|Any CPU\r\n\t\t{__CS_PROJ_GUID__}.Debug|Any
+    CPU.Build.0 = Debug|Any CPU\r\n\t\t{__CS_PROJ_GUID__}.Release|Any CPU.ActiveCfg
+    = Release|Any CPU\r\n\t\t{__CS_PROJ_GUID__}.Release|Any CPU.Build.0 = Release|Any
+    CPU\r\n\tEndGlobalSection\r\n\tGlobalSection(SolutionProperties) = preSolution\r\n\t\tHideSolutionNode
+    = FALSE\r\n\tEndGlobalSection\r\n\tGlobalSection(ExtensibilityGlobals) = postSolution\r\n\t\tSolutionGuid
+    = {__SLN_GUID__}\r\n\tEndGlobalSection\r\nEndGlobal\r\n"

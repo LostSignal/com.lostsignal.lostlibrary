@@ -1,0 +1,39 @@
+{
+  "name": "com.lostsignal.lostlibrary",
+  "displayName": "Lost Library",
+  "version": "0.1.0",
+  "unity": "2019.3",
+  "description": "The Lost Library",
+  "keywords": [
+    "Lost Lirbary"
+  ],
+  "category": "",
+  "dependencies": {
+    "com.unity.addressables": "1.15.1",
+    "com.unity.ads": "3.4.9",
+    "com.unity.analytics": "3.3.5",
+    "com.unity.mobile.android-logcat": "1.1.1",
+    "com.unity.assetbundlebrowser": "1.7.0",
+    "com.unity.build-report-inspector": "0.2.2-preview",
+    "com.unity.cinemachine": "2.6.2",
+    "com.unity.device-simulator": "2.2.3-preview",
+    "com.unity.editorcoroutines": "1.0.0",
+    "com.unity.formats.fbx": "3.2.1-preview.2",
+    "com.unity.memoryprofiler": "0.2.5-preview.1",
+    "com.unity.mobile.notifications": "1.0.3",
+    "com.unity.nuget.newtonsoft-json": "1.1.2",
+    "com.unity.performance.profile-analyzer": "1.0.3",
+    "com.unity.polybrush": "1.0.2",
+    "com.unity.probuilder": "4.4.0",
+    "com.unity.progrids": "3.0.3-preview.6",
+    "com.unity.quicksearch": "2.0.2",
+    "com.unity.settings-manager": "1.0.3",
+    "com.unity.test-framework": "1.1.16",
+    "com.unity.textmeshpro": "2.1.1",
+    "com.unity.timeline": "1.4.2",
+    "com.unity.ugui": "1.0.0",
+    "com.unity.ui.builder": "1.0.0-preview.6",
+    "com.unity.vectorgraphics": "2.0.0-preview.13",
+    "com.unity.coding": "0.1.0-preview.16"
+  }
+}

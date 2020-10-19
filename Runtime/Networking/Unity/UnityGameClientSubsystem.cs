@@ -1,0 +1,306 @@
+//-----------------------------------------------------------------------
+// <copyright file="UnityGameClientSubsystem.cs" company="Lost Signal LLC">
+//     Copyright (c) Lost Signal LLC. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+#if UNITY_2019_3_OR_NEWER
+
+namespace Lost.Networking
+{
+    using System.Collections.Generic;
+    using UnityEngine;
+    using UnityEngine.SceneManagement;
+
+    public class UnityGameClientSubsystem : IGameClientSubsystem
+    {
+        private static readonly NetworkReader reader = new NetworkReader(new byte[0]);
+
+        // private static readonly NetworkIdentityUpdate updateNetworkIdentityCache = new NetworkIdentityUpdate();
+        private static Dictionary<string, NetworkIdentity> resourcePrefabCache = new Dictionary<string, NetworkIdentity>();
+
+        // Dynamic Network Object Tracking
+        private Dictionary<long, NetworkIdentity> dynamicNetworkObjectsHash = new Dictionary<long, NetworkIdentity>();
+        private List<NetworkIdentity> dynamicNetworkObjectsList = new List<NetworkIdentity>();
+
+        private Dictionary<long, NetworkIdentity> sceneNetworkObjectsHash = new Dictionary<long, NetworkIdentity>();
+        private List<NetworkIdentity> sceneNetworkObjectsList = new List<NetworkIdentity>();
+        private List<NetworkIdentity> onSceneLoadIdentitiesCache = new List<NetworkIdentity>();
+        private GameClient gameClient;
+        private bool isConnected;
+
+        public void Initialize(GameClient gameClient)
+        {
+            this.gameClient = gameClient;
+            this.gameClient.RegisterMessage<NetworkIdentityRequestUpdate>();
+            this.gameClient.RegisterMessage<NetworkIdentityUpdate>();
+            this.gameClient.RegisterMessage<NetworkIdentitiesDestroyed>();
+            this.gameClient.RegisterMessage<NetworkBehaviourMessage>();
+            this.gameClient.RegisterMessage<NetworkBehaviourDataMessage>();
+        }
+
+        public void Start()
+        {
+            this.gameClient.ClientReceivedMessage += this.ClientReceivedMessage;
+            this.gameClient.ClientConnectedToServer += this.ClientConnected;
+            this.gameClient.ClientDisconnectedFromServer += this.ClientDisconnected;
+
+            this.sceneNetworkObjectsList.Clear();
+            this.sceneNetworkObjectsHash.Clear();
+
+            // Collecting all the scene network objects from every scene
+            NetworkIdentity.GetAllSceneNetworkIdentities(this.sceneNetworkObjectsList);
+
+            // Hashing all the scene network objects for quicker lookup
+            foreach (var identity in this.sceneNetworkObjectsList)
+            {
+                this.AddSceneNetworkIdentityToHash(identity);
+            }
+
+            // Making sure we don't miss any if there's a scene load
+            SceneManager.sceneLoaded += this.OnSceneLoaded;
+        }
+
+        public void Stop()
+        {
+            this.gameClient.ClientReceivedMessage -= this.ClientReceivedMessage;
+            this.gameClient.ClientConnectedToServer -= this.ClientConnected;
+            this.gameClient.ClientDisconnectedFromServer -= this.ClientDisconnected;
+
+            this.sceneNetworkObjectsList.Clear();
+            this.sceneNetworkObjectsHash.Clear();
+
+            if (Platform.IsApplicationQuitting == false)
+            {
+                // Destroy all dynamic objects
+                foreach (var dynamic in this.dynamicNetworkObjectsList)
+                {
+                    if (dynamic && dynamic.gameObject)
+                    {
+                        Pooler.Destroy(dynamic.gameObject);
+                    }
+                }
+
+                this.dynamicNetworkObjectsList.Clear();
+                this.dynamicNetworkObjectsHash.Clear();
+            }
+
+            SceneManager.sceneLoaded -= this.OnSceneLoaded;
+        }
+
+        public void ClientReceivedMessage(Message message)
+        {
+            switch (message.GetId())
+            {
+                case NetworkIdentityRequestUpdate.Id:
+                    // WTF?
+                    break;
+
+                case NetworkIdentityUpdate.Id:
+                {
+                    var networkIdentityUpdatedMessage = (NetworkIdentityUpdate)message;
+
+                    if (this.sceneNetworkObjectsHash.TryGetValue(networkIdentityUpdatedMessage.NetworkId, out NetworkIdentity sceneIdentity))
+                    {
+                        if (sceneIdentity)
+                        {
+                            networkIdentityUpdatedMessage.PopulateNetworkIdentity(sceneIdentity);
+                        }
+                        else
+                        {
+                            Debug.LogError($"Scene NetworkIdentity {networkIdentityUpdatedMessage.NetworkId} has been destoryed, but still getting updates.");
+                        }
+                    }
+                    else if (this.dynamicNetworkObjectsHash.TryGetValue(networkIdentityUpdatedMessage.NetworkId, out NetworkIdentity dynamicIdentity))
+                    {
+                        networkIdentityUpdatedMessage.PopulateNetworkIdentity(dynamicIdentity);
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(networkIdentityUpdatedMessage.ResourceName) == false)
+                        {
+                            var newIdentity = this.CreateDynamicNetworkIdentity(
+                                networkIdentityUpdatedMessage.ResourceName,
+                                networkIdentityUpdatedMessage.NetworkId,
+                                networkIdentityUpdatedMessage.OwnerId,
+                                networkIdentityUpdatedMessage.Position,
+                                networkIdentityUpdatedMessage.Rotation);
+
+                            networkIdentityUpdatedMessage.PopulateNetworkIdentity(newIdentity);
+                        }
+                    }
+
+                    break;
+                }
+
+                case NetworkBehaviourMessage.Id:
+                {
+                    var networkBehaviourMessage = (NetworkBehaviourMessage)message;
+
+                    this.sceneNetworkObjectsHash.TryGetValue(networkBehaviourMessage.NetworkId, out NetworkIdentity sceneIdentity);
+                    this.dynamicNetworkObjectsHash.TryGetValue(networkBehaviourMessage.NetworkId, out NetworkIdentity dynamicIdentity);
+
+                    NetworkIdentity identity = null;
+
+                    if (sceneIdentity)
+                    {
+                        identity = sceneIdentity;
+                    }
+                    else if (dynamicIdentity)
+                    {
+                        identity = dynamicIdentity;
+                    }
+
+                    if (identity && identity.IsOwner == false)
+                    {
+                        reader.Replace(networkBehaviourMessage.DataBytes);
+                        identity.Behaviours[networkBehaviourMessage.BehaviourIndex].Deserialize(reader);
+                    }
+
+                    break;
+                }
+
+                case NetworkBehaviourDataMessage.Id:
+                {
+                    var networkBehaviourDataMessage = (NetworkBehaviourDataMessage)message;
+
+                    this.sceneNetworkObjectsHash.TryGetValue(networkBehaviourDataMessage.NetworkId, out NetworkIdentity sceneIdentity);
+                    this.dynamicNetworkObjectsHash.TryGetValue(networkBehaviourDataMessage.NetworkId, out NetworkIdentity dynamicIdentity);
+
+                    NetworkIdentity identity = null;
+
+                    if (sceneIdentity)
+                    {
+                        identity = sceneIdentity;
+                    }
+                    else if (dynamicIdentity)
+                    {
+                        identity = dynamicIdentity;
+                    }
+
+                    if (identity)
+                    {
+                        identity.Behaviours[networkBehaviourDataMessage.BehaviourIndex].OnReceiveNetworkData(networkBehaviourDataMessage.DataKey, networkBehaviourDataMessage.DataValue);
+                    }
+
+                    break;
+                }
+
+                case NetworkIdentitiesDestroyed.Id:
+                {
+                    var networkIdentitiesDestoryed = (NetworkIdentitiesDestroyed)message;
+
+                    foreach (long networkId in networkIdentitiesDestoryed.DestroyedNetworkIds)
+                    {
+                        this.sceneNetworkObjectsHash.TryGetValue(networkId, out NetworkIdentity sceneIdentity);
+                        this.dynamicNetworkObjectsHash.TryGetValue(networkId, out NetworkIdentity dynamicIdentity);
+
+                        NetworkIdentity identity = null;
+
+                        if (sceneIdentity)
+                        {
+                            identity = sceneIdentity;
+                        }
+                        else if (dynamicIdentity)
+                        {
+                            identity = dynamicIdentity;
+                        }
+
+                        if (identity)
+                        {
+                            Pooler.Destroy(identity.gameObject);
+                        }
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        public void ClientConnected()
+        {
+            Debug.Log("CLIENT: Connected");
+            this.isConnected = true;
+
+            foreach (var sceneObject in this.sceneNetworkObjectsList)
+            {
+                sceneObject.RequestUpdate();
+            }
+
+            foreach (var dynamicObject in this.dynamicNetworkObjectsList)
+            {
+                dynamicObject.RequestUpdate();
+            }
+        }
+
+        public void ClientDisconnected()
+        {
+            Debug.Log("CLIENT: Disconnected");
+            this.isConnected = false;
+        }
+
+        public NetworkIdentity CreateDynamicNetworkIdentity(string resourceName, long networkId, long ownerId, Vector3 position, Quaternion rotation)
+        {
+            NetworkIdentity networkIdentityPrefab;
+
+            if (resourcePrefabCache.TryGetValue(resourceName, out networkIdentityPrefab) == false)
+            {
+                networkIdentityPrefab = Resources.Load<NetworkIdentity>(resourceName);
+                resourcePrefabCache.Add(resourceName, networkIdentityPrefab);
+            }
+
+            var newNetworkIdentity = Pooler.Instantiate(networkIdentityPrefab);
+            newNetworkIdentity.SetClient(this.gameClient);
+            newNetworkIdentity.SetNetworkId(networkId);
+            newNetworkIdentity.SetOwner(ownerId);
+            newNetworkIdentity.ResourceName = resourceName;
+            newNetworkIdentity.transform.position = position;
+            newNetworkIdentity.transform.rotation = rotation;
+
+            if (this.isConnected)
+            {
+                newNetworkIdentity.RequestUpdate();
+            }
+
+            // Registering the new dynamic object
+            this.dynamicNetworkObjectsHash.Add(newNetworkIdentity.NetworkId, newNetworkIdentity);
+            this.dynamicNetworkObjectsList.Add(newNetworkIdentity);
+
+            return newNetworkIdentity;
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
+        {
+            this.onSceneLoadIdentitiesCache.Clear();
+            NetworkIdentity.GetNetworkIdentitiesFromScene(this.onSceneLoadIdentitiesCache, scene);
+
+            // Adding these newly loaded network identities to our list of identities
+            this.sceneNetworkObjectsList.AddRange(this.onSceneLoadIdentitiesCache);
+
+            // Adding these newly loaded network identities to our hash as well
+            foreach (var identity in this.onSceneLoadIdentitiesCache)
+            {
+                this.AddSceneNetworkIdentityToHash(identity);
+            }
+        }
+
+        private void AddSceneNetworkIdentityToHash(NetworkIdentity identity)
+        {
+            if (this.sceneNetworkObjectsHash.ContainsKey(identity.NetworkId))
+            {
+                Debug.LogError($"Multiple Network Identities with same Id: {identity.name} and {this.sceneNetworkObjectsHash[identity.NetworkId].name}");
+                return;
+            }
+
+            this.sceneNetworkObjectsHash.Add(identity.NetworkId, identity);
+            identity.SetClient(this.gameClient);
+
+            if (this.isConnected)
+            {
+                identity.RequestUpdate();
+            }
+        }
+    }
+}
+
+#endif

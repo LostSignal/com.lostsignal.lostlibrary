@@ -1,0 +1,171 @@
+//-----------------------------------------------------------------------
+// <copyright file="PlayFabSettings.cs" company="Lost Signal LLC">
+//     Copyright (c) Lost Signal LLC. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace Lost.PlayFab
+{
+    using System.Collections.Generic;
+    using System.IO;
+    using Lost.AppConfig;
+    using UnityEditor.Build.Reporting;
+    using UnityEngine;
+
+    [AppConfigSettingsOrder(500)]
+    public class PlayFabSettings : AppConfigSettings
+    {
+#pragma warning disable 0649
+        [SerializeField] private string titleId;
+        [SerializeField] private string secretKey;
+        [SerializeField] private bool isDevelopmentEnvironment;
+
+        [Header("Azure Functions")]
+        [SerializeField] private AzureFunctionsProjectGenerator azureFunctionsProjectGenerator;
+        [SerializeField] private string functionsSite;
+        [SerializeField] private string functionsHostKey;
+        [SerializeField] private string ablyServerKey;
+        [SerializeField] private string redisConnectionString;
+        [SerializeField] private string cosmosDbConnectionString;
+
+        [Header("Game Server")]
+        [SerializeField] private GameServerProjectGenerator gameServerProjectGenerator;
+#pragma warning restore 0649
+
+        public override string DisplayName => "PlayFab";
+
+        public override bool IsInline => false;
+
+        public string TitleId => this.titleId;
+
+        public string SecretKey => this.secretKey;
+
+        public bool IsDevelopmentEnvironment
+        {
+            get => this.isDevelopmentEnvironment;
+            set => this.isDevelopmentEnvironment = value;
+        }
+
+        public string FunctionsSite => this.functionsSite;
+
+        public string FunctionsHostKey => this.functionsHostKey;
+
+        public string CosmosDbConnectionString => this.cosmosDbConnectionString;
+
+        public string RedisConnectionString => this.redisConnectionString;
+
+        public string AblySererKey => this.ablyServerKey;
+
+        public override void GetRuntimeConfigSettings(Lost.AppConfig.AppConfig appConfig, Dictionary<string, string> runtimeConfigSettings)
+        {
+            var playFabSettings = appConfig.GetSettings<PlayFabSettings>();
+
+            if (playFabSettings == null)
+            {
+                return;
+            }
+
+            runtimeConfigSettings.Add(PlayFabConfigExtensions.TitleId, playFabSettings.titleId);
+        }
+
+        public override void OnPostprocessBuild(AppConfig appConfig, BuildReport buildReport)
+        {
+            var playFabSettings = appConfig.GetSettings<PlayFabSettings>();
+
+            if (playFabSettings == null || playFabSettings.azureFunctionsProjectGenerator == null)
+            {
+                return;
+            }
+
+            azureFunctionsProjectGenerator.UploadFunctionsToPlayFab();
+
+            //// TODO [bgish]: If Platform.IsUnityCloudBuild, check if Upload was successful and fail the build if it wasn't
+        }
+
+        public override void InitializeOnLoad(AppConfig appConfig)
+        {
+            var playFabSettings = appConfig.GetSettings<PlayFabSettings>();
+
+            if (playFabSettings == null)
+            {
+                return;
+            }
+
+            if (playFabSettings.azureFunctionsProjectGenerator != null)
+            {
+                GenerateLaunchSettingsForAzureFunctionsProject(playFabSettings);
+            }
+
+            if (playFabSettings.gameServerProjectGenerator != null)
+            {
+                GenerateLaunchSettingsForGameServerProject(playFabSettings);
+            }
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
+        private static void RuntimeInitializeOnLoad()
+        {
+            var playfabSettings = EditorAppConfig.ActiveAppConfig.GetSettings<PlayFabSettings>();
+
+            if (playfabSettings != null)
+            {
+                global::PlayFab.PlayFabSettings.staticSettings.TitleId = playfabSettings.titleId;
+                global::PlayFab.PlayFabSettings.staticSettings.DeveloperSecretKey = playfabSettings.secretKey;
+            }
+        }
+
+        private static void GenerateLaunchSettingsForAzureFunctionsProject(PlayFabSettings playfabSettings)
+        {
+            string launchSettings = BetterStringBuilder.New()
+                .AppendLine("{")
+                .AppendLine("  \"profiles\": {")
+                .AppendLine("    \"" + playfabSettings.azureFunctionsProjectGenerator.ProjectName + "\": {")
+                .AppendLine("      \"commandName\": \"Project\",")
+                .AppendLine("      \"environmentVariables\": {")
+                .AppendLine($"        \"ABLY_SERVER_KEY\": \"{playfabSettings.ablyServerKey}\",")
+                .AppendLine($"        \"COSMOS_DB_CONNECTION_STRING\": \"{playfabSettings.cosmosDbConnectionString}\",")
+                .AppendLine($"        \"DEVELOPMENT\": \"{playfabSettings.isDevelopmentEnvironment.ToString().ToUpperInvariant()}\",")
+                .AppendLine($"        \"PF_TITLE_ID\": \"{playfabSettings.titleId}\",")
+                .AppendLine($"        \"PF_SECRET_KEY\": \"{playfabSettings.secretKey}\",")
+                .AppendLine($"        \"REDIS_CONNECTION_STRING\": \"{playfabSettings.redisConnectionString}\"")
+                .AppendLine("      }")
+                .AppendLine("    }")
+                .AppendLine("  }")
+                .AppendLine("}")
+                .ToString();
+
+            string projectDirectory = Path.GetDirectoryName(playfabSettings.azureFunctionsProjectGenerator.CsProjFilePath);
+            string launchSettingsPath = Path.Combine(projectDirectory, "Properties", "launchSettings.json");
+
+            if (File.Exists(launchSettingsPath) == false || File.ReadAllText(launchSettingsPath) != launchSettings)
+            {
+                File.WriteAllText(launchSettingsPath, launchSettings);
+            }
+        }
+
+        private static void GenerateLaunchSettingsForGameServerProject(PlayFabSettings playfabSettings)
+        {
+            string launchSettings = BetterStringBuilder.New()
+                .AppendLine("{")
+                .AppendLine("  \"profiles\": {")
+                .AppendLine("    \"" + playfabSettings.gameServerProjectGenerator.ProjectName + "\": {")
+                .AppendLine("      \"commandName\": \"Project\",")
+                .AppendLine("      \"environmentVariables\": {")
+                .AppendLine($"        \"PF_TITLE_ID\": \"{playfabSettings.titleId}\",")
+                .AppendLine($"        \"PF_SECRET_KEY\": \"{playfabSettings.secretKey}\",")
+                .AppendLine("      }")
+                .AppendLine("    }")
+                .AppendLine("  }")
+                .AppendLine("}")
+                .ToString();
+
+            string projectDirectory = Path.GetDirectoryName(playfabSettings.gameServerProjectGenerator.CsProjFilePath);
+            string launchSettingsPath = Path.Combine(projectDirectory, "Properties", "launchSettings.json");
+
+            if (File.Exists(launchSettingsPath) == false || File.ReadAllText(launchSettingsPath) != launchSettings)
+            {
+                File.WriteAllText(launchSettingsPath, launchSettings);
+            }
+        }
+    }
+}
