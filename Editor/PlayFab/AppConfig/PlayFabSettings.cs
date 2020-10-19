@@ -135,7 +135,18 @@ namespace Lost.PlayFab
                 .ToString();
 
             string projectDirectory = Path.GetDirectoryName(playfabSettings.azureFunctionsProjectGenerator.CsProjFilePath);
-            string launchSettingsPath = Path.Combine(projectDirectory, "Properties", "launchSettings.json");
+            string propertiesDirectory = Path.Combine(projectDirectory, "Properties");
+            string launchSettingsPath = Path.Combine(propertiesDirectory, "launchSettings.json");
+
+            if (File.Exists(playfabSettings.azureFunctionsProjectGenerator.CsProjFilePath) == false)
+            {
+                return;
+            }
+
+            if (Directory.Exists(propertiesDirectory) == false)
+            {
+                Directory.CreateDirectory(propertiesDirectory);
+            }
 
             if (File.Exists(launchSettingsPath) == false || File.ReadAllText(launchSettingsPath) != launchSettings)
             {
@@ -160,7 +171,18 @@ namespace Lost.PlayFab
                 .ToString();
 
             string projectDirectory = Path.GetDirectoryName(playfabSettings.gameServerProjectGenerator.CsProjFilePath);
-            string launchSettingsPath = Path.Combine(projectDirectory, "Properties", "launchSettings.json");
+            string propertiesDirectory = Path.Combine(projectDirectory, "Properties");
+            string launchSettingsPath = Path.Combine(propertiesDirectory, "launchSettings.json");
+
+            if (File.Exists(playfabSettings.gameServerProjectGenerator.CsProjFilePath) == false)
+            {
+                return;
+            }
+
+            if (Directory.Exists(propertiesDirectory) == false)
+            {
+                Directory.CreateDirectory(propertiesDirectory);
+            }
 
             if (File.Exists(launchSettingsPath) == false || File.ReadAllText(launchSettingsPath) != launchSettings)
             {

@@ -77,7 +77,8 @@ namespace Lost.AppConfig
             get
             {
                 // Special case if someone has deleted the last selected app config
-                if (string.IsNullOrEmpty(RuntimeAppConfig.Instance.AppConfigGuid) == false &&
+                if (RuntimeAppConfig.Instance != null &&
+                    string.IsNullOrEmpty(RuntimeAppConfig.Instance.AppConfigGuid) == false &&
                     string.IsNullOrEmpty(AssetDatabase.GUIDToAssetPath(RuntimeAppConfig.Instance.AppConfigGuid)))
                 {
                     RuntimeAppConfig.Instance.AppConfigGuid = null;
@@ -91,7 +92,7 @@ namespace Lost.AppConfig
                 {
                     // Do nothing, already set
                 }
-                else if (string.IsNullOrEmpty(RuntimeAppConfig.Instance.AppConfigGuid) == false)
+                else if (RuntimeAppConfig.Instance != null && string.IsNullOrEmpty(RuntimeAppConfig.Instance.AppConfigGuid) == false)
                 {
                     foreach (var config in Instance.appConfigs)
                     {

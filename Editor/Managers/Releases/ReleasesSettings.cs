@@ -17,7 +17,6 @@ namespace Lost
     public class ReleasesSettings : AppConfigSettings
     {
 #pragma warning disable 0649
-        [SerializeField] private Releases releases;
         [SerializeField] private string releasesUrl;
 
         [Header("Azure Upload Settings")]
@@ -128,7 +127,7 @@ namespace Lost
 
             var machineName = Platform.IsUnityCloudBuild ? "cloud_build" : System.Environment.MachineName;
             var blobKey = $"{machineName}/{ReleasesManager.ReleasesJsonFileName}";
-            var releasesJson = JsonUtil.Serialize(this.releases);
+            var releasesJson = JsonUtil.Serialize(Releases.AllReleases);
 
             var azureConfig = new AzureStorage.Config
             {

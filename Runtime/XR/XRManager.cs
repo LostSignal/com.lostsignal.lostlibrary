@@ -59,13 +59,16 @@ namespace Lost
             Debug.Log($"SystemInfo.deviceName = {SystemInfo.deviceName}");
 
             // Printing off all our loaders
-            var loaders = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders;
-            Debug.Log("XR Loader Count: " + loaders.Count);
-
-            for (int i = 0; i < loaders.Count; i++)
+            if (UnityEngine.XR.Management.XRGeneralSettings.Instance)
             {
-                Debug.Log("XR Loader: " + loaders[i].name);
-            }
+                var loaders = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders;
+                Debug.Log("XR Loader Count: " + loaders.Count);
+
+                for (int i = 0; i < loaders.Count; i++)
+                {
+                    Debug.Log("XR Loader: " + loaders[i].name);
+                }
+            }            
 
             if (this.CurrentDevice == null)
             {

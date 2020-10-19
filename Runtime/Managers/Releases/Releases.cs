@@ -17,5 +17,7 @@ namespace Lost
 #pragma warning restore 0649
 
         public Release CurrentRelease => this.releases.LastOrDefault();
+
+        public List<Release> AllReleases => this.releases;
     }
 }
