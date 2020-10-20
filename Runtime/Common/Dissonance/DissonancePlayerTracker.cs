@@ -18,7 +18,7 @@ namespace Lost.DissonanceIntegration
 #endif
     {
 #pragma warning disable 0649
-        [SerializeField] [HideInInspector] private NetworkIdentity networkIdentity;
+        [SerializeField][HideInInspector] private NetworkIdentity networkIdentity;
 #pragma warning disable 0649
 
         public bool IsTracking { get; private set; }

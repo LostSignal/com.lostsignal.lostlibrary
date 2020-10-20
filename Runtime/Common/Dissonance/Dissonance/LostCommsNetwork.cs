@@ -14,12 +14,12 @@ namespace Lost.DissonanceIntegration
     using System;
 
     public class LostCommsNetwork
-      : BaseCommsNetwork<
-          LostServer,   // A class which implements BaseServer
-          LostClient,   // A class which implements BaseClient
-          LostConn,     // A struct which contains a HLAPI NetworkConnection
-          Unit,         // Nothing
-          Unit>         // Nothing
+        : BaseCommsNetwork<
+            LostServer, // A class which implements BaseServer
+            LostClient, // A class which implements BaseClient
+            LostConn,   // A struct which contains a HLAPI NetworkConnection
+            Unit,       // Nothing
+            Unit>       // Nothing
     {
         private bool hasClientStarted;
 

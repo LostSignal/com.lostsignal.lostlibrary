@@ -68,7 +68,7 @@ namespace Lost
                 {
                     Debug.Log("XR Loader: " + loaders[i].name);
                 }
-            }            
+            }
 
             if (this.CurrentDevice == null)
             {

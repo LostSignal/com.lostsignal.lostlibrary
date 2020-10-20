@@ -48,6 +48,7 @@ namespace Lost.DissonanceIntegration
 
                 this.SetInstance(this);
             }
+
 #else
             Debug.LogError("Tring to use the DissonanceManager without USING_DISSONANCE define.  Add the Dissonance package to your project.");
             this.SetInstance(this);
