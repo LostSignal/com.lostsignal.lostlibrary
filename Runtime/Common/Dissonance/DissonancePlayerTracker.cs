@@ -65,7 +65,7 @@ namespace Lost.DissonanceIntegration
                 if (this.IsTracking)
                 {
                     yield break;
-                }    
+                }
 
                 while (this.PlayerId == null && NetworkingManager.Instance && DissonanceManager.Instance)
                 {
@@ -90,7 +90,10 @@ namespace Lost.DissonanceIntegration
             {
                 this.IsTracking = false;
 
-                DissonanceManager.Instance.DissonanceComms.StopTracking(this);
+                if (DissonanceManager.Instance)
+                {
+                    DissonanceManager.Instance.DissonanceComms.StopTracking(this);
+                }
             }
         }
 

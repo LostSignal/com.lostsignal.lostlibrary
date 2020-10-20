@@ -170,7 +170,10 @@ namespace Lost.Networking
             // Making sure we send all our info on disable
             for (int i = 0; i < this.behaviours.Length; i++)
             {
-                this.behaviours[i].SendNetworkBehaviourMessage(true);
+                if (this.behaviours[i])
+                {
+                    this.behaviours[i].SendNetworkBehaviourMessage(true);
+                }
             }
         }
 
