@@ -159,7 +159,7 @@ namespace Lost
 
                 // Render Camera
                 var renderCamera = dialog.Canvas.worldCamera;
-                var newRenderCamera = EditorGUILayout.ObjectField("Render Camera", renderCamera, typeof(Camera), false) as Camera;
+                var newRenderCamera = EditorGUILayout.ObjectField("Render Camera", renderCamera, typeof(Camera), true) as Camera;
                 if (renderCamera != newRenderCamera)
                 {
                     dialog.Canvas.worldCamera = newRenderCamera;
