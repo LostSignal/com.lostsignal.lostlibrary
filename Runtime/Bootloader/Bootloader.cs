@@ -80,6 +80,18 @@ namespace Lost
                 {
                     bootloaderAlreadyLoaded = true;
                 }
+
+                // Special case for not loading the bootloader with some scenes
+                if (Application.isEditor &&
+                    SceneManager.GetSceneAt(i).path.ToUpperInvariant()
+                        .Replace(" ", string.Empty)
+                        .Replace("_", string.Empty)
+                        .Replace("-", string.Empty)
+                        .Replace(".", string.Empty)
+                        .Contains("NOBOOTLOADER"))
+                {
+                    return;
+                }
             }
 
             if (bootloaderAlreadyLoaded == false)
