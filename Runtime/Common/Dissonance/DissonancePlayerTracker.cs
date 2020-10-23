@@ -11,14 +11,13 @@ namespace Lost.DissonanceIntegration
     using Lost.Networking;
     using UnityEngine;
 
-    [RequireComponent(typeof(NetworkIdentity))]
     public class DissonancePlayerTracker : MonoBehaviour
 #if USING_DISSONANCE
         , Dissonance.IDissonancePlayer
 #endif
     {
 #pragma warning disable 0649
-        [SerializeField][HideInInspector] private NetworkIdentity networkIdentity;
+        [SerializeField] private NetworkIdentity networkIdentity;
 #pragma warning disable 0649
 
         public bool IsTracking { get; private set; }

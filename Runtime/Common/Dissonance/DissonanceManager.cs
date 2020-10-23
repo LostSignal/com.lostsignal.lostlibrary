@@ -15,6 +15,7 @@ namespace Lost.DissonanceIntegration
     {
 #pragma warning disable 0649
         [Header("Dependencies")]
+        [SerializeField] private bool startDissonanceCommsOnInitialize = true;
         [SerializeField] private PlayFabManager playfabManager;
 
 #if USING_DISSONANCE
@@ -43,7 +44,11 @@ namespace Lost.DissonanceIntegration
                 else
                 {
                     this.dissonanceComms.LocalPlayerName = this.playfabManager.User.PlayFabId;
-                    this.dissonanceComms.gameObject.SetActive(true);
+
+                    if (this.startDissonanceCommsOnInitialize)
+                    {
+                        this.StartDissonanceComms();
+                    }
                 }
 
                 this.SetInstance(this);
@@ -53,6 +58,11 @@ namespace Lost.DissonanceIntegration
             Debug.LogError("Tring to use the DissonanceManager without USING_DISSONANCE define.  Add the Dissonance package to your project.");
             this.SetInstance(this);
 #endif
+        }
+
+        public void StartDissonanceComms()
+        {
+            this.dissonanceComms.gameObject.SetActive(true);
         }
     }
 }
