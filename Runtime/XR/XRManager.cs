@@ -66,7 +66,7 @@ namespace Lost
 
                 for (int i = 0; i < loaders.Count; i++)
                 {
-                    Debug.Log("XR Loader: " + loaders[i].name);
+                    Debug.Log("XR Loader: " + loaders[i]?.name ?? "NULL");
                 }
             }
 
@@ -139,7 +139,7 @@ namespace Lost
                 {
                     var loader = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders[i];
 
-                    if (loader.name == loaderName)
+                    if (loader?.name == loaderName)
                     {
                         UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders.RemoveAt(i);
                         UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders.Insert(0, loader);
