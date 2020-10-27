@@ -119,15 +119,15 @@ namespace Lost.Networking
             this.gameClient?.SendMessage(message);
         }
 
-        public void InstantiateNetworkIdentity(string resourceName, Vector3 position)
+        public NetworkIdentity InstantiateNetworkIdentity(string resourceName, Vector3 position)
         {
-            this.InstantiateNetworkIdentity(resourceName, position, Quaternion.identity);
+            return this.InstantiateNetworkIdentity(resourceName, position, Quaternion.identity);
         }
 
-        public void InstantiateNetworkIdentity(string resourceName, Vector3 position, Quaternion rotation)
+        public NetworkIdentity InstantiateNetworkIdentity(string resourceName, Vector3 position, Quaternion rotation)
         {
             var subsystem = this.gameClient.GetSubsystem<UnityGameClientSubsystem>();
-            subsystem.CreateDynamicNetworkIdentity(resourceName, NetworkIdentity.NewId(), PlayFab.PlayFabManager.Instance.User.PlayFabNumericId, position, rotation);
+            return subsystem.CreateDynamicNetworkIdentity(resourceName, NetworkIdentity.NewId(), PlayFab.PlayFabManager.Instance.User.PlayFabNumericId, position, rotation);
         }
 
         public UserInfo GetUserInfo(long playerId)
