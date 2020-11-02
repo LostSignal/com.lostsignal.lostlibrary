@@ -127,7 +127,6 @@ namespace Lost
             else if (isMetaFile)
             {
                 sourceFileBytes = GetTextFileContents(source).GetUTF8Bytes();
-                return;
             }
             else if (isAssemblyDef)
             {
