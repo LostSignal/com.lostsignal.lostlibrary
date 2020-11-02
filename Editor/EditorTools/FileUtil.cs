@@ -7,6 +7,7 @@
 namespace Lost
 {
     using System.IO;
+    using System.Text;
     using UnityEditor;
     using UnityEditor.VersionControl;
     using UnityEngine;
@@ -137,9 +138,40 @@ namespace Lost
             return inputText;
         }
 
+        public static string TrimTrailingWhitespace(string fileContents, char newlineCharacter)
+        {
+            StringBuilder newFileContents = new StringBuilder();
+
+            foreach (var line in fileContents.Split(newlineCharacter))
+            {
+                newFileContents.Append(line.TrimEnd());
+                newFileContents.Append(newlineCharacter);
+            }
+
+            return newFileContents.ToString();
+        }
+
+        public static string ReplaceHardTabsWithSoftTabs(string fileContents)
+        {
+            return fileContents.Replace("\t", "    ");
+        }
+
+        public static string InsertFinalNewLine(string fileContents, char newlineCharacter)
+        {
+            return fileContents.TrimEnd() + newlineCharacter;
+        }
+
         public static string ConvertLineEndings(string inputText)
         {
             return ConvertLineEndings(inputText, EditorSettings.lineEndingsForNewScripts);
+        }
+
+        public static byte[] GetUtf8Bytes(string fileContents)
+        {
+            byte[] contents = new UTF8Encoding().GetBytes(fileContents);
+            MemoryStream finalFileContents = new MemoryStream();
+            finalFileContents.Write(contents, 0, contents.Length);
+            return finalFileContents.ToArray();
         }
 
         public static void RemoveEmptyDirectories(string directory)
