@@ -62,7 +62,11 @@ namespace Lost.DissonanceIntegration
 
         public void StartDissonanceComms()
         {
+#if USING_DISSONANCE
             this.dissonanceComms.gameObject.SetActive(true);
+#else
+            Debug.LogError("Tring to use the DissonanceManager without USING_DISSONANCE define.  Add the Dissonance package to your project.");
+#endif
         }
     }
 }
