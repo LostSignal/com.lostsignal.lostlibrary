@@ -17,6 +17,8 @@ namespace Lost.CloudFunctions
         public static Task<Result> Common_IncrementBadCallCount(this CloudFunctionsManager cloudFunctionsManager) => cloudFunctionsManager.Execute("Common_IncrementBadCallCount");
 
         public static Task<Result> Common_StartUnityCloudBuilds(this CloudFunctionsManager cloudFunctionsManager, StartUnityCloudBuildsRequest request) => cloudFunctionsManager.Execute("Common_StartUnityCloudBuilds", request);
+
+        public static Task<Result> Common_GrantDefaultCharacter(this CloudFunctionsManager cloudFunctionsManager) => cloudFunctionsManager.Execute("Common_GrantDefaultCharacter");
     }
 }
 

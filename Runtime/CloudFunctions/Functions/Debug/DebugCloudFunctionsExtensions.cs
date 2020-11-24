@@ -17,6 +17,8 @@ namespace Lost.CloudFunctions
         public static Task<Result> Debug_PurchaseItem(this CloudFunctionsManager cloudFunctionsManager, DebugPurchaseItemRequest request) => cloudFunctionsManager.Execute("Debug_PurchaseItem", request);
 
         public static Task<Result> Debug_GiveCurrency(this CloudFunctionsManager cloudFunctionsManager, DebugGiveCurrencyRequest request) => cloudFunctionsManager.Execute("Debug_GiveCurrency", request);
+
+        public static Task<Result> Debug_DeleteUser(this CloudFunctionsManager cloudFunctionsManager, string request) => cloudFunctionsManager.Execute("Debug_DeleteUser", request);
     }
 }
 

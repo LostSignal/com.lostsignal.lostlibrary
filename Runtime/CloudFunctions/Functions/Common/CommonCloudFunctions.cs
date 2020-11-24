@@ -19,6 +19,9 @@ namespace Lost.CloudFunctions.Common
 
     public static class CommonCloudFunctions
     {
+        private const string DefaultCharacterItemId = "DefaultCharacter";
+        private const string DefaultCharacterName = "Default";
+
         private static string ablyBasicAuthString;
 
         [CloudFunction("Common", "IncrementBadCallCount")]
@@ -60,6 +63,25 @@ namespace Lost.CloudFunctions.Common
                     Debug.LogError($"Unable to kick off build {buildTarget}");
                 }
             }
+        }
+
+        [CloudFunction("Common", "GrantDefaultCharacter")]
+        public static async Task GrantDefaultCharacter(CloudFunctionContext context)
+        {
+            await PlayFabServerAPI.GrantItemsToUserAsync(new GrantItemsToUserRequest
+            {
+                PlayFabId = context.PlayerId,
+                AuthenticationContext = context.TitleAuthenticationContext,
+                ItemIds = new List<string> { DefaultCharacterItemId },
+            });
+
+            await PlayFabServerAPI.GrantCharacterToUserAsync(new GrantCharacterToUserRequest
+            {
+                PlayFabId = context.PlayerId,
+                AuthenticationContext = context.TitleAuthenticationContext,
+                CharacterType = DefaultCharacterItemId,
+                CharacterName = DefaultCharacterName,
+            });
         }
 
         public static Task<HttpWebResponse> SendRealtimeMessage(CloudFunctionContext context, string receiverId, RealtimeMessage realtimeMessage)
