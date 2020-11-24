@@ -144,7 +144,8 @@ namespace Lost
                 }
             }
 
-            Debug.Log(newFileContents.ToString());
+            File.WriteAllText(ManifestPath, newFileContents.ToString());
+            UnityEditor.PackageManager.Client.Resolve();
         }
 
         private static string GetLastestGitHash(string gitPath)
