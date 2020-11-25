@@ -10,10 +10,10 @@ namespace Lost
 
     public class CameraShake : MonoBehaviour
     {
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [SerializeField] private float shakeTime = 0.25f;
         [SerializeField] private float shakeAmount = 0.2f;
-        #pragma warning restore 0649
+#pragma warning restore 0649
 
         private float currentShakeTime;
         private Vector3 originalPosition;
@@ -43,12 +43,18 @@ namespace Lost
 
         private void OnEnable()
         {
-            ObjectTracker.Instance.Register<CameraShake>(this);
+            Bootloader.OnBoot += this.UpdateObjectTracker;
         }
 
         private void OnDisable()
         {
-            ObjectTracker.Instance.Deregister<CameraShake>(this);
+            Bootloader.OnBoot -= this.UpdateObjectTracker;
+            this.UpdateObjectTracker();
+        }
+
+        private void UpdateObjectTracker()
+        {
+            ObjectTracker.UpdateRegistration(this);
         }
     }
 }

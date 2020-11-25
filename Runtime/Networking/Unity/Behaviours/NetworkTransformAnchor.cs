@@ -43,18 +43,18 @@ namespace Lost.Networking
 
         private void OnEnable()
         {
-            ObjectTracker.OnInitialized += () =>
-            {
-                ObjectTracker.Instance.Register(this);
-            };
+            Bootloader.OnBoot += this.UpdateObjectTracker;
         }
 
         private void OnDisable()
         {
-            if (ObjectTracker.Instance)
-            {
-                ObjectTracker.Instance.Deregister(this);
-            }
+            Bootloader.OnBoot -= this.UpdateObjectTracker;
+            this.UpdateObjectTracker();
+        }
+
+        private void UpdateObjectTracker()
+        {
+            ObjectTracker.UpdateRegistration(this);
         }
     }
 }

@@ -19,6 +19,21 @@ namespace Lost
             this.SetInstance(this);
         }
 
+        public static void UpdateRegistration<T>(T obj) where T : MonoBehaviour
+        {
+            if (Instance && obj)
+            {
+                if (obj.gameObject.activeSelf)
+                {
+                    ObjectTracker.Instance.Register(obj);
+                }
+                else
+                {
+                    ObjectTracker.Instance.Deregister(obj);
+                }
+            }
+        }
+
         public void Register<T>(T obj) where T : class
         {
             if (obj == null)
