@@ -628,7 +628,7 @@ namespace Lost.PlayFab
             {
                 if (this.HasEverLoggedIn)
                 {
-                    if (false /*this.AutoLoginWithDeviceId && this.LastLoginEmail.IsNullOrWhitespace() == false*/)
+                    if (this.AutoLoginWithDeviceId && this.LastLoginEmail.IsNullOrWhitespace() == false)
                     {
                         var deviceId = this.GetEmailCustomId(this.LastLoginEmail);
                         var login = this.LoginWithDeviceId(false, deviceId, this.GetCombinedInfoRequest(infoRequestParams));
