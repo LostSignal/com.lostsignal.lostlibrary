@@ -72,7 +72,7 @@ namespace Lost.PlayFab
                 CharacterId = characterId,
                 Keys = keys,
             },
-                PlayFabClientAPI.GetCharacterDataAsync);
+            PlayFabClientAPI.GetCharacterDataAsync);
         }
 
         public UnityTask<UpdateCharacterDataResult> UpdateCharacterData(string characterId, Dictionary<string, string> data)
@@ -82,7 +82,7 @@ namespace Lost.PlayFab
                 CharacterId = characterId,
                 Data = data,
             },
-                PlayFabClientAPI.UpdateCharacterDataAsync);
+            PlayFabClientAPI.UpdateCharacterDataAsync);
         }
     }
 }

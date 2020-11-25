@@ -31,56 +31,40 @@ namespace Lost.PlayFab
 
         public string SessionTicket => this.loginResult?.SessionTicket;
 
-        public bool IsDeviceLinked
-        {
-            get
-            {
-                if (Application.isEditor || Platform.IsIosOrAndroid == false)
-                {
-                    return this.loginResult?.InfoResultPayload?.AccountInfo?.CustomIdInfo?.CustomId == this.DeviceId;
-                }
-                else if (Platform.CurrentDevicePlatform == DevicePlatform.iOS)
-                {
-                    return this.loginResult?.InfoResultPayload?.AccountInfo?.IosDeviceInfo?.IosDeviceId == this.DeviceId;
-                }
-                else if (Platform.CurrentDevicePlatform == DevicePlatform.Android)
-                {
-                    return this.loginResult?.InfoResultPayload?.AccountInfo?.AndroidDeviceInfo?.AndroidDeviceId == this.DeviceId;
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-            }
-        }
+        public bool IsDeviceIdLinked => this.IsCustomIdLinked(this.DeviceId);
 
         public string DeviceId
         {
             get { return UnityAnalyticsManager.Instance.AnonymousId; }
         }
 
+        public bool IsLoggedIn
+        {
+            get { return this.forceRelogin == false && PlayFabClientAPI.IsClientLoggedIn(); }
+        }
+
         public string LastLoginEmail
         {
-            get => LostPlayerPrefs.GetString("LastLoginEmail", string.Empty);
-            set => LostPlayerPrefs.SetString("LastLoginEmail", value, true);
+            get => LostPlayerPrefs.GetString("LogIn-LastLoginEmail", string.Empty);
+            set => LostPlayerPrefs.SetString("LogIn-LastLoginEmail", value, true);
         }
 
         public bool AutoLoginWithDeviceId
         {
-            get => LostPlayerPrefs.GetBool("AutoLoginWithDeviceId", false);
-            set => LostPlayerPrefs.SetBool("AutoLoginWithDeviceId", value, true);
+            get => LostPlayerPrefs.GetBool("LogIn-AutoLoginWithDeviceId", false);
+            set => LostPlayerPrefs.SetBool("LogIn-AutoLoginWithDeviceId", value, true);
         }
 
         public bool HasEverLoggedIn
         {
-            get => LostPlayerPrefs.GetBool("HasEverLoggedIn", false);
-            set => LostPlayerPrefs.SetBool("HasEverLoggedIn", value, true);
+            get => LostPlayerPrefs.GetBool("LogIn-HasEverLoggedIn", false);
+            set => LostPlayerPrefs.SetBool("LogIn-HasEverLoggedIn", value, true);
         }
 
         public bool HasLinkedFacebook
         {
-            get => LostPlayerPrefs.GetBool("HasLinkedFacebook", false);
-            set => LostPlayerPrefs.SetBool("HasLinkedFacebook", value, true);
+            get => LostPlayerPrefs.GetBool("LogIn-HasLinkedFacebook", false);
+            set => LostPlayerPrefs.SetBool("LogIn-HasLinkedFacebook", value, true);
         }
 
 #if USING_FACEBOOK_SDK
@@ -95,9 +79,36 @@ namespace Lost.PlayFab
             PlayFabSettings.GlobalErrorHandler += this.PlayfabEvents_OnGlobalErrorEvent;
         }
 
-        public bool IsLoggedIn
+        public string GetEmailCustomId(string email)
         {
-            get { return this.forceRelogin == false && PlayFabClientAPI.IsClientLoggedIn(); }
+            string key = $"LogIn-{email}";
+
+            if (LostPlayerPrefs.HasKey(key) == false)
+            {
+                LostPlayerPrefs.SetString(key, System.Guid.NewGuid().ToString(), true);
+            }
+
+            return LostPlayerPrefs.GetString(key, null);
+        }
+
+        public bool IsCustomIdLinked(string customId)
+        {
+            if (Application.isEditor || Platform.IsIosOrAndroid == false)
+            {
+                return this.loginResult?.InfoResultPayload?.AccountInfo?.CustomIdInfo?.CustomId == customId;
+            }
+            else if (Platform.CurrentDevicePlatform == DevicePlatform.iOS)
+            {
+                return this.loginResult?.InfoResultPayload?.AccountInfo?.IosDeviceInfo?.IosDeviceId == customId;
+            }
+            else if (Platform.CurrentDevicePlatform == DevicePlatform.Android)
+            {
+                return this.loginResult?.InfoResultPayload?.AccountInfo?.AndroidDeviceInfo?.AndroidDeviceId == customId;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public UnityTask<LoginResult> Login(LoginMethod loginMethod, GetPlayerCombinedInfoRequestParams combinedInfoRequestParams, List<string> facebookPermissions = null)
@@ -361,6 +372,7 @@ namespace Lost.PlayFab
         public void Logout()
         {
             this.AutoLoginWithDeviceId = false;
+            this.LastLoginEmail = null;
             this.forceRelogin = true;
             this.loginResult = null;
         }
@@ -616,9 +628,10 @@ namespace Lost.PlayFab
             {
                 if (this.HasEverLoggedIn)
                 {
-                    if (this.AutoLoginWithDeviceId)
+                    if (false /*this.AutoLoginWithDeviceId && this.LastLoginEmail.IsNullOrWhitespace() == false*/)
                     {
-                        var login = this.LoginWithDeviceId(false, this.DeviceId, this.GetCombinedInfoRequest(infoRequestParams));
+                        var deviceId = this.GetEmailCustomId(this.LastLoginEmail);
+                        var login = this.LoginWithDeviceId(false, deviceId, this.GetCombinedInfoRequest(infoRequestParams));
 
                         yield return login;
 

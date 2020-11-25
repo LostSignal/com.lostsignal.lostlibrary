@@ -14,7 +14,7 @@ namespace Lost.PlayFab
 
     public class LogInDialog : DialogLogic
     {
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [SerializeField] private LostButton closeButton;
         [SerializeField] private TMP_InputField emailInputField;
         [SerializeField] private TMP_InputField passwordInputField;
@@ -23,7 +23,7 @@ namespace Lost.PlayFab
         [SerializeField] private LostButton forgotPasswordButton;
         [SerializeField] private LostButton createNewAccountButton;
         [SerializeField] private string forgotEmailTemplateId;
-        #pragma warning restore 0649
+#pragma warning restore 0649
 
         private GetPlayerCombinedInfoRequestParams infoRequestParams;
         private LoginManager loginManager;
@@ -159,8 +159,9 @@ namespace Lost.PlayFab
                 {
                     this.loginManager.LastLoginEmail = this.emailInputField.text;
                     this.loginManager.AutoLoginWithDeviceId = this.autoLoginToggle.isOn;
+                    string customId = this.loginManager.GetEmailCustomId(this.emailInputField.text);
 
-                    if (this.loginManager.AutoLoginWithDeviceId)
+                    if (this.loginManager.AutoLoginWithDeviceId && this.loginManager.IsCustomIdLinked(customId) == false)
                     {
                         this.loginManager.LinkDeviceId(this.loginManager.DeviceId);
                     }

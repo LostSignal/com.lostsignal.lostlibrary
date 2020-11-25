@@ -14,7 +14,7 @@ namespace Lost.PlayFab
 
     public class SignUpDialog : DialogLogic
     {
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [SerializeField] private LostButton closeButton;
         [SerializeField] private TMP_InputField emailInputField;
         [SerializeField] private TMP_InputField passwordInputField;
@@ -22,7 +22,7 @@ namespace Lost.PlayFab
         [SerializeField] private Toggle autoLoginToggle;
         [SerializeField] private LostButton alreadRegistedButton;
         [SerializeField] private LostButton signUpButton;
-        #pragma warning restore 0649
+#pragma warning restore 0649
 
         private LoginManager loginManager;
         private GetPlayerCombinedInfoRequestParams infoRequestParams;
@@ -137,24 +137,47 @@ namespace Lost.PlayFab
 
                 this.isSignUpCoroutineRunning = true;
 
-                var login = this.loginManager.RegisterPlayFabUser(this.emailInputField.text, this.passwordInputField.text);
+                var register = this.loginManager.RegisterPlayFabUser(this.emailInputField.text, this.passwordInputField.text);
 
-                yield return login;
+                yield return register;
 
-                if (login.HasError)
+                if (register.HasError)
                 {
-                    yield return PlayFabMessages.HandleError(login.Exception);
+                    yield return PlayFabMessages.HandleError(register.Exception);
                 }
                 else
                 {
-                    this.loginManager.HasEverLoggedIn = true;
-                    this.loginManager.LastLoginEmail = this.emailInputField.text;
-                    this.loginManager.AutoLoginWithDeviceId = this.autoLoginToggle.isOn;
+                    var login = this.loginManager.LoginWithEmailAddress(this.emailInputField.text, this.passwordInputField.text);
 
-                    if (this.loginManager.AutoLoginWithDeviceId)
+                    yield return login;
+
+                    if (login.HasError)
                     {
-                        this.loginManager.LinkDeviceId(this.loginManager.DeviceId);
+                        yield return PlayFabMessages.HandleError(login.Exception);
+
+                        // TODO [bgish]: If email already take, then ask them to retry and continue showing the SignUp dialog
                     }
+                    else
+                    {
+                        this.loginManager.HasEverLoggedIn = true;
+                        this.loginManager.LastLoginEmail = this.emailInputField.text;
+                        this.loginManager.AutoLoginWithDeviceId = this.autoLoginToggle.isOn;
+
+                        if (this.loginManager.AutoLoginWithDeviceId)
+                        {
+                            var linkDevice = this.loginManager.LinkDeviceId(this.loginManager.GetEmailCustomId(this.emailInputField.text));
+
+                            yield return linkDevice;
+
+                            if (linkDevice.HasError)
+                            {
+                                yield return PlayFabMessages.HandleError(linkDevice.Exception);
+                            }
+                        }
+                    }
+
+                    //// TODO [bgish]: What Do I Do If the Linking is not successful!?!?!?!?! It will fail
+                    ////               if someone logs out and tries to create another account.
 
                     this.Dialog.Hide();
                 }
