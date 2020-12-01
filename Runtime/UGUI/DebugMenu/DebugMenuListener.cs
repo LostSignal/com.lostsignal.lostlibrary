@@ -11,11 +11,14 @@ namespace Lost
     [RequireComponent(typeof(DebugMenu))]
     public class DebugMenuListener : MonoBehaviour
     {
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [SerializeField, HideInInspector] private DebugMenu debugMenu;
-        #pragma warning restore 0649
+#pragma warning restore 0649
 
         private const float HoldTime = 2.0f;
+
+        private KeyCode keyCodeCache = KeyCode.None;
+        private string keyCodeString = null;
 
         private float fingerHoldTime = 0.0f;
         private float keyHoldTime = 0.0f;
@@ -56,7 +59,26 @@ namespace Lost
 
         private void CheckKeyboard()
         {
+#if USING_UNITY_INPUT_SYSTEM
+            if (this.keyCodeString.IsNullOrWhitespace() || this.keyCodeCache != this.debugMenu.Settings.Key)
+            {
+                this.keyCodeCache = this.debugMenu.Settings.Key;
+                this.keyCodeString = this.debugMenu.Settings.Key.ToString();
+            }
+
+            var keyboard = UnityEngine.InputSystem.Keyboard.current;
+            var isKeyPressed = false;
+
+            if (keyboard != null)
+            {
+                var key = keyboard.FindKeyOnCurrentKeyboardLayout(this.keyCodeString);
+                isKeyPressed = key.wasPressedThisFrame;
+            }
+
+            if (isKeyPressed)
+#else
             if (UnityEngine.Input.GetKey(this.debugMenu.Settings.Key))
+#endif
             {
                 this.keyHoldTime += Time.unscaledDeltaTime;
 

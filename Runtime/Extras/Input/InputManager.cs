@@ -139,27 +139,41 @@ namespace Lost
 
         private void UpdateMouseInput()
         {
+#if USING_UNITY_INPUT_SYSTEM
+            var mouse = UnityEngine.InputSystem.Mouse.current;
+
+            Vector3 mousePosition = mouse.position.ReadValue();
+            bool isLeftButtonDown = mouse.leftButton.isPressed; ;
+            bool isRightButtonDown = mouse.rightButton.isPressed;
+            bool isMiddleButtonDown = mouse.middleButton.isPressed;
+#else
+            Vector3 mousePosition = UnityEngine.Input.mousePosition;
+            bool isLeftButtonDown = UnityEngine.Input.GetMouseButton(0);
+            bool isRightButtonDown = UnityEngine.Input.GetMouseButton(1);
+            bool isMiddleButtonDown = UnityEngine.Input.GetMouseButton(2);
+#endif
+
             // defaulting the mouse input to be in the hover state
             if (this.mouseInput == null || this.mouseInput.InputState == InputState.Released)
             {
                 this.RecycleInput(this.mouseInput);
-                this.mouseInput = this.GetNewInput(-1, InputType.Mouse, InputButton.None, UnityEngine.Input.mousePosition);
-                this.mouseInput.UpdateHover(UnityEngine.Input.mousePosition);
+                this.mouseInput = this.GetNewInput(-1, InputType.Mouse, InputButton.None, mousePosition);
+                this.mouseInput.UpdateHover(mousePosition);
             }
 
             if (this.mouseInput.InputState == InputState.Hover)
             {
                 InputButton inputButton = InputButton.None;
 
-                if (UnityEngine.Input.GetMouseButton(0))
+                if (isLeftButtonDown)
                 {
                     inputButton = InputButton.Left;
                 }
-                else if (UnityEngine.Input.GetMouseButton(1))
+                else if (isRightButtonDown)
                 {
                     inputButton = InputButton.Right;
                 }
-                else if (UnityEngine.Input.GetMouseButton(2))
+                else if (isMiddleButtonDown)
                 {
                     inputButton = InputButton.Middle;
                 }
@@ -167,20 +181,20 @@ namespace Lost
                 if (inputButton != InputButton.None)
                 {
                     this.RecycleInput(this.mouseInput);
-                    this.mouseInput = this.GetNewInput(-1, InputType.Mouse, inputButton, UnityEngine.Input.mousePosition);
+                    this.mouseInput = this.GetNewInput(-1, InputType.Mouse, inputButton, mousePosition);
                 }
                 else
                 {
-                    this.mouseInput.UpdateHover(UnityEngine.Input.mousePosition);
+                    this.mouseInput.UpdateHover(mousePosition);
                 }
             }
             else
             {
                 if (this.mouseInput.InputButton == InputButton.Left)
                 {
-                    if (UnityEngine.Input.GetMouseButton(0))
+                    if (isLeftButtonDown)
                     {
-                        this.mouseInput.Update(UnityEngine.Input.mousePosition);
+                        this.mouseInput.Update(mousePosition);
                     }
                     else
                     {
@@ -189,9 +203,9 @@ namespace Lost
                 }
                 else if (this.mouseInput.InputButton == InputButton.Right)
                 {
-                    if (UnityEngine.Input.GetMouseButton(1))
+                    if (isRightButtonDown)
                     {
-                        this.mouseInput.Update(UnityEngine.Input.mousePosition);
+                        this.mouseInput.Update(mousePosition);
                     }
                     else
                     {
@@ -200,9 +214,9 @@ namespace Lost
                 }
                 else if (this.mouseInput.InputButton == InputButton.Middle)
                 {
-                    if (UnityEngine.Input.GetMouseButton(2))
+                    if (isMiddleButtonDown)
                     {
-                        this.mouseInput.Update(UnityEngine.Input.mousePosition);
+                        this.mouseInput.Update(mousePosition);
                     }
                     else
                     {

@@ -89,16 +89,19 @@ namespace Lost
             }
         }
 
-        #if UNITY_ANDROID || UNITY_EDITOR || UNITY_STANDALONE
+#if UNITY_ANDROID || UNITY_EDITOR || UNITY_STANDALONE
         private void Update()
         {
             // NOTE [bgish]: this catches the Android Back Button
+#if USING_UNITY_INPUT_SYSTEM
+            if (UnityEngine.InputSystem.Keyboard.current.escapeKey.wasPressedThisFrame)
+#else
             if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
+#endif
             {
                 this.BackButtonPressed();
             }
         }
-
-        #endif
+#endif
     }
 }
