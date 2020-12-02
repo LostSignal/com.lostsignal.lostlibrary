@@ -56,19 +56,20 @@ namespace Lost
                 Debug.Log("Device Config Changed: " + device.ToString());
             };
 
-            Debug.Log($"SystemInfo.deviceName = {SystemInfo.deviceName}");
-
-            // Printing off all our loaders
-            if (UnityEngine.XR.Management.XRGeneralSettings.Instance)
-            {
-                var loaders = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders;
-                Debug.Log("XR Loader Count: " + loaders.Count);
-
-                for (int i = 0; i < loaders.Count; i++)
-                {
-                    Debug.Log("XR Loader: " + loaders[i]?.name ?? "NULL");
-                }
-            }
+            //// NOTE [bgish]: Some helpful debug info
+            //// Debug.Log($"SystemInfo.deviceName = {SystemInfo.deviceName}");
+            //// 
+            //// // Printing off all our loaders
+            //// if (UnityEngine.XR.Management.XRGeneralSettings.Instance)
+            //// {
+            ////     var loaders = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders;
+            ////     Debug.Log("XR Loader Count: " + loaders.Count);
+            //// 
+            ////     for (int i = 0; i < loaders.Count; i++)
+            ////     {
+            ////         Debug.Log("XR Loader: " + loaders[i]?.name ?? "NULL");
+            ////     }
+            //// }
 
             if (this.CurrentDevice == null)
             {
