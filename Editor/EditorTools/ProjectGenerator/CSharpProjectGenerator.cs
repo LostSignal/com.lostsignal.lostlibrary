@@ -117,7 +117,7 @@ namespace Lost
                 try
                 {
                     var absoluteCsharpFolderUri = new Uri(Path.GetFullPath(this.CsProjFilePath));
-                    codePath = absoluteCsharpFolderUri.MakeRelative(absoluteAssetPathUri);
+                    codePath = absoluteCsharpFolderUri.MakeRelativeUri(absoluteAssetPathUri).ToString();
                 }
                 catch
                 {

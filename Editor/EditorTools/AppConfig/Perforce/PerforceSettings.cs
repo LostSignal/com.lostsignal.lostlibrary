@@ -23,7 +23,7 @@ namespace Lost
             BuildNumber,
         }
 
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [SerializeField] private string server;
         [SerializeField] private BuildNumberType buildNumberType;
         [SerializeField] private int incrementBuildNumberBy;
@@ -34,7 +34,7 @@ namespace Lost
         [SerializeField] private string password;
         [SerializeField] private string workspace;
         [SerializeField] private string unityFolder;
-        #pragma warning restore 0649
+#pragma warning restore 0649
 
         public override string DisplayName => "Perforce";
         public override bool IsInline => false;
@@ -68,9 +68,9 @@ namespace Lost
 
             if (settings.autosetVersionControlToPerforce)
             {
-                if (EditorSettings.externalVersionControl != "Perforce")
+                if (VersionControlSettings.mode != "Perforce")
                 {
-                    EditorSettings.externalVersionControl = "Perforce";
+                    VersionControlSettings.mode = "Perforce";
                 }
 
                 EditorUserSettings.SetConfigValue("vcPerforceServer", settings.server);

@@ -143,7 +143,7 @@ namespace Lost
             var mouse = UnityEngine.InputSystem.Mouse.current;
 
             Vector3 mousePosition = mouse.position.ReadValue();
-            bool isLeftButtonDown = mouse.leftButton.isPressed; ;
+            bool isLeftButtonDown = mouse.leftButton.isPressed;
             bool isRightButtonDown = mouse.rightButton.isPressed;
             bool isMiddleButtonDown = mouse.middleButton.isPressed;
 #else

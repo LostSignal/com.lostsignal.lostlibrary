@@ -11,13 +11,14 @@ namespace Lost
 
     public delegate void OnManagerInitializedDelegate();
 
-    public abstract class Manager<T> : MonoBehaviour, IManager where T : MonoBehaviour
+    public abstract class Manager<T> : MonoBehaviour, IManager
+        where T : MonoBehaviour
     {
         private bool hasInitializationRun;
 
-        private static event OnManagerInitializedDelegate onInitialized;
-
         public static bool IsInitialized => Instance != null;
+
+        public static T Instance { get; private set; }
 
         public static event OnManagerInitializedDelegate OnInitialized
         {
@@ -37,13 +38,18 @@ namespace Lost
             }
         }
 
-        public static T Instance { get; private set; }
+        private static event OnManagerInitializedDelegate onInitialized;
 
         public abstract void Initialize();
 
+        bool IManager.IsManagerInitialized()
+        {
+            return IsInitialized || this.enabled == false;
+        }
+
         protected virtual void Start()
         {
-            RunInitialization();
+            this.RunInitialization();
         }
 
         protected virtual void OnEnable()
@@ -106,11 +112,6 @@ namespace Lost
             this.hasInitializationRun = true;
 
             this.Initialize();
-        }
-
-        bool IManager.IsManagerInitialized()
-        {
-            return IsInitialized || this.enabled == false;
         }
     }
 }
