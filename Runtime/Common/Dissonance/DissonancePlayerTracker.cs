@@ -41,6 +41,8 @@ namespace Lost.DissonanceIntegration
             get => this.networkIdentity.IsOwner ? Dissonance.NetworkPlayerType.Local : Dissonance.NetworkPlayerType.Remote;
         }
 
+        public Dissonance.VoicePlayerState PlayerState { get; private set; }
+
 #endif
 
         private void OnValidate()
@@ -78,6 +80,12 @@ namespace Lost.DissonanceIntegration
                         DissonanceManager.Instance.DissonanceComms.TrackPlayerPosition(this);
                     }
 
+                    yield return null;
+                }
+
+                while (this.PlayerState == null)
+                {
+                    this.PlayerState = DissonanceManager.Instance.DissonanceComms.FindPlayer(this.PlayerId);
                     yield return null;
                 }
             }
