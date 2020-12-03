@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY_EDITOR || !UNITY_2019_4_OR_NEWER
+
 namespace Lost.CloudFunctions.Debug
 {
     using System;
@@ -36,3 +38,5 @@ namespace Lost.CloudFunctions.Debug
         }
     }
 }
+
+#endif
