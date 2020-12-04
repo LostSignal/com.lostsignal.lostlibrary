@@ -8,6 +8,10 @@ namespace Lost
 {
     using UnityEngine;
 
+#if USING_UNITY_XR_INTERACTION_TOOLKIT
+    using UnityEngine.XR.Interaction.Toolkit.UI;
+#endif
+
     // Right now the PancakeDevice.Awake (line 47) sets "Cursor.lockState = CursorLockMode.Locked;"
     // Should this be a part of the XRManager
     // Whenever a Dialog is shown that has "RequireMouseInPancakeMode", it will turn the mouse back on?????
@@ -41,6 +45,10 @@ namespace Lost
         private Dialog dialog;
         private Canvas dialogCanvas;
         private float originalPlaneDistance;
+
+#if USING_UNITY_XR_INTERACTION_TOOLKIT
+        private TrackedDeviceGraphicRaycaster trackedDeviceGraphicRaycaster;
+#endif
 
         private bool IsXRApplication
         {
@@ -104,6 +112,14 @@ namespace Lost
             if (this.IsXRApplication && this.IsPancakeMode == false)
             {
                 this.enabled = true;
+
+
+#if USING_UNITY_XR_INTERACTION_TOOLKIT
+                if (this.trackedDeviceGraphicRaycaster == null)
+                {
+                    this.GetOrAddComponent<TrackedDeviceGraphicRaycaster>();
+                }
+#endif
 
                 if (this.dialogCanvas.renderMode != RenderMode.WorldSpace)
                 {

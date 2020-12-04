@@ -12,7 +12,8 @@
         "GUID:fd3cf217e39d72f45b19ecb8bd8664e2",
         "GUID:e40ba710768534012815d3193fa296cb",
         "GUID:61106e8dfb7a4e64a96af0eccfe1209f",
-        "GUID:75469ad4d38634e559750d17036d5f7c"
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:fe685ec1767f73d42b749ea8045bfe43"
     ],
     "includePlatforms": [],
     "excludePlatforms": [
@@ -74,6 +75,11 @@
             "name": "com.unity.inputsystem",
             "expression": "0.0.0",
             "define": "USING_UNITY_INPUT_SYSTEM"
+        },
+        {
+            "name": "com.unity.xr.interaction.toolkit",
+            "expression": "0.0.0",
+            "define": "USING_UNITY_XR_INTERACTION_TOOLKIT"
         }
     ],
     "noEngineReferences": false

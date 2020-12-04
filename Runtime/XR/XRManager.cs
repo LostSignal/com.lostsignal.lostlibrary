@@ -6,33 +6,40 @@
 
 namespace Lost
 {
+    using System;
     using System.Collections.Generic;
     using UnityEngine;
+
+#if USING_UNITY_XR_INTERACTION_TOOLKIT
+    using UnityEngine.InputSystem.UI;
+    using UnityEngine.XR.Interaction.Toolkit.UI;
+#endif
 
     public class XRManager : Manager<XRManager>
     {
 #pragma warning disable 0649
         [SerializeField] private XRDevice pancake;
         [SerializeField] private List<XRDevice> devices = new List<XRDevice>();
+
+        [Header("Mobile AR")]
+        [SerializeField] private bool setTargetFramerateOnMobileAR = true;
+        [SerializeField] private int mobileArTargetFramerate = 30;
+
+#if USING_UNITY_XR_INTERACTION_TOOLKIT
+        [Header("Event Systems")]
+        [SerializeField] private InputSystemUIInputModule pancakeInputSystem;
+        [SerializeField] private XRUIInputModule xrInputSystem;
+#endif
+
+        [Header("Debug")]
+        [SerializeField] private bool printDebugInfo;
 #pragma warning restore 0649
 
         private bool manuallyInitXRManager;
-        private XRDevice currentDevice;
 
         public bool IsPancakeMode => this.CurrentDevice == this.pancake;
 
-        public XRDevice CurrentDevice
-        {
-            get
-            {
-                if (this.currentDevice == null)
-                {
-                    this.currentDevice = this.GetCurrentXRDevice();
-                }
-
-                return this.currentDevice;
-            }
-        }
+        public XRDevice CurrentDevice { get; private set; }
 
         public override void Initialize()
         {
@@ -41,117 +48,162 @@ namespace Lost
             this.SetInstance(this);
 #else
 
-            UnityEngine.XR.XRDevice.deviceLoaded += (device) =>
+            if (this.printDebugInfo)
             {
-                Debug.Log("Device Loaded: " + device);
-            };
+                UnityEngine.XR.XRDevice.deviceLoaded += (device) =>
+                {
+                    Debug.Log("XRManager: Device Loaded: " + device);
+                };
 
-            UnityEngine.XR.InputDevices.deviceConnected += (device) =>
-            {
-                Debug.Log("Device Connected: " + device.name);
-            };
+                UnityEngine.XR.InputDevices.deviceConnected += (device) =>
+                {
+                    Debug.Log("XRManager: Device Connected: " + device.name);
+                };
 
-            UnityEngine.XR.InputDevices.deviceConfigChanged += (device) =>
-            {
-                Debug.Log("Device Config Changed: " + device.ToString());
-            };
-
-            //// NOTE [bgish]: Some helpful debug info
-            //// Debug.Log($"SystemInfo.deviceName = {SystemInfo.deviceName}");
-            //// 
-            //// // Printing off all our loaders
-            //// if (UnityEngine.XR.Management.XRGeneralSettings.Instance)
-            //// {
-            ////     var loaders = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders;
-            ////     Debug.Log("XR Loader Count: " + loaders.Count);
-            //// 
-            ////     for (int i = 0; i < loaders.Count; i++)
-            ////     {
-            ////         Debug.Log("XR Loader: " + loaders[i]?.name ?? "NULL");
-            ////     }
-            //// }
-
-            if (this.CurrentDevice == null)
-            {
-                Debug.LogError("Found Unknown XR Device");
-                Platform.QuitApplication();
-                return;
+                UnityEngine.XR.InputDevices.deviceConfigChanged += (device) =>
+                {
+                    Debug.Log("XRManager: Device Config Changed: " + device.ToString());
+                };
             }
 
-            // AR mobile apps work great at 30 fps, so lets throttle to that to save battery
-            if (this.CurrentDevice.XRType == XRType.ARHanheld)
+            if (this.printDebugInfo)
             {
-                Application.targetFrameRate = 30;
+                Debug.Log($"XRManager: SystemInfo.deviceName = {SystemInfo.deviceName}");
+
+                // Printing off all our loaders
+                if (UnityEngine.XR.Management.XRGeneralSettings.Instance)
+                {
+                    var loaders = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders;
+                    Debug.Log("XRManager: XR Loader Count - " + loaders.Count);
+
+                    for (int i = 0; i < loaders.Count; i++)
+                    {
+                        Debug.Log("XRManager: XR Loader - " + loaders[i]?.name ?? "NULL");
+                    }
+                }
             }
 
-            UpdateLoader(this.CurrentDevice.XRLoader);
+            var xrDevice = this.GetCurrentXRDevice();
+
+            if (xrDevice != this.pancake)
+            {
+                this.StartUnityXR(xrDevice.XRLoader);
+                this.FinishInitialization();
+            }
+            else
+            {
+                this.StartUnityXR(this.StartLoaders());
+                this.ExecuteDelayed(1.0f, this.FinishInitialization);
+            }
+#endif
+        }
+
+        private void FinishInitialization()
+        {
+            this.CurrentDevice = this.GetCurrentXRDevice();
+
+            // Setting target framerate on mobile
+            if (this.setTargetFramerateOnMobileAR && this.CurrentDevice.XRType == XRType.ARHanheld)
+            {
+                Application.targetFrameRate = this.mobileArTargetFramerate;
+            }
+
+#if USING_UNITY_XR_INTERACTION_TOOLKIT
+            if (this.IsPancakeMode)
+            {
+                this.pancakeInputSystem.enabled = true;
+                this.xrInputSystem.enabled = false;
+            }
+            else
+            {
+                this.pancakeInputSystem.enabled = false;
+                this.xrInputSystem.enabled = true;
+            }
+#endif
+            if (this.printDebugInfo)
+            {
+                Debug.Log($"Current Device = {this.CurrentDevice.name}");
+            }
+
+            this.SetInstance(this);
+        }
+
+        private void StartUnityXR(XRLoader xrLoader)
+        {
+#if USING_UNITY_XR
 
             // Starting up the XR Manager if needed
-            if (this.CurrentDevice.XRLoader != XRLoader.None && UnityEngine.XR.Management.XRGeneralSettings.Instance.InitManagerOnStart == false)
+            if (xrLoader != XRLoader.None && xrLoader != XRLoader.Unknown && UnityEngine.XR.Management.XRGeneralSettings.Instance.InitManagerOnStart == false)
             {
+                MoveLoaderToTop(xrLoader);
+
                 this.manuallyInitXRManager = true;
                 UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.InitializeLoaderSync();
                 UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.StartSubsystems();
             }
 
-            this.SetInstance(this);
-
-            void UpdateLoader(XRLoader loader)
+            void MoveLoaderToTop(XRLoader loader)
             {
-                // Making sure the correct loader is at the top
-                if (loader == XRLoader.Oculus)
-                {
-                    MoveLoaderToTop("Oculus Loader");
-                }
-                else if (loader == XRLoader.ARCore)
-                {
-                    MoveLoaderToTop("AR Core Loader");
-                }
-                else if (loader == XRLoader.ARKit)
-                {
-                    MoveLoaderToTop("AR Kit Loader");
-                }
-                else if (loader == XRLoader.MagicLeap)
-                {
-                    MoveLoaderToTop("Magic Leap Loader");
-                }
-                else if (loader == XRLoader.WindowsMixedReality)
-                {
-                    MoveLoaderToTop("Windows MR Loader");
-                }
-                else if (loader == XRLoader.SteamVR)
-                {
-                    // MoveLoaderToTop("Steam VR Loader");
-                    throw new System.NotImplementedException();
-                }
-                else if (loader == XRLoader.None)
-                {
-                    // Do Nothing
-                }
-                else
-                {
-                    Debug.LogError($"Unkonwn XRLoader Type \"{loader}\" encountered");
-                }
-            }
+                string loaderName = this.GetLoaderName(loader);
 
-            void MoveLoaderToTop(string loaderName)
-            {
+                if (loaderName == null)
+                {
+                    Debug.LogError($"Unkonwn XRLoader Type \"{xrLoader}\" encountered");
+                    return;
+                }
+
                 for (int i = 0; i < UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders.Count; i++)
                 {
-                    var loader = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders[i];
+                    var unityXRLoader = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders[i];
 
-                    if (loader?.name == loaderName)
+                    if (unityXRLoader?.name == loaderName)
                     {
                         UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders.RemoveAt(i);
-                        UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders.Insert(0, loader);
+                        UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders.Insert(0, unityXRLoader);
                         return;
                     }
                 }
 
-                Debug.LogError($"Unable to find XR Loader {loaderName}");
+                Debug.LogError($"Unable to find XR Loader in the XR Settings {loaderName}");
             }
-
 #endif
+        }
+
+        private string GetLoaderName(XRLoader loader)
+        {
+            if (loader == XRLoader.None || loader == XRLoader.Unknown)
+            {
+                return null;
+            }
+            else if (loader == XRLoader.Oculus)
+            {
+                return "Oculus Loader";
+            }
+            else if (loader == XRLoader.ARCore)
+            {
+                return "AR Core Loader";
+            }
+            else if (loader == XRLoader.ARKit)
+            {
+                return "AR Kit Loader";
+            }
+            else if (loader == XRLoader.MagicLeap)
+            {
+                return "Magic Leap Loader";
+            }
+            else if (loader == XRLoader.WindowsMixedReality)
+            {
+                return "Windows MR Loader";
+            }
+            else if (loader == XRLoader.SteamVR)
+            {
+                return null; // "Steam VR Loader";
+            }
+            else
+            {
+                Debug.LogError($"Found Unknown XRLoader {loader}");
+                return null;
+            }
         }
 
         private void OnDestroy()
@@ -163,6 +215,49 @@ namespace Lost
                 UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.DeinitializeLoader();
             }
 #endif
+        }
+
+        private XRLoader StartLoaders()
+        {
+#if USING_UNITY_XR
+            var xrLoaders = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders;
+
+            foreach (var loader in Enum.GetValues(typeof(XRLoader)))
+            {
+                XRLoader xrLoader = (XRLoader)loader;
+
+                if (xrLoader == XRLoader.None || xrLoader == XRLoader.Unknown)
+                {
+                    continue;
+                }
+
+                var loaderName = this.GetLoaderName(xrLoader);
+
+                if (loaderName == null)
+                {
+                    continue;
+                }
+
+                for (int i = 0; i < xrLoaders.Count; i++)
+                {
+                    try
+                    {
+                        if (xrLoaders[i]?.name == loaderName)
+                        {
+                            if (xrLoaders[i].Start())
+                            {
+                                return xrLoader;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+#endif
+
+            return XRLoader.None;
         }
 
         private XRDevice GetCurrentXRDevice()
@@ -183,7 +278,11 @@ namespace Lost
             if (hmdDevice.isValid)
             {
                 bool presenceSupported = hmdDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.userPresence, out bool userPresent);
-                Debug.Log($"Head Device = {hmdDevice.name}, Presence Supported = {presenceSupported}, User Present = {userPresent}");
+
+                if (this.printDebugInfo)
+                {
+                    Debug.Log($"Head Device = {hmdDevice.name}, Presence Supported = {presenceSupported}, User Present = {userPresent}");
+                }
 
                 if (presenceSupported)
                 {
