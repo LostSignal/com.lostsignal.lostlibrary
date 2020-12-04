@@ -42,30 +42,60 @@ namespace Lost
         [MenuItem("Assets/Package Util/Point To Local Source", false)]
         public static void PointToLocal()
         {
-            SwitchRepositoryTo(Mode.LocalFolder);
+            SwitchRepositoryTo(Selection.activeObject, Mode.LocalFolder);
         }
 
         [MenuItem("Assets/Package Util/Point To Local Source", true)]
         public static bool PointToLocalValidate()
         {
-            GetRepository(out PackageUtilConfig.Repository repository, out string packageLocalPath, out Mode currentMode);
+            GetRepository(Selection.activeObject, out PackageUtilConfig.Repository repository, out string packageLocalPath, out Mode currentMode);
             return repository != null && currentMode != Mode.LocalFolder;
         }
 
         [MenuItem("Assets/Package Util/Point To GitHub", false)]
         public static void PointToGitHub()
         {
-            SwitchRepositoryTo(Mode.GitHub);
+            SwitchRepositoryTo(Selection.activeObject, Mode.GitHub);
         }
 
         [MenuItem("Assets/Package Util/Point To GitHub", true)]
         public static bool PointToGitHubValidate()
         {
-            GetRepository(out PackageUtilConfig.Repository repository, out string packageLocalPath, out Mode currentMode);
+            GetRepository(Selection.activeObject, out PackageUtilConfig.Repository repository, out string packageLocalPath, out Mode currentMode);
             return repository != null && currentMode != Mode.GitHub;
         }
 
-        private static void GetRepository(out PackageUtilConfig.Repository repository, out string packageLocalPath, out Mode currentMode)
+        [MenuItem("Assets/Package Util/Update Package(s) To Latest GitHub", false)]
+        public static void UpdateToLatestGitHub()
+        {
+            foreach (var selectedObject in Selection.objects)
+            {
+                SwitchRepositoryTo(selectedObject, Mode.GitHub);
+            }
+        }
+
+        [MenuItem("Assets/Package Util/Update Package(s) To Latest GitHub", true)]
+        public static bool UpdateToLatestGitHubValidate()
+        {
+            if (Selection.objects == null || Selection.objects.Length == 0)
+            {
+                return false;
+            }
+
+            foreach (var selectedObject in Selection.objects)
+            {
+                GetRepository(selectedObject, out PackageUtilConfig.Repository repository, out string packageLocalPath, out Mode currentMode);
+
+                if (repository == null)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static void GetRepository(UnityEngine.Object selectedObject, out PackageUtilConfig.Repository repository, out string packageLocalPath, out Mode currentMode)
         {
             repository = null;
             packageLocalPath = null;
@@ -84,7 +114,7 @@ namespace Lost
                 return;
             }
 
-            string packageName = GetPackageName();
+            string packageName = GetPackageName(selectedObject);
 
             if (string.IsNullOrEmpty(packageName))
             {
@@ -117,9 +147,9 @@ namespace Lost
             }
         }
 
-        private static void SwitchRepositoryTo(Mode newMode)
+        private static void SwitchRepositoryTo(UnityEngine.Object selectedObject, Mode newMode)
         {
-            GetRepository(out PackageUtilConfig.Repository repository, out string packageLocalPath, out Mode currentMode);
+            GetRepository(selectedObject, out PackageUtilConfig.Repository repository, out string packageLocalPath, out Mode currentMode);
 
             StringBuilder newFileContents = new StringBuilder();
             foreach (var line in File.ReadAllLines(ManifestPath))
@@ -174,9 +204,9 @@ namespace Lost
             return null;
         }
 
-        private static string GetPackageName()
+        private static string GetPackageName(UnityEngine.Object selectedObject)
         {
-            string path = AssetDatabase.GetAssetPath(Selection.activeObject);
+            string path = AssetDatabase.GetAssetPath(selectedObject);
 
             if (path.StartsWith(PackagesPath) && Directory.Exists(path) && path.IndexOf("/") == path.LastIndexOf("/"))
             {
