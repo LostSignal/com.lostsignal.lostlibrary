@@ -9,6 +9,7 @@ namespace Lost
     using UnityEngine;
 
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
+    using UnityEngine.XR.Interaction.Toolkit;
     using UnityEngine.XR.Interaction.Toolkit.UI;
 #endif
 
@@ -39,26 +40,22 @@ namespace Lost
     {
 #pragma warning disable 0649
         [SerializeField] private XRDialogSettings settings;
-        [SerializeField] private bool isXrMode;
+
+#if USING_UNITY_XR_INTERACTION_TOOLKIT
+        [SerializeField] private bool isGrabable;
+#endif
 #pragma warning restore 0649
 
         private Dialog dialog;
         private Canvas dialogCanvas;
         private float originalPlaneDistance;
+        private bool isPancakeMode;
+        private bool hasBeenGrabbed;
 
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
         private TrackedDeviceGraphicRaycaster trackedDeviceGraphicRaycaster;
+        private XRGrabInteractable xrGrabInteractable;
 #endif
-
-        private bool IsXRApplication
-        {
-            get => XRManager.Instance != null ? XRManager.Instance.enabled : false;
-        }
-
-        private bool IsPancakeMode
-        {
-            get => XRManager.Instance != null ? XRManager.Instance.IsPancakeMode : true;
-        }
 
         private void OnValidate()
         {
@@ -71,10 +68,20 @@ namespace Lost
             this.OnValidate();
             this.enabled = this.dialog.ShowOnAwake;
             this.dialog.OnShow.AddListener(this.OnShow);
+            this.dialog.OnHide.AddListener(this.OnHide);
             this.originalPlaneDistance = this.dialogCanvas.planeDistance;
         }
 
+
         private void Update()
+        {
+            if (this.hasBeenGrabbed == false)
+            {
+                this.UpdatePosition();
+            }
+        }
+
+        private void UpdatePosition()
         {
             var dialogCamera = this.dialogCanvas.worldCamera;
 
@@ -109,15 +116,27 @@ namespace Lost
 
         private void OnShow()
         {
-            if (this.IsXRApplication && this.IsPancakeMode == false)
+            // TODO [bgish]: Do some calculations to spawn this dialog in front of the user
+
+            this.isPancakeMode = XRManager.IsInitialized == false || XRManager.Instance.IsPancakeMode;
+
+            if (this.isPancakeMode == false)
             {
                 this.enabled = true;
-
 
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
                 if (this.trackedDeviceGraphicRaycaster == null)
                 {
                     this.GetOrAddComponent<TrackedDeviceGraphicRaycaster>();
+                }
+
+                if (this.isGrabable)
+                {
+                    if (this.xrGrabInteractable == null)
+                    {
+                        this.xrGrabInteractable = this.GetOrAddComponent<XRGrabInteractable>();
+                        this.xrGrabInteractable.onSelectEntered.AddListener((interactor) => this.hasBeenGrabbed = true);
+                    }
                 }
 #endif
 
@@ -146,6 +165,11 @@ namespace Lost
                     this.dialogCanvas.planeDistance = this.originalPlaneDistance;
                 }
             }
+        }
+
+        private void OnHide()
+        {
+            this.hasBeenGrabbed = false;
         }
     }
 }

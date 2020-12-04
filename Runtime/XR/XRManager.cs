@@ -9,7 +9,9 @@ namespace Lost
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using TMPro;
     using UnityEngine;
+    using UnityEngine.EventSystems;
 
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
     using UnityEngine.InputSystem.UI;
@@ -78,12 +80,20 @@ namespace Lost
                     }
                 }
 
+                // Special case for forcing Pancake mode
+                if (Application.isEditor && Application.isPlaying && ForcePancakeInEditorUtil.ForcePancakeInEditor)
+                {
+                    this.StartUnityXR(this.pancake.XRLoader);
+                    this.FinishInitialization(this.pancake);
+                    yield break;
+                }
+
                 var xrDevice = this.GetCurrentXRDevice();
 
                 if (xrDevice != this.pancake)
                 {
                     this.StartUnityXR(xrDevice.XRLoader);
-                    this.FinishInitialization();
+                    this.FinishInitialization(xrDevice);
                 }
                 else
                 {
@@ -96,7 +106,19 @@ namespace Lost
 
         private void FinishInitialization()
         {
-            this.CurrentDevice = this.GetCurrentXRDevice();
+            this.FinishInitialization(null);
+        }
+
+        private void FinishInitialization(XRDevice xrDevice)
+        {
+            if (xrDevice != null)
+            {
+                this.CurrentDevice = xrDevice;
+            }
+            else
+            {
+                this.CurrentDevice = this.GetCurrentXRDevice();
+            }
 
             // Setting target framerate on mobile
             if (this.setTargetFramerateOnMobileAR && this.CurrentDevice.XRType == XRType.ARHanheld)
@@ -119,6 +141,12 @@ namespace Lost
             if (this.printDebugInfo)
             {
                 Debug.Log($"Current Device = {this.CurrentDevice.name}");
+            }
+
+            if (this.IsPancakeMode == false)
+            {
+                //// TODO [bgish]: Uncomment this out when keyboard is ready for prime time
+                //// this.ListenForXRKeyboard();
             }
 
             this.SetInstance(this);
@@ -199,6 +227,11 @@ namespace Lost
                 Debug.LogError($"Found Unknown XRLoader {loader}");
                 return null;
             }
+        }
+
+        private void Update()
+        {
+            this.ListenForXRKeyboard();
         }
 
         private void OnDestroy()
@@ -295,6 +328,34 @@ namespace Lost
 #endif
 
             return this.pancake;
+        }
+
+        private void ListenForXRKeyboard()
+        {
+            this.StartCoroutine(Coroutine());
+
+            IEnumerator Coroutine()
+            {
+                int lastSeenInstanceId = int.MinValue;
+
+                while (true)
+                {
+                    GameObject selected = EventSystem.current.currentSelectedGameObject;
+                    int instanceId = selected != null ? selected.GetInstanceID() : int.MinValue;
+
+                    if (instanceId != lastSeenInstanceId)
+                    {
+                        lastSeenInstanceId = instanceId;
+
+                        if (selected != null && selected.GetComponent<TMP_InputField>() != null)
+                        {
+                            DialogManager.GetDialog<XRKeyboard>().Dialog.Show();
+                        }
+                    }
+
+                    yield return WaitForUtil.Seconds(0.25f);
+                }
+            }
         }
     }
 }

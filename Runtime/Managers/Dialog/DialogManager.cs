@@ -7,10 +7,26 @@
 namespace Lost
 {
     using System.Collections.Generic;
+    using Lost.PlayFab;
     using UnityEngine;
 
     public class DialogManager : Manager<DialogManager>
     {
+        //// TODO [bgish]: Update GetDialog to look out for these types and create them on the fly if needed
+        //// #pragma warning disable 0649
+        //// [Header("Required Dialogs")]
+        //// [SerializeField] private BootloaderDialog bootloaderDialog;
+        //// [SerializeField] private MessageBox messageBox;
+        //// [SerializeField] private DebugMenu debugMenu;
+        //// [SerializeField] private PurchaseItem purchaseItem;
+        //// [SerializeField] private StringInputBox stringInputBox;
+        //// [SerializeField] private LogInDialog loginDialog;
+        //// [SerializeField] private SignUpDialog signUpDialog;
+        //// [SerializeField] private XRKeyboard xrKeyboard;
+        //// TODO [bgish]: Add 2FA Request Login
+        //// TODO [bgish]: Add 2FA Login
+        //// #pragma warning restore 0649
+
         private Dictionary<System.Type, DialogLogic> dialogTypes = new Dictionary<System.Type, DialogLogic>();
         private LinkedList<Dialog> dialogs = new LinkedList<Dialog>();
 
