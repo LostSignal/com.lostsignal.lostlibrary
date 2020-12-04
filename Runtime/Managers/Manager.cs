@@ -40,6 +40,14 @@ namespace Lost
 
         private static event OnManagerInitializedDelegate onInitialized;
 
+        public static IEnumerator WaitForInitialization()
+        {
+            while (IsInitialized == false)
+            {
+                yield return null;
+            }
+        }
+
         public abstract void Initialize();
 
         bool IManager.IsManagerInitialized()

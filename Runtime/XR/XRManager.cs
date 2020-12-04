@@ -7,6 +7,7 @@
 namespace Lost
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
 
@@ -47,53 +48,48 @@ namespace Lost
             Debug.LogError("Tring to use XRManager without USING_UNITY_XR define.");
             this.SetInstance(this);
 #else
+            this.StartCoroutine(Coroutine());
 
-            if (this.printDebugInfo)
+            IEnumerator Coroutine()
             {
-                UnityEngine.XR.XRDevice.deviceLoaded += (device) =>
+                yield return CoroutineRunner.WaitForInitialization();
+
+                if (this.printDebugInfo)
                 {
-                    Debug.Log("XRManager: Device Loaded: " + device);
-                };
+                    UnityEngine.XR.XRDevice.deviceLoaded += (device) => Debug.Log($"XRManager: Device Loaded - {device}");
+                    UnityEngine.XR.InputDevices.deviceConnected += (device) => Debug.Log($"XRManager: Device Connected - {device.name}");
+                    UnityEngine.XR.InputDevices.deviceConfigChanged += (device) => Debug.Log($"XRManager: Device Config Changed - {device}");
+                }
 
-                UnityEngine.XR.InputDevices.deviceConnected += (device) =>
+                if (this.printDebugInfo)
                 {
-                    Debug.Log("XRManager: Device Connected: " + device.name);
-                };
+                    Debug.Log($"XRManager: SystemInfo.deviceName - {SystemInfo.deviceName}");
 
-                UnityEngine.XR.InputDevices.deviceConfigChanged += (device) =>
-                {
-                    Debug.Log("XRManager: Device Config Changed: " + device.ToString());
-                };
-            }
-
-            if (this.printDebugInfo)
-            {
-                Debug.Log($"XRManager: SystemInfo.deviceName = {SystemInfo.deviceName}");
-
-                // Printing off all our loaders
-                if (UnityEngine.XR.Management.XRGeneralSettings.Instance)
-                {
-                    var loaders = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders;
-                    Debug.Log("XRManager: XR Loader Count - " + loaders.Count);
-
-                    for (int i = 0; i < loaders.Count; i++)
+                    // Printing off all our loaders
+                    if (UnityEngine.XR.Management.XRGeneralSettings.Instance)
                     {
-                        Debug.Log("XRManager: XR Loader - " + loaders[i]?.name ?? "NULL");
+                        var loaders = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders;
+                        Debug.Log("XRManager: XR Loader Count - " + loaders.Count);
+
+                        for (int i = 0; i < loaders.Count; i++)
+                        {
+                            Debug.Log("XRManager: XR Loader - " + loaders[i]?.name ?? "NULL");
+                        }
                     }
                 }
-            }
 
-            var xrDevice = this.GetCurrentXRDevice();
+                var xrDevice = this.GetCurrentXRDevice();
 
-            if (xrDevice != this.pancake)
-            {
-                this.StartUnityXR(xrDevice.XRLoader);
-                this.FinishInitialization();
-            }
-            else
-            {
-                this.StartUnityXR(this.StartLoaders());
-                this.ExecuteDelayed(1.0f, this.FinishInitialization);
+                if (xrDevice != this.pancake)
+                {
+                    this.StartUnityXR(xrDevice.XRLoader);
+                    this.FinishInitialization();
+                }
+                else
+                {
+                    this.StartUnityXR(this.StartLoaders());
+                    this.ExecuteDelayed(1.0f, this.FinishInitialization);
+                }
             }
 #endif
         }
@@ -131,7 +127,6 @@ namespace Lost
         private void StartUnityXR(XRLoader xrLoader)
         {
 #if USING_UNITY_XR
-
             // Starting up the XR Manager if needed
             if (xrLoader != XRLoader.None && xrLoader != XRLoader.Unknown && UnityEngine.XR.Management.XRGeneralSettings.Instance.InitManagerOnStart == false)
             {
