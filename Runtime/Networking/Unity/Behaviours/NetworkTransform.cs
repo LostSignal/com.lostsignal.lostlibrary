@@ -48,7 +48,7 @@ namespace Lost.Networking
         {
             base.Awake();
 
-            this.desiredPosition = this.transform.localPosition;
+            this.desiredPosition = this.transform.position;
             this.desiredRotation = this.transform.localRotation;
             this.desiredScale = this.transform.localScale;
         }
@@ -67,7 +67,7 @@ namespace Lost.Networking
                     }
 
                     // If the desired position is more than 2 meters away, then do a warp
-                    if ((this.transform.localPosition - this.desiredPosition).sqrMagnitude > 9)
+                    if ((this.transform.position - this.desiredPosition).sqrMagnitude > 9)
                     {
                         this.transform.position = this.desiredPosition;
                     }
