@@ -100,6 +100,16 @@ namespace Lost.Networking
                 this.lineRenderer.SetPositions(this.currentPositions);
             }
         }
+
+        protected override SendConfig GetInitialSendConfig()
+        {
+            return new SendConfig
+            {
+                NetworkUpdateType = NetworkUpdateType.Tick,
+                SendReliable = false,
+                UpdateFrequency = 0.1f,
+            };
+        }
     }
 }
 

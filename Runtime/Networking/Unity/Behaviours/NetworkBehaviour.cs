@@ -8,6 +8,7 @@
 
 namespace Lost.Networking
 {
+    using System;
     using UnityEngine;
 
     public enum NetworkUpdateType
@@ -24,11 +25,9 @@ namespace Lost.Networking
 
 #pragma warning disable 0649
         [HideInInspector, SerializeField] private NetworkIdentity networkIdentity;
-        [SerializeField] private NetworkUpdateType networkUpdateType = NetworkUpdateType.Tick;
-        [SerializeField] private float updateFrequency = 0.1f;
-        [SerializeField] private bool sendReliable = true;
 #pragma warning restore 0649
 
+        private SendConfig sendConfig;
         private float lastSent;
 
         public NetworkIdentity Identity => this.networkIdentity;
@@ -39,7 +38,7 @@ namespace Lost.Networking
 
         public int BehaviourIndex => this.networkIdentity.GetBehaviourIndex(this);
 
-        protected float UpdateFrequency => this.updateFrequency;
+        protected float UpdateFrequency => this.sendConfig.UpdateFrequency;
 
         public abstract void Serialize(NetworkWriter writer);
 
@@ -53,7 +52,7 @@ namespace Lost.Networking
             behaviourDataMessage.DataKey = key;
             behaviourDataMessage.DataValue = value;
 
-            this.Identity.SendMessage(behaviourDataMessage, this.sendReliable);
+            this.Identity.SendMessage(behaviourDataMessage, this.sendConfig.SendReliable);
         }
 
         public void SendNetworkBehaviourMessage(bool forceReliable = false)
@@ -69,7 +68,7 @@ namespace Lost.Networking
                 behaviourMessage.DataLength = writer.Position;
                 behaviourMessage.DataBytes = writer.RawBuffer;
 
-                this.Identity.SendMessage(behaviourMessage, forceReliable ? true : this.sendReliable);
+                this.Identity.SendMessage(behaviourMessage, forceReliable ? true : this.sendConfig.SendReliable);
             }
         }
 
@@ -77,9 +76,23 @@ namespace Lost.Networking
         {
         }
 
+        protected abstract SendConfig GetInitialSendConfig();
+
+        protected void UpdateSendConfig(SendConfig sendConfig)
+        {
+            this.sendConfig = sendConfig;
+
+            this.Identity.NetworkUpdate -= this.NetworkUpdate;
+
+            if (this.sendConfig.NetworkUpdateType == NetworkUpdateType.Tick)
+            {
+                this.Identity.NetworkUpdate += this.NetworkUpdate;
+            }
+        }
+
         protected virtual void NetworkUpdate()
         {
-            if (this.IsOwner && ((Time.realtimeSinceStartup - this.lastSent) > this.updateFrequency))
+            if (this.IsOwner && ((Time.realtimeSinceStartup - this.lastSent) > this.sendConfig.UpdateFrequency))
             {
                 this.SendNetworkBehaviourMessage();
                 this.lastSent = Time.realtimeSinceStartup;
@@ -88,6 +101,19 @@ namespace Lost.Networking
 
         protected virtual void OnValidate()
         {
+            // Making sure we have a NetworkIdentity and we belong to it (editor only)
+            if (Application.isEditor && Application.isPlaying == false)
+            {
+                var networkIdentity = this.GetComponentInParent<NetworkIdentity>();
+
+                if (networkIdentity == null)
+                {
+                    networkIdentity = this.GetOrAddComponent<NetworkIdentity>();
+                }
+
+                networkIdentity.EditorOnlyAddBehaviour(this);
+            }
+
             this.AssertGetComponentInParent(ref this.networkIdentity);
         }
 
@@ -101,10 +127,15 @@ namespace Lost.Networking
                 Debug.LogError($"NetworkBehaviour {this.name} couldn't find a NetworkIdentity.  It will not work properly!", this);
             }
 
-            if (this.networkUpdateType == NetworkUpdateType.Tick)
-            {
-                this.Identity.NetworkUpdate += this.NetworkUpdate;
-            }
+            this.UpdateSendConfig(this.GetInitialSendConfig());
+        }
+
+        [Serializable]
+        public struct SendConfig
+        {
+            public NetworkUpdateType NetworkUpdateType;
+            public float UpdateFrequency;
+            public bool SendReliable;
         }
     }
 }

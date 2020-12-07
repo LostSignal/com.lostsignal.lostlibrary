@@ -17,7 +17,7 @@ namespace Lost.Networking
         [SerializeField] private bool sendPosition = true;
         [SerializeField] private bool estimateVelocity = true;
         [SerializeField] private bool sendRotation = true;
-        [SerializeField] private bool sendScale = true;
+        [SerializeField] private bool sendScale = false;
         [SerializeField] private Rigidbody rigidBody;
 #pragma warning restore 0649
 
@@ -32,6 +32,16 @@ namespace Lost.Networking
         public void SetPositionLerpPercentage(float lerpPercentage)
         {
             this.positionLerpPercentage = lerpPercentage;
+        }
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            if (this.rigidBody == null)
+            {
+                this.rigidBody = this.GetComponent<Rigidbody>();
+            }
         }
 
         protected override void Awake()
@@ -183,6 +193,16 @@ namespace Lost.Networking
                 this.rigidBody.freezeRotation = freezeRotation;
                 this.rigidBody.isKinematic = isKinematic;
             }
+        }
+
+        protected override SendConfig GetInitialSendConfig()
+        {
+            return new SendConfig
+            {
+                NetworkUpdateType = NetworkUpdateType.Tick,
+                SendReliable = false,
+                UpdateFrequency = 0.1f,
+            };
         }
     }
 }
