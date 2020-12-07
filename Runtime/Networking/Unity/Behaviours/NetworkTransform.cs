@@ -49,7 +49,7 @@ namespace Lost.Networking
             base.Awake();
 
             this.desiredPosition = this.transform.position;
-            this.desiredRotation = this.transform.localRotation;
+            this.desiredRotation = this.transform.rotation;
             this.desiredScale = this.transform.localScale;
         }
 
