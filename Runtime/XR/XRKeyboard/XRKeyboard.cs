@@ -63,6 +63,7 @@ namespace Lost
                 }
             }
         }
+
 #endif
 
         private void InternalKeyPressed(char c)

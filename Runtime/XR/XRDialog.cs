@@ -72,7 +72,6 @@ namespace Lost
             this.originalPlaneDistance = this.dialogCanvas.planeDistance;
         }
 
-
         private void Update()
         {
             if (this.hasBeenGrabbed == false)
@@ -127,7 +126,7 @@ namespace Lost
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
                 if (this.trackedDeviceGraphicRaycaster == null)
                 {
-                    this.GetOrAddComponent<TrackedDeviceGraphicRaycaster>();
+                    this.trackedDeviceGraphicRaycaster = this.GetOrAddComponent<TrackedDeviceGraphicRaycaster>();
                 }
 
                 if (this.isGrabable)
