@@ -39,30 +39,19 @@ namespace Lost
             LocalFolder,
         }
 
-        [MenuItem("Assets/Package Util/Point To Local Source", false)]
-        public static void PointToLocal()
+        [MenuItem("Assets/Package Util/Update Package(s) To Local Source", false)]
+        public static void UpdateToLocalSource()
         {
-            SwitchRepositoryTo(Selection.activeObject, Mode.LocalFolder);
+            foreach (var selectedObject in Selection.objects)
+            {
+                SwitchRepositoryTo(selectedObject, Mode.LocalFolder);
+            }
         }
 
-        [MenuItem("Assets/Package Util/Point To Local Source", true)]
-        public static bool PointToLocalValidate()
+        [MenuItem("Assets/Package Util/Update Package(s) To Local Source", true)]
+        public static bool UpdateToLocalSourceValidate()
         {
-            GetRepository(Selection.activeObject, out PackageUtilConfig.Repository repository, out string packageLocalPath, out Mode currentMode);
-            return repository != null && currentMode != Mode.LocalFolder;
-        }
-
-        [MenuItem("Assets/Package Util/Point To GitHub", false)]
-        public static void PointToGitHub()
-        {
-            SwitchRepositoryTo(Selection.activeObject, Mode.GitHub);
-        }
-
-        [MenuItem("Assets/Package Util/Point To GitHub", true)]
-        public static bool PointToGitHubValidate()
-        {
-            GetRepository(Selection.activeObject, out PackageUtilConfig.Repository repository, out string packageLocalPath, out Mode currentMode);
-            return repository != null && currentMode != Mode.GitHub;
+            return IsSelectionAllPackages();
         }
 
         [MenuItem("Assets/Package Util/Update Package(s) To Latest GitHub", false)]
@@ -77,6 +66,11 @@ namespace Lost
         [MenuItem("Assets/Package Util/Update Package(s) To Latest GitHub", true)]
         public static bool UpdateToLatestGitHubValidate()
         {
+            return IsSelectionAllPackages();
+        }
+
+        private static bool IsSelectionAllPackages()
+        {
             if (Selection.objects == null || Selection.objects.Length == 0)
             {
                 return false;
@@ -88,6 +82,7 @@ namespace Lost
 
                 if (repository == null)
                 {
+                    Debug.LogError($"Object {selectedObject} is not a Packages Folder!");
                     return false;
                 }
             }
