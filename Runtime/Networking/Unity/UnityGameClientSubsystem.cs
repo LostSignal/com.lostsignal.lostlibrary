@@ -219,7 +219,11 @@ namespace Lost.Networking
 
         public void ClientConnected()
         {
-            Debug.Log("CLIENT: Connected");
+            if (this.gameClient.PrintDebugOutput)
+            {
+                Debug.Log("UnityGameClientSubsystem: Client Connected");
+            }
+
             this.isConnected = true;
 
             foreach (var sceneObject in this.sceneNetworkObjectsList)
@@ -235,7 +239,11 @@ namespace Lost.Networking
 
         public void ClientDisconnected()
         {
-            Debug.Log("CLIENT: Disconnected");
+            if (this.gameClient.PrintDebugOutput)
+            {
+                Debug.Log("UnityGameClientSubsystem: Client Disconnected");
+            }
+
             this.isConnected = false;
         }
 

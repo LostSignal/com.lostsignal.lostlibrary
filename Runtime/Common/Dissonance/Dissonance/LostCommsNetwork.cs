@@ -42,7 +42,6 @@ namespace Lost.DissonanceIntegration
                 {
                     if (this.hasClientStarted == false)
                     {
-                        UnityEngine.Debug.Log("LostCommsNetwork.RunAsCleint");
                         this.hasClientStarted = true;
                         this.RunAsClient(default(Unit));
                     }
@@ -51,7 +50,6 @@ namespace Lost.DissonanceIntegration
                 {
                     if (this.hasClientStarted)
                     {
-                        UnityEngine.Debug.Log("LostCommsNetwork.Stop");
                         this.hasClientStarted = false;
                         this.Stop();
                     }

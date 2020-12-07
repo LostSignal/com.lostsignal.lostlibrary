@@ -102,7 +102,10 @@ namespace Lost.Networking
 
         public void RequestUpdate()
         {
-            Debug.Log($"NetworkIdentity.RequestUpdate {this.NetworkId}: {this.name}");
+            if (NetworkingManager.PrintDebugOutput)
+            {
+                Debug.Log($"NetworkIdentity.RequestUpdate {this.NetworkId}: {this.name}");
+            }
 
             NetworkIdentityRequestUpdateCache.NetworkId = this.networkId;
             NetworkIdentityRequestUpdateCache.IsEnabled = this.gameObject.activeSelf;

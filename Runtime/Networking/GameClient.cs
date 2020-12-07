@@ -20,6 +20,7 @@ namespace Lost.Networking
         private IClientTransportLayer transportLayer;
         private MessageCollection messageCollection;
         private UserInfo myUserInfo;
+        private bool printDebugOutput;
 
         // used for serializing messages to a byte buffer
         private NetworkWriter messageWriter = new NetworkWriter();
@@ -34,11 +35,13 @@ namespace Lost.Networking
         // Subsystem Tracking
         private List<IGameClientSubsystem> subsystems = new List<IGameClientSubsystem>();
 
-        public GameClient(IClientTransportLayer transportLayer, UserInfo userInfo)
+        public bool PrintDebugOutput => this.printDebugOutput;
+
+        public GameClient(IClientTransportLayer transportLayer, UserInfo userInfo, bool printDebugOutput)
         {
             this.transportLayer = transportLayer;
-
             this.UserId = userInfo.UserId;
+            this.printDebugOutput = printDebugOutput;
 
             this.myUserInfo = new UserInfo();
             this.myUserInfo.CopyFrom(userInfo);
@@ -289,7 +292,11 @@ namespace Lost.Networking
             {
                 case JoinServerResponseMessage.Id:
                     var joinServerResponse = (JoinServerResponseMessage)message;
-                    Debug.LogFormat("GameClient: JoinServerResponseMessage.Accepted = {0}", joinServerResponse.Accepted);
+
+                    if (this.printDebugOutput)
+                    {
+                        Debug.LogFormat("GameClient: JoinServerResponseMessage.Accepted = {0}", joinServerResponse.Accepted);
+                    }
 
                     if (joinServerResponse.Accepted)
                     {
@@ -314,7 +321,11 @@ namespace Lost.Networking
                     }
                     else
                     {
-                        Debug.Log("GameClient: UserInfoMessage For Myself");
+                        if (this.printDebugOutput)
+                        {
+                            Debug.Log("GameClient: UserInfoMessage For Myself");
+                        }
+
                         this.myUserInfo.CopyFrom(userInfoMessage.UserInfo);
                         this.ClientUserInfoUpdated?.Invoke(this.myUserInfo);
                     }

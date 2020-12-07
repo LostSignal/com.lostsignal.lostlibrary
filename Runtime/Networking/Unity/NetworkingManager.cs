@@ -40,6 +40,7 @@ namespace Lost.Networking
 
         [Header("Mode")]
         [SerializeField] private NetworkingMode networkingMode;
+        [SerializeField] private NetworkingMode editorNetworkingMode;
 
         [Header("Editor Server Info")]
         [SerializeField] private string editorServerIp = "127.0.0.1";
@@ -48,6 +49,9 @@ namespace Lost.Networking
         [Header("LAN Server Info")]
         [SerializeField] private string lanServerIp = "127.0.0.1";
         [SerializeField] private int lanServerPort = 7777;
+
+        [Header("Debug")]
+        [SerializeField] private bool printDebugOutput;
 #pragma warning restore 0649
 
         private bool originalRunInBackground;
@@ -79,6 +83,8 @@ namespace Lost.Networking
         private ReadOnlyCollection<UserInfo> emptyConnectedUsersList = new ReadOnlyCollection<UserInfo>(new List<UserInfo>());
 
         public ReadOnlyCollection<UserInfo> ConnectedUsers => this.gameClient?.ConnectedUsers ?? this.emptyConnectedUsersList;
+
+        public static bool PrintDebugOutput => IsInitialized ? Instance.printDebugOutput : false;
 
         public static string GenerateRandomRoomName()
         {
@@ -324,7 +330,10 @@ namespace Lost.Networking
                     serverIp = enterRoom.Result.ResultObject.FQDN;
                     port = enterRoom.Result.ResultObject.Ports.Where(x => x.Name == "game_port").FirstOrDefault().Num;
 
-                    Debug.Log($"Connecting to Sever {roomServerInfo.FQDN}, Port = {port}, Room Id = {roomServerInfo.RoomId}, Session Id = {roomServerInfo.SessionId}, Server Id = {roomServerInfo.ServerId}");
+                    if (this.printDebugOutput)
+                    {
+                        Debug.Log($"Connecting to Sever {roomServerInfo.FQDN}, Port = {port}, Room Id = {roomServerInfo.RoomId}, Session Id = {roomServerInfo.SessionId}, Server Id = {roomServerInfo.ServerId}");
+                    }
                 }
                 else
                 {
