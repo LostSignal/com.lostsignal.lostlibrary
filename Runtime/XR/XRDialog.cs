@@ -44,10 +44,11 @@ namespace Lost
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
         [SerializeField] private bool isGrabable;
 #endif
+
+        [SerializeField] [HideInInspector] private Dialog dialog;
+        [SerializeField] [HideInInspector] private Canvas dialogCanvas;
 #pragma warning restore 0649
 
-        private Dialog dialog;
-        private Canvas dialogCanvas;
         private float originalPlaneDistance;
         private bool isPancakeMode;
         private bool hasBeenGrabbed;

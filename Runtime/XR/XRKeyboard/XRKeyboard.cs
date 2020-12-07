@@ -46,7 +46,10 @@ namespace Lost
             base.Awake();
 
 #if USING_UNITY_INPUT_SYSTEM
-            Keyboard.current.onTextInput += this.InternalKeyPressed;
+            if (Application.isPlaying)
+            {
+                Keyboard.current.onTextInput += this.InternalKeyPressed;
+            }
 #endif
         }
 
