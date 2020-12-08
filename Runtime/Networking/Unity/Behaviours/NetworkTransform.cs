@@ -17,7 +17,7 @@ namespace Lost.Networking
         [SerializeField] private bool sendPosition = true;
         [SerializeField] private bool estimateVelocity = true;
         [SerializeField] private bool sendRotation = true;
-        [SerializeField] private bool sendScale = true;
+        [SerializeField] private bool sendScale = false;
         [SerializeField] private Rigidbody rigidBody;
 #pragma warning restore 0649
 
@@ -34,12 +34,22 @@ namespace Lost.Networking
             this.positionLerpPercentage = lerpPercentage;
         }
 
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            if (this.rigidBody == null)
+            {
+                this.rigidBody = this.GetComponent<Rigidbody>();
+            }
+        }
+
         protected override void Awake()
         {
             base.Awake();
 
-            this.desiredPosition = this.transform.localPosition;
-            this.desiredRotation = this.transform.localRotation;
+            this.desiredPosition = this.transform.position;
+            this.desiredRotation = this.transform.rotation;
             this.desiredScale = this.transform.localScale;
         }
 
@@ -57,7 +67,7 @@ namespace Lost.Networking
                     }
 
                     // If the desired position is more than 2 meters away, then do a warp
-                    if ((this.transform.localPosition - this.desiredPosition).sqrMagnitude > 9)
+                    if ((this.transform.position - this.desiredPosition).sqrMagnitude > 9)
                     {
                         this.transform.position = this.desiredPosition;
                     }
@@ -183,6 +193,16 @@ namespace Lost.Networking
                 this.rigidBody.freezeRotation = freezeRotation;
                 this.rigidBody.isKinematic = isKinematic;
             }
+        }
+
+        protected override SendConfig GetInitialSendConfig()
+        {
+            return new SendConfig
+            {
+                NetworkUpdateType = NetworkUpdateType.Tick,
+                SendReliable = false,
+                UpdateFrequency = 0.1f,
+            };
         }
     }
 }

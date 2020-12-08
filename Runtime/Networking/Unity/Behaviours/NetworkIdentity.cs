@@ -75,6 +75,23 @@ namespace Lost.Networking
             }
         }
 
+        public void EditorOnlyAddBehaviour(NetworkBehaviour networkBehaviour)
+        {
+            if (Application.isEditor && Application.isPlaying == false)
+            {
+                List<NetworkBehaviour> allBehaviours = new List<NetworkBehaviour>(this.behaviours);
+                if (allBehaviours.Contains(networkBehaviour) == false)
+                {
+                    allBehaviours.Add(networkBehaviour);
+                    this.behaviours = allBehaviours.ToArray();
+                }
+            }
+            else
+            {
+                Debug.LogError("EditorOnlyAddBehaviour was called when not in editor.");
+            }
+        }
+
         public void SetNetworkId(long networkId)
         {
             this.networkId = networkId;

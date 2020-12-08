@@ -77,8 +77,17 @@ namespace Lost
 
             return null;
         }
-
 #endif
+
+        protected override SendConfig GetInitialSendConfig()
+        {
+            return new SendConfig
+            {
+                SendReliable = true,
+                NetworkUpdateType = NetworkUpdateType.Manual,
+                UpdateFrequency = 0.25f,  // NOTE [bgish]: This should never be needed, but just in case
+            };
+        }
 
         [Serializable]
         public class State
