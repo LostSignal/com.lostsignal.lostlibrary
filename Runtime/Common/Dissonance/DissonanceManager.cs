@@ -10,6 +10,9 @@ namespace Lost.DissonanceIntegration
 {
     using Lost.PlayFab;
     using UnityEngine;
+#if PLATFORM_ANDROID
+    using UnityEngine.Android;
+#endif
 
     public class DissonanceManager : Manager<DissonanceManager>
     {
@@ -31,6 +34,13 @@ namespace Lost.DissonanceIntegration
         public override void Initialize()
         {
 #if USING_DISSONANCE
+
+#if PLATFORM_ANDROID
+            if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
+            {
+                Permission.RequestUserPermission(Permission.Microphone);
+            }
+#endif
             this.StartCoroutine(Coroutine());
 
             System.Collections.IEnumerator Coroutine()
