@@ -77,6 +77,7 @@ namespace Lost
 
             return null;
         }
+#endif
 
         protected override SendConfig GetInitialSendConfig()
         {
@@ -87,8 +88,6 @@ namespace Lost
                 UpdateFrequency = 0.25f,  // NOTE [bgish]: This should never be needed, but just in case
             };
         }
-
-#endif
 
         [Serializable]
         public class State

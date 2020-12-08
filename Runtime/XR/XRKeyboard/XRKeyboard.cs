@@ -8,12 +8,12 @@ namespace Lost
 {
     using TMPro;
     using UnityEngine;
-    using UnityEngine.InputSystem;
 
     public class XRKeyboard : DialogLogic
     {
 #pragma warning disable 0649
         [SerializeField] private XRKeyboardData keyboardData;
+        [SerializeField] private XRKeyboardKey keyPrefab;
 
         [Header("Layouts")]
         [SerializeField] private Transform lowerCaseLayout;
@@ -29,52 +29,29 @@ namespace Lost
         [SerializeField] private Transform[] keypadRows;
 #pragma warning restore 0649
 
+        private bool isUpperCase;
+        private bool isShowingLetters = true;
+        private bool isShowingNumbers;
+        private bool isShowingSymbols;
+
         private int currentSelectedGameObjectInstanceId = int.MinValue;
         private TMP_InputField currentInputField;
 
-        public bool IsUpperCase { get; private set; }
-
-        public System.Action<string> KeyPressed;
-
-        public void KeyboardKeyPressed(string key)
+        public XRKeyboardData.Keyboard CurrentKeyboard
         {
-            this.InternalKeyPressed(key);
+            get => this.keyboardData.CurrentKeyboard;
         }
+
+        public System.Action<char> KeyPressed;
 
         protected override void Awake()
         {
             base.Awake();
-
-#if USING_UNITY_INPUT_SYSTEM
-            if (Application.isPlaying)
-            {
-                Keyboard.current.onTextInput += this.InternalKeyPressed;
-            }
-#endif
+            this.PopulateKeyboard();
+            this.UpdateKeyboardVisuals();
         }
 
-#if !USING_UNITY_INPUT_SYSTEM
-        private void Update()
-        {
-            string inputString = UnityEngine.Input.inputString;
-
-            if (inputString != null)
-            {
-                for (int i = 0; i < inputString.Length; i++)
-                {
-                    this.InternalKeyPressed(inputString[i]);
-                }
-            }
-        }
-
-#endif
-
-        private void InternalKeyPressed(char c)
-        {
-            this.InternalKeyPressed(c.ToString());
-        }
-
-        private void InternalKeyPressed(string key)
+        private void OnKeyPressed(char key)
         {
             this.KeyPressed?.Invoke(key);
 
@@ -92,6 +69,50 @@ namespace Lost
             {
                 // TODO [bgish]: Process key with this object
             }
+        }
+        
+        private void PopulateKeyboard()
+        {
+            var keyboard = this.CurrentKeyboard;
+
+            Populate(nameof(this.lowerCaseRows), this.lowerCaseRows, keyboard?.LowerCaseText);
+            Populate(nameof(this.upperCaseRows), this.upperCaseRows, keyboard?.UpperCaseText);
+            Populate(nameof(this.numbersRows), this.numbersRows, keyboard?.NumbersText);
+            Populate(nameof(this.symbolsRows), this.symbolsRows, keyboard?.SymbolsText);
+            Populate(nameof(this.keypadRows), this.keypadRows, keyboard?.KeypadText);
+
+            void Populate(string rowName, Transform[] rows, string text)
+            {
+                var lines = text.IsNullOrWhitespace() == false ? text.Split('\n') : null;
+
+                if (rows.Length != lines.Length)
+                {
+                    Debug.LogError($"{rowName} row/teext doesn't match!");
+                    return;
+                }
+
+                for (int i = 0; i < rows.Length; i++)
+                {
+                    var row = rows[i];
+                    var line = lines[i];
+
+                    row.DestroyAllChildren();
+
+                    for (int j = 0; j < line.Length; j++)
+                    {
+                        var keyboardKey = GameObject.Instantiate(this.keyPrefab, row);
+                        keyboardKey.SetData(this, line[j], this.OnKeyPressed);
+                    }
+                }
+            }
+        }
+
+        private void UpdateKeyboardVisuals()
+        {
+            this.lowerCaseLayout.SafeSetActive(this.isShowingLetters && this.isUpperCase == false);
+            this.upperCaseLayout.SafeSetActive(this.isShowingLetters && this.isUpperCase);
+            this.numbersLayout.SafeSetActive(this.isShowingNumbers);
+            this.symbolsLayout.SafeSetActive(this.isShowingSymbols);
         }
     }
 }
