@@ -72,8 +72,22 @@ namespace Lost.Networking
 
         public NetworkingMode Mode
         {
-            get => this.networkingMode;
-            set => this.networkingMode = value;
+            get
+            {
+                return Application.isEditor ? this.editorNetworkingMode : this.networkingMode;
+            }
+
+            set
+            {
+                if (Application.isEditor)
+                {
+                    this.editorNetworkingMode = value;
+                }
+                else
+                {
+                    this.networkingMode = value;
+                }
+            }
         }
 
         public event ConnectedUsersUpdatedDelegate OnConnectedUsersUpdated;

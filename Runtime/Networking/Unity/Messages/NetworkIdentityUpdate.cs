@@ -18,6 +18,7 @@ namespace Lost.Networking
         public string ResourceName { get; set; }
         public Vector3 Position { get; set; }
         public Quaternion Rotation { get; set; }
+        public bool CanChangeOwner { get; set; }
 
         public override short GetId()
         {
@@ -32,21 +33,22 @@ namespace Lost.Networking
             this.OwnerId = identity.OwnerId;
             this.IsEnabled = identity.gameObject.activeSelf;
             this.ResourceName = identity.ResourceName;
+            this.CanChangeOwner = identity.CanChangeOwner;
             this.Position = NetworkTransformAnchor.InverseTransformPosition(identity.transform.position);
             this.Rotation = NetworkTransformAnchor.InverseTransformRotation(identity.transform.rotation);
         }
 
-        public void PopulateNetworkIdentity(NetworkIdentity identity)
+        public void PopulateNetworkIdentity(NetworkIdentity identity, bool updatePositionAndRotation)
         {
-            if (identity.OwnerId != this.OwnerId)
-            {
-                identity.SetOwner(this.OwnerId);
-            }
-
+            identity.SetOwner(this.OwnerId, this.CanChangeOwner);
             identity.gameObject.SafeSetActive(this.IsEnabled);
             identity.ResourceName = identity.ResourceName;
-            identity.transform.position = NetworkTransformAnchor.TransformPosition(this.Position);
-            identity.transform.rotation = NetworkTransformAnchor.TransformRotation(this.Rotation);
+
+            if (updatePositionAndRotation)
+            {
+                identity.transform.position = NetworkTransformAnchor.TransformPosition(this.Position);
+                identity.transform.rotation = NetworkTransformAnchor.TransformRotation(this.Rotation);
+            }
         }
 
 #endif
@@ -61,6 +63,7 @@ namespace Lost.Networking
             this.ResourceName = reader.ReadString();
             this.Position = reader.ReadVector3();
             this.Rotation = reader.ReadQuaternion();
+            this.CanChangeOwner = reader.ReadBoolean();
         }
 
         public override void Serialize(NetworkWriter writer)
@@ -73,6 +76,7 @@ namespace Lost.Networking
             writer.Write(this.ResourceName);
             writer.Write(this.Position);
             writer.Write(this.Rotation);
+            writer.Write(this.CanChangeOwner);
         }
     }
 }

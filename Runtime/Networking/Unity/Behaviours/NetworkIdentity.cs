@@ -14,10 +14,16 @@ namespace Lost.Networking
     using UnityEngine.SceneManagement;
 
     public delegate void NetworkUpdateDelegate();
+    public delegate void NetworkOwnershipRequestedDelegate();
+    public delegate void NetworkOwnershipGrantedDelegate();
+    public delegate void NetworkOwnershipFailedDelegate();
 
     public class NetworkIdentity : MonoBehaviour
     {
         private static readonly NetworkIdentityRequestUpdate NetworkIdentityRequestUpdateCache = new NetworkIdentityRequestUpdate();
+        private static readonly NetworkIdentityOwnershipRequest NetworkIdentityOwnershipRequestCache = new NetworkIdentityOwnershipRequest();
+        private static readonly NetworkIdentityReleaseOwnershipRequest NetworkIdentityReleaseOwnershipRequestCache = new NetworkIdentityReleaseOwnershipRequest();
+
 
         public event NetworkUpdateDelegate NetworkUpdate;
 
@@ -32,14 +38,19 @@ namespace Lost.Networking
         public delegate void NetworkIdentityDestroyedDelegate(long networkId);
 
         public NetworkIdentityDestroyedDelegate Destroyed;
+        public NetworkOwnershipRequestedDelegate OwnershipRequested;
+        public NetworkOwnershipGrantedDelegate OwnershipRequestGranted;
+        public NetworkOwnershipFailedDelegate OwnershipRequestFailed;
 
 #pragma warning disable 0649
         [SerializeField] private long networkId = -1L;
         [SerializeField] private NetworkBehaviour[] behaviours = new NetworkBehaviour[0];
         [SerializeField] private bool destoryOnDisconnect;
+        [SerializeField] private bool canChangeOwner;
 #pragma warning restore 0649
 
         private GameClient gameClient = null;
+        private bool isRequestingOwnership;
         private long ownerId;
 
         public long NetworkId => this.networkId;
@@ -50,7 +61,11 @@ namespace Lost.Networking
 
         public bool IsOwner => this.gameClient?.IsConnected == true && this.ownerId == this.gameClient.UserId;
 
+        public bool IsRequestingOwnership => this.isRequestingOwnership;
+
         public bool DestoryOnDisconnect => this.destoryOnDisconnect;
+
+        public bool CanChangeOwner => this.canChangeOwner;
 
         public NetworkBehaviour[] Behaviours => this.behaviours;
 
@@ -92,6 +107,37 @@ namespace Lost.Networking
             }
         }
 
+        public void RequestOwnership()
+        {
+            if (this.canChangeOwner)
+            {
+                this.isRequestingOwnership = true;
+                this.OwnershipRequested?.Invoke();
+
+                NetworkIdentityOwnershipRequestCache.NetworkId = this.networkId;
+                this.gameClient?.SendMessage(NetworkIdentityOwnershipRequestCache);
+
+                if (this.gameClient.PrintDebugOutput)
+                {
+                    Debug.Log($"Requesting Ownership of NetworkIdentity {this.networkId}");
+                }
+            }
+        }
+
+        public void ReleaseOwnership()
+        {
+            if (this.IsOwner)
+            {
+                NetworkIdentityReleaseOwnershipRequestCache.NetworkId = this.networkId;
+                this.gameClient?.SendMessage(NetworkIdentityReleaseOwnershipRequestCache);
+
+                if (this.gameClient.PrintDebugOutput)
+                {
+                    Debug.Log($"Releasing Ownership of NetworkIdentity {this.networkId}");
+                }
+            }
+        }
+
         public void SetNetworkId(long networkId)
         {
             this.networkId = networkId;
@@ -102,9 +148,34 @@ namespace Lost.Networking
             this.networkId = NewId();
         }
 
-        public void SetOwner(long ownerId)
+        public void SetOwner(long ownerId, bool canChangeOwner)
         {
+            if (this.isRequestingOwnership)
+            {
+                if (ownerId == this.gameClient?.UserId)
+                {
+                    if (this.gameClient.PrintDebugOutput)
+                    {
+                        Debug.Log($"Ownership Granted for NetworkIdentity {this.networkId}");
+                    }
+
+                    this.OwnershipRequestGranted?.Invoke();
+                }
+                else
+                {
+                    if (this.gameClient.PrintDebugOutput)
+                    {
+                        Debug.Log($"Ownership Failed for NetworkIdentity {this.networkId}");
+                    }
+
+                    this.OwnershipRequestFailed?.Invoke();
+                }
+
+                this.isRequestingOwnership = false;
+            }
+
             this.ownerId = ownerId;
+            this.canChangeOwner = canChangeOwner;
         }
 
         public void SetClient(GameClient gameClient)
@@ -131,6 +202,7 @@ namespace Lost.Networking
             NetworkIdentityRequestUpdateCache.Rotation = this.transform.rotation;
             NetworkIdentityRequestUpdateCache.BehaviourCount = this.behaviours.Length;
             NetworkIdentityRequestUpdateCache.DestoryOnDisconnect = this.destoryOnDisconnect;
+            NetworkIdentityRequestUpdateCache.CanChangeOwner = this.canChangeOwner;
 
             this.SendMessage(NetworkIdentityRequestUpdateCache);
         }

@@ -19,6 +19,7 @@ namespace Lost.Networking
         public Quaternion Rotation { get; set; }
         public int BehaviourCount { get; set; }
         public bool DestoryOnDisconnect { get; set; }
+        public bool CanChangeOwner { get; set; }
 
         public override short GetId()
         {
@@ -35,8 +36,8 @@ namespace Lost.Networking
             this.Rotation = identity.transform.rotation;
             this.BehaviourCount = identity.Behaviours.Length;
             this.DestoryOnDisconnect = identity.DestoryOnDisconnect;
+            this.CanChangeOwner = identity.CanChangeOwner;
         }
-
 #endif
 
         public override void Deserialize(NetworkReader reader)
@@ -50,6 +51,7 @@ namespace Lost.Networking
             this.Rotation = reader.ReadQuaternion();
             this.BehaviourCount = (int)reader.ReadPackedUInt32();
             this.DestoryOnDisconnect = reader.ReadBoolean();
+            this.CanChangeOwner = reader.ReadBoolean();
         }
 
         public override void Serialize(NetworkWriter writer)
@@ -63,6 +65,7 @@ namespace Lost.Networking
             writer.Write(this.Rotation);
             writer.WritePackedUInt32((uint)this.BehaviourCount);
             writer.Write(this.DestoryOnDisconnect);
+            writer.Write(this.CanChangeOwner);
         }
     }
 }

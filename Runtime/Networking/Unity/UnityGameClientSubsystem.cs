@@ -37,6 +37,8 @@ namespace Lost.Networking
             this.gameClient.RegisterMessage<NetworkIdentitiesDestroyed>();
             this.gameClient.RegisterMessage<NetworkBehaviourMessage>();
             this.gameClient.RegisterMessage<NetworkBehaviourDataMessage>();
+            this.gameClient.RegisterMessage<NetworkIdentityOwnershipRequest>();
+            this.gameClient.RegisterMessage<NetworkIdentityReleaseOwnershipRequest>();
         }
 
         public void Start()
@@ -92,128 +94,88 @@ namespace Lost.Networking
         {
             switch (message.GetId())
             {
-                case NetworkIdentityRequestUpdate.Id:
-                    // WTF?
-                    break;
-
                 case NetworkIdentityUpdate.Id:
-                {
-                    var networkIdentityUpdatedMessage = (NetworkIdentityUpdate)message;
-
-                    if (this.sceneNetworkObjectsHash.TryGetValue(networkIdentityUpdatedMessage.NetworkId, out NetworkIdentity sceneIdentity))
                     {
-                        if (sceneIdentity)
+                        var networkIdentityUpdatedMessage = (NetworkIdentityUpdate)message;
+
+                        if (this.sceneNetworkObjectsHash.TryGetValue(networkIdentityUpdatedMessage.NetworkId, out NetworkIdentity sceneIdentity))
                         {
-                            networkIdentityUpdatedMessage.PopulateNetworkIdentity(sceneIdentity);
+                            if (sceneIdentity)
+                            {
+                                networkIdentityUpdatedMessage.PopulateNetworkIdentity(sceneIdentity, false);
+                            }
+                            else
+                            {
+                                Debug.LogError($"Scene NetworkIdentity {networkIdentityUpdatedMessage.NetworkId} has been destoryed, but still getting updates.");
+                            }
+                        }
+                        else if (this.dynamicNetworkObjectsHash.TryGetValue(networkIdentityUpdatedMessage.NetworkId, out NetworkIdentity dynamicIdentity))
+                        {
+                            networkIdentityUpdatedMessage.PopulateNetworkIdentity(dynamicIdentity, false);
                         }
                         else
                         {
-                            Debug.LogError($"Scene NetworkIdentity {networkIdentityUpdatedMessage.NetworkId} has been destoryed, but still getting updates.");
-                        }
-                    }
-                    else if (this.dynamicNetworkObjectsHash.TryGetValue(networkIdentityUpdatedMessage.NetworkId, out NetworkIdentity dynamicIdentity))
-                    {
-                        networkIdentityUpdatedMessage.PopulateNetworkIdentity(dynamicIdentity);
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(networkIdentityUpdatedMessage.ResourceName) == false)
-                        {
-                            var newIdentity = this.CreateDynamicNetworkIdentity(
-                                networkIdentityUpdatedMessage.ResourceName,
-                                networkIdentityUpdatedMessage.NetworkId,
-                                networkIdentityUpdatedMessage.OwnerId,
-                                networkIdentityUpdatedMessage.Position,
-                                networkIdentityUpdatedMessage.Rotation);
+                            if (string.IsNullOrEmpty(networkIdentityUpdatedMessage.ResourceName) == false)
+                            {
+                                var newIdentity = this.CreateDynamicNetworkIdentity(
+                                    networkIdentityUpdatedMessage.ResourceName,
+                                    networkIdentityUpdatedMessage.NetworkId,
+                                    networkIdentityUpdatedMessage.OwnerId,
+                                    networkIdentityUpdatedMessage.Position,
+                                    networkIdentityUpdatedMessage.Rotation);
 
-                            networkIdentityUpdatedMessage.PopulateNetworkIdentity(newIdentity);
+                                networkIdentityUpdatedMessage.PopulateNetworkIdentity(newIdentity, true);
+                            }
                         }
-                    }
 
-                    break;
-                }
+                        break;
+                    }
 
                 case NetworkBehaviourMessage.Id:
-                {
-                    var networkBehaviourMessage = (NetworkBehaviourMessage)message;
-
-                    this.sceneNetworkObjectsHash.TryGetValue(networkBehaviourMessage.NetworkId, out NetworkIdentity sceneIdentity);
-                    this.dynamicNetworkObjectsHash.TryGetValue(networkBehaviourMessage.NetworkId, out NetworkIdentity dynamicIdentity);
-
-                    NetworkIdentity identity = null;
-
-                    if (sceneIdentity)
                     {
-                        identity = sceneIdentity;
-                    }
-                    else if (dynamicIdentity)
-                    {
-                        identity = dynamicIdentity;
-                    }
+                        var networkBehaviourMessage = (NetworkBehaviourMessage)message;
 
-                    if (identity && identity.IsOwner == false)
-                    {
-                        reader.Replace(networkBehaviourMessage.DataBytes);
-                        identity.Behaviours[networkBehaviourMessage.BehaviourIndex].Deserialize(reader);
-                    }
+                        NetworkIdentity identity = this.GetNetworkIdentity(networkBehaviourMessage.NetworkId);
 
-                    break;
-                }
+                        if (identity && identity.IsOwner == false)
+                        {
+                            reader.Replace(networkBehaviourMessage.DataBytes);
+                            identity.Behaviours[networkBehaviourMessage.BehaviourIndex].Deserialize(reader);
+                        }
+
+                        break;
+                    }
 
                 case NetworkBehaviourDataMessage.Id:
-                {
-                    var networkBehaviourDataMessage = (NetworkBehaviourDataMessage)message;
-
-                    this.sceneNetworkObjectsHash.TryGetValue(networkBehaviourDataMessage.NetworkId, out NetworkIdentity sceneIdentity);
-                    this.dynamicNetworkObjectsHash.TryGetValue(networkBehaviourDataMessage.NetworkId, out NetworkIdentity dynamicIdentity);
-
-                    NetworkIdentity identity = null;
-
-                    if (sceneIdentity)
                     {
-                        identity = sceneIdentity;
-                    }
-                    else if (dynamicIdentity)
-                    {
-                        identity = dynamicIdentity;
-                    }
+                        var networkBehaviourDataMessage = (NetworkBehaviourDataMessage)message;
 
-                    if (identity)
-                    {
-                        identity.Behaviours[networkBehaviourDataMessage.BehaviourIndex].OnReceiveNetworkData(networkBehaviourDataMessage.DataKey, networkBehaviourDataMessage.DataValue);
-                    }
-
-                    break;
-                }
-
-                case NetworkIdentitiesDestroyed.Id:
-                {
-                    var networkIdentitiesDestoryed = (NetworkIdentitiesDestroyed)message;
-
-                    foreach (long networkId in networkIdentitiesDestoryed.DestroyedNetworkIds)
-                    {
-                        this.sceneNetworkObjectsHash.TryGetValue(networkId, out NetworkIdentity sceneIdentity);
-                        this.dynamicNetworkObjectsHash.TryGetValue(networkId, out NetworkIdentity dynamicIdentity);
-
-                        NetworkIdentity identity = null;
-
-                        if (sceneIdentity)
-                        {
-                            identity = sceneIdentity;
-                        }
-                        else if (dynamicIdentity)
-                        {
-                            identity = dynamicIdentity;
-                        }
+                        NetworkIdentity identity = this.GetNetworkIdentity(networkBehaviourDataMessage.NetworkId);
 
                         if (identity)
                         {
-                            Pooler.Destroy(identity.gameObject);
+                            identity.Behaviours[networkBehaviourDataMessage.BehaviourIndex].OnReceiveNetworkData(networkBehaviourDataMessage.DataKey, networkBehaviourDataMessage.DataValue);
                         }
+
+                        break;
                     }
 
-                    break;
-                }
+                case NetworkIdentitiesDestroyed.Id:
+                    {
+                        var networkIdentitiesDestoryed = (NetworkIdentitiesDestroyed)message;
+
+                        foreach (long networkId in networkIdentitiesDestoryed.DestroyedNetworkIds)
+                        {
+                            NetworkIdentity identity = this.GetNetworkIdentity(networkId);
+
+                            if (identity)
+                            {
+                                Pooler.Destroy(identity.gameObject);
+                            }
+                        }
+
+                        break;
+                    }
             }
         }
 
@@ -260,7 +222,7 @@ namespace Lost.Networking
             var newNetworkIdentity = Pooler.Instantiate(networkIdentityPrefab);
             newNetworkIdentity.SetClient(this.gameClient);
             newNetworkIdentity.SetNetworkId(networkId);
-            newNetworkIdentity.SetOwner(ownerId);
+            newNetworkIdentity.SetOwner(ownerId, newNetworkIdentity.CanChangeOwner);
             newNetworkIdentity.ResourceName = resourceName;
             newNetworkIdentity.transform.position = position;
             newNetworkIdentity.transform.rotation = rotation;
@@ -307,6 +269,16 @@ namespace Lost.Networking
             {
                 identity.RequestUpdate();
             }
+        }
+
+        private NetworkIdentity GetNetworkIdentity(long networkId)
+        {
+            bool foundSceneIdentity = this.sceneNetworkObjectsHash.TryGetValue(networkId, out NetworkIdentity sceneIdentity);
+            bool foundDynamicIdentity = this.dynamicNetworkObjectsHash.TryGetValue(networkId, out NetworkIdentity dynamicIdentity);
+
+            return foundSceneIdentity ? sceneIdentity :
+                   foundDynamicIdentity ? dynamicIdentity :
+                   null;
         }
     }
 }

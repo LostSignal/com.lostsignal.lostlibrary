@@ -42,10 +42,16 @@ namespace Lost.Networking
 
     public class UnityGameServerSubsystem : IGameServerSubsystem
     {
+        public enum NotifyType
+        {
+            All,
+            AllOthers,
+        }
+
+        private const long InvalidId = long.MinValue;
+
         private readonly NetworkReader reader = new NetworkReader(new byte[0]);
-        private readonly Dictionary<long, UnityNetworkObject> sceneUnityNetworkObjects = new Dictionary<long, UnityNetworkObject>();
-        private readonly HashSet<long> destroyedSceneUnityNetworkObjects = new HashSet<long>();
-        private readonly Dictionary<long, UnityNetworkObject> dynamicUnityGameObjects = new Dictionary<long, UnityNetworkObject>();
+        private readonly ServerState serverState = new ServerState();
 
         // Message Cache
         private readonly NetworkIdentityUpdate networkIdentityUpdate = new NetworkIdentityUpdate();
@@ -53,6 +59,7 @@ namespace Lost.Networking
         private readonly NetworkIdentitiesDestroyed networkBehaviourDestoryed = new NetworkIdentitiesDestroyed();
 
         private GameServer gameServer;
+        private long serverId = InvalidId;
 
         public void Initialize(GameServer gameServer)
         {
@@ -62,13 +69,13 @@ namespace Lost.Networking
             this.gameServer.RegisterMessage<NetworkBehaviourMessage>();
             this.gameServer.RegisterMessage<NetworkBehaviourDataMessage>();
             this.gameServer.RegisterMessage<NetworkIdentitiesDestroyed>();
+            this.gameServer.RegisterMessage<NetworkIdentityOwnershipRequest>();
+            this.gameServer.RegisterMessage<NetworkIdentityReleaseOwnershipRequest>();
         }
 
         public Task<bool> Run()
         {
-            this.sceneUnityNetworkObjects.Clear();
-            this.destroyedSceneUnityNetworkObjects.Clear();
-            this.dynamicUnityGameObjects.Clear();
+            this.serverState.Start();
 
             this.gameServer.ServerReceivedMessage += this.ServerReceivedMessage;
             this.gameServer.ServerUserConnected += this.ServerUserConnected;
@@ -79,9 +86,7 @@ namespace Lost.Networking
 
         public Task Shutdown()
         {
-            this.sceneUnityNetworkObjects.Clear();
-            this.destroyedSceneUnityNetworkObjects.Clear();
-            this.dynamicUnityGameObjects.Clear();
+            this.serverState.Stop();
 
             this.gameServer.ServerReceivedMessage -= this.ServerReceivedMessage;
             this.gameServer.ServerUserConnected -= this.ServerUserConnected;
@@ -105,199 +110,285 @@ namespace Lost.Networking
             switch (message.GetId())
             {
                 case NetworkIdentityRequestUpdate.Id:
-                {
-                    var requestUpdateMessage = (NetworkIdentityRequestUpdate)message;
-                    var unityNetworkObject = this.GetObject(requestUpdateMessage.NetworkId);
-
-                    // TODO [bgish]: Check if this is a destroyed scene object and send destroy message instead
-
-                    Debug.Log("NetworkIdentityRequestUpdate " + requestUpdateMessage.NetworkId);
-
-                    if (unityNetworkObject == null)
                     {
-                        unityNetworkObject = new UnityNetworkObject
-                        {
-                            OwnerId = userInfo.UserId,
-                            NetworkId = requestUpdateMessage.NetworkId,
-                            IsEnabled = requestUpdateMessage.IsEnabled,
-                            Position = requestUpdateMessage.Position,
-                            Rotation = requestUpdateMessage.Rotation,
-                            ResourceName = requestUpdateMessage.ResourceName,
-                            BehaviourDatas = new List<BehaviourData>(requestUpdateMessage.BehaviourCount),
-                            DestoryOnDisconnect = requestUpdateMessage.DestoryOnDisconnect,
-                        };
+                        var requestUpdateMessage = (NetworkIdentityRequestUpdate)message;
+                        var unityNetworkObject = this.serverState.GetUnityNetworkObject(requestUpdateMessage.NetworkId);
 
-                        for (int i = 0; i < requestUpdateMessage.BehaviourCount; i++)
+                        // Making sure a "Server" player has been selected
+                        if (this.serverId == InvalidId)
                         {
-                            unityNetworkObject.BehaviourDatas.Add(new BehaviourData());
+                            Debug.Log("NetworkIdentityRequestUpdate is Migrating Server...");
+                            this.MigrateServerToNewUser(this.GetNextServerUser(), NotifyType.AllOthers);
                         }
 
-                        bool isScene = string.IsNullOrEmpty(requestUpdateMessage.ResourceName);
+                        Debug.Log("NetworkIdentityRequestUpdate " + requestUpdateMessage.NetworkId);
 
-                        if (isScene)
+                        if (this.serverState.DestroyedSceneUnityNetworkObjects.Contains(requestUpdateMessage.NetworkId))
                         {
-                            this.sceneUnityNetworkObjects.Add(unityNetworkObject.NetworkId, unityNetworkObject);
+                            // The object they're requesting an update on was destroyed, so sending a destroyed message
+                            this.networkBehaviourDestoryed.DestroyedNetworkIds.Clear();
+                            this.networkBehaviourDestoryed.DestroyedNetworkIds.Add(requestUpdateMessage.NetworkId);
+                            this.gameServer.SendMessageToUser(userInfo, this.networkBehaviourDestoryed);
+                        }
+                        else if (unityNetworkObject == null)
+                        {
+                            bool isSceneObject = requestUpdateMessage.ResourceName.IsNullOrWhitespace();
+
+                            unityNetworkObject = new UnityNetworkObject
+                            {
+                                OwnerId = isSceneObject ? this.serverId : userInfo.UserId,
+                                NetworkId = requestUpdateMessage.NetworkId,
+                                IsEnabled = requestUpdateMessage.IsEnabled,
+                                Position = requestUpdateMessage.Position,
+                                Rotation = requestUpdateMessage.Rotation,
+                                ResourceName = requestUpdateMessage.ResourceName,
+                                BehaviourDatas = new List<BehaviourData>(requestUpdateMessage.BehaviourCount),
+                                DestoryOnDisconnect = requestUpdateMessage.DestoryOnDisconnect,
+                                CanChangeOwner = requestUpdateMessage.CanChangeOwner,
+                                InitialCanChangeOwner = requestUpdateMessage.CanChangeOwner,
+                            };
+
+                            for (int i = 0; i < requestUpdateMessage.BehaviourCount; i++)
+                            {
+                                unityNetworkObject.BehaviourDatas.Add(new BehaviourData());
+                            }
+
+                            if (isSceneObject)
+                            {
+                                this.serverState.SceneUnityNetworkObjects.Add(unityNetworkObject.NetworkId, unityNetworkObject);
+                            }
+                            else
+                            {
+                                this.serverState.DynamicUnityGameObjects.Add(unityNetworkObject.NetworkId, unityNetworkObject);
+                            }
+
+                            this.SendIdentityUpdateMessage(unityNetworkObject);
                         }
                         else
                         {
-                            this.dynamicUnityGameObjects.Add(unityNetworkObject.NetworkId, unityNetworkObject);
+                            this.SendIdentityUpdateMessage(unityNetworkObject, userInfo);
+                            this.SendAllNetworkBehaviourDataToUser(unityNetworkObject, userInfo);
                         }
 
-                        this.SendIdentityUpdateMessage(unityNetworkObject);
+                        break;
                     }
-                    else
-                    {
-                        this.SendIdentityUpdateMessage(unityNetworkObject, userInfo);
-
-                        // Send all the network behaviour data we know about
-                        this.networkBehaviourMessage.NetworkId = unityNetworkObject.NetworkId;
-
-                        for (int i = 0; i < unityNetworkObject.BehaviourDatas.Count; i++)
-                        {
-                            var behaviourData = unityNetworkObject.BehaviourDatas[i];
-
-                            if (behaviourData?.Data?.Length > 0)
-                            {
-                                this.networkBehaviourMessage.BehaviourIndex = i;
-                                this.networkBehaviourMessage.DataBytes = behaviourData.Data.Bytes;
-                                this.networkBehaviourMessage.DataLength = behaviourData.Data.Length;
-
-                                this.gameServer.SendMessageToUser(userInfo, this.networkBehaviourMessage);
-                            }
-                        }
-                    }
-
-                    break;
-                }
 
                 case NetworkIdentitiesDestroyed.Id:
-                {
-                    var destroyedMessage = (NetworkIdentitiesDestroyed)message;
-
-                    if (destroyedMessage.DestroyedNetworkIds?.Count > 0)
                     {
-                        for (int i = 0; i < destroyedMessage.DestroyedNetworkIds.Count; i++)
-                        {
-                            long networkId = destroyedMessage.DestroyedNetworkIds[i];
-                            var networkObject = this.GetObject(networkId);
+                        var destroyedMessage = (NetworkIdentitiesDestroyed)message;
 
-                            if (networkObject != null)
+                        if (destroyedMessage.DestroyedNetworkIds?.Count > 0)
+                        {
+                            for (int i = 0; i < destroyedMessage.DestroyedNetworkIds.Count; i++)
                             {
-                                if (networkObject.OwnerId == userInfo.UserId)
+                                long networkId = destroyedMessage.DestroyedNetworkIds[i];
+                                var networkObject = this.serverState.GetUnityNetworkObject(networkId);
+
+                                if (networkObject != null)
                                 {
-                                    // If static, remove from static dictionary and add to destoryed static list
-                                    // If dynamic, just remove from dynamic dictionary
-                                    // Delete the object and forward to everyone
+                                    if (networkObject.OwnerId == userInfo.UserId)
+                                    {
+                                        // If static, remove from static dictionary and add to destoryed static list
+                                        // If dynamic, just remove from dynamic dictionary
+                                        // Delete the object and forward to everyone
+                                    }
                                 }
                             }
                         }
+
+                        // If this came from the owner of the object, then add
+
+                        //
+
+                        // Ignore for now, can't get this till ownership changing exists
+                        break;
                     }
-
-                    // If this came from the owner of the object, then add
-
-                    //
-
-                    // Ignore for now, can't get this till ownership changing exists
-                    break;
-                }
 
                 case NetworkIdentityUpdate.Id:
-                {
-                    // Ignore for now, can't get this till ownership changing exists
-                    break;
-                }
+                    {
+                        // Ignore for now, can't get this till ownership changing exists
+                        break;
+                    }
 
                 case NetworkBehaviourMessage.Id:
-                {
-                    var networkBehaviourMessage = (NetworkBehaviourMessage)message;
-
-                    var networkObject = this.GetObject(networkBehaviourMessage.NetworkId);
-
-                    if (networkObject != null && networkObject.OwnerId == userInfo.UserId)
                     {
-                        if (networkObject.BehaviourDatas[networkBehaviourMessage.BehaviourIndex] == null)
+                        var networkBehaviourMessage = (NetworkBehaviourMessage)message;
+
+                        var networkObject = this.serverState.GetUnityNetworkObject(networkBehaviourMessage.NetworkId);
+
+                        if (networkObject != null && networkObject.OwnerId == userInfo.UserId)
                         {
-                            networkObject.BehaviourDatas[networkBehaviourMessage.BehaviourIndex] = new BehaviourData();
+                            if (networkObject.BehaviourDatas[networkBehaviourMessage.BehaviourIndex] == null)
+                            {
+                                networkObject.BehaviourDatas[networkBehaviourMessage.BehaviourIndex] = new BehaviourData();
+                            }
+
+                            var behaviourData = networkObject.BehaviourDatas[networkBehaviourMessage.BehaviourIndex];
+                            behaviourData.Data.SetData(networkBehaviourMessage.DataBytes, networkBehaviourMessage.DataLength);
+
+                            this.gameServer.SendMessageToAllExcept(userInfo, message, reliable);
                         }
 
-                        var behaviourData = networkObject.BehaviourDatas[networkBehaviourMessage.BehaviourIndex];
-                        behaviourData.Data.SetData(networkBehaviourMessage.DataBytes, networkBehaviourMessage.DataLength);
-
-                        this.gameServer.SendMessageToAllExcept(userInfo, message, reliable);
+                        break;
                     }
-
-                    break;
-                }
 
                 case NetworkBehaviourDataMessage.Id:
-                {
-                    var networkBehaviourDataMessage = (NetworkBehaviourDataMessage)message;
-
-                    var networkObject = this.GetObject(networkBehaviourDataMessage.NetworkId);
-
-                    if (networkObject != null)
                     {
-                        if (networkBehaviourDataMessage.SendType == BehaviourDataSendType.All)
+                        var networkBehaviourDataMessage = (NetworkBehaviourDataMessage)message;
+
+                        var networkObject = this.serverState.GetUnityNetworkObject(networkBehaviourDataMessage.NetworkId);
+
+                        if (networkObject != null)
                         {
-                            this.gameServer.SendMessageToAll(networkBehaviourDataMessage);
+                            if (networkBehaviourDataMessage.SendType == BehaviourDataSendType.All)
+                            {
+                                this.gameServer.SendMessageToAll(networkBehaviourDataMessage);
+                            }
+                            else if (networkBehaviourDataMessage.SendType == BehaviourDataSendType.Others)
+                            {
+                                this.gameServer.SendMessageToAllExcept(userInfo, networkBehaviourDataMessage);
+                            }
+                            else
+                            {
+                                throw new NotImplementedException();
+                            }
                         }
-                        else if (networkBehaviourDataMessage.SendType == BehaviourDataSendType.Others)
-                        {
-                            this.gameServer.SendMessageToAllExcept(userInfo, networkBehaviourDataMessage);
-                        }
-                        else
-                        {
-                            throw new NotImplementedException();
-                        }
+
+                        break;
                     }
 
-                    break;
-                }
+                case NetworkIdentityOwnershipRequest.Id:
+                    {
+                        var networkIdentityOwnershipRequest = (NetworkIdentityOwnershipRequest)message;
+
+                        UnityNetworkObject unityNetworkObject = this.serverState.GetUnityNetworkObject(networkIdentityOwnershipRequest.NetworkId);
+
+                        if (unityNetworkObject != null)
+                        {
+                            if (unityNetworkObject.CanChangeOwner)
+                            {
+                                Debug.Log($"User {userInfo.UserId} requesting Ownership of {unityNetworkObject.NetworkId} Granted.");
+
+                                unityNetworkObject.OwnerId = userInfo.UserId;
+                                unityNetworkObject.CanChangeOwner = false;
+                            }
+                            else
+                            {
+                                Debug.Log($"User {userInfo.UserId} requesting Ownership of {unityNetworkObject.NetworkId} Failed: CanChangeOwner = false.");
+                            }
+
+                            this.SendIdentityUpdateMessage(unityNetworkObject); // Telling everyone about the ownership change
+                            this.SendAllNetworkBehaviourDataToUser(unityNetworkObject, userInfo); // Making sure the new owner has all the latest server info
+                        }
+
+                        break;
+                    }
+
+                case NetworkIdentityReleaseOwnershipRequest.Id:
+                    {
+                        var networkIdentityReleaseOwnershipRequest = (NetworkIdentityReleaseOwnershipRequest)message;
+
+                        UnityNetworkObject unityNetworkObject = this.serverState.GetUnityNetworkObject(networkIdentityReleaseOwnershipRequest.NetworkId);
+
+                        if (unityNetworkObject != null && unityNetworkObject.OwnerId == userInfo.UserId)
+                        {
+                            unityNetworkObject.CanChangeOwner = true;
+
+                            //// TODO [bgish]: Possibly set the OwnerId to be whomever is the "Server"
+
+                            this.SendIdentityUpdateMessage(unityNetworkObject);
+                        }
+
+                        break;
+                    }
             }
         }
 
         public void ServerUserConnected(UserInfo userInfo, bool isReconnect)
         {
-            // TODO [bgish]: Tell user about all Dynamic Objects...
+            Debug.Log("SERVER: User Connected - " + userInfo.GetDisplayName() + " - " + userInfo.GetPlayFabId());
 
-            foreach (var dynamic in this.dynamicUnityGameObjects.Values)
+            // Detecting if we're Migrating the server state to this new user
+            if (this.serverId == InvalidId)
             {
-                this.SendIdentityUpdateMessage(dynamic, userInfo);
-
-                // TODO [bgish]: Also send behaviour Data
+                Debug.Log("ServerUserConnected is Migrating Server...");
+                this.MigrateServerToNewUser(userInfo, NotifyType.AllOthers);
             }
 
-            //// Update(this.staticNetworkObjectsList);
-            //// Update(this.dynamicNetworkObjectsList);
-            ////
-            //// // Telling this user what static network objects have been destroyed
-            //// networkIdentitiesDestroyedCache.DestroyedNetworkIds.Clear();
-            //// networkIdentitiesDestroyedCache.DestroyedNetworkIds.AddRange(this.destroyedStaticNetworkObjects);
-            //// this.gameServer.SendMessageToAll(networkIdentitiesDestroyedCache);
-            ////
-            //// void Update(List<NetworkIdentity> identities)
-            //// {
-            ////     for (int identityIndex = 0; identityIndex < identities.Count; identityIndex++)
-            ////     {
-            ////         networkIdentityUpdateCache.PopulateMessage(identities[identityIndex]);
-            ////         this.gameServer.SendMessageToUser(userInfo, networkIdentityUpdateCache);
-            ////     }
-            //// }
+            // Telling the newly connected use about all the dynamic objects
+            foreach (var dynamic in this.serverState.DynamicUnityGameObjects.Values)
+            {
+                this.SendIdentityUpdateMessage(dynamic, userInfo);
+                this.SendAllNetworkBehaviourDataToUser(dynamic, userInfo);
+            }
+        }
 
-            Debug.Log("SERVER: User Connected - " + userInfo.GetDisplayName() + " - " + userInfo.GetPlayFabId());
+
+        // var users = this.gameServer?.ConnectedUsers;
+        // int userCount = users?.Count ?? 0;
+        // long oldServerId = this.serverId;
+        // long newServerId = userCount > 0 ? users[0].UserId : InvalidId;
+        //         this.serverId = newServerId;
+        // 
+        //         Debug.Log($"Host Migration Detected: OldServerId = {oldServerId}, NewServerId = {newServerId}, User Count = {userCount}");
+        // 
+        //         this.UpdateOwnerForAllUnityNetworkObjects(oldServerId, newServerId);
+        // 
+        //         // Notify all users of the owner id change
+        //         if (userCount > 0)
+        //         {
+        //             Debug.Log($"Notifying All Users of Owner Update...");
+        // 
+        //             foreach (var unityNetworkObject in this.serverState.GetAllUnityNetworkObjects())
+        //             {
+        //                 this.SendIdentityUpdateMessage(unityNetworkObject);
+        //            }
+        //        }
+
+        private UserInfo GetNextServerUser()
+        {
+            int userCount = this.gameServer?.ConnectedUsers?.Count ?? 0;
+            return userCount > 0 ? this.gameServer.ConnectedUsers[0] : null;
+        }
+
+        private void MigrateServerToNewUser(UserInfo userInfo, NotifyType notifyType)
+        {
+            long oldServerId = this.serverId;
+            long newServerId = userInfo != null ? userInfo.UserId : InvalidId;
+            this.serverId = newServerId;
+
+            Debug.Log($"Host Migration Initiated: OldServerId = {oldServerId}, NewServerId = {newServerId}, User Count = {this.gameServer?.ConnectedUsers?.Count}");
+
+            this.UpdateOwnerForAllUnityNetworkObjects(oldServerId, newServerId);
+
+            // Notify all other users of the owner id change
+            if (this.gameServer?.ConnectedUsers == null)
+            {
+                return;
+            }
+
+            foreach (var user in this.gameServer.ConnectedUsers)
+            {
+                if (notifyType == NotifyType.All || user.UserId != userInfo.UserId)
+                {
+                    Debug.Log($"Host Migration is Notifying {user.UserId} about the OwnerId Update...");
+
+                    foreach (var unityNetworkObject in this.serverState.GetAllUnityNetworkObjects())
+                    {
+                        this.SendIdentityUpdateMessage(unityNetworkObject);
+                    }
+                }
+            }
         }
 
         public void ServerUserDisconnected(UserInfo userInfo, bool wasConnectionLost)
         {
-            // TODO [bgish]: Need to go through every object and reassign any UnityNetworkObject owners from
-            //               this owner to a new one, and make sure to tell the remaining clients of the change.
-            //               This is kind of a server host migration.
-
             Debug.Log("SERVER: User Disconnected - " + userInfo.GetDisplayName() + " - " + userInfo.GetPlayFabId());
 
+            // Making sure to destroy all object this user owns, but DestoryOnDisconnect is true
             this.networkBehaviourDestoryed.DestroyedNetworkIds.Clear();
 
-            foreach (var dynamic in this.dynamicUnityGameObjects.Values)
+            foreach (var dynamic in this.serverState.DynamicUnityGameObjects.Values)
             {
                 if (dynamic.DestoryOnDisconnect && dynamic.OwnerId == userInfo.UserId)
                 {
@@ -311,7 +402,26 @@ namespace Lost.Networking
 
                 for (int i = 0; i < this.networkBehaviourDestoryed.DestroyedNetworkIds.Count; i++)
                 {
-                    this.dynamicUnityGameObjects.Remove(this.networkBehaviourDestoryed.DestroyedNetworkIds[i]);
+                    this.serverState.DynamicUnityGameObjects.Remove(this.networkBehaviourDestoryed.DestroyedNetworkIds[i]);
+                }
+            }
+
+            // Detecting if we need to migrate to a new user
+            if (this.serverId == userInfo.UserId)
+            {
+                Debug.Log("ServerUserDisconnected is Migrating Server...");
+                this.MigrateServerToNewUser(this.GetNextServerUser(), NotifyType.All);
+            }
+        }
+
+        private void UpdateOwnerForAllUnityNetworkObjects(long oldOwnerId, long newOwerId)
+        {
+            foreach (var unityNetworkObject in this.serverState.GetAllUnityNetworkObjects())
+            {
+                if (unityNetworkObject.OwnerId == oldOwnerId)
+                {
+                    unityNetworkObject.OwnerId = newOwerId;
+                    unityNetworkObject.CanChangeOwner = unityNetworkObject.InitialCanChangeOwner;
                 }
             }
         }
@@ -324,6 +434,7 @@ namespace Lost.Networking
             this.networkIdentityUpdate.ResourceName = unityNetworkObject.ResourceName;
             this.networkIdentityUpdate.Position = unityNetworkObject.Position;
             this.networkIdentityUpdate.Rotation = unityNetworkObject.Rotation;
+            this.networkIdentityUpdate.CanChangeOwner = unityNetworkObject.CanChangeOwner;
 
             if (user != null)
             {
@@ -335,18 +446,24 @@ namespace Lost.Networking
             }
         }
 
-        private UnityNetworkObject GetObject(long networkId)
+        private void SendAllNetworkBehaviourDataToUser(UnityNetworkObject unityNetworkObject, UserInfo userInfo)
         {
-            if (this.sceneUnityNetworkObjects.TryGetValue(networkId, out UnityNetworkObject sceneObject))
-            {
-                return sceneObject;
-            }
-            else if (this.dynamicUnityGameObjects.TryGetValue(networkId, out UnityNetworkObject dynamicObject))
-            {
-                return dynamicObject;
-            }
+            // Send all the network behaviour data we know about
+            this.networkBehaviourMessage.NetworkId = unityNetworkObject.NetworkId;
 
-            return null;
+            for (int i = 0; i < unityNetworkObject.BehaviourDatas.Count; i++)
+            {
+                var behaviourData = unityNetworkObject.BehaviourDatas[i];
+
+                if (behaviourData?.Data?.Length > 0)
+                {
+                    this.networkBehaviourMessage.BehaviourIndex = i;
+                    this.networkBehaviourMessage.DataBytes = behaviourData.Data.Bytes;
+                    this.networkBehaviourMessage.DataLength = behaviourData.Data.Length;
+
+                    this.gameServer.SendMessageToUser(userInfo, this.networkBehaviourMessage);
+                }
+            }
         }
 
         private class UnityNetworkObject
@@ -366,6 +483,10 @@ namespace Lost.Networking
             public bool IsEnabled { get; set; }
 
             public bool DestoryOnDisconnect { get; set; }
+
+            public bool InitialCanChangeOwner { get; set; }
+
+            public bool CanChangeOwner { get; set; }
         }
 
         private class BehaviourData
@@ -401,154 +522,55 @@ namespace Lost.Networking
                 this.SetData(data, data.Length);
             }
         }
-    }
 
-    /*
-    private static readonly NetworkReader reader = new NetworkReader(new byte[0]);
-
-    // Caching Members
-    private static readonly NetworkIdentityUpdate networkIdentityUpdateCache = new NetworkIdentityUpdate();
-    private static readonly NetworkIdentitiesDestroyed networkIdentitiesDestroyedCache = new NetworkIdentitiesDestroyed();
-    private static Dictionary<string, NetworkIdentity> resourcePrefabCache = new Dictionary<string, NetworkIdentity>();
-
-    // Dynamic Network Object Tracking
-    private Dictionary<long, NetworkIdentity> dynamicNetworkObjectsHash = new Dictionary<long, NetworkIdentity>();
-    private List<NetworkIdentity> dynamicNetworkObjectsList = new List<NetworkIdentity>();
-
-    // Static Network Object Tracking
-    private Dictionary<long, NetworkIdentity> staticNetworkObjectsHash = new Dictionary<long, NetworkIdentity>();
-    private List<NetworkIdentity> staticNetworkObjectsList = new List<NetworkIdentity>();
-    private HashSet<long> destroyedStaticNetworkObjects = new HashSet<long>();
-
-    NetworkIdentityCreated networkIdentityCreatedMessage = new NetworkIdentityCreated();
-    private GameServer gameServer;
-
-    public ReadOnlyCollection<UserInfo> ConnectedUsers => this.gameServer.ConnectedUsers;
-    public GameServer GameServer => this.gameServer;
-
-    public UnityGameServer(GameServer gameServer)
-    {
-        this.StartGameServer(gameServer);
-    }
-
-    public void Update()
-    {
-        this.gameServer?.Update();
-    }
-
-    public void Shutdown()
-    {
-        this.gameServer?.Shutdown();
-
-        if (Platform.IsApplicationQuitting == false)
+        private class ServerState
         {
-            // Destroy all dynamic objects
-            foreach (var dynamic in this.dynamicNetworkObjectsList)
+            public Dictionary<long, UnityNetworkObject> SceneUnityNetworkObjects { get; } = new Dictionary<long, UnityNetworkObject>();
+            public HashSet<long> DestroyedSceneUnityNetworkObjects { get; } = new HashSet<long>();
+            public Dictionary<long, UnityNetworkObject> DynamicUnityGameObjects { get; } = new Dictionary<long, UnityNetworkObject>();
+
+            public void Start()
             {
-                Pooler.Destroy(dynamic.gameObject);
+                // TODO [bgish]: Make this a Task and Load ServerState from PlayFab
+                this.SceneUnityNetworkObjects.Clear();
+                this.DestroyedSceneUnityNetworkObjects.Clear();
+                this.DynamicUnityGameObjects.Clear();
+            }
+
+            public void Stop()
+            {
+                // TODO [bgish]: Make this a Task and Save ServerState to PlayFab
+                this.SceneUnityNetworkObjects.Clear();
+                this.DestroyedSceneUnityNetworkObjects.Clear();
+                this.DynamicUnityGameObjects.Clear();
+            }
+
+            public IEnumerable<UnityNetworkObject> GetAllUnityNetworkObjects()
+            {
+                foreach (var scene in this.SceneUnityNetworkObjects)
+                {
+                    yield return scene.Value;
+                }
+
+                foreach (var dynamic in this.DynamicUnityGameObjects)
+                {
+                    yield return dynamic.Value;
+                }
+            }
+
+            public UnityNetworkObject GetUnityNetworkObject(long networkId)
+            {
+                if (this.SceneUnityNetworkObjects.TryGetValue(networkId, out UnityNetworkObject sceneObject))
+                {
+                    return sceneObject;
+                }
+                else if (this.DynamicUnityGameObjects.TryGetValue(networkId, out UnityNetworkObject dynamicObject))
+                {
+                    return dynamicObject;
+                }
+
+                return null;
             }
         }
     }
-
-    public NetworkIdentity CreateNetworkIdentity(string resourceName, long ownerId, Vector3 position)
-    {
-        NetworkIdentity networkIdentityPrefab = null;
-
-        if (resourcePrefabCache.TryGetValue(resourceName, out networkIdentityPrefab) == false)
-        {
-            networkIdentityPrefab = Resources.Load<NetworkIdentity>(resourceName);
-            resourcePrefabCache.Add(resourceName, networkIdentityPrefab);
-        }
-
-        var newNetworkIdentity = Pooler.Instantiate(networkIdentityPrefab);
-        newNetworkIdentity.GenerateNewNetworkId();
-        newNetworkIdentity.SetOwner(ownerId);
-        newNetworkIdentity.ResourceName = resourceName;
-        newNetworkIdentity.Destroyed += this.NetworkIdentityDestroyed;
-        newNetworkIdentity.transform.position = position;
-
-        // Registering it with the dynamic game objects
-        this.dynamicNetworkObjectsHash.Add(newNetworkIdentity.NetworkId, newNetworkIdentity);
-        this.dynamicNetworkObjectsList.Add(newNetworkIdentity);
-
-        this.networkIdentityCreatedMessage.NetworkId = newNetworkIdentity.NetworkId;
-        this.networkIdentityCreatedMessage.OwnerId = newNetworkIdentity.OwnerId;
-        this.networkIdentityCreatedMessage.ResourceName = resourceName;
-        this.networkIdentityCreatedMessage.Position = position;
-        this.SendNetworkMessage(this.networkIdentityCreatedMessage);
-
-        return newNetworkIdentity;
-    }
-
-    public void SendNetworkMessage(Message message)
-    {
-        this.gameServer?.SendMessageToAll(message);
-    }
-
-    private void StartGameServer(GameServer gameServer)
-    {
-        this.gameServer = gameServer;
-
-        // Registering Custom Messages
-        this.gameServer.RegisterMessage<NetworkIdentityUpdate>();
-        this.gameServer.RegisterMessage<NetworkIdentitiesDestroyed>();
-        this.gameServer.RegisterMessage<NetworkBehaviourMessage>();
-        this.gameServer.RegisterMessage<NetworkIdentityCreated>();
-
-        // Messages
-        this.gameServer.ServerReceivedMessage += this.ServerReceivedMessage;
-
-        // Startup/Shutdown
-        this.gameServer.ServerStarted += this.ServerStarted;
-        this.gameServer.ServerShutdown += this.ServerShutdown;
-
-        // User Connected / Disconnected
-        this.gameServer.ServerUserConnected += this.ServerUserConnected;
-        this.gameServer.ServerUserInfoUpdated += this.ServerUserInfoUpdated;
-        this.gameServer.ServerUserDisconnected += this.ServerUserDisconnected;
-
-        // Collecting all the static network objects
-        NetworkManager.GetAllNetworkIdentities(this.staticNetworkObjectsList);
-
-        // Hashing all the static network objects for quicker lookup
-        foreach (var identity in this.staticNetworkObjectsList)
-        {
-            this.staticNetworkObjectsHash.Add(identity.NetworkId, identity);
-            identity.Destroyed += this.NetworkIdentityDestroyed;
-        }
-    }
-
-    private void NetworkIdentityDestroyed(long networkId)
-    {
-        if (this.staticNetworkObjectsHash.TryGetValue(networkId, out NetworkIdentity staticNetworkIdentity))
-        {
-            staticNetworkIdentity.Destroyed = null;
-
-            this.staticNetworkObjectsHash.Remove(networkId);
-            this.staticNetworkObjectsList.Remove(staticNetworkIdentity);
-            this.destroyedStaticNetworkObjects.Add(networkId);
-
-            // Telling all the clients it was destroyed
-            networkIdentitiesDestroyedCache.DestroyedNetworkIds.Clear();
-            networkIdentitiesDestroyedCache.DestroyedNetworkIds.Add(networkId);
-            this.gameServer.SendMessageToAll(networkIdentitiesDestroyedCache);
-        }
-        else if (this.dynamicNetworkObjectsHash.TryGetValue(networkId, out NetworkIdentity dynamicNetworkIdentity))
-        {
-            dynamicNetworkIdentity.Destroyed = null;
-
-            this.dynamicNetworkObjectsHash.Remove(networkId);
-            this.dynamicNetworkObjectsList.Remove(dynamicNetworkIdentity);
-
-            // Telling all the clients it was destroyed
-            networkIdentitiesDestroyedCache.DestroyedNetworkIds.Clear();
-            networkIdentitiesDestroyedCache.DestroyedNetworkIds.Add(networkId);
-            this.gameServer.SendMessageToAll(networkIdentitiesDestroyedCache);
-        }
-        else
-        {
-            Debug.LogError("WTF");
-        }
-    }
-    */
 }

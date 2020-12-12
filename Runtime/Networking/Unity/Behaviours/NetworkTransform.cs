@@ -59,6 +59,12 @@ namespace Lost.Networking
 
             if (this.IsOwner == false)
             {
+                // Early out and don't update positions if we're trying to get ownership of this object
+                if (this.Identity.IsRequestingOwnership)
+                {
+                    return;
+                }
+
                 if (this.sendPosition)
                 {
                     if (this.rigidBody == null && this.estimateVelocity)
@@ -184,6 +190,12 @@ namespace Lost.Networking
             if (sentScale)
             {
                 this.desiredScale = reader.ReadVector3();
+            }
+
+            // Early out and don't update physics if we're trying to get ownership of this object
+            if (this.Identity.IsRequestingOwnership)
+            {
+                return;
             }
 
             if (sentPhysics)
