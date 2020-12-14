@@ -9,9 +9,9 @@ namespace Lost
     using System;
     using System.Collections.Generic;
 
-    #if USING_ABLY
+#if USING_ABLY
     using IO.Ably;
-    #endif
+#endif
 
     using Lost.AppConfig;
     using Newtonsoft.Json.Linq;
@@ -23,42 +23,11 @@ namespace Lost
 
     public class RealtimeMessageManager : Manager<RealtimeMessageManager>
     {
-        #pragma warning disable 0649
-        [Header("Dependencies")]
-        [SerializeField] private ReleasesManager releasesManager;
-        [SerializeField] private PlayFabManager playfabManager;
-        #pragma warning restore 0649
-
-        [ExposeInEditor("Go To ably.io")]
-        public void GoToAblyWebsite()
-        {
-            Application.OpenURL("https://www.ably.io/accounts");
-        }
-
-        #if !USING_ABLY
-
-        public override void Initialize()
-        {
-            Debug.LogError("Trying to use RealtimeMessageManager without USING_ABLY define set.");
-        }
-
-        [ExposeInEditor("Download Ably 1.1.14")]
-        public void DownloadAbly()
-        {
-            Application.OpenURL("https://github.com/ably/ably-dotnet/tree/1.1.14");
-        }
-
-        [ExposeInEditor("Add USING_ABLY Define")]
-        public void AddUsingAblyDefine()
-        {
-            ProjectDefinesHelper.AddDefineToProject("USING_ABLY");
-        }
-
-        #else
-
+#if USING_ABLY
         private Dictionary<string, Type> messageTypes = new Dictionary<string, Type>();
         private HashSet<string> subscribedChannels = new HashSet<string>();
         private AblyRealtime ably;
+#endif
 
         public override void Initialize()
         {
@@ -66,14 +35,37 @@ namespace Lost
 
             IEnumerator InitializeCoroutine()
             {
-                yield return this.WaitForDependencies(this.releasesManager, this.playfabManager);
+                yield return ReleasesManager.WaitForInitialization();
+                yield return PlayFabManager.WaitForInitialization();
 
-                this.ably = new AblyRealtime(this.releasesManager.CurrentRelease.AblyClientKey);
-                this.Subscribe(this.playfabManager.User.PlayFabId);
+                var settings = ReleasesManager.Instance.CurrentRelease.RealtimeMessageManagerSettings;
+                var isEnabled = settings.IsEnabled;
+                var ablyKey = settings.AblyClientKey;
+
+                if (isEnabled)
+                {
+#if !USING_ABLY
+                    Debug.LogError("RealtimeMessageManager: Trying to use this manager, but the USING_ABLY define is not set." +
+                                   "Make sure you have installed Ably 1.1.14 (https://github.com/ably/ably-dotnet/tree/1.1.14) and that the" +
+                                   "USING_ABLY define is set or else this manager will not work.", this);
+#else
+                    if (ablyKey.IsNullOrWhitespace() == false)
+                    {
+                        this.InitilializeAbly(ablyKey);
+                    }
+                    else
+                    {
+                        Debug.LogError("RealtimeMessageManager requires a valid Ably Client Key in the Releases RealtimeMessageManagerSettings. " +
+                                       "This manager will not work properly. Go to https://www.ably.io/accounts to get a valid client key.", this);
+                    }
+#endif
+                }
+
                 this.SetInstance(this);
             }
         }
 
+#if USING_ABLY
         public void RegisterType<T>() where T : RealtimeMessage, new()
         {
             this.messageTypes.Add(typeof(T).Name, typeof(T));
@@ -132,6 +124,32 @@ namespace Lost
             }
         }
 
-        #endif
+        private void InitilializeAbly(string ablyKey)
+        {
+            this.ably = new AblyRealtime(ablyKey);
+            this.Subscribe(PlayFabManager.Instance.User.PlayFabId);
+        }
+#endif
+
+        [Serializable]
+        public class Settings
+        {
+#pragma warning disable 0649
+            [SerializeField] private bool isEnabled;
+            [SerializeField] private string ablyClientKey;
+#pragma warning restore 0649
+
+            public bool IsEnabled
+            {
+                get => this.isEnabled;
+                set => this.isEnabled = value;
+            }
+
+            public string AblyClientKey
+            {
+                get => this.ablyClientKey;
+                set => this.ablyClientKey = value;
+            }
+        }
     }
 }

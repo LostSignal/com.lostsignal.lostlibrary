@@ -10,73 +10,82 @@ namespace Lost.DissonanceIntegration
 {
     using Lost.PlayFab;
     using UnityEngine;
-#if PLATFORM_ANDROID
-    using UnityEngine.Android;
-#endif
 
     public class DissonanceManager : Manager<DissonanceManager>
     {
 #pragma warning disable 0649
-        [Header("Dependencies")]
-        [SerializeField] private bool startDissonanceCommsOnInitialize = true;
-        [SerializeField] private PlayFabManager playfabManager;
-
-#if USING_DISSONANCE
-        [Header("Dissonance")]
-        [SerializeField] private Dissonance.DissonanceComms dissonanceComms;
-#endif
+        [SerializeField] private GameObject dissonanceCommsPrefab;
 #pragma warning restore 0649
 
-#if USING_DISSONANCE
-        public Dissonance.DissonanceComms DissonanceComms => this.dissonanceComms;
+        public Dissonance.DissonanceComms DissonanceComms { get; private set; }
+
+        public void RequestMicrophonePermissions()
+        {
+#if PLATFORM_ANDROID
+            var microphonePermission = UnityEngine.Android.Permission.Microphone;
+
+            if (UnityEngine.Android.Permission.HasUserAuthorizedPermission(microphonePermission) == false)
+            {
+                UnityEngine.Android.Permission.RequestUserPermission(microphonePermission);
+            }
 #endif
+        }
 
         public override void Initialize()
         {
-#if USING_DISSONANCE
-
-#if PLATFORM_ANDROID
-            if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
-            {
-                Permission.RequestUserPermission(Permission.Microphone);
-            }
-#endif
+            this.RequestMicrophonePermissions();
             this.StartCoroutine(Coroutine());
 
             System.Collections.IEnumerator Coroutine()
             {
-                yield return this.WaitForDependencies(this.playfabManager);
+                yield return ReleasesManager.WaitForInitialization();
+                yield return PlayFabManager.WaitForInitialization();
 
-                if (this.dissonanceComms == null)
+                var settings = ReleasesManager.Instance.CurrentRelease.DissonanceManagerSettings;
+
+#if !USING_DISSONANCE
+                Debug.LogError("DissonanceManager is enabled, but USING_DISSONANCE define is not set.  Make sure Dissonance plugin is " +
+                               "installed and the define is set, otherwise Dissonance will not work.", this);
+#else
+                if (this.dissonanceCommsPrefab == null)
                 {
-                    Debug.LogError("Tring to use the DissonanceManager without specifying the dissonanceComms object.  Dissonance will not work.");
+                    Debug.LogError("DissonanceManager: Unable to locate the DissonanceComms object. Dissonance will not work.", this);
                 }
                 else
                 {
-                    this.dissonanceComms.LocalPlayerName = this.playfabManager.User.PlayFabId;
+                    var dissonanceCommsObject = GameObject.Instantiate(this.dissonanceCommsPrefab, this.transform);
 
-                    if (this.startDissonanceCommsOnInitialize)
+                    this.DissonanceComms = dissonanceCommsObject.GetComponent<Dissonance.DissonanceComms>();
+
+                    if (this.DissonanceComms == null)
                     {
-                        this.StartDissonanceComms();
+                        Debug.LogError("DissonanceManager: DissonanceComms Prefab does not have the DissonanceComms Component, Dissonance will not work.", this);
+                    }
+                    else
+                    {
+                        this.DissonanceComms.LocalPlayerName = PlayFabManager.Instance.User.PlayFabId;
+                        this.DissonanceComms.gameObject.name = "Dissonance Comms";
+                        this.DissonanceComms.gameObject.SetActive(true);
                     }
                 }
+#endif
 
                 this.SetInstance(this);
             }
-
-#else
-            Debug.LogError("Tring to use the DissonanceManager without USING_DISSONANCE define.  Add the Dissonance package to your project.");
-            this.SetInstance(this);
-#endif
         }
 
-        public void StartDissonanceComms()
+        [System.Serializable]
+        public class Settings
         {
-#if USING_DISSONANCE
-            this.dissonanceComms.gameObject.SetActive(true);
-#else
-            Debug.LogError("Tring to use the DissonanceManager without USING_DISSONANCE define.  Add the Dissonance package to your project.");
-#endif
+#pragma warning disable 0649
+            [SerializeField] private bool isEnabled;
+#pragma warning restore 0649
+
+            public bool IsEnabled
+            {
+                get => this.isEnabled;
+                set => this.isEnabled = value;
+            }
         }
     }
 }

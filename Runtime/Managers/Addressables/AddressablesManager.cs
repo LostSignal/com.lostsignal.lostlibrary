@@ -7,22 +7,16 @@
 namespace Lost
 {
     using System.Collections;
-    using UnityEngine;
 
     public class AddressablesManager : Manager<AddressablesManager>
     {
-        #pragma warning disable 0649
-        [Header("Dependencies")]
-        [SerializeField] private ReleasesManager releasesManager;
-        #pragma warning restore 0649
-
         public override void Initialize()
         {
             this.StartCoroutine(InitializeCoroutine());
 
             IEnumerator InitializeCoroutine()
             {
-                yield return this.WaitForDependencies(this.releasesManager);
+                yield return ReleasesManager.WaitForInitialization();
 
                 //// TODO [bgish]: Set the addressables location
                 //// this.releasesManager.CurrentRelease.AddressablesLocation;

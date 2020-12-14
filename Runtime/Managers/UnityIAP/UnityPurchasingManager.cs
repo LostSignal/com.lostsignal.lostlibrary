@@ -10,20 +10,20 @@
 
 namespace Lost.IAP
 {
+    using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
 
-    #if PURCHASING_ENABLED
+#if PURCHASING_ENABLED
     using UnityEngine.Purchasing;
-    #endif
+#endif
 
     public class UnityPurchasingManager : Manager<UnityPurchasingManager>
-        #if PURCHASING_ENABLED
+#if PURCHASING_ENABLED
         , IStoreListener
-        #endif
+#endif
     {
-        #if PURCHASING_ENABLED
-
+#if PURCHASING_ENABLED
         private enum InitializationState
         {
             Initializing,
@@ -54,18 +54,31 @@ namespace Lost.IAP
         {
             get { return initializationState == InitializationState.InitializedSucceeded; }
         }
-        #endif
+#endif
 
         public override void Initialize()
         {
-            #if !PURCHASING_ENABLED
-            Debug.LogError("Tring to use UnityPurchasingManager without USING_UNITY_PURCHASING define.");
-            #endif
+            this.StartCoroutine(Coroutine());
 
-            this.SetInstance(this);
+            IEnumerator Coroutine()
+            {
+                yield return ReleasesManager.WaitForInitialization();
+
+                var settings = ReleasesManager.Instance.CurrentRelease.UnityPurchasingManagerSettings;
+
+                if (settings.IsEnabled)
+                {
+#if !PURCHASING_ENABLED
+                    Debug.LogError("UnityPurchasingManager: Tring to use UnityPurchasingManager without USING_UNITY_PURCHASING define. " +
+                                   "Make sure Unity Purchasing is installed correctly.");
+#endif
+                }
+
+                this.SetInstance(this);
+            }
         }
 
-        #if PURCHASING_ENABLED
+#if PURCHASING_ENABLED
 
         public string GetLocalizedPrice(string itemId)
         {
@@ -204,15 +217,20 @@ namespace Lost.IAP
             this.purchaseFailureReason = p;
         }
 
-        #endif
+#endif
 
-        #if !USING_UNITY_PURCHASING
-        [ExposeInEditor("Add USING_UNITY_PURCHASING Define")]
-        private void AddUsingUnityPurchasingDefine()
+        [System.Serializable]
+        public class Settings
         {
-            ProjectDefinesHelper.AddDefineToProject("USING_UNITY_PURCHASING");
-        }
+#pragma warning disable 0649
+            [SerializeField] private bool isEnabled;
+#pragma warning restore 0649
 
-        #endif
+            public bool IsEnabled
+            {
+                get => this.isEnabled;
+                set => this.isEnabled = value;
+            }
+        }
     }
 }

@@ -14,20 +14,9 @@ namespace Lost
 
     public class SpriteAtlasLoadingManager : Manager<SpriteAtlasLoadingManager>
     {
-        #pragma warning disable 0649
-        [Header("Dependencies")]
-        [SerializeField] private AddressablesManager addressablesManager;
-
-        [Header("Atlases")]
-        [SerializeField] private List<Atlas> atlases = new List<Atlas>();
-        #pragma warning restore 0649
-
         private Dictionary<string, Action<SpriteAtlas>> unknownAtlasRequests = new Dictionary<string, Action<SpriteAtlas>>();
         private Dictionary<string, Atlas> atlasesMap = null;
-
-        #if UNITY_EDITOR
-        public List<Atlas> Atlases => this.atlases;
-        #endif
+        private Settings settings;
 
         public override void Initialize()
         {
@@ -35,7 +24,10 @@ namespace Lost
 
             IEnumerator InitializeCoroutine()
             {
-                yield return this.WaitForDependencies(this.addressablesManager);
+                yield return ReleasesManager.WaitForInitialization();
+                yield return AddressablesManager.WaitForInitialization();
+
+                this.settings = ReleasesManager.Instance.CurrentRelease.SpriteAtlasLoadingManagerSettings;
 
                 this.SetInstance(this);
             }
@@ -104,7 +96,7 @@ namespace Lost
             {
                 this.atlasesMap = new Dictionary<string, Atlas>();
 
-                foreach (var atlas in this.atlases)
+                foreach (var atlas in this.settings.Atlases)
                 {
                     this.atlasesMap.Add(atlas.Tag, atlas);
                 }
@@ -147,10 +139,10 @@ namespace Lost
         [Serializable]
         public class Atlas
         {
-            #pragma warning disable 0649
+#pragma warning disable 0649
             [SerializeField] private string tag;
             [SerializeField] private LazySpriteAtlas spriteAtlas;
-            #pragma warning restore 0649
+#pragma warning restore 0649
 
             public Atlas(string tag, string guid)
             {
@@ -168,6 +160,20 @@ namespace Lost
             {
                 get { return this.tag; }
                 set { this.tag = value; }
+            }
+        }
+
+        [Serializable]
+        public class Settings
+        {
+#pragma warning disable 0649
+            [SerializeField] private List<Atlas> atlases = new List<Atlas>();
+#pragma warning restore 0649
+
+            public List<Atlas> Atlases
+            {
+                get => this.atlases;
+                set => this.atlases = value;
             }
         }
     }

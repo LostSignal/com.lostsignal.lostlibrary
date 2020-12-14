@@ -130,15 +130,16 @@ namespace Lost
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
             if (this.IsPancakeMode)
             {
-                this.pancakeInputSystem.enabled = true;
-                this.xrInputSystem.enabled = false;
+                this.pancakeInputSystem.gameObject.SetActive(true);
+                this.xrInputSystem.gameObject.SetActive(false);
             }
             else
             {
-                this.pancakeInputSystem.enabled = false;
-                this.xrInputSystem.enabled = true;
+                this.pancakeInputSystem.gameObject.SetActive(false);
+                this.xrInputSystem.gameObject.SetActive(true);
             }
 #endif
+
             if (this.printDebugInfo)
             {
                 Debug.Log($"Current Device = {this.CurrentDevice.name}");

@@ -14,6 +14,7 @@ namespace Lost.PlayFab
     using global::PlayFab.ClientModels;
     using global::PlayFab.Internal;
     using Lost.IAP;
+    using Newtonsoft.Json;
     using UnityEngine;
 
     public class PlayFabManager : Manager<PlayFabManager>
@@ -23,24 +24,7 @@ namespace Lost.PlayFab
         private static ISerializerPlugin serializerPlugin;
 
 #pragma warning disable 0649
-        [Header("Dependencies")]
-        [SerializeField] private ReleasesManager releaseManager;
-        [SerializeField] private UnityPurchasingManager unityPurchasingManager;
-
-        [Header("Login")]
         [SerializeField] private LoginMethod loginMethod;
-        [SerializeField] private List<string> facebookPermissions = new List<string> { "public_profile", "email", "user_friends" };
-
-        [Header("Startup")]
-        [SerializeField] private List<string> loadTitleDataKeys;
-        [SerializeField] private bool loadInventory;
-        [SerializeField] private bool loadVirtualCurrency;
-        [SerializeField] private bool loadPlayerProfile;
-        [SerializeField] private bool loadCatalog;
-        [SerializeField] private bool loadCharacters;
-        [SerializeField] private bool loadPurchasing;
-        [SerializeField] private List<string> loadStoresAtStartup;
-        [SerializeField] private bool registerIosPushNotificationsAtStartup;
 #pragma warning restore 0649
 
         private bool regainFocusCoroutineRunning;
@@ -96,34 +80,38 @@ namespace Lost.PlayFab
             {
                 PlayFabSettings.GlobalErrorHandler += this.OnGlobalErrorEvent;
 
-                yield return this.WaitForDependencies(this.releaseManager, this.unityPurchasingManager);
+                yield return ReleasesManager.WaitForInitialization();
+                yield return UnityPurchasingManager.WaitForInitialization();
 
-                string catalogVersion = this.releaseManager.CurrentRelease.PlayFab.CatalogVersion;
-                PlayFabSettings.staticSettings.TitleId = this.releaseManager.CurrentRelease.PlayFab.TitleId;
+                PlayFabManager.Settings playfabSettings = ReleasesManager.Instance.CurrentRelease.PlayfabManagerSettings;
+
+                string catalogVersion = playfabSettings.CatalogVersion;
+                PlayFabSettings.staticSettings.TitleId = Lost.AppConfig.RuntimeAppConfig.Instance.GetString(PlayFabConfigExtensions.TitleId);
 
                 this.Login = new LoginManager(this);
 
                 // Starting the Logging In loop
                 var combinedParams = new GetPlayerCombinedInfoRequestParams
                 {
-                    GetTitleData = this.loadTitleDataKeys.Count > 0,
-                    TitleDataKeys = this.loadTitleDataKeys,
-                    GetUserInventory = this.loadInventory,
-                    GetUserVirtualCurrency = this.loadVirtualCurrency,
-                    GetPlayerProfile = this.loadPlayerProfile,
-                    GetCharacterList = this.loadCharacters,
+                    GetTitleData = playfabSettings.LoadTitleDataKeys.Count > 0,
+                    TitleDataKeys = playfabSettings.LoadTitleDataKeys,
+                    GetUserInventory = playfabSettings.LoadInventory,
+                    GetUserVirtualCurrency = playfabSettings.LoadVirtualCurrency,
+                    GetPlayerProfile = playfabSettings.LoadPlayerProfile,
+                    GetCharacterList = playfabSettings.LoadCharacters,
                     GetUserAccountInfo = true,
                 };
 
                 LostMessages.BootloaderLoggingIn();
-                var login = this.Login.Login(this.loginMethod, combinedParams, this.facebookPermissions);
+                var login = this.Login.Login(this.loginMethod, combinedParams, playfabSettings.FacebookPermissions);
 
                 yield return login;
 
                 this.Catalog = new CatalogManager(this, catalogVersion);
                 this.Character = new CharacterManager(this, login.Value?.InfoResultPayload?.CharacterList);
                 this.Inventory = new InventoryManager(this, login.Value?.InfoResultPayload?.UserInventory);
-                this.Purchasing = new PurchasingManager(this, catalogVersion, this.unityPurchasingManager);
+                this.Purchasing = new PurchasingManager(this, catalogVersion);
+
                 this.PushNotifications = new PushNotificationManager(this);
                 this.Store = new StoreManager(this, catalogVersion);
                 this.TitleData = new TitleDataManager(this, login.Value?.InfoResultPayload?.TitleData);
@@ -132,18 +120,18 @@ namespace Lost.PlayFab
                 this.VirtualCurrency = new VirtualCurrencyManager(this, login.Value?.InfoResultPayload?.UserVirtualCurrency);
 
                 // Catalog
-                if (this.loadCatalog)
+                if (playfabSettings.LoadCatalog)
                 {
                     LostMessages.BootloaderDownloadingCatalog();
                     yield return this.Catalog.GetCatalog();
                 }
 
                 // Stores
-                if (this.loadStoresAtStartup?.Count > 0)
+                if (playfabSettings.LoadStoresAtStartup?.Count > 0)
                 {
                     LostMessages.BootloaderLoadingStores();
 
-                    foreach (var store in this.loadStoresAtStartup)
+                    foreach (var store in playfabSettings.LoadStoresAtStartup)
                     {
                         // TODO [bgish]: Tell the loading dialog that we're getting store "X"
                         yield return this.Store.GetStore(store);
@@ -151,14 +139,14 @@ namespace Lost.PlayFab
                 }
 
                 // Initializing purchasing, but no need to wait on it later
-                if (this.loadPurchasing)
+                if (playfabSettings.LoadPurchasing)
                 {
                     LostMessages.BootloaderInitializingPurchasing();
                     yield return this.Purchasing.Initialize();
                 }
 
                 // Push Notifications
-                if (Application.platform == RuntimePlatform.IPhonePlayer && this.registerIosPushNotificationsAtStartup)
+                if (Application.platform == RuntimePlatform.IPhonePlayer && playfabSettings.RegisterIosPushNotificationsAtStartup)
                 {
                     this.PushNotifications.RegisterPushNotificationsWithPlayFab();
                 }
@@ -444,6 +432,117 @@ namespace Lost.PlayFab
             if (error.Error == PlayFabErrorCode.InvalidSessionTicket)
             {
                 this.ExecuteAtEndOfFrame(Bootloader.Reboot);
+            }
+        }
+
+        public enum TitleDataSerializationMethod
+        {
+            PlayFab,
+            JsonDotNet,
+            Unity,
+        }
+
+        public interface ITitleData
+        {
+            string TitleDataKey { get; }
+
+            bool IsCompressed { get; }
+
+            bool LoadAtStartup { get; }
+
+            TitleDataSerializationMethod SerializationMethod { get; }
+        }
+
+        [Serializable]
+        public class TitleDataKeys
+        {
+            public string TitleDataKey;
+            public bool IsCompressed;
+            public bool LoadAtStartup;
+            public TitleDataSerializationMethod SerializationMethod;
+        }
+
+        [Serializable]
+        public class Settings
+        {
+#pragma warning disable 0649
+            [SerializeField] private string catalogVersion = "1.0";
+            [SerializeField] private List<string> facebookPermissions = new List<string> { "public_profile", "email", "user_friends" };
+            [SerializeField] private List<string> loadTitleDataKeys;
+            [SerializeField] private List<string> loadStoresAtStartup;
+            [SerializeField] private bool loadInventory;
+            [SerializeField] private bool loadVirtualCurrency;
+            [SerializeField] private bool loadPlayerProfile;
+            [SerializeField] private bool loadCatalog;
+            [SerializeField] private bool loadCharacters;
+            [SerializeField] private bool loadPurchasing;
+            [SerializeField] private bool registerIosPushNotificationsAtStartup;
+#pragma warning restore 0649
+
+            public string CatalogVersion
+            {
+                get => this.catalogVersion;
+                set => this.catalogVersion = value;
+            }
+
+            public List<string> FacebookPermissions
+            {
+                get => this.facebookPermissions;
+                set => this.facebookPermissions = value;
+            }
+
+            public List<string> LoadTitleDataKeys
+            {
+                get => this.loadTitleDataKeys;
+                set => this.loadTitleDataKeys = value;
+            }
+
+            public List<string> LoadStoresAtStartup
+            {
+                get => this.loadStoresAtStartup;
+                set => this.loadStoresAtStartup = value;
+            }
+
+            public bool LoadInventory
+            {
+                get => this.loadInventory;
+                set => this.loadInventory = value;
+            }
+
+            public bool LoadVirtualCurrency
+            {
+                get => this.loadVirtualCurrency;
+                set => this.loadVirtualCurrency = value;
+            }
+
+            public bool LoadPlayerProfile
+            {
+                get => this.loadPlayerProfile;
+                set => this.loadPlayerProfile = value;
+            }
+
+            public bool LoadCatalog
+            {
+                get => this.loadCatalog;
+                set => this.loadCatalog = value;
+            }
+
+            public bool LoadCharacters
+            {
+                get => this.loadCharacters;
+                set => this.loadCharacters = value;
+            }
+
+            public bool LoadPurchasing
+            {
+                get => this.loadPurchasing;
+                set => this.loadPurchasing = value;
+            }
+
+            public bool RegisterIosPushNotificationsAtStartup
+            {
+                get => this.registerIosPushNotificationsAtStartup;
+                set => this.registerIosPushNotificationsAtStartup = value;
             }
         }
     }

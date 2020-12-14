@@ -28,9 +28,13 @@ namespace Lost
         private Dictionary<string, Channel> channelsHash;
         private List<AudioSource> audioSourcePool;
         private List<Channel> channelsList;
+        private GameObject audioPool;
 
         public override void Initialize()
         {
+            this.audioPool = new GameObject("Audio Pool");
+            this.audioPool.transform.SetParent(this.transform);
+
             // Initializing the audio source pool
             this.audioSourcePool = new List<AudioSource>(this.initialAudioSourcePoolSize);
 
@@ -136,7 +140,7 @@ namespace Lost
 
         private void AddToPool()
         {
-            var poolItem = GameObject.Instantiate(this.audioSourcePrefab, this.transform);
+            var poolItem = GameObject.Instantiate(this.audioSourcePrefab, this.audioPool.transform);
             poolItem.gameObject.SetActive(false);
             poolItem.name = "Audio Source " + this.audioSourcePool.Count;
             this.audioSourcePool.Add(poolItem);

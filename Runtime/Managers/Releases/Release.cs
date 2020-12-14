@@ -7,33 +7,29 @@
 namespace Lost
 {
     using System;
-    using System.Collections.Generic;
+    using Lost.DissonanceIntegration;
     using Lost.PlayFab;
-    using Newtonsoft.Json;
+    using Lost.IAP;
     using UnityEngine;
-
-    public enum TitleDataSerializationMethod
-    {
-        PlayFab,
-        JsonDotNet,
-        Unity,
-    }
 
     [Serializable]
     public class Release
     {
 #pragma warning disable 0649
-        [SerializeField] private string appVersion;
-        [SerializeField] private PlayFabData playFab = new PlayFabData();
-        [SerializeField] private string ablyClientKey;
-#pragma warning restore 0649
+        [SerializeField] private string appVersion = "0.1.0";
+        [SerializeField] private string dataVersion = "0";
+        [SerializeField] private bool forceAppUpdate;
+        [SerializeField] private bool isXRApp;
 
-        public string dataVersion;
-        public bool forceAppUpdate;
-        public string addressablesUrl;
-        public SerializableDictionary<string, string> customData;
-        public List<LazyAsset> startupAssets;
-        public List<LazySpriteAtlas> startupSpriteAtlases;
+        [Header("Manager Settings")]
+        [SerializeField] private DissonanceManager.Settings dissonanceManagerSettings = new DissonanceManager.Settings();
+        [SerializeField] private LoggingManager.Settings loggingManagerSettings = new LoggingManager.Settings();
+        [SerializeField] private PlayFabManager.Settings playfabManagerSettings = new PlayFabManager.Settings();
+        [SerializeField] private RealtimeMessageManager.Settings realtimeMessageManagerSettings = new RealtimeMessageManager.Settings();
+        [SerializeField] private ScreenSizeManager.Settings screenSizeManagerSettings = new ScreenSizeManager.Settings();
+        [SerializeField] private SpriteAtlasLoadingManager.Settings spriteAtlasLoadingManagerSettings = new SpriteAtlasLoadingManager.Settings();
+        [SerializeField] private UnityPurchasingManager.Settings unityPurchasingManagerSettings = new UnityPurchasingManager.Settings();
+#pragma warning restore 0649
 
         public string AppVersion
         {
@@ -41,109 +37,64 @@ namespace Lost
             set => this.appVersion = value;
         }
 
-        public PlayFabData PlayFab
+        public string DataVersion
         {
-            get => this.playFab;
-            set => this.playFab = value;
+            get => this.dataVersion;
+            set => this.dataVersion = value;
         }
 
-        public string AblyClientKey
+        public bool ForceAppUpdate
         {
-            get => this.ablyClientKey;
-            set => this.ablyClientKey = value;
+            get => this.forceAppUpdate;
+            set => this.forceAppUpdate = value;
         }
 
-        [Serializable]
-        public class PlayFabData
+        public bool IsXRApp
         {
-#pragma warning disable 0649
-            [SerializeField] private string catalogVersion;
-            [SerializeField] private List<TitleDataKeys> titleDataKeys;
-            [SerializeField] private List<MatchmakingConfig> matchmakingConfigs;
-
-            [SerializeField]
-            private SerializableDictionary<string, LoginURLs> loginURLs = new SerializableDictionary<string, LoginURLs>
-            {
-                { "Dev", new Release.LoginURLs() },
-                { "Live", new Release.LoginURLs() },
-            };
-#pragma warning restore 0649
-
-            [JsonIgnore]
-            public string TitleId
-            {
-                get => AppConfig.RuntimeAppConfig.Instance.GetTitleId();
-            }
-
-            public string CatalogVersion
-            {
-                get => this.catalogVersion;
-                set => this.catalogVersion = value;
-            }
-
-            public List<TitleDataKeys> TitleDataKeys
-            {
-                get => this.titleDataKeys;
-                set => this.titleDataKeys = value;
-            }
-
-            public List<MatchmakingConfig> MatchmakingConfigs
-            {
-                get => this.matchmakingConfigs;
-                set => this.matchmakingConfigs = value;
-            }
-
-            public SerializableDictionary<string, LoginURLs> LoginURLs
-            {
-                get => this.loginURLs;
-                set => this.loginURLs = value;
-            }
-
-
-#if UNITY_EDITOR
-            public List<ITitleData> TitleDatas;
-#endif
+            get => this.isXRApp;
+            set => this.isXRApp = value;
         }
 
-        [Serializable]
-        public class LoginURLs
+        public PlayFabManager.Settings PlayfabManagerSettings
         {
-            public string RequestLoginCodeUrl;
-            public string LoginWithCodeUrl;
+            get => this.playfabManagerSettings;
+            set => this.playfabManagerSettings = value;
         }
 
-        public interface ITitleData
+        public RealtimeMessageManager.Settings RealtimeMessageManagerSettings
         {
-            string TitleDataKey { get; }
-
-            bool IsCompressed { get; }
-
-            bool LoadAtStartup { get; }
-
-            TitleDataSerializationMethod SerializationMethod { get; }
+            get => this.realtimeMessageManagerSettings;
+            set => this.realtimeMessageManagerSettings = value;
         }
 
-        [Serializable]
-        public class TitleDataKeys
+        public SpriteAtlasLoadingManager.Settings SpriteAtlasLoadingManagerSettings
         {
-            public string TitleDataKey;
-            public bool IsCompressed;
-            public bool LoadAtStartup;
-            public TitleDataSerializationMethod SerializationMethod;
+            get => this.spriteAtlasLoadingManagerSettings;
+            set => this.spriteAtlasLoadingManagerSettings = value;
         }
 
-        [Serializable]
-        public class MatchmakingConfig
+        public ScreenSizeManager.Settings ScreenSizeManagerSettings
         {
-            public string ConfigName { get; set; }
+            get => this.screenSizeManagerSettings;
+            set => this.screenSizeManagerSettings = value;
+        }
 
-            public string GameMode { get; set; }
+        public LoggingManager.Settings LoggingManagerSettings
+        {
+            get => this.loggingManagerSettings;
+            set => this.loggingManagerSettings = value;
+        }
 
-            public string BuildVersion { get; set; }
+        public UnityPurchasingManager.Settings UnityPurchasingManagerSettings
+        {
+            get => this.unityPurchasingManagerSettings;
+            set => this.unityPurchasingManagerSettings = value;
+        }
 
-            public List<int> Regions { get; set; }
-
-            public bool StartNewIfNoneFound { get; set; }
+        public DissonanceManager.Settings DissonanceManagerSettings
+        {
+            get => this.dissonanceManagerSettings;
+            set => this.dissonanceManagerSettings = value;
         }
     }
 }

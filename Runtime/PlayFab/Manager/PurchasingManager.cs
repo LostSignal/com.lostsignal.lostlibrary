@@ -27,16 +27,14 @@ namespace Lost.PlayFab
 
     public class PurchasingManager
     {
-        private UnityPurchasingManager unityPurchasingManager;
         private PlayFabManager playfabManager;
         private bool isInitializationRunning;
         private string catalogVersion;
 
         public bool IsInitialized { get; private set; }
 
-        public PurchasingManager(PlayFabManager playfabManager, string catalogVersion, UnityPurchasingManager unityPurchasingManager)
+        public PurchasingManager(PlayFabManager playfabManager, string catalogVersion)
         {
-            this.unityPurchasingManager = unityPurchasingManager;
             this.playfabManager = playfabManager;
             this.catalogVersion = catalogVersion;
         }
@@ -75,11 +73,11 @@ namespace Lost.PlayFab
                     yield return default(bool);
                 }
 
-                #if PURCHASING_ENABLED
+#if PURCHASING_ENABLED
                 // initializing purchasing, but no need to wait on it
-                if (getCatalog.HasError == false && this.unityPurchasingManager.IsIAPInitialized == false)
+                if (getCatalog.HasError == false && UnityPurchasingManager.Instance.IsIAPInitialized == false)
                 {
-                    var initializeUnityIap = this.unityPurchasingManager.InitializeUnityPurchasing((store, builder) =>
+                    var initializeUnityIap = UnityPurchasingManager.Instance.InitializeUnityPurchasing((store, builder) =>
                     {
                         foreach (var catalogItem in getCatalog.Value)
                         {
@@ -96,15 +94,15 @@ namespace Lost.PlayFab
                         yield return default(bool);
                     }
                 }
-                #endif
+#endif
 
                 this.isInitializationRunning = false;
 
-                #if PURCHASING_ENABLED
+#if PURCHASING_ENABLED
                 this.IsInitialized = getCatalog.HasError == false && UnityPurchasingManager.IsInitialized;
-                #else
+#else
                 this.IsInitialized = getCatalog.HasError == false;
-                #endif
+#endif
 
                 yield return this.IsInitialized;
             }
@@ -129,7 +127,7 @@ namespace Lost.PlayFab
 
                 IEnumerator<bool> InitializeCoroutine()
                 {
-                    #if PURCHASING_ENABLED
+#if PURCHASING_ENABLED
                     // Making sure we're properly initialized
                     if (this.IsInitialized == false)
                     {
@@ -152,7 +150,7 @@ namespace Lost.PlayFab
                             yield break;
                         }
                     }
-                    #endif
+#endif
 
                     yield break;
                 }
@@ -160,7 +158,7 @@ namespace Lost.PlayFab
 
             IEnumerator<bool> PurchaseIAPStoreItemCoroutine()
             {
-                #if PURCHASING_ENABLED
+#if PURCHASING_ENABLED
 
                 // Making sure we're initialized
                 var initialize = Initialize();
@@ -176,7 +174,7 @@ namespace Lost.PlayFab
                 }
 
                 // Start with the iap purchasing
-                var iapPurchaseItem = this.unityPurchasingManager.PurchaseProduct(storeItem.ItemId);
+                var iapPurchaseItem = UnityPurchasingManager.Instance.PurchaseProduct(storeItem.ItemId);
 
                 while (iapPurchaseItem.IsDone == false)
                 {
@@ -213,9 +211,9 @@ namespace Lost.PlayFab
                     }
                 }
 
-                #else
+#else
                 throw new NotImplementedException("Trying to buy IAP Store Item when USING_UNITY_PURCHASING is not defined!");
-                #endif
+#endif
             }
 
             IEnumerator<bool> PurchaseStoreItemCoroutine()
@@ -279,7 +277,7 @@ namespace Lost.PlayFab
                 yield return isSuccessful;
             }
 
-            #if PURCHASING_ENABLED
+#if PURCHASING_ENABLED
             IEnumerator<bool> DebugPurchaseStoreItemCoroutine(PurchaseEventArgs e)
             {
                 // TODO [bgish]: Need to find a way to do this that works for all projects
@@ -436,10 +434,10 @@ namespace Lost.PlayFab
                 yield return true;
             }
 
-            #endif
+#endif
         }
 
-        #if PURCHASING_ENABLED
+#if PURCHASING_ENABLED
 
         private int GetPurchasePrice(PurchaseEventArgs e)
         {
@@ -518,7 +516,7 @@ namespace Lost.PlayFab
                 UnityEngine.Purchasing.ProductType.NonConsumable;
         }
 
-        #endif
+#endif
 
         private UnityTask<PurchaseItemResult> Do(PurchaseItemRequest request)
         {

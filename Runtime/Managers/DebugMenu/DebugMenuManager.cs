@@ -29,9 +29,6 @@ namespace Lost
         [SerializeField] private bool showToggleFps = true;
         [SerializeField] private bool showPrintAdsInfo = true;
         [SerializeField] private bool addRebootButton = true;
-
-        [Header("Dependencies")]
-        [SerializeField] private DialogManager dialogManager;
 #pragma warning restore 0649
 
         public override void Initialize()
@@ -47,7 +44,7 @@ namespace Lost
 
             IEnumerator InitializeSettings()
             {
-                yield return this.WaitForDependencies(this.dialogManager);
+                yield return DialogManager.WaitForInitialization();
 
                 var debugMenu = DialogManager.GetDialog<DebugMenu>();
 
