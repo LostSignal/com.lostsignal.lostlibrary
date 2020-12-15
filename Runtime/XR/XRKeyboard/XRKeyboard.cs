@@ -8,6 +8,7 @@ namespace Lost
 {
     using TMPro;
     using UnityEngine;
+    using UnityEngine.UI;
 
     public class XRKeyboard : DialogLogic
     {
@@ -34,15 +35,16 @@ namespace Lost
         private bool isShowingNumbers;
         private bool isShowingSymbols;
 
-        private int currentSelectedGameObjectInstanceId = int.MinValue;
-        private TMP_InputField currentInputField;
+        public InputField CurrentInputField { get; set; }
+
+        public TMP_InputField CurrentTMPInputField { get; set; }
 
         public XRKeyboardData.Keyboard CurrentKeyboard
         {
             get => this.keyboardData.CurrentKeyboard;
         }
 
-        public System.Action<char> KeyPressed;
+        public System.Action<char, string> KeyPressed;
 
         protected override void Awake()
         {
@@ -51,26 +53,20 @@ namespace Lost
             this.UpdateKeyboardVisuals();
         }
 
-        private void OnKeyPressed(char key)
+        private void OnKeyPressed(char keyChar, string keyString)
         {
-            this.KeyPressed?.Invoke(key);
+            this.KeyPressed?.Invoke(keyChar, keyString);
 
-            // Sending this key to the currently select InputField
-            var selected = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
-            int instanceId = selected != null ? selected.GetInstanceID() : int.MinValue;
-
-            if (instanceId != this.currentSelectedGameObjectInstanceId)
+            if (this.CurrentInputField)
             {
-                this.currentSelectedGameObjectInstanceId = instanceId;
-                this.currentInputField = selected.GetComponent<TMP_InputField>();
+                this.CurrentInputField.ProcessEvent(Event.KeyboardEvent(keyString));
             }
-
-            if (this.currentInputField != null)
+            else if (this.CurrentTMPInputField)
             {
-                // TODO [bgish]: Process key with this object
+                this.CurrentTMPInputField.ProcessEvent(Event.KeyboardEvent(keyString));
             }
         }
-        
+
         private void PopulateKeyboard()
         {
             var keyboard = this.CurrentKeyboard;
@@ -101,7 +97,7 @@ namespace Lost
                     for (int j = 0; j < line.Length; j++)
                     {
                         var keyboardKey = GameObject.Instantiate(this.keyPrefab, row);
-                        keyboardKey.SetData(this, line[j], this.OnKeyPressed);
+                        keyboardKey.SetData(this, line[j], line.Substring(j, 1), this.OnKeyPressed);
                     }
                 }
             }

@@ -9,9 +9,7 @@ namespace Lost
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using TMPro;
     using UnityEngine;
-    using UnityEngine.EventSystems;
 
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
     using UnityEngine.InputSystem.UI;
@@ -152,6 +150,7 @@ namespace Lost
             }
 
             this.SetInstance(this);
+            this.ListenForXRKeyboard();
         }
 
         private void StartUnityXR(XRLoader xrLoader)
@@ -230,11 +229,6 @@ namespace Lost
                 Debug.LogError($"Found Unknown XRLoader {loader}");
                 return null;
             }
-        }
-
-        private void Update()
-        {
-            this.ListenForXRKeyboard();
         }
 
         private void OnDestroy()
@@ -335,30 +329,33 @@ namespace Lost
 
         private void ListenForXRKeyboard()
         {
-            this.StartCoroutine(Coroutine());
-
-            IEnumerator Coroutine()
-            {
-                int lastSeenInstanceId = int.MinValue;
-
-                while (true)
-                {
-                    GameObject selected = EventSystem.current.currentSelectedGameObject;
-                    int instanceId = selected != null ? selected.GetInstanceID() : int.MinValue;
-
-                    if (instanceId != lastSeenInstanceId)
-                    {
-                        lastSeenInstanceId = instanceId;
-
-                        if (selected != null && selected.GetComponent<TMP_InputField>() != null)
-                        {
-                            DialogManager.GetDialog<XRKeyboard>().Dialog.Show();
-                        }
-                    }
-
-                    yield return WaitForUtil.Seconds(0.25f);
-                }
-            }
+            // this.StartCoroutine(Coroutine());
+            // 
+            // IEnumerator Coroutine()
+            // {
+            //     XRKeyboard xrKeyboard = null;
+            // 
+            //     InputField currentInputField;
+            //     TMP_InputField
+            // 
+            // 
+            //     while (true)
+            //     {
+            //         if (InputFieldTracker.GetCurrentInputField() != null)
+            //         {
+            //             if (xrKeyboard == null)
+            //             {
+            //                 xrKeyboard = DialogManager.GetDialog<XRKeyboard>();
+            //             }
+            // 
+            //             xrKeyboard.CurrentInputField = InputFieldTracker.GetCurrentInputField();
+            //             xrKeyboard.CurrentTMPInputField = InputFieldTracker.GetCurrentTMPInputField();
+            //             xrKeyboard.Dialog.Show();
+            //         }
+            // 
+            //         yield return WaitForUtil.Seconds(0.25f);
+            //     }
+            // }
         }
     }
 }

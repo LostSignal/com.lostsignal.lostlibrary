@@ -14,23 +14,25 @@ namespace Lost
     public class XRKeyboardKey : MonoBehaviour
     {
 #pragma warning disable 0649
-        [SerializeField][HideInInspector] private TMP_Text text;
-        [SerializeField][HideInInspector] private Button button;
-        [SerializeField][HideInInspector] private XRKeyboard xrKeyboard;
+        [SerializeField] [HideInInspector] private TMP_Text text;
+        [SerializeField] [HideInInspector] private Button button;
+        [SerializeField] [HideInInspector] private XRKeyboard xrKeyboard;
 #pragma warning restore 0649
 
         private XRKeyboard keyboard;
-        private char key;
+        private char keyChar;
+        private string keyString;
         private string secondaryKeys;
-        private System.Action<char> keyPressed;
+        private System.Action<char, string> keyPressed;
 
-        public void SetData(XRKeyboard keyboard, char key, System.Action<char> keyPressed)
+        public void SetData(XRKeyboard keyboard, char keyChar, string keyString, System.Action<char, string> keyPressed)
         {
             this.keyboard = keyboard;
-            this.key = key;
+            this.keyChar = keyChar;
+            this.keyString = keyString;
             this.keyPressed = keyPressed;
-            this.secondaryKeys = keyboard.CurrentKeyboard.GetSeconardyKeys(key);
-            this.text.text = key.ToString();
+            this.secondaryKeys = keyboard.CurrentKeyboard.GetSeconardyKeys(keyChar);
+            this.text.text = keyString;
 
             //// TODO [bgish]: Do something with the secondary keys (show them on hover?)
         }
@@ -50,7 +52,7 @@ namespace Lost
 
         private void OnButtonClick()
         {
-            this.keyPressed?.Invoke(this.key);
+            this.keyPressed?.Invoke(this.keyChar, this.keyString);
         }
     }
 }

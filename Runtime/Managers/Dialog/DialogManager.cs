@@ -9,6 +9,7 @@ namespace Lost
     using System.Collections.Generic;
     using Lost.PlayFab;
     using UnityEngine;
+    using UnityEngine.SceneManagement;
 
     public class DialogManager : Manager<DialogManager>
     {
@@ -71,6 +72,7 @@ namespace Lost
                 if (dailogLogicComponent)
                 {
                     var newDialog = GameObject.Instantiate(prefab);
+                    SceneManager.MoveGameObjectToScene(newDialog.gameObject, SceneManager.GetSceneByName("Bootloader"));
                     return newDialog.GetComponent<T>();
                 }
             }
