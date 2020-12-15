@@ -136,6 +136,12 @@ namespace Lost
                     {
                         this.xrGrabInteractable = this.GetOrAddComponent<XRGrabInteractable>();
                         this.xrGrabInteractable.onSelectEntered.AddListener((interactor) => this.hasBeenGrabbed = true);
+                        this.xrGrabInteractable.smoothPosition = true;
+                        this.xrGrabInteractable.throwOnDetach = false;
+
+                        var rigidBody = this.GetComponent<Rigidbody>();
+                        rigidBody.useGravity = false;
+                        rigidBody.isKinematic = true;
                     }
                 }
 #endif

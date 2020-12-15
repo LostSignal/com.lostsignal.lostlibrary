@@ -9,10 +9,12 @@ namespace Lost
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using TMPro;
     using UnityEngine;
 
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
     using UnityEngine.InputSystem.UI;
+    using UnityEngine.UI;
     using UnityEngine.XR.Interaction.Toolkit.UI;
 #endif
 
@@ -329,33 +331,22 @@ namespace Lost
 
         private void ListenForXRKeyboard()
         {
-            // this.StartCoroutine(Coroutine());
-            // 
-            // IEnumerator Coroutine()
-            // {
-            //     XRKeyboard xrKeyboard = null;
-            // 
-            //     InputField currentInputField;
-            //     TMP_InputField
-            // 
-            // 
-            //     while (true)
-            //     {
-            //         if (InputFieldTracker.GetCurrentInputField() != null)
-            //         {
-            //             if (xrKeyboard == null)
-            //             {
-            //                 xrKeyboard = DialogManager.GetDialog<XRKeyboard>();
-            //             }
-            // 
-            //             xrKeyboard.CurrentInputField = InputFieldTracker.GetCurrentInputField();
-            //             xrKeyboard.CurrentTMPInputField = InputFieldTracker.GetCurrentTMPInputField();
-            //             xrKeyboard.Dialog.Show();
-            //         }
-            // 
-            //         yield return WaitForUtil.Seconds(0.25f);
-            //     }
-            // }
+            this.StartCoroutine(Coroutine());
+
+            IEnumerator Coroutine()
+            {
+                XRKeyboard xrKeyboard = DialogManager.GetDialog<XRKeyboard>();
+
+                while (true)
+                {
+                    if (xrKeyboard.Dialog.IsHidden && (InputFieldTracker.GetCurrentInputField() != null || InputFieldTracker.GetCurrentTMPInputField() != null))
+                    {
+                        xrKeyboard.Dialog.Show();
+                    }
+
+                    yield return WaitForUtil.Seconds(0.25f);
+                }
+            }
         }
     }
 }

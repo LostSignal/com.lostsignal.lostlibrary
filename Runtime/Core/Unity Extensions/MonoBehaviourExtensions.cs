@@ -29,9 +29,9 @@ namespace Lost
                 }
                 else
                 {
-                    #if UNITY_EDITOR
+#if UNITY_EDITOR
                     UnityEditor.EditorUtility.SetDirty(monoBehaviour);
-                    #endif
+#endif
                 }
             }
         }
@@ -39,12 +39,12 @@ namespace Lost
         public static void AssertGetComponentInParent<T>(this MonoBehaviour monoBehaviour, ref T memberVariable)
             where T : Component
         {
-            #if UNITY_EDITOR
-            if (monoBehaviour.gameObject.scene.IsValid() == false)
+#if UNITY_EDITOR
+            if (monoBehaviour.gameObject.scene.IsValid() == false || UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage() != null)
             {
                 return;
             }
-            #endif
+#endif
 
             if (memberVariable == null)
             {
@@ -60,9 +60,9 @@ namespace Lost
                 }
                 else
                 {
-                    #if UNITY_EDITOR
+#if UNITY_EDITOR
                     UnityEditor.EditorUtility.SetDirty(monoBehaviour);
-                    #endif
+#endif
                 }
             }
         }
@@ -89,14 +89,14 @@ namespace Lost
 
         public static void DrawGizmoCube(this MonoBehaviour lhs, Color color, float width, float height, Vector2 offset)
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             Gizmos.color = color;
             Vector2 parentScale = new Vector2(lhs.gameObject.transform.localToWorldMatrix[0, 0], lhs.gameObject.transform.localToWorldMatrix[1, 1]);
             Vector2 localUnits = new Vector2(width, height);
             Vector3 worldUnits = new Vector3(localUnits.x * parentScale.x, localUnits.y * parentScale.y, 0);
 
             Gizmos.DrawWireCube(lhs.gameObject.transform.position + new Vector3(offset.x, offset.y, 0), worldUnits);
-            #endif
+#endif
         }
 
         public static Coroutine ExecuteAtEndOfFrame(this MonoBehaviour lhs, Action action)

@@ -37,6 +37,11 @@ namespace Lost
             //// TODO [bgish]: Do something with the secondary keys (show them on hover?)
         }
 
+        public void ProcessKeyPress()
+        {
+            this.keyPressed?.Invoke(this.keyChar, this.keyString);
+        }
+
         private void OnValidate()
         {
             this.AssertGetComponent(ref this.text);
@@ -47,12 +52,7 @@ namespace Lost
         private void Awake()
         {
             this.OnValidate();
-            this.button.onClick.AddListener(this.OnButtonClick);
-        }
-
-        private void OnButtonClick()
-        {
-            this.keyPressed?.Invoke(this.keyChar, this.keyString);
+            this.button.onClick.AddListener(this.ProcessKeyPress);
         }
     }
 }

@@ -35,10 +35,6 @@ namespace Lost
         private bool isShowingNumbers;
         private bool isShowingSymbols;
 
-        public InputField CurrentInputField { get; set; }
-
-        public TMP_InputField CurrentTMPInputField { get; set; }
-
         public XRKeyboardData.Keyboard CurrentKeyboard
         {
             get => this.keyboardData.CurrentKeyboard;
@@ -57,13 +53,16 @@ namespace Lost
         {
             this.KeyPressed?.Invoke(keyChar, keyString);
 
-            if (this.CurrentInputField)
+            var inputField = InputFieldTracker.GetCurrentInputField();
+            var tmpInputField = InputFieldTracker.GetCurrentTMPInputField();
+
+            if (inputField)
             {
-                this.CurrentInputField.ProcessEvent(Event.KeyboardEvent(keyString));
+                inputField.ProcessEvent(Event.KeyboardEvent(keyString));
             }
-            else if (this.CurrentTMPInputField)
+            else if (tmpInputField)
             {
-                this.CurrentTMPInputField.ProcessEvent(Event.KeyboardEvent(keyString));
+                tmpInputField.ProcessEvent(Event.KeyboardEvent(keyString));
             }
         }
 
