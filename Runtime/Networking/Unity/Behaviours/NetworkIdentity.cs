@@ -117,7 +117,7 @@ namespace Lost.Networking
                 NetworkIdentityOwnershipRequestCache.NetworkId = this.networkId;
                 this.gameClient?.SendMessage(NetworkIdentityOwnershipRequestCache);
 
-                if (this.gameClient.PrintDebugOutput)
+                if (NetworkingManager.PrintDebugOutput)
                 {
                     Debug.Log($"Requesting Ownership of NetworkIdentity {this.networkId}");
                 }
@@ -131,7 +131,7 @@ namespace Lost.Networking
                 NetworkIdentityReleaseOwnershipRequestCache.NetworkId = this.networkId;
                 this.gameClient?.SendMessage(NetworkIdentityReleaseOwnershipRequestCache);
 
-                if (this.gameClient.PrintDebugOutput)
+                if (NetworkingManager.PrintDebugOutput)
                 {
                     Debug.Log($"Releasing Ownership of NetworkIdentity {this.networkId}");
                 }
@@ -154,7 +154,7 @@ namespace Lost.Networking
             {
                 if (ownerId == this.gameClient?.UserId)
                 {
-                    if (this.gameClient.PrintDebugOutput)
+                    if (NetworkingManager.PrintDebugOutput)
                     {
                         Debug.Log($"Ownership Granted for NetworkIdentity {this.networkId}");
                     }
@@ -163,7 +163,7 @@ namespace Lost.Networking
                 }
                 else
                 {
-                    if (this.gameClient.PrintDebugOutput)
+                    if (NetworkingManager.PrintDebugOutput)
                     {
                         Debug.Log($"Ownership Failed for NetworkIdentity {this.networkId}");
                     }
