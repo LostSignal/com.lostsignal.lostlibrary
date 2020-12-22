@@ -136,8 +136,21 @@ namespace Lost
                     {
                         this.xrGrabInteractable = this.GetOrAddComponent<XRGrabInteractable>();
                         this.xrGrabInteractable.onSelectEntered.AddListener((interactor) => this.hasBeenGrabbed = true);
-                        this.xrGrabInteractable.smoothPosition = true;
+
+                        this.xrGrabInteractable.attachEaseInTime = -1.0f;
+                        this.xrGrabInteractable.movementType = XRBaseInteractable.MovementType.Instantaneous;
                         this.xrGrabInteractable.throwOnDetach = false;
+                        this.xrGrabInteractable.gravityOnDetach = false;
+
+                        this.xrGrabInteractable.trackPosition = true;
+                        this.xrGrabInteractable.smoothPosition = true;
+                        this.xrGrabInteractable.smoothPositionAmount = 3.0f;
+                        this.xrGrabInteractable.tightenPosition = 0.0f;
+
+                        this.xrGrabInteractable.trackRotation = true;
+                        this.xrGrabInteractable.smoothRotation = true;
+                        this.xrGrabInteractable.smoothRotationAmount = 0.5f;
+                        this.xrGrabInteractable.tightenRotation = 0.0f;
 
                         var rigidBody = this.GetComponent<Rigidbody>();
                         rigidBody.useGravity = false;
