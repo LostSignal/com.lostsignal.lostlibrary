@@ -13,37 +13,38 @@ namespace Lost.Networking
     [RequireComponent(typeof(LineRenderer))]
     public class NetworkLineRenderer : NetworkBehaviour
     {
+        private static Vector3[] PositionsCache = new Vector3[500];
+
 #pragma warning disable 0649
         [SerializeField] private LineRenderer lineRenderer;
-        [SerializeField] private bool doPositionsChange;
 #pragma warning restore 0649
 
-        private Vector3[] currentPositions = new Vector3[100];
-        private uint currentPositionsCount;
-
-        private Vector3[] desiredPositions = new Vector3[100];
-        private uint desiredPositionsCount;
         private uint version;
+
+        //// TODO [bgish]: Would love it if we could attach this to an event that fires everytime our line renderer data is updated
+        public void LineRendererUpdated(bool sendReliably = true)
+        {
+            this.SendNetworkBehaviourMessage(sendReliably);
+        }
 
         public override void Serialize(NetworkWriter writer)
         {
-            this.currentPositionsCount = (uint)this.lineRenderer.GetPositions(this.currentPositions);
-
+            int positionCount = this.lineRenderer.GetPositions(PositionsCache);
             bool useWorldSpace = this.lineRenderer.useWorldSpace;
 
             writer.WritePackedUInt32(++this.version);
             writer.Write(this.lineRenderer.enabled);
-            writer.WritePackedUInt32(this.currentPositionsCount);
+            writer.WritePackedUInt32((uint)positionCount);
 
-            for (int i = 0; i < this.currentPositionsCount; i++)
+            for (int i = 0; i < positionCount; i++)
             {
                 if (useWorldSpace)
                 {
-                    writer.Write(NetworkTransformAnchor.InverseTransformPosition(this.currentPositions[i]));
+                    writer.Write(NetworkTransformAnchor.InverseTransformPosition(PositionsCache[i]));
                 }
                 else
                 {
-                    writer.Write(this.currentPositions[i]);
+                    writer.Write(PositionsCache[i]);
                 }
             }
         }
@@ -59,56 +60,82 @@ namespace Lost.Networking
 
             this.version = messageVersion;
             this.lineRenderer.enabled = reader.ReadBoolean();
-            this.desiredPositionsCount = reader.ReadPackedUInt32();
+            int positionCount = (int)reader.ReadPackedUInt32();
 
             bool useWorldSpace = this.lineRenderer.useWorldSpace;
 
-            for (int i = 0; i < this.desiredPositionsCount; i++)
+            for (int i = 0; i < positionCount; i++)
             {
-                this.desiredPositions[i] = useWorldSpace ?
-                    NetworkTransformAnchor.TransformPosition(reader.ReadVector3()) :
-                    this.desiredPositions[i] = reader.ReadVector3();
+                PositionsCache[i] = useWorldSpace ? NetworkTransformAnchor.TransformPosition(reader.ReadVector3()) : reader.ReadVector3();
             }
+
+            this.lineRenderer.positionCount = positionCount;
+            this.lineRenderer.SetPositions(PositionsCache);
         }
 
-        protected override void NetworkUpdate()
-        {
-            base.NetworkUpdate();
-
-            if (this.IsOwner == false)
-            {
-                this.currentPositionsCount = (uint)this.lineRenderer.GetPositions(this.currentPositions);
-
-                // Lerp all the position that we already have
-                for (int i = 0; i < this.currentPositionsCount; i++)
-                {
-                    float distance = Vector3.Distance(this.currentPositions[i], this.desiredPositions[i]);
-                    this.currentPositions[i] = Vector3.MoveTowards(this.currentPositions[i], this.desiredPositions[i], distance * this.UpdateFrequency);
-                }
-
-                // If more have been added then snap to the new desired positions
-                if (this.currentPositionsCount != this.desiredPositionsCount)
-                {
-                    this.lineRenderer.positionCount = (int)this.desiredPositionsCount;
-
-                    for (uint i = this.currentPositionsCount; i < this.desiredPositionsCount; i++)
-                    {
-                        this.currentPositions[i] = this.desiredPositions[i];
-                    }
-                }
-
-                this.lineRenderer.SetPositions(this.currentPositions);
-            }
-        }
+        //// private Vector3[] desiredPositions = new Vector3[100];
+        //// private uint desiredPositionsCount;
+        ////
+        //// // BUG [bgish]: THIS IS CURRENTLY NEVER GETTING CALLED, we probably need to make it so non-owners actually call Update
+        //// //              The real answer may be that Network Line renderers don't do any lerping and that is a completely different component
+        //// protected override void NetworkUpdate()
+        //// {
+        ////     base.NetworkUpdate();
+        //// 
+        ////     if (this.IsOwner == false)
+        ////     {
+        ////         if (this.doPositionsChangeFrequently == false)
+        ////         {
+        ////             // NOTE [bgish]: If they don't change frequently, then just set them to the desired
+        ////             this.lineRenderer.positionCount = (int)this.desiredPositionsCount;
+        ////             this.lineRenderer.SetPositions(this.desiredPositions);
+        ////         }
+        ////         else
+        ////         {
+        ////             throw new System.NotImplementedException();
+        //// 
+        ////             //// // NOTE [bgish]: If they do chnage often, then lets lerp them to their desired position
+        ////             //// this.currentPositionsCount = (uint)this.lineRenderer.GetPositions(this.currentPositions);
+        ////             //// 
+        ////             //// // Lerp all the position that we already have
+        ////             //// for (int i = 0; i < this.currentPositionsCount; i++)
+        ////             //// {
+        ////             ////     float distance = Vector3.Distance(this.currentPositions[i], this.desiredPositions[i]);
+        ////             ////     this.currentPositions[i] = Vector3.MoveTowards(this.currentPositions[i], this.desiredPositions[i], distance * this.UpdateFrequency);
+        ////             //// }
+        ////             //// 
+        ////             //// // If more have been added then snap to the new desired positions
+        ////             //// if (this.currentPositionsCount != this.desiredPositionsCount)
+        ////             //// {
+        ////             ////     this.lineRenderer.positionCount = (int)this.desiredPositionsCount;
+        ////             //// 
+        ////             ////     for (uint i = this.currentPositionsCount; i < this.desiredPositionsCount; i++)
+        ////             ////     {
+        ////             ////         this.currentPositions[i] = this.desiredPositions[i];
+        ////             ////     }
+        ////             //// }
+        ////             //// 
+        ////             //// this.lineRenderer.SetPositions(this.currentPositions);
+        ////         }
+        ////     }
+        //// }
 
         protected override SendConfig GetInitialSendConfig()
         {
             return new SendConfig
             {
-                NetworkUpdateType = NetworkUpdateType.Tick,
+                NetworkUpdateType = NetworkUpdateType.Manual,
                 SendReliable = false,
                 UpdateFrequency = 0.1f,
             };
+        }
+
+        private void Start()
+        {
+            if (this.IsOwner)
+            {
+                this.LineRendererUpdated();
+            }
         }
     }
 }
