@@ -47,6 +47,11 @@ namespace Lost.Networking
                     writer.Write(PositionsCache[i]);
                 }
             }
+
+            if (NetworkingManager.PrintDebugOutput)
+            {
+                Debug.Log($"NetworkLineRenderer {this.GetInstanceID()} serialized {positionCount} positions.", this);
+            }
         }
 
         public override void Deserialize(NetworkReader reader)
@@ -71,6 +76,11 @@ namespace Lost.Networking
 
             this.lineRenderer.positionCount = positionCount;
             this.lineRenderer.SetPositions(PositionsCache);
+
+            if (NetworkingManager.PrintDebugOutput)
+            {
+                Debug.Log($"NetworkLineRenderer {this.GetInstanceID()} deserialized {positionCount} positions.", this);
+            }
         }
 
         //// private Vector3[] desiredPositions = new Vector3[100];
