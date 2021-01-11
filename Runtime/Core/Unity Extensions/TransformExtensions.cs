@@ -11,6 +11,29 @@ namespace Lost
 
     public static class TransformExtensions
     {
+        public static Transform FindChildRecursive(this Transform transform, string childName)
+        {
+            if (transform)
+            {
+                if (transform.name == childName)
+                {
+                    return transform;
+                }
+
+                for (int i = 0; i < transform.childCount; i++)
+                {
+                    var childTransform = FindChildRecursive(transform.GetChild(i), childName);
+
+                    if (childTransform != null)
+                    {
+                        return childTransform;
+                    }
+                }
+            }
+
+            return null;
+        }
+
         public static void Reset(this Transform transform)
         {
             transform.localScale = Vector3.one;
