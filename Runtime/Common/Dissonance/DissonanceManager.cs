@@ -17,7 +17,9 @@ namespace Lost.DissonanceIntegration
         [SerializeField] private GameObject dissonanceCommsPrefab;
 #pragma warning restore 0649
 
+#if USING_DISSONANCE
         public Dissonance.DissonanceComms DissonanceComms { get; private set; }
+#endif
 
         public void RequestMicrophonePermissions()
         {
