@@ -14,9 +14,9 @@ namespace Lost
     public class XRKeyboardKey : MonoBehaviour
     {
 #pragma warning disable 0649
-        [SerializeField] [HideInInspector] private TMP_Text text;
-        [SerializeField] [HideInInspector] private Button button;
-        [SerializeField] [HideInInspector] private XRKeyboard xrKeyboard;
+        [SerializeField][HideInInspector] private TMP_Text text;
+        [SerializeField][HideInInspector] private Button button;
+        [SerializeField][HideInInspector] private XRKeyboard xrKeyboard;
 #pragma warning restore 0649
 
         private XRKeyboard keyboard;

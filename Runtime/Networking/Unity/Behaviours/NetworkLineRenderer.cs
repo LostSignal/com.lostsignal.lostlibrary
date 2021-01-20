@@ -91,7 +91,7 @@ namespace Lost.Networking
         //// protected override void NetworkUpdate()
         //// {
         ////     base.NetworkUpdate();
-        //// 
+        ////
         ////     if (this.IsOwner == false)
         ////     {
         ////         if (this.doPositionsChangeFrequently == false)
@@ -103,28 +103,28 @@ namespace Lost.Networking
         ////         else
         ////         {
         ////             throw new System.NotImplementedException();
-        //// 
+        ////
         ////             //// // NOTE [bgish]: If they do chnage often, then lets lerp them to their desired position
         ////             //// this.currentPositionsCount = (uint)this.lineRenderer.GetPositions(this.currentPositions);
-        ////             //// 
+        ////             ////
         ////             //// // Lerp all the position that we already have
         ////             //// for (int i = 0; i < this.currentPositionsCount; i++)
         ////             //// {
         ////             ////     float distance = Vector3.Distance(this.currentPositions[i], this.desiredPositions[i]);
         ////             ////     this.currentPositions[i] = Vector3.MoveTowards(this.currentPositions[i], this.desiredPositions[i], distance * this.UpdateFrequency);
         ////             //// }
-        ////             //// 
+        ////             ////
         ////             //// // If more have been added then snap to the new desired positions
         ////             //// if (this.currentPositionsCount != this.desiredPositionsCount)
         ////             //// {
         ////             ////     this.lineRenderer.positionCount = (int)this.desiredPositionsCount;
-        ////             //// 
+        ////             ////
         ////             ////     for (uint i = this.currentPositionsCount; i < this.desiredPositionsCount; i++)
         ////             ////     {
         ////             ////         this.currentPositions[i] = this.desiredPositions[i];
         ////             ////     }
         ////             //// }
-        ////             //// 
+        ////             ////
         ////             //// this.lineRenderer.SetPositions(this.currentPositions);
         ////         }
         ////     }

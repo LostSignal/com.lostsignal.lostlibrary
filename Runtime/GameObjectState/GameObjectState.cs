@@ -77,6 +77,7 @@ namespace Lost
 
             return null;
         }
+
 #endif
 
         protected override SendConfig GetInitialSendConfig()

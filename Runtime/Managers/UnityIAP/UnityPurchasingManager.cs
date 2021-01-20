@@ -70,7 +70,7 @@ namespace Lost.IAP
                 {
 #if !PURCHASING_ENABLED
                     Debug.LogError("UnityPurchasingManager: Tring to use UnityPurchasingManager without USING_UNITY_PURCHASING define. " +
-                                   "Make sure Unity Purchasing is installed correctly.");
+                        "Make sure Unity Purchasing is installed correctly.");
 #endif
                 }
 

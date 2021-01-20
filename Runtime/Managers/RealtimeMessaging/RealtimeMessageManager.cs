@@ -46,8 +46,8 @@ namespace Lost
                 {
 #if !USING_ABLY
                     Debug.LogError("RealtimeMessageManager: Trying to use this manager, but the USING_ABLY define is not set." +
-                                   "Make sure you have installed Ably 1.1.14 (https://github.com/ably/ably-dotnet/tree/1.1.14) and that the" +
-                                   "USING_ABLY define is set or else this manager will not work.", this);
+                        "Make sure you have installed Ably 1.1.14 (https://github.com/ably/ably-dotnet/tree/1.1.14) and that the" +
+                        "USING_ABLY define is set or else this manager will not work.", this);
 #else
                     if (ablyKey.IsNullOrWhitespace() == false)
                     {
@@ -56,7 +56,7 @@ namespace Lost
                     else
                     {
                         Debug.LogError("RealtimeMessageManager requires a valid Ably Client Key in the Releases RealtimeMessageManagerSettings. " +
-                                       "This manager will not work properly. Go to https://www.ably.io/accounts to get a valid client key.", this);
+                            "This manager will not work properly. Go to https://www.ably.io/accounts to get a valid client key.", this);
                     }
 #endif
                 }
@@ -135,6 +135,7 @@ namespace Lost
             this.ably = new AblyRealtime(ablyKey);
             this.Subscribe(PlayFabManager.Instance.User.PlayFabId);
         }
+
 #endif
 
         [Serializable]
