@@ -15,10 +15,10 @@ namespace Lost
         [SerializeField, HideInInspector] private DebugMenu debugMenu;
 #pragma warning restore 0649
 
-        private const float HoldTime = 2.0f;
-
+#if USING_UNITY_INPUT_SYSTEM
         private KeyCode keyCodeCache = KeyCode.None;
         private string keyCodeString = null;
+#endif
 
         private float fingerHoldTime = 0.0f;
         private float keyHoldTime = 0.0f;

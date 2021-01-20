@@ -4,6 +4,10 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if USING_UNITY_ANALYTICS && !UNITY_XBOXONE
+#define UNITY_ANALYTICS_SUPPORTED
+#endif
+
 namespace Lost.Analytics
 {
     using System;
@@ -150,7 +154,7 @@ namespace Lost.Analytics
             return enumString;
         }
 
-        #if UNITY_ANALYTICS
+#if UNITY_ANALYTICS_SUPPORTED
 
         public static UnityEngine.Analytics.ScreenName Convert(ScreenName screenName)
         {
@@ -192,7 +196,7 @@ namespace Lost.Analytics
             return (UnityEngine.Analytics.AuthorizationNetwork)((int)authorizationNetwork);
         }
 
-        #endif
+#endif
     }
 
     public class AnalyticsEventAttribute : Attribute
