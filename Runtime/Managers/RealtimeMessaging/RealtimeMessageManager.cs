@@ -65,30 +65,36 @@ namespace Lost
             }
         }
 
-#if USING_ABLY
         public void RegisterType<T>() where T : RealtimeMessage, new()
         {
+#if USING_ABLY
             this.messageTypes.Add(typeof(T).Name, typeof(T));
+#endif
         }
 
         public void Subscribe(string channel)
         {
+#if USING_ABLY
             if (this.subscribedChannels.Contains(channel) == false)
             {
                 this.ably.Channels.Get(channel).Subscribe(this.MessageReceived);
                 this.subscribedChannels.Add(channel);
             }
+#endif
         }
 
         public void Unsubscribe(string channel)
         {
+#if USING_ABLY
             if (this.subscribedChannels.Contains(channel))
             {
                 this.ably.Channels.Get(channel).Unsubscribe(this.MessageReceived);
                 this.subscribedChannels.Remove(channel);
             }
+#endif
         }
 
+#if USING_ABLY
         private void MessageReceived(Message message)
         {
             string json = message.Data as string;
