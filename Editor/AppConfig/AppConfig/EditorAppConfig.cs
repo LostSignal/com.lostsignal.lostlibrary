@@ -9,6 +9,7 @@ namespace Lost.AppConfig
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using Lost.Addressables;
     using PlayFab;
     using UnityEditor;
@@ -32,17 +33,11 @@ namespace Lost.AppConfig
     {
         private static readonly string EditorBuildSettingsName = "com.lostsignal.appconfig";
         private static readonly string AppConfigPath = "Assets/Editor/com.lostsignal.lostlibrary";
-        private static readonly string EditorAppConfigAssetName = "EditorAppConfig.asset";
-        private static readonly string CSharpFileName = "EditorAppConfigs.cs";
-        private static readonly string ConfigsPath = AppConfigPath + "/AppConfigs";
-        private static readonly string RootConfigName = "Root.asset";
-        private static readonly string DevConfigName = "Dev.asset";
-        private static readonly string LiveConfigName = "Live.asset";
+        private static readonly string EditorAppConfigAssetName = "AppConfigs.asset";
+        private static readonly string CSharpFileName = "AppConfigsMenuItems.cs";
 
 #pragma warning disable 0649
-        [SerializeField] private List<AppConfig> appConfigs;
-        [SerializeField] private AppConfig defaultAppConfig;
-        [SerializeField] private AppConfig rootConfig;
+        [SerializeField] private List<AppConfig> appConfigs = new List<AppConfig>();
 #pragma warning restore 0649
 
         [NonSerialized] private AppConfig activeAppConfig;
@@ -63,9 +58,13 @@ namespace Lost.AppConfig
             };
         }
 
-        public static List<AppConfig> AppConfigs => Instance?.appConfigs;
+        public static List<AppConfig> AppConfigs => Instance.appConfigs;
 
-        public static AppConfig RootAppConfig => Instance?.rootConfig;
+        public static AppConfig FindAppConfig(string appConfigId) => Instance.appConfigs.FirstOrDefault(x => x.Id == appConfigId);
+
+        public static AppConfig RootAppConfig => Instance.appConfigs.FirstOrDefault(x => x.Parent == null);
+
+        public static AppConfig DefaultAppConfig => AppConfigs.Where(x => x.IsDefault).FirstOrDefault();
 
         public static string AppConfigScriptPath
         {
@@ -88,15 +87,15 @@ namespace Lost.AppConfig
                 {
                     return null;
                 }
-                else if (Instance.activeAppConfig)
+                else if (Instance.activeAppConfig != null)
                 {
                     // Do nothing, already set
                 }
                 else if (RuntimeAppConfig.Instance != null && string.IsNullOrEmpty(RuntimeAppConfig.Instance.AppConfigGuid) == false)
                 {
-                    foreach (var config in Instance.appConfigs)
+                    foreach (var config in AppConfigs)
                     {
-                        if (config.GetGuid() == RuntimeAppConfig.Instance.AppConfigGuid)
+                        if (config.Id == RuntimeAppConfig.Instance.AppConfigGuid)
                         {
                             Instance.activeAppConfig = config;
                             break;
@@ -105,7 +104,7 @@ namespace Lost.AppConfig
                 }
                 else
                 {
-                    Instance.activeAppConfig = Instance.defaultAppConfig;
+                    Instance.activeAppConfig = DefaultAppConfig;
                     WriteRuntimeConfigFile();
                 }
 
@@ -113,33 +112,32 @@ namespace Lost.AppConfig
             }
         }
 
-        private static EditorAppConfig Instance
+        public static EditorAppConfig Instance
         {
             get
             {
-                EditorAppConfig editorAppConfig = null;
-                EditorBuildSettings.TryGetConfigObject(EditorBuildSettingsName, out editorAppConfig);
+                EditorBuildSettings.TryGetConfigObject(EditorBuildSettingsName, out EditorAppConfig editorAppConfig);
 
-                if (editorAppConfig != null)
-                {
-                    if (editorAppConfig.defaultAppConfig == null)
-                    {
-                        Debug.LogError("EditorAppConfig doesn't have a default config.");
-                        return null;
-                    }
-
-                    if (editorAppConfig.appConfigs == null || editorAppConfig.appConfigs.Count == 0)
-                    {
-                        Debug.LogError("EditorAppConfig doesn't have any app configs in it's list.");
-                        return null;
-                    }
-
-                    if (editorAppConfig.appConfigs.Contains(editorAppConfig.defaultAppConfig) == false)
-                    {
-                        Debug.LogError("EditorAppConfig's configs list doesn't contain the default app config.");
-                        return null;
-                    }
-                }
+                // if (editorAppConfig != null)
+                // {
+                //     if (DefaultAppConfig == null)
+                //     {
+                //         Debug.LogError("EditorAppConfig doesn't have a default config.");
+                //         return null;
+                //     }
+                // 
+                //     if (AppConfigs == null || AppConfigs.Count == 0)
+                //     {
+                //         Debug.LogError("EditorAppConfig doesn't have any app configs in it's list.");
+                //         return null;
+                //     }
+                // 
+                //     if (AppConfigs.Contains(DefaultAppConfig) == false)
+                //     {
+                //         Debug.LogError("EditorAppConfig's configs list doesn't contain the default app config.");
+                //         return null;
+                //     }
+                // }
 
                 return editorAppConfig;
             }
@@ -156,56 +154,42 @@ namespace Lost.AppConfig
                 Directory.CreateDirectory(editorAppConfigDirectory);
             }
 
-            // Making sure Root Config path exists
-            string rootConfigAssetPath = Path.Combine(ConfigsPath, RootConfigName);
-            string devConfigAssetPath = Path.Combine(ConfigsPath, DevConfigName);
-            string liveConfigAssetPath = Path.Combine(ConfigsPath, LiveConfigName);
-
-            if (Directory.Exists(ConfigsPath) == false)
-            {
-                Directory.CreateDirectory(ConfigsPath);
-            }
-
             EditorAppConfig editorAppConfig = null;
 
             if (File.Exists(editorAppConfigAssetPath) == false)
             {
-                var rootConfig = ScriptableObject.CreateInstance<AppConfig>();
-                AssetDatabase.CreateAsset(rootConfig, rootConfigAssetPath);
-                rootConfig = AssetDatabase.LoadAssetAtPath<AppConfig>(rootConfigAssetPath);
+                var rootConfig = new AppConfig();
+                rootConfig.Name = "Root";
                 AddSetting<BundleIdentifierSetting>(rootConfig);
                 AddSetting<BuildPlayerContentSettings>(rootConfig);
-                AddSetting<ReleasesSettings>(rootConfig);
                 AddSetting<GeneralAppSettings>(rootConfig);
+                AddSetting<ReleasesSettings>(rootConfig);
+                AddSetting<CacheServerSettings>(rootConfig);
                 AddSetting<OverrideTemplatesSettings>(rootConfig);
-                AddSetting<PerforceSettings>(rootConfig);
-                AddSetting<AndroidKeystoreSettings>(rootConfig);
-                AddSetting<LostDefineSettings>(rootConfig);
+                AddSetting<CloudBuildSetBuildNumber>(rootConfig);
+                AddSetting<AndroidBuildSettings>(rootConfig);
+                AddSetting<IosSettings>(rootConfig);
 
-                var devConfig = ScriptableObject.CreateInstance<AppConfig>();
-                AssetDatabase.CreateAsset(devConfig, devConfigAssetPath);
-                devConfig = AssetDatabase.LoadAssetAtPath<AppConfig>(devConfigAssetPath);
-                devConfig.Parent = rootConfig;
+                var devConfig = new AppConfig();
+                devConfig.Name = "Dev";
+                devConfig.IsDefault = true;
+                devConfig.ParentId = rootConfig.Id;
                 AddSetting<DevelopmentBuildSetting>(devConfig).IsDevelopmentBuild = true;
                 AddSetting<PlayFabSettings>(devConfig).IsDevelopmentEnvironment = true;
 
-                var liveConfig = ScriptableObject.CreateInstance<AppConfig>();
-                AssetDatabase.CreateAsset(liveConfig, liveConfigAssetPath);
-                liveConfig = AssetDatabase.LoadAssetAtPath<AppConfig>(liveConfigAssetPath);
-                liveConfig.Parent = rootConfig;
+                var liveConfig = new AppConfig();
+                liveConfig.Name = "Live";
+                liveConfig.ParentId = rootConfig.Id;
                 AddSetting<DevelopmentBuildSetting>(liveConfig).IsDevelopmentBuild = false;
                 AddSetting<PlayFabSettings>(liveConfig).IsDevelopmentEnvironment = false;
 
+                // Creating the AppConfigs scriptable object
                 editorAppConfig = ScriptableObject.CreateInstance<EditorAppConfig>();
-                editorAppConfig.rootConfig = rootConfig;
-                editorAppConfig.defaultAppConfig = devConfig;
-                editorAppConfig.appConfigs = new List<AppConfig> { rootConfig, devConfig, liveConfig };
+                editorAppConfig.appConfigs.Add(rootConfig);
+                editorAppConfig.appConfigs.Add(devConfig);
+                editorAppConfig.appConfigs.Add(liveConfig);
                 AssetDatabase.CreateAsset(editorAppConfig, editorAppConfigAssetPath);
                 EditorUtility.SetDirty(editorAppConfig);
-                EditorUtility.SetDirty(rootConfig);
-                EditorUtility.SetDirty(devConfig);
-                EditorUtility.SetDirty(liveConfig);
-
                 AssetDatabase.SaveAssets();
             }
             else
@@ -216,16 +200,10 @@ namespace Lost.AppConfig
             EditorBuildSettings.AddConfigObject(EditorBuildSettingsName, editorAppConfig, true);
             EditorAppConfigFileBuidler.GenerateAppConfigsFile();
 
-            T AddSetting<T>(AppConfig config) where T : AppConfigSettings
+            T AddSetting<T>(AppConfig config) where T : AppConfigSettings, new()
             {
-                var newSettings = ScriptableObject.CreateInstance<T>();
-                newSettings.name = typeof(T).Name;
+                var newSettings = new T();
                 config.Settings.Add(newSettings);
-
-                string path = config.GetPath();
-                AssetDatabase.AddObjectToAsset(newSettings, path);
-                AssetDatabase.ImportAsset(path);
-
                 return newSettings;
             }
         }
@@ -250,7 +228,7 @@ namespace Lost.AppConfig
             }
 
             // Generating the runtime config object and serializing to json
-            var runtimeConfig = new RuntimeAppConfig(activeConfig.GetGuid(), activeConfig.SafeName, runtimeConfigValues);
+            var runtimeConfig = new RuntimeAppConfig(activeConfig.Id, activeConfig.SafeName, runtimeConfigValues);
             string configJson = JsonUtility.ToJson(runtimeConfig);
 
             // Early out if the file file hasn't chenged
@@ -272,9 +250,9 @@ namespace Lost.AppConfig
                 return;
             }
 
-            foreach (var config in Instance.appConfigs)
+            foreach (var config in AppConfigs)
             {
-                if (config.GetGuid() == guid)
+                if (config.Id == guid)
                 {
                     Instance.activeAppConfig = config;
                     EditorAppConfig.InitializeOnLoad();
@@ -297,7 +275,7 @@ namespace Lost.AppConfig
 
         public static bool IsActiveConfig(string guid)
         {
-            return guid == EditorAppConfig.ActiveAppConfig.GetGuid();
+            return guid == EditorAppConfig.ActiveAppConfig.Id;
         }
 
         public static IEnumerable<AppConfigSettings> GetActiveConfigSettings()

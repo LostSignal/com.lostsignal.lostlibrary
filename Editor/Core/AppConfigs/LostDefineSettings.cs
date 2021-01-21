@@ -12,6 +12,7 @@ namespace Lost
     using Lost.EditorGrid;
     using Lost.AppConfig;
     using UnityEngine;
+    using UnityEditor;
 
     // TODO [bgish]: Try adding all the button types to the grid and make sure they all still look good.
     //               May need to update the up and down buttons.
@@ -22,14 +23,14 @@ namespace Lost
         private static EditorGrid.EditorGrid definesGrid;
         private static EditorGridDefinition definesGridDefinition;
 
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [SerializeField] private List<Define> defines = new List<Define>();
-        #pragma warning restore 0649
+#pragma warning restore 0649
 
         public override string DisplayName => "Lost Defines";
         public override bool IsInline => false;
 
-        public override void DrawSettings(AppConfigSettings settings, float width)
+        public override void DrawSettings(AppConfigSettings settings, SerializedProperty serializedProperty, float width)
         {
             var lostDefineSettings = settings as LostDefineSettings;
 
@@ -156,10 +157,10 @@ namespace Lost
         [Serializable]
         public class Define
         {
-            #pragma warning disable 0649
+#pragma warning disable 0649
             [SerializeField] private string name;
             [SerializeField] private bool isEnabled;
-            #pragma warning restore 0649
+#pragma warning restore 0649
 
             public string Name
             {

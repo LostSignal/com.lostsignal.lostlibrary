@@ -10,19 +10,83 @@ namespace Lost.AppConfig
     using System.Collections.Generic;
     using UnityEngine;
 
-    [CreateAssetMenu(menuName = "Lost/App Config")]
-    public class AppConfig : ScriptableObject
+    [Serializable]
+    public class AppConfig
     {
-        public AppConfig Parent;
-        public List<AppConfigSettings> Settings = new List<AppConfigSettings>();
-        public DevicePlatform SupportedPlatform;
-        public List<string> Defines = new List<string>();
+#pragma warning disable 0649
+        [SerializeReference] private List<AppConfigSettings> settings = new List<AppConfigSettings>();
+        [SerializeField] private string id = Guid.NewGuid().ToString();
+        [SerializeField] private string name;
+        [SerializeField] private bool isDefault;
+        [SerializeField] private string parentId;
+        [SerializeField] private List<string> customDefines = new List<string>();
+        [NonSerialized] private bool showInherited;
+#pragma warning restore 0649
 
-        [NonSerialized] public bool ShowInherited;
+        public string Id => this.id;
 
-        public string SafeName
+        public string Name
         {
-            get { return this.name.Replace(" ", string.Empty); }
+            get => this.name;
+            set => this.name = value;
+        }
+
+        public string FullName
+        {
+            get
+            {
+                if (this.Parent == null)
+                {
+                    return this.name;
+                }
+                else
+                {
+                    return $"{this.Parent.FullName}/{this.name}";
+                }
+            }
+        }
+
+        public int Depth
+        {
+            get
+            {
+                int depth = 0;
+                var appConfig = this;
+
+                while (appConfig.Parent != null)
+                {
+                    depth++;
+                    appConfig = appConfig.Parent;
+                }
+
+                return depth;
+            }
+        }
+
+        public string ParentId
+        {
+            get => this.parentId;
+            set => this.parentId = value;
+        }
+
+        public AppConfig Parent => EditorAppConfig.FindAppConfig(this.parentId);
+
+        public bool IsDefault
+        {
+            get => this.isDefault;
+            set => this.isDefault = value;
+        }
+
+        public List<string> Defines => this.customDefines;
+
+        public List<AppConfigSettings> Settings => this.settings;
+
+        public string SafeName => this.name?.Replace(" ", string.Empty) ?? string.Empty;
+
+        public bool ShowInherited
+        {
+            get => this.showInherited;
+            set => this.showInherited = value;
         }
 
         public T GetSettings<T>() where T : AppConfigSettings
@@ -38,12 +102,15 @@ namespace Lost.AppConfig
 
         public AppConfigSettings GetSettings(System.Type type, out bool isInherited)
         {
-            foreach (var settings in this.Settings)
+            if (this.settings != null)
             {
-                if (settings != null && settings.GetType() == type)
+                foreach (var settings in this.settings)
                 {
-                    isInherited = false;
-                    return settings;
+                    if (settings != null && settings.GetType() == type)
+                    {
+                        isInherited = false;
+                        return settings;
+                    }
                 }
             }
 
@@ -58,9 +125,9 @@ namespace Lost.AppConfig
                 return null;
             }
 
-            if (parentBuildConfig.Settings != null)
+            if (parentBuildConfig.settings != null)
             {
-                foreach (var settings in parentBuildConfig.Settings)
+                foreach (var settings in parentBuildConfig.settings)
                 {
                     if (settings != null && settings.GetType() == type)
                     {

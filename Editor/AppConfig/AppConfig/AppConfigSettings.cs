@@ -6,15 +6,18 @@
 
 namespace Lost.AppConfig
 {
+    using System;
     using System.Collections.Generic;
     using UnityEditor;
     using UnityEditor.Build.Reporting;
     using UnityEngine;
     using UnityEngine.SceneManagement;
 
-    public abstract class AppConfigSettings : ScriptableObject
+    [Serializable]
+    public abstract class AppConfigSettings
     {
         public abstract string DisplayName { get; }
+
         public abstract bool IsInline { get; }
 
         public virtual void GetRuntimeConfigSettings(AppConfig appConfig, Dictionary<string, string> runtimeConfigSettings)
@@ -62,10 +65,10 @@ namespace Lost.AppConfig
             return options;
         }
 
-        public virtual void DrawSettings(AppConfigSettings settings, float width)
+        public virtual void DrawSettings(AppConfigSettings settings, SerializedProperty settingsSerializedProperty, float width)
         {
-            SerializedObject serializedObject = new SerializedObject(settings);
-            SerializedProperty prop = serializedObject.GetIterator();
+            SerializedObject serializedObject = settingsSerializedProperty.serializedObject;
+            SerializedProperty prop = settingsSerializedProperty;
 
             while (prop.NextVisible(true))
             {
@@ -81,6 +84,24 @@ namespace Lost.AppConfig
             }
 
             serializedObject.ApplyModifiedProperties();
+
+            // SerializedObject serializedObject = new SerializedObject(settings);
+            // SerializedProperty prop = serializedObject.GetIterator();
+            // 
+            // while (prop.NextVisible(true))
+            // {
+            //     if (prop.name == "m_Script" || prop.hasVisibleChildren)
+            //     {
+            //         continue;
+            //     }
+            // 
+            //     using (new EditorGUILayout.HorizontalScope())
+            //     {
+            //         EditorGUILayout.PropertyField(prop, false, GUILayout.Width(width));
+            //     }
+            // }
+            // 
+            // serializedObject.ApplyModifiedProperties();
         }
     }
 }

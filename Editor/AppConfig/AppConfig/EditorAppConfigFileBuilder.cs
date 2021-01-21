@@ -62,7 +62,7 @@ namespace Lost.AppConfig
 
                 string constantsString = constantsBuilder.ToString()
                     .Replace("{config_name}", appConfig.SafeName)
-                    .Replace("{config_guid}", AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(appConfig.GetInstanceID())))
+                    .Replace("{config_guid}", appConfig.Id)
                     .Replace("{menu_item_name}", GetMenuItemName(appConfig));
 
                 constants.AppendLine(constantsString);
