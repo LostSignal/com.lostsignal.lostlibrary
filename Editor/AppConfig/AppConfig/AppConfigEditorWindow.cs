@@ -117,7 +117,10 @@ namespace Lost
                         }
                     }
 
-                    this.DrawAppConfig(SelectedConfig, selectSerializedProperty, rightSideWidth);
+                    using (new LabelWidthScope(220))
+                    {
+                        this.DrawAppConfig(SelectedConfig, selectSerializedProperty, rightSideWidth);
+                    }
                 }
             }
         }
@@ -177,7 +180,7 @@ namespace Lost
                         }
                     }
 
-                    this.DrawAppConfigSettings(appConfig, settings, currentSettings, isInherited, out bool didDeleteSettings);
+                    this.DrawAppConfigSettings(appConfig, settings, currentSettings, isInherited, currentViewWidth, out bool didDeleteSettings);
 
                     if (didDeleteSettings)
                     {
@@ -194,11 +197,10 @@ namespace Lost
             this.DrawSettingsButtons(appConfig, currentViewWidth, settingsToAdd);
         }
 
-        private void DrawAppConfigSettings(AppConfig.AppConfig appConfig, AppConfigSettings settings, SerializedProperty settingsSerializedProperty, bool isInherited, out bool didDeleteSettings)
+        private void DrawAppConfigSettings(AppConfig.AppConfig appConfig, AppConfigSettings settings, SerializedProperty settingsSerializedProperty, bool isInherited, float currentViewWidth, out bool didDeleteSettings)
         {
             didDeleteSettings = false;
 
-            float currentViewWidth = EditorGUIUtility.currentViewWidth - 20;
             bool foldoutVisible = true;
             Rect boxRect = new Rect();
 
@@ -212,8 +214,8 @@ namespace Lost
 
                 // Drawing the button
                 float buttonSize = 14;
-                float rightPadding = 7;
-                float topPadding = 1;
+                float rightPadding = 25;
+                float topPadding = 2;
 
                 Rect buttonRect = new Rect(new Vector2(currentViewWidth - rightPadding, y + topPadding), new Vector2(buttonSize, buttonSize));
 
@@ -243,7 +245,7 @@ namespace Lost
                 // Iterating and displaying all properties
                 using (new EditorGUI.DisabledGroupScope(isInherited))
                 {
-                    float width = currentViewWidth - (settings.IsInline ? 34 : 15);
+                    float width = currentViewWidth - (settings.IsInline ? 60 : 15);
                     settings.DrawSettings(settings, settingsSerializedProperty, width);
                 }
             }
