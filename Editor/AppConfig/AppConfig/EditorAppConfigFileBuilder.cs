@@ -48,10 +48,10 @@ namespace Lost.AppConfig
         {
             StringBuilder constants = new StringBuilder();
 
-            foreach (var appConfig in EditorAppConfig.AppConfigs)
+            foreach (var appConfig in LostLibrary.AppConfigs.AppConfigs)
             {
                 // If we have more than one config, then skip the root config
-                if (EditorAppConfig.AppConfigs.Count > 1 && appConfig == EditorAppConfig.RootAppConfig)
+                if (LostLibrary.AppConfigs.AppConfigs.Count > 1 && appConfig == LostLibrary.AppConfigs.RootAppConfig)
                 {
                     continue;
                 }
@@ -75,10 +75,10 @@ namespace Lost.AppConfig
         {
             List<string> methods = new List<string>();
 
-            foreach (var appConfig in EditorAppConfig.AppConfigs)
+            foreach (var appConfig in LostLibrary.AppConfigs.AppConfigs)
             {
                 // If we have more than one config, then skip the root config
-                if (EditorAppConfig.AppConfigs.Count > 1 && appConfig == EditorAppConfig.RootAppConfig)
+                if (LostLibrary.AppConfigs.AppConfigs.Count > 1 && appConfig == LostLibrary.AppConfigs.RootAppConfig)
                 {
                     continue;
                 }
@@ -130,9 +130,9 @@ namespace Lost.AppConfig
             string menuItemName = "Tools/Lost/Configs/" + GetSafeAppConfigName(appConfig);
 
             // Removing the root config from the menu item path if we have more than one configs
-            if (EditorAppConfig.AppConfigs.Count > 1)
+            if (LostLibrary.AppConfigs.AppConfigs.Count > 1)
             {
-                menuItemName = menuItemName.Replace(EditorAppConfig.RootAppConfig.SafeName + "/", string.Empty);
+                menuItemName = menuItemName.Replace(LostLibrary.AppConfigs.RootAppConfig.SafeName + "/", string.Empty);
             }
 
             return menuItemName;

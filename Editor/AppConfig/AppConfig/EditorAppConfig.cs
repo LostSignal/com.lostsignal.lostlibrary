@@ -31,9 +31,6 @@ namespace Lost.AppConfig
     [InitializeOnLoad]
     public class EditorAppConfig : ScriptableObject
     {
-        private static readonly string EditorBuildSettingsName = "com.lostsignal.appconfig";
-        private static readonly string AppConfigPath = "Assets/Editor/com.lostsignal.lostlibrary";
-        private static readonly string EditorAppConfigAssetName = "AppConfigs.asset";
         private static readonly string CSharpFileName = "AppConfigsMenuItems.cs";
 
 #pragma warning disable 0649
@@ -47,28 +44,17 @@ namespace Lost.AppConfig
             EditorApplication.delayCall += InitializeOnLoad;
             BuildPlayerWindow.RegisterBuildPlayerHandler(BuildPlayerHandler);
             BuildPlayerWindow.RegisterGetBuildPlayerOptionsHandler(BuildPlayerOptionsHandler);
-
-            // Making sure all the initial config files exist
-            EditorApplication.delayCall += () =>
-            {
-                if (Instance == null)
-                {
-                    CreateAppConfigs();
-                }
-            };
         }
 
-        public static List<AppConfig> AppConfigs => Instance.appConfigs;
+        public List<AppConfig> AppConfigs => this.appConfigs;
 
-        public static AppConfig FindAppConfig(string appConfigId) => Instance.appConfigs.FirstOrDefault(x => x.Id == appConfigId);
+        public AppConfig RootAppConfig => this.appConfigs.FirstOrDefault(x => string.IsNullOrEmpty(x.ParentId));
 
-        public static AppConfig RootAppConfig => Instance.appConfigs.FirstOrDefault(x => x.Parent == null);
-
-        public static AppConfig DefaultAppConfig => AppConfigs.Where(x => x.IsDefault).FirstOrDefault();
+        public AppConfig DefaultAppConfig => this.appConfigs.Where(x => x.IsDefault).FirstOrDefault();
 
         public static string AppConfigScriptPath
         {
-            get { return Instance == null ? null : Path.Combine(Path.GetDirectoryName(Instance.GetPath()), CSharpFileName); }
+            get { return Path.Combine(Path.GetDirectoryName(LostLibrary.AppConfigs.GetPath()), CSharpFileName); }
         }
 
         public static AppConfig ActiveAppConfig
@@ -83,128 +69,30 @@ namespace Lost.AppConfig
                     RuntimeAppConfig.Instance.AppConfigGuid = null;
                 }
 
-                if (Instance == null)
-                {
-                    return null;
-                }
-                else if (Instance.activeAppConfig != null)
+                var instance = LostLibrary.AppConfigs;
+
+                if (instance.activeAppConfig != null)
                 {
                     // Do nothing, already set
                 }
                 else if (RuntimeAppConfig.Instance != null && string.IsNullOrEmpty(RuntimeAppConfig.Instance.AppConfigGuid) == false)
                 {
-                    foreach (var config in AppConfigs)
+                    foreach (var config in instance.AppConfigs)
                     {
                         if (config.Id == RuntimeAppConfig.Instance.AppConfigGuid)
                         {
-                            Instance.activeAppConfig = config;
+                            instance.activeAppConfig = config;
                             break;
                         }
                     }
                 }
                 else
                 {
-                    Instance.activeAppConfig = DefaultAppConfig;
+                    instance.activeAppConfig = instance.DefaultAppConfig;
                     WriteRuntimeConfigFile();
                 }
 
-                return Instance.activeAppConfig;
-            }
-        }
-
-        public static EditorAppConfig Instance
-        {
-            get
-            {
-                EditorBuildSettings.TryGetConfigObject(EditorBuildSettingsName, out EditorAppConfig editorAppConfig);
-
-                // if (editorAppConfig != null)
-                // {
-                //     if (DefaultAppConfig == null)
-                //     {
-                //         Debug.LogError("EditorAppConfig doesn't have a default config.");
-                //         return null;
-                //     }
-                // 
-                //     if (AppConfigs == null || AppConfigs.Count == 0)
-                //     {
-                //         Debug.LogError("EditorAppConfig doesn't have any app configs in it's list.");
-                //         return null;
-                //     }
-                // 
-                //     if (AppConfigs.Contains(DefaultAppConfig) == false)
-                //     {
-                //         Debug.LogError("EditorAppConfig's configs list doesn't contain the default app config.");
-                //         return null;
-                //     }
-                // }
-
-                return editorAppConfig;
-            }
-        }
-
-        public static void CreateAppConfigs()
-        {
-            // Making sure EditorAppConfig path exists
-            string editorAppConfigAssetPath = Path.Combine(AppConfigPath, EditorAppConfigAssetName);
-            string editorAppConfigDirectory = Path.GetDirectoryName(editorAppConfigAssetPath);
-
-            if (Directory.Exists(editorAppConfigDirectory) == false)
-            {
-                Directory.CreateDirectory(editorAppConfigDirectory);
-            }
-
-            EditorAppConfig editorAppConfig = null;
-
-            if (File.Exists(editorAppConfigAssetPath) == false)
-            {
-                var rootConfig = new AppConfig();
-                rootConfig.Name = "Root";
-                AddSetting<BundleIdentifierSetting>(rootConfig);
-                AddSetting<BuildPlayerContentSettings>(rootConfig);
-                AddSetting<GeneralAppSettings>(rootConfig);
-                AddSetting<ReleasesSettings>(rootConfig);
-                AddSetting<CacheServerSettings>(rootConfig);
-                AddSetting<OverrideTemplatesSettings>(rootConfig);
-                AddSetting<CloudBuildSetBuildNumber>(rootConfig);
-                AddSetting<AndroidBuildSettings>(rootConfig);
-                AddSetting<IosSettings>(rootConfig);
-
-                var devConfig = new AppConfig();
-                devConfig.Name = "Dev";
-                devConfig.IsDefault = true;
-                devConfig.ParentId = rootConfig.Id;
-                AddSetting<DevelopmentBuildSetting>(devConfig).IsDevelopmentBuild = true;
-                AddSetting<PlayFabSettings>(devConfig).IsDevelopmentEnvironment = true;
-
-                var liveConfig = new AppConfig();
-                liveConfig.Name = "Live";
-                liveConfig.ParentId = rootConfig.Id;
-                AddSetting<DevelopmentBuildSetting>(liveConfig).IsDevelopmentBuild = false;
-                AddSetting<PlayFabSettings>(liveConfig).IsDevelopmentEnvironment = false;
-
-                // Creating the AppConfigs scriptable object
-                editorAppConfig = ScriptableObject.CreateInstance<EditorAppConfig>();
-                editorAppConfig.appConfigs.Add(rootConfig);
-                editorAppConfig.appConfigs.Add(devConfig);
-                editorAppConfig.appConfigs.Add(liveConfig);
-                AssetDatabase.CreateAsset(editorAppConfig, editorAppConfigAssetPath);
-                EditorUtility.SetDirty(editorAppConfig);
-                AssetDatabase.SaveAssets();
-            }
-            else
-            {
-                editorAppConfig = AssetDatabase.LoadAssetAtPath<EditorAppConfig>(editorAppConfigAssetPath);
-            }
-
-            EditorBuildSettings.AddConfigObject(EditorBuildSettingsName, editorAppConfig, true);
-            EditorAppConfigFileBuidler.GenerateAppConfigsFile();
-
-            T AddSetting<T>(AppConfig config) where T : AppConfigSettings, new()
-            {
-                var newSettings = new T();
-                config.Settings.Add(newSettings);
-                return newSettings;
+                return instance.activeAppConfig;
             }
         }
 
@@ -245,16 +133,11 @@ namespace Lost.AppConfig
 
         public static void SetActiveConfig(string guid)
         {
-            if (Instance == null)
-            {
-                return;
-            }
-
-            foreach (var config in AppConfigs)
+            foreach (var config in LostLibrary.AppConfigs.AppConfigs)
             {
                 if (config.Id == guid)
                 {
-                    Instance.activeAppConfig = config;
+                    LostLibrary.AppConfigs.activeAppConfig = config;
                     EditorAppConfig.InitializeOnLoad();
 
                     if (Platform.IsUnityCloudBuild)
@@ -325,7 +208,7 @@ namespace Lost.AppConfig
         [MenuItem("Tools/Lost/Work In Progress/InitializeOnLoad and OnAppSetingsChanged")]
         private static void InitializeOnLoad()
         {
-            if (Instance == null)
+            if (LostLibrary.AppConfigs == null)
             {
                 return;
             }

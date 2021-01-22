@@ -8,6 +8,7 @@ namespace Lost.AppConfig
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using UnityEngine;
 
     [Serializable]
@@ -69,7 +70,7 @@ namespace Lost.AppConfig
             set => this.parentId = value;
         }
 
-        public AppConfig Parent => EditorAppConfig.FindAppConfig(this.parentId);
+        public AppConfig Parent => LostLibrary.AppConfigs.AppConfigs.FirstOrDefault(x => x.Id == this.parentId);
 
         public bool IsDefault
         {

@@ -7,7 +7,7 @@
 namespace Lost
 {
     // https://github.com/th3d0g/unitycloudbuildhockeyapp/blob/master/index.js
-    public class UploadToHockeyAppSettings
-    {
-    }
+    //// public class UploadToHockeyAppSettings
+    //// {
+    //// }
 }

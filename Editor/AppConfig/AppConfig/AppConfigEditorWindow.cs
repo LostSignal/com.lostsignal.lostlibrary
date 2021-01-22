@@ -37,20 +37,14 @@ namespace Lost
         }
 
         [MenuItem("Tools/Lost/Tools/App Configs Editor")]
-        private static void ShowWindow()
+        public static void ShowWindow()
         {
             EditorWindow.GetWindow<AppConfigEditorWindow>(false, "App Configs");
         }
 
         private void OnGUI()
         {
-            if (!EditorAppConfig.Instance)
-            {
-                // TODO [bgish]: Make Create Default Configs Button?
-                return;
-            }
-
-            var appConfigs = EditorAppConfig.AppConfigs;
+            var appConfigs = LostLibrary.AppConfigs.AppConfigs;
 
             float columnWidth = 150;
             float padding = 3;
@@ -99,7 +93,7 @@ namespace Lost
 
             using (new GUILayout.AreaScope(new Rect(rightSideX, rightSideY, rightSideWidth, rightSideHeight)))
             {
-                SerializedObject editorAppConfigsSO = new SerializedObject(EditorAppConfig.Instance);
+                SerializedObject editorAppConfigsSO = new SerializedObject(LostLibrary.AppConfigs);
                 SerializedProperty appConfigsSerializedProperty = editorAppConfigsSO.FindProperty("appConfigs");
 
                 SerializedProperty selectSerializedProperty = null;
@@ -144,7 +138,7 @@ namespace Lost
 
             if (GUI.changed)
             {
-                EditorUtility.SetDirty(EditorAppConfig.Instance);
+                EditorUtility.SetDirty(LostLibrary.AppConfigs);
             }
         }
 

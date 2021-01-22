@@ -34,14 +34,13 @@
   * Also add this in the first slot in the build settings
   * I'd recommend making your own copy or prefab varients of all the prefabs in this scene
   * I'll try to automate this in the future
-  
-* Find Packages/com.lostsignal.lostlibrary/Content/ScriptableObjects/AzureFunctionsGenerator.asset 
-  * Copy this asset into the Assets/Editor/com.lostsignal.lostlibrary folder
-  * I'll try to automate this in the future
 
-* Find Packages/com.lostsignal.lostlibrary/Content/ScriptableObjects/GameServerGenerator.asset 
-  * Copy this asset into the Assets/Editor/com.lostsignal.lostlibrary folder
-  * I'll try to automate this in the future
+* Find Assets/Editor/com.lostsignal.lostlibrary/AzureFunctionsGenerator.asset
+  * Give project name and build the project
+  * Upload this project to Azure
+
+  
+* Find Assets/Editor/com.lostsignal.lostlibrary/GameServerGenerator.asset (OPTIONAL)
   * Generate your game server project and build it
     * Make sure rename the project and fill out all the Custom Replace Variables
   * Dissonance
@@ -49,24 +48,14 @@
     * You must also add the NCRUNCH define
     * Also add ```server.RegisterSubsystem<DissonanceServerSubsystem>();``` to Program.cs template
 
-* Lost Library
-  * Lost Library will auto generate App Configs in the Assets/Editor/com.lostsignal.lostlibrary folder.
-    * There are 3 AppConfigs Dev, Live and Root, you'll need to make sure to fill everything out in these
-      * Root.asset
-  	    * Bundle Id
-  	    * General App Settings
-  	    * Perforce Settings
-  	    * Android Keystore Settings
-  	  * Live
-  	    * PlayFab Account Settings
-  	  * Dev
-  	    * PlayFab Account Settings (**MUST SET THESE**)
-  * Lost Library will also auto generate a Releases object in the Assets/Editor/com.lostsignal.lostlibrary folder.
-    * The Bootloader's ReleasesManager loads this data to figure out how to download a bunch of initial data
-    * You must set the Ably Key
+* Find Assets/Editor/com.lostsignal.lostlibrary/AppConfigs.asset (OPTIONAL)
+  * Fill out Root Settings
+    * Bundle Id, General App Settings
+  * Fill out Dev Settings
+    * PlayFab   
 
 * Open Bootloader scene
-  * Set the Startup scene (make sure that scene is in the Addressables system)
+  * Set the Startup scene on the Bootloader Prefab
 
 * Create GameServer build
   * Open GameServer project

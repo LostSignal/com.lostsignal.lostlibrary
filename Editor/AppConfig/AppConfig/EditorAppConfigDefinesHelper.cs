@@ -14,7 +14,7 @@ namespace Lost.AppConfig
     {
         public static void UpdateProjectDefines()
         {
-            if (EditorAppConfig.ActiveAppConfig == null || EditorAppConfig.AppConfigs == null)
+            if (EditorAppConfig.ActiveAppConfig == null || LostLibrary.AppConfigs.AppConfigs == null)
             {
                 return;
             }
@@ -23,7 +23,7 @@ namespace Lost.AppConfig
             HashSet<string> definesToRemove = new HashSet<string>();
 
             GetActiveDefines(EditorAppConfig.ActiveAppConfig, activeDefines);
-            GetAllDefines(EditorAppConfig.AppConfigs, definesToRemove);
+            GetAllDefines(LostLibrary.AppConfigs.AppConfigs, definesToRemove);
 
             foreach (var define in activeDefines)
             {

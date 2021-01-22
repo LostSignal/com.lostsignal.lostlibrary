@@ -31,48 +31,7 @@ namespace Lost
             this.disableUplaod = true;
         }
 
-        public static Releases Releases
-        {
-            get
-            {
-                string releasesNamespace = "com.lostsignal.releases";
 
-                if (EditorBuildSettings.TryGetConfigObject(releasesNamespace, out Releases releases) == false || !releases)
-                {
-                    string releasesDirectory = "Assets/Editor/com.lostsignal.lostlibrary";
-                    string releasesAssetName = "Releases.asset";
-                    string releasesAssetPath = Path.Combine(releasesDirectory, releasesAssetName);
-
-                    if (Directory.Exists(releasesDirectory) == false)
-                    {
-                        Directory.CreateDirectory(releasesDirectory);
-                    }
-
-                    Releases releasesObject;
-
-                    if (File.Exists(releasesAssetPath) == false)
-                    {
-                        releasesObject = ScriptableObject.CreateInstance<Releases>();
-                        AssetDatabase.CreateAsset(releasesObject, releasesAssetPath);
-                        EditorUtility.SetDirty(releasesObject);
-                        AssetDatabase.SaveAssets();
-                        AssetDatabase.Refresh();
-                    }
-                    else
-                    {
-                        releasesObject = AssetDatabase.LoadAssetAtPath<Releases>(releasesAssetPath);
-                    }
-
-                    EditorBuildSettings.AddConfigObject(releasesNamespace, releasesObject, true);
-
-                    return releasesObject;
-                }
-                else
-                {
-                    return releases;
-                }
-            }
-        }
 
         public override string DisplayName => "Releases Settings";
 
@@ -101,7 +60,7 @@ namespace Lost
 
             runtimeConfigSettings.Add(ReleasesManager.ReleasesMachineNameKey, System.Environment.MachineName);
             runtimeConfigSettings.Add(ReleasesManager.ReleasesUrlKey, settings.releasesUrl);
-            runtimeConfigSettings.Add(ReleasesManager.ReleasesCurrentRelease, JsonUtil.Serialize(Releases.CurrentRelease));
+            runtimeConfigSettings.Add(ReleasesManager.ReleasesCurrentRelease, JsonUtil.Serialize(LostLibrary.Releases.CurrentRelease));
         }
 
         public override void OnUserBuildInitiated(AppConfig.AppConfig appConfig)
@@ -127,7 +86,7 @@ namespace Lost
 
             var machineName = Platform.IsUnityCloudBuild ? "cloud_build" : System.Environment.MachineName;
             var blobKey = $"{machineName}/{ReleasesManager.ReleasesJsonFileName}";
-            var releasesJson = JsonUtil.Serialize(Releases.AllReleases);
+            var releasesJson = JsonUtil.Serialize(LostLibrary.Releases.AllReleases);
 
             var azureConfig = new AzureStorage.Config
             {

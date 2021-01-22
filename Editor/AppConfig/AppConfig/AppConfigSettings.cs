@@ -65,22 +65,6 @@ namespace Lost.AppConfig
             return options;
         }
 
-        private int GetSettingsIndex(string propertyPath)
-        {
-            int startIndex = propertyPath.IndexOf(".settings.Array.data[");
-
-            if (startIndex == -1)
-            {
-                return -1;
-            }
-
-            int endIndex = propertyPath.IndexOf("]", startIndex);
-
-            string arrayIndexString = propertyPath.Substring(startIndex + 21, endIndex - (startIndex + 21));
-
-            return int.TryParse(arrayIndexString, out int result) ? result : -1;
-        }
-
         public virtual void DrawSettings(AppConfigSettings settings, SerializedProperty settingsSerializedProperty, float width)
         {
             SerializedObject serializedObject = settingsSerializedProperty.serializedObject;
@@ -117,6 +101,22 @@ namespace Lost.AppConfig
             }
 
             serializedObject.ApplyModifiedProperties();
+        }
+
+        private int GetSettingsIndex(string propertyPath)
+        {
+            int startIndex = propertyPath.IndexOf(".settings.Array.data[");
+
+            if (startIndex == -1)
+            {
+                return -1;
+            }
+
+            int endIndex = propertyPath.IndexOf("]", startIndex);
+
+            string arrayIndexString = propertyPath.Substring(startIndex + 21, endIndex - (startIndex + 21));
+
+            return int.TryParse(arrayIndexString, out int result) ? result : -1;
         }
     }
 }

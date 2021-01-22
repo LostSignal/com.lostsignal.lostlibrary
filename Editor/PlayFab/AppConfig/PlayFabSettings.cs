@@ -21,15 +21,11 @@ namespace Lost.PlayFab
         [SerializeField] private bool isDevelopmentEnvironment;
 
         [Header("Azure Functions")]
-        [SerializeField] private AzureFunctionsProjectGenerator azureFunctionsProjectGenerator;
         [SerializeField] private string functionsSite;
         [SerializeField] private string functionsHostKey;
         [SerializeField] private string ablyServerKey;
         [SerializeField] private string redisConnectionString;
         [SerializeField] private string cosmosDbConnectionString;
-
-        [Header("Game Server")]
-        [SerializeField] private GameServerProjectGenerator gameServerProjectGenerator;
 #pragma warning restore 0649
 
         public override string DisplayName => "PlayFab";
@@ -72,12 +68,12 @@ namespace Lost.PlayFab
         {
             var playFabSettings = appConfig.GetSettings<PlayFabSettings>();
 
-            if (playFabSettings == null || playFabSettings.azureFunctionsProjectGenerator == null)
+            if (playFabSettings == null || LostLibrary.AzureFunctionsProjectGenerator == null)
             {
                 return;
             }
 
-            azureFunctionsProjectGenerator.UploadFunctionsToPlayFab();
+            LostLibrary.AzureFunctionsProjectGenerator.UploadFunctionsToPlayFab();
 
             //// TODO [bgish]: If Platform.IsUnityCloudBuild, check if Upload was successful and fail the build if it wasn't
         }
@@ -91,12 +87,12 @@ namespace Lost.PlayFab
                 return;
             }
 
-            if (playFabSettings.azureFunctionsProjectGenerator != null)
+            if (LostLibrary.AzureFunctionsProjectGenerator != null)
             {
                 GenerateLaunchSettingsForAzureFunctionsProject(playFabSettings);
             }
 
-            if (playFabSettings.gameServerProjectGenerator != null)
+            if (LostLibrary.GameServerProjectGenerator != null)
             {
                 GenerateLaunchSettingsForGameServerProject(playFabSettings);
             }
@@ -119,7 +115,7 @@ namespace Lost.PlayFab
             string launchSettings = BetterStringBuilder.New()
                 .AppendLine("{")
                 .AppendLine("  \"profiles\": {")
-                .AppendLine("    \"" + playfabSettings.azureFunctionsProjectGenerator.ProjectName + "\": {")
+                .AppendLine("    \"" + LostLibrary.AzureFunctionsProjectGenerator.ProjectName + "\": {")
                 .AppendLine("      \"commandName\": \"Project\",")
                 .AppendLine("      \"environmentVariables\": {")
                 .AppendLine($"        \"ABLY_SERVER_KEY\": \"{playfabSettings.ablyServerKey}\",")
@@ -134,11 +130,11 @@ namespace Lost.PlayFab
                 .AppendLine("}")
                 .ToString();
 
-            string projectDirectory = Path.GetDirectoryName(playfabSettings.azureFunctionsProjectGenerator.CsProjFilePath);
+            string projectDirectory = Path.GetDirectoryName(LostLibrary.AzureFunctionsProjectGenerator.CsProjFilePath);
             string propertiesDirectory = Path.Combine(projectDirectory, "Properties");
             string launchSettingsPath = Path.Combine(propertiesDirectory, "launchSettings.json");
 
-            if (File.Exists(playfabSettings.azureFunctionsProjectGenerator.CsProjFilePath) == false)
+            if (File.Exists(LostLibrary.AzureFunctionsProjectGenerator.CsProjFilePath) == false)
             {
                 return;
             }
@@ -159,7 +155,7 @@ namespace Lost.PlayFab
             string launchSettings = BetterStringBuilder.New()
                 .AppendLine("{")
                 .AppendLine("  \"profiles\": {")
-                .AppendLine("    \"" + playfabSettings.gameServerProjectGenerator.ProjectName + "\": {")
+                .AppendLine("    \"" + LostLibrary.GameServerProjectGenerator.ProjectName + "\": {")
                 .AppendLine("      \"commandName\": \"Project\",")
                 .AppendLine("      \"environmentVariables\": {")
                 .AppendLine($"        \"PF_TITLE_ID\": \"{playfabSettings.titleId}\",")
@@ -170,11 +166,11 @@ namespace Lost.PlayFab
                 .AppendLine("}")
                 .ToString();
 
-            string projectDirectory = Path.GetDirectoryName(playfabSettings.gameServerProjectGenerator.CsProjFilePath);
+            string projectDirectory = Path.GetDirectoryName(LostLibrary.GameServerProjectGenerator.CsProjFilePath);
             string propertiesDirectory = Path.Combine(projectDirectory, "Properties");
             string launchSettingsPath = Path.Combine(propertiesDirectory, "launchSettings.json");
 
-            if (File.Exists(playfabSettings.gameServerProjectGenerator.CsProjFilePath) == false)
+            if (File.Exists(LostLibrary.GameServerProjectGenerator.CsProjFilePath) == false)
             {
                 return;
             }
