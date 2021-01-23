@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="DictionaryEditor.cs" company="Lost Signal LLC">
+// <copyright file="WordDictionaryEditor.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,14 +11,14 @@ namespace Lost
     using UnityEditor;
     using UnityEngine;
 
-    [CustomEditor(typeof(Dictionary))]
-    public class DictionaryEditor : Editor
+    [CustomEditor(typeof(WordDictionary))]
+    public class WordDictionaryEditor : Editor
     {
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
-            var dictionary = this.target as Dictionary;
+            var dictionary = this.target as WordDictionary;
 
             if (dictionary == null)
             {
