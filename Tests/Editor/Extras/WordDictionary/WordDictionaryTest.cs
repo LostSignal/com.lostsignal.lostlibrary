@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="DictionaryTest.cs" company="Lost Signal LLC">
+// <copyright file="WordDictionaryTest.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -9,7 +9,7 @@ namespace Lost
     using NUnit.Framework;
     using UnityEditor;
 
-    public class DictionaryTest
+    public class WordDictionaryTest
     {
         [Test]
         public void Validate()
@@ -18,7 +18,7 @@ namespace Lost
             Assert.True(dictionaryAssetGuids.Length == 1, "Couldn't find default dictionary to test with.");
 
             string dictionaryAssetPath = AssetDatabase.GUIDToAssetPath(dictionaryAssetGuids[0]);
-            var dictionary = AssetDatabase.LoadAssetAtPath(dictionaryAssetPath, typeof(Dictionary)) as Dictionary;
+            var dictionary = AssetDatabase.LoadAssetAtPath<WordDictionary>(dictionaryAssetPath);
 
             Assert.NotNull(dictionary);
 

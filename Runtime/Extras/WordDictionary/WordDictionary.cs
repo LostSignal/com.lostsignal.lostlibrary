@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="Dictionary.cs" company="Lost Signal LLC">
+// <copyright file="WordDictionary.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -10,8 +10,8 @@ namespace Lost
     using System.Collections.Generic;
     using UnityEngine;
 
-    [CreateAssetMenu(menuName = "Lost/Dictionary")]
-    public class Dictionary : ScriptableObject
+    [CreateAssetMenu(menuName = "Lost/WordDictionary")]
+    public class WordDictionary : ScriptableObject
     {
         private const int LetterCount = 26;
 
