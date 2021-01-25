@@ -1,7 +1,8 @@
-using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
 
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
+
+using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 
 /// <summary>
 /// Subclass of the classic Socket Interactor from the Interaction toolkit that will only accept object with the right

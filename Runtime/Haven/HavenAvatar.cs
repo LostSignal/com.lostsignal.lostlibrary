@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if USING_UNITY_XR_INTERACTION_TOOLKIT
+
 namespace HavenXR
 {
     using System.Collections;
@@ -138,3 +140,5 @@ namespace HavenXR
         }
     }
 }
+
+#endif
