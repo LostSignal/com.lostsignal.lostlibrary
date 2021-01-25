@@ -13,12 +13,12 @@ namespace Lost
 
     public class UnityAdsProvider : MonoBehaviour, IAdProvider
     {
-        #pragma warning disable 0649, 0414
+#pragma warning disable 0649, 0414
         [SerializeField] private string appleAppStoreId = null;
         [SerializeField] private string googlePlayAppStoreId = null;
-        #pragma warning restore 0649, 0414
+#pragma warning restore 0649, 0414
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         [ExposeInEditor("Open Unity Ads Dashboard")]
         private void OpenUnityAdsDashboard()
         {
@@ -28,47 +28,46 @@ namespace Lost
             Application.OpenURL(url);
         }
 
-        #endif
+#endif
 
-        #if !USING_UNITY_ADS
+#if !USING_UNITY_ADS
         [ExposeInEditor("Add USING_UNITY_ADS Define")]
         private void AddUsingUsingUnityAdsDefine()
         {
             ProjectDefinesHelper.AddDefineToProject("USING_UNITY_ADS");
         }
 
-        #endif
+#endif
 
         private void OnEnable()
         {
-            #if !USING_UNITY_ADS
+#if !USING_UNITY_ADS
 
-            Debug.LogError("Trying to UnityAdsProvider without the Unity Ads Package");
-
-            #else
+            Debug.LogError("Trying to UnityAdsProvider without the Unity Ads Package", this);
+#else
 
             AdsManager.OnInitialized += () =>
             {
-                #if UNITY_IOS
+#if UNITY_IOS
 
                 if (string.IsNullOrWhiteSpace(this.appleAppStoreId) == false && UnityEngine.Advertisements.Advertisement.isInitialized == false)
                 {
                     UnityEngine.Advertisements.Advertisement.Initialize(this.appleAppStoreId);
                 }
 
-                #elif UNITY_ANDROID
+#elif UNITY_ANDROID
 
                 if (string.IsNullOrWhiteSpace(this.googlePlayAppStoreId) == false && UnityEngine.Advertisements.Advertisement.isInitialized == false)
                 {
                     UnityEngine.Advertisements.Advertisement.Initialize(this.googlePlayAppStoreId);
                 }
 
-                #endif
+#endif
 
                 AdsManager.Instance.SetAdProvider(this);
             };
 
-            #endif
+#endif
         }
 
         string IAdProvider.ProviderName
@@ -76,7 +75,7 @@ namespace Lost
             get { return "UnityAds"; }
         }
 
-        #if USING_UNITY_ADS && (UNITY_IOS || UNITY_ANDROID)
+#if USING_UNITY_ADS && (UNITY_IOS || UNITY_ANDROID)
 
         bool IAdProvider.AreAdsSupported
         {
@@ -130,7 +129,7 @@ namespace Lost
                 UnityEngine.Advertisements.Advertisement.IsReady(placementId);
         }
 
-        #else
+#else
 
         bool IAdProvider.AreAdsSupported => false;
 
@@ -146,6 +145,6 @@ namespace Lost
             watchResultCallback?.Invoke(AdWatchedResult.AdsNotSupported);
         }
 
-        #endif
+#endif
     }
 }
