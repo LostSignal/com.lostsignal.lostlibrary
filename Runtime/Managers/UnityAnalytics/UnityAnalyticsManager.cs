@@ -22,9 +22,9 @@ namespace Lost
         private bool pauseFlushing;
         private string anonymousId;
 
-        #if UNITY_XBOXONE
+#if UNITY_XBOXONE
         private long sessionId = BitConverter.ToInt64(Guid.NewGuid().ToByteArray(), 0);
-        #endif
+#endif
 
         public string AnonymousId
         {
@@ -54,30 +54,30 @@ namespace Lost
         {
             get
             {
-                #if UNITY_XBOXONE
+#if UNITY_XBOXONE
                 return this.sessionId;
-                #else
+#else
                 return UnityEngine.Analytics.AnalyticsSessionInfo.sessionId;
-                #endif
+#endif
             }
         }
 
         public override void Initialize()
         {
-            #if !UNITY_XBOXONE
+#if !UNITY_XBOXONE
             UnityEngine.Analytics.Analytics.initializeOnStartup = true;
             UnityEngine.Analytics.Analytics.enabled = true;
 
             // Toggle this on if you wish to see debug logs for every analytic event
-            #if UNITY_ANALYTICS
+#if USING_UNITY_ANALYTICS
             UnityEngine.Analytics.AnalyticsEvent.debugMode = false;
-            #endif
+#endif
 
             if (UnityEngine.Analytics.AnalyticsSessionInfo.userId != AnonymousId)
             {
                 UnityEngine.Analytics.Analytics.SetUserId(AnonymousId);
             }
-            #endif
+#endif
 
             Analytics.AnalyticsEvent.CustomEventFired += this.EventFired;
 
@@ -196,7 +196,7 @@ namespace Lost
             }
         }
 
-        #if !USING_UNITY_ANALYTICS
+#if !USING_UNITY_ANALYTICS
 
         [ExposeInEditor("Add USING_UNITY_ANALYTICS Define")]
         private void AddUsingUsingUnityAnalyticsDefine()
@@ -204,6 +204,6 @@ namespace Lost
             ProjectDefinesHelper.AddDefineToProject("USING_UNITY_ANALYTICS");
         }
 
-        #endif
+#endif
     }
 }
