@@ -15,7 +15,7 @@ namespace Lost
     ////     #pragma warning disable 0649
     ////     [SerializeField] private string workspace;
     ////     #pragma warning restore 0649
-    //// 
+    ////
     ////     public override string DisplayName => "Perforce Workspace Override";
     ////     public override bool IsInline => true;
     //// }

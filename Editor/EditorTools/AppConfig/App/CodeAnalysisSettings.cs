@@ -8,7 +8,7 @@ namespace Lost
 {
     //// using Lost.AppConfig;
     //// using UnityEngine;
-    //// 
+    ////
     //// [AppConfigSettingsOrder(25)]
     //// public class CodeAnalysisSettings : AppConfigSettings
     //// {
@@ -18,7 +18,7 @@ namespace Lost
     ////     [SerializeField] private bool runStyleCop;
     ////     [SerializeField] private bool warningsAsErrors;
     ////     #pragma warning restore 0649
-    //// 
+    ////
     ////     public override string DisplayName => "Code Analysis";
     ////     public override bool IsInline => false;
     //// }

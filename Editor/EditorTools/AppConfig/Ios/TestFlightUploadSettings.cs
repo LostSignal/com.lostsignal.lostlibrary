@@ -50,12 +50,12 @@
 ////   * https://developer.apple.com/videos/play/wwdc2018/301/
 ////   * https://developer.apple.com/videos/play/wwdc2018/303/
 ////
-//// 
+////
 //// namespace Lost
 //// {
 ////     using Lost.AppConfig;
 ////     using UnityEngine;
-//// 
+////
 ////     [AppConfigSettingsOrder(430)]
 ////     public class TestFlightUploadSettings : AppConfigSettings
 ////     {
@@ -63,7 +63,7 @@
 ////         [SerializeField] private string username;
 ////         [SerializeField] private string password;
 ////         #pragma warning restore 0649
-//// 
+////
 ////         public override string DisplayName => "TestFlight Upload";
 ////         public override bool IsInline => false;
 ////     }

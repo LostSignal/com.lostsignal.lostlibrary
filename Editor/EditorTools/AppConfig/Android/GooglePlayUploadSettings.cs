@@ -8,7 +8,7 @@ namespace Lost
 {
     //// using Lost.AppConfig;
     //// using UnityEngine;
-    //// 
+    ////
     //// [AppConfigSettingsOrder(350)]
     //// public class GooglePlayUploadSettings : AppConfigSettings
     //// {
@@ -16,7 +16,7 @@ namespace Lost
     ////     [SerializeField] private string username;
     ////     [SerializeField] private string password;
     ////     #pragma warning restore 0649
-    //// 
+    ////
     ////     public override string DisplayName => "GoolePlay Uplaod";
     ////     public override bool IsInline => false;
     //// }

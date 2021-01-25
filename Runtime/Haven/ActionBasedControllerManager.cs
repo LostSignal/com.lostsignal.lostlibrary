@@ -1,4 +1,3 @@
-
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
 
 using System;
@@ -28,13 +27,13 @@ public class ActionBasedControllerManager : MonoBehaviour
     }
 
     [Serializable]
-    public class StateEnterEvent : UnityEvent<StateId> { }
+    public class StateEnterEvent : UnityEvent<StateId> {}
 
     [Serializable]
-    public class StateUpdateEvent : UnityEvent { }
+    public class StateUpdateEvent : UnityEvent {}
 
     [Serializable]
-    public class StateExitEvent : UnityEvent<StateId> { }
+    public class StateExitEvent : UnityEvent<StateId> {}
 
     /// <summary>
     /// Use this class to create a controller state and set up its enter, update, and exit events.

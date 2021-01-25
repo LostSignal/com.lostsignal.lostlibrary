@@ -1,4 +1,3 @@
-
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
 
 using UnityEngine;
@@ -25,12 +24,12 @@ public class DialInteractable : XRBaseInteractable
     }
 
     [System.Serializable]
-    public class DialTurnedAngleEvent : UnityEvent<float> { }
+    public class DialTurnedAngleEvent : UnityEvent<float> {}
     [System.Serializable]
-    public class DialTurnedStepEvent : UnityEvent<int> { }
+    public class DialTurnedStepEvent : UnityEvent<int> {}
 
     [System.Serializable]
-    public class DialChangedEvent : UnityEvent<DialInteractable> { }
+    public class DialChangedEvent : UnityEvent<DialInteractable> {}
 
     public InteractionType DialType = InteractionType.ControllerRotation;
 

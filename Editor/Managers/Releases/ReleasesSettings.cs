@@ -31,8 +31,6 @@ namespace Lost
             this.disableUplaod = true;
         }
 
-
-
         public override string DisplayName => "Releases Settings";
 
         public override bool IsInline => false;

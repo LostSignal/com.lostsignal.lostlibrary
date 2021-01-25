@@ -1,4 +1,3 @@
-
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
 
 using System.Collections;

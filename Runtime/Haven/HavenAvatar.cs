@@ -19,8 +19,8 @@ namespace HavenXR
 #pragma warning disable 0649
         [SerializeField] private Renderer[] allRenderers;
         [SerializeField] private Renderer[] tintedMeshRenderers;
-        [SerializeField] [HideInInspector] private NetworkIdentity networkIdentity;
-        [SerializeField] [HideInInspector] private DissonancePlayerTracker dissonancePlayerTracker;
+        [SerializeField][HideInInspector] private NetworkIdentity networkIdentity;
+        [SerializeField][HideInInspector] private DissonancePlayerTracker dissonancePlayerTracker;
 #pragma warning restore 0649
 
         private HavenRig havenRig;

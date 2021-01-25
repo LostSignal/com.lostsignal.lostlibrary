@@ -1,4 +1,3 @@
-
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
 
 using System;
@@ -6,7 +5,7 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
 ////
-//// NOTE [bgish]: This class is a direct copy of XRGrabInteractable.  The reason why I copied it is because of bugs 
+//// NOTE [bgish]: This class is a direct copy of XRGrabInteractable.  The reason why I copied it is because of bugs
 ////               revolving around attachment transforms.  That class doesn't account for them at all.  The hope is
 ////               that once those bugs are fixed, I can delete this class and have HavenGrabbable inherit that instead.
 ////

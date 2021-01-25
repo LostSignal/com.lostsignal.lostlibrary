@@ -1,4 +1,3 @@
-
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
 
 using Lost;
@@ -14,10 +13,10 @@ using Random = UnityEngine.Random;
 public class AxisDragInteractable : XRBaseInteractable
 {
     [Serializable]
-    public class DragDistanceEvent : UnityEvent<float> { }
+    public class DragDistanceEvent : UnityEvent<float> {}
 
     [Serializable]
-    public class DragStepEvent : UnityEvent<int> { }
+    public class DragStepEvent : UnityEvent<int> {}
 
     [Tooltip("The Rigidbody that will be moved. If null will try to grab one on that object or its children")]
     public Rigidbody MovingRigidbody;

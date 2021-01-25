@@ -14,9 +14,9 @@
 //// var module = StandardPurchasingModule.Instance();
 //// bool m_IsUnityChannelSelected = Application.platform == RuntimePlatform.Android && module.androidStore == AndroidStore.XiaomiMiPay;
 //// ```
-//// 
+////
 //// #if UNITY_IAP
-//// 
+////
 //// namespace Lost
 //// {
 ////     using Lost.AppConfig;
@@ -24,20 +24,20 @@
 ////     using UnityEditor.Build;
 ////     using UnityEngine;
 ////     using UnityEngine.Purchaseing;
-//// 
+////
 ////     [AppConfigSettingsOrder()]
 ////     public class AndroidStoreSettings : BuildConfigSettings, IPreprocessBuild
 ////     {
 ////         #pragma warning disable 0649
 ////         [SerializeField] private AndroidStore androidStore;
 ////         #pragma warning restore 0649
-//// 
+////
 ////         int IOrderedCallback.callbackOrder => 100;
-//// 
+////
 ////         void IPreprocessBuild.OnPreprocessBuild(BuildTarget target, string path)
 ////         {
 ////             var storeSettings = EditorBuildConfig.ActiveConfig.GetSettings<AndroidStoreSettings>();
-//// 
+////
 ////             if (storeSettings != null)
 ////             {
 ////                 UnityPurchasingEditor.TargetAndroidStore(AndroidStore.AmazonAppStore);
@@ -45,5 +45,5 @@
 ////         }
 ////     }
 //// }
-//// 
+////
 //// #endif

@@ -1,4 +1,3 @@
-
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
 
 using Lost;
@@ -9,9 +8,9 @@ using UnityEngine.Events;
 public class ButtonInteractable : MonoBehaviour
 {
     [System.Serializable]
-    public class ButtonPressedEvent : UnityEvent { }
+    public class ButtonPressedEvent : UnityEvent {}
     [System.Serializable]
-    public class ButtonReleasedEvent : UnityEvent { }
+    public class ButtonReleasedEvent : UnityEvent {}
 
     public Vector3 Axis = new Vector3(0, -1, 0);
     public float MaxDistance;
@@ -25,7 +24,6 @@ public class ButtonInteractable : MonoBehaviour
 
     public ButtonPressedEvent OnButtonPressed;
     public ButtonReleasedEvent OnButtonReleased;
-
 
 
     Vector3 m_StartPosition;

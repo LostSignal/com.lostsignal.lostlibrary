@@ -199,8 +199,8 @@ namespace Lost
             Rect boxRect = new Rect();
 
             var verticleHelper = settings.IsInline ?
-                (IDisposable)new EditorGUILayout.HorizontalScope("box") :
-                (IDisposable)new FoldoutScope(settings.DisplayName.GetHashCode(), settings.DisplayName, out foldoutVisible, out boxRect, false);
+                (IDisposable) new EditorGUILayout.HorizontalScope("box") :
+                (IDisposable) new FoldoutScope(settings.DisplayName.GetHashCode(), settings.DisplayName, out foldoutVisible, out boxRect, false);
 
             using (verticleHelper)
             {
