@@ -41,12 +41,28 @@ namespace Lost
         [ExposeInEditor("Generate C# Project")]
         public virtual void Generate()
         {
+            // Making sure the solution directory exists
+            var solutionDirectory = Path.GetDirectoryName(this.SolutionFilePath);
+            if (Directory.Exists(solutionDirectory) == false)
+            {
+                Directory.CreateDirectory(solutionDirectory);
+            }
+
             this.WriteFile(this.SolutionFilePath, this.slnProjectFileContent.Text);
             this.WriteFile(this.CsProjFilePath, this.csProjectFileContent.Text);
 
             foreach (var file in this.files)
             {
-                this.WriteFile(this.GetFullFilePath(file.name), file.Text);
+                var filePath = this.GetFullFilePath(file.name);
+                var fileDirectory = Path.GetDirectoryName(filePath);
+
+                // Making sure file directory exists
+                if (Directory.Exists(fileDirectory) == false)
+                {
+                    Directory.CreateDirectory(fileDirectory);
+                }
+
+                this.WriteFile(filePath, file.Text);
             }
         }
 
@@ -80,14 +96,7 @@ namespace Lost
 
         private string GetFullFilePath(string fileName)
         {
-            FileInfo fileInfo = new FileInfo(Path.Combine(this.GetDirectory(), fileName));
-
-            if (fileInfo.Directory.Exists == false)
-            {
-                fileInfo.Directory.Create();
-            }
-
-            return fileInfo.FullName;
+            return new FileInfo(Path.Combine(this.GetDirectory(), fileName)).FullName;
         }
 
         private string GetDirectory()
