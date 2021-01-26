@@ -140,7 +140,12 @@ namespace Lost
                         this.xrGrabInteractable.attachEaseInTime = -1.0f;
                         this.xrGrabInteractable.movementType = XRBaseInteractable.MovementType.Instantaneous;
                         this.xrGrabInteractable.throwOnDetach = false;
+
+#if UNITY_2020_2_OR_NEWER
                         this.xrGrabInteractable.forceGravityOnDetach = false;
+#else
+                        this.xrGrabInteractable.gravityOnDetach = false;
+#endif
 
                         this.xrGrabInteractable.trackPosition = true;
                         this.xrGrabInteractable.smoothPosition = true;

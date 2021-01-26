@@ -80,33 +80,27 @@ namespace Lost.PlayFab
 
         public override void InitializeOnLoad(AppConfig appConfig)
         {
-            var playFabSettings = appConfig.GetSettings<PlayFabSettings>();
+            var playfabSettings = appConfig.GetSettings<PlayFabSettings>();
 
-            if (playFabSettings == null)
+            if (playfabSettings == null)
             {
                 return;
             }
-
-            if (LostLibrary.AzureFunctionsProjectGenerator != null)
-            {
-                GenerateLaunchSettingsForAzureFunctionsProject(playFabSettings);
-            }
-
-            if (LostLibrary.GameServerProjectGenerator != null)
-            {
-                GenerateLaunchSettingsForGameServerProject(playFabSettings);
-            }
-        }
-
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
-        private static void RuntimeInitializeOnLoad()
-        {
-            var playfabSettings = EditorAppConfig.ActiveAppConfig.GetSettings<PlayFabSettings>();
 
             if (playfabSettings != null)
             {
                 global::PlayFab.PlayFabSettings.staticSettings.TitleId = playfabSettings.titleId;
                 global::PlayFab.PlayFabSettings.staticSettings.DeveloperSecretKey = playfabSettings.secretKey;
+            }
+
+            if (LostLibrary.AzureFunctionsProjectGenerator != null)
+            {
+                GenerateLaunchSettingsForAzureFunctionsProject(playfabSettings);
+            }
+
+            if (LostLibrary.GameServerProjectGenerator != null)
+            {
+                GenerateLaunchSettingsForGameServerProject(playfabSettings);
             }
         }
 

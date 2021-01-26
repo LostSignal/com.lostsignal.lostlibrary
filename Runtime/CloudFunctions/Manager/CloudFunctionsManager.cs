@@ -18,26 +18,30 @@ namespace Lost.CloudFunctions
     public class CloudFunctionsManager : Manager<CloudFunctionsManager>
     {
 #if UNITY_EDITOR
-        public static string TitleEntityToken = null;
+        private static string TitleEntityTokenCache = null;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void RuntimeInitializeOnLoad()
+        private static async Task<string> GetTitleEntityToken()
         {
             if (PlayFabSecretKeyCheck() == false)
             {
-                return;
+                return null;
             }
 
-            var getEntityToken = global::PlayFab.PlayFabAuthenticationAPI.GetEntityTokenAsync(new global::PlayFab.AuthenticationModels.GetEntityTokenRequest
+            if (TitleEntityTokenCache.IsNullOrWhitespace())
             {
-                Entity = new global::PlayFab.AuthenticationModels.EntityKey
+                var getEntityToken = await global::PlayFab.PlayFabAuthenticationAPI.GetEntityTokenAsync(new global::PlayFab.AuthenticationModels.GetEntityTokenRequest
                 {
-                    Id = global::PlayFab.PlayFabSettings.staticSettings.TitleId,
-                    Type = "title",
-                }
-            }).Result;
+                    Entity = new global::PlayFab.AuthenticationModels.EntityKey
+                    {
+                        Id = global::PlayFab.PlayFabSettings.staticSettings.TitleId,
+                        Type = "title",
+                    }
+                });
 
-            TitleEntityToken = getEntityToken.Result.EntityToken;
+                TitleEntityTokenCache = getEntityToken.Result.EntityToken;
+            }
+
+            return TitleEntityTokenCache;
         }
 
         private static bool PlayFabSecretKeyCheck()
@@ -54,7 +58,6 @@ namespace Lost.CloudFunctions
 
             return true;
         }
-
 #endif
 
         public override void Initialize()
@@ -163,7 +166,7 @@ namespace Lost.CloudFunctions
             var functionExecution = new FunctionExecutionContext(
                 JsonUtil.Serialize(functionParameter),
                 PlayFabManager.Instance.User.PlayFabId,
-                TitleEntityToken);
+                await GetTitleEntityToken());
 
             try
             {
@@ -208,7 +211,7 @@ namespace Lost.CloudFunctions
             var functionExecution = new FunctionExecutionContext(
                 JsonUtil.Serialize(functionParameter),
                 PlayFabManager.Instance.User.PlayFabId,
-                TitleEntityToken);
+                await GetTitleEntityToken());
 
             try
             {
