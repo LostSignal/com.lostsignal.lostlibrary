@@ -23,7 +23,7 @@ namespace Lost.Haven
 #pragma warning disable 0649
         [SerializeField] private TeleportType type;
         [SerializeField] bool setScaleOnTeleport;
-        [SerializeField] Vector3 rigScale = new Vector3(1.0f, 1.0f, 1.0f);
+        [SerializeField] float rigScale = 1.0f;
 
         [Tooltip("The Transform that represents the teleportation destination.")]
         [SerializeField] Transform teleportAnchorTransform;
@@ -47,6 +47,9 @@ namespace Lost.Haven
             {
                 this.gameObject.layer = teleportLayer;
             }
+
+            // Making sure the interaction layer mask only cares about the teleport layer
+            this.interactionLayerMask = LayerMask.GetMask(HavenRig.TelportLayer);
         }
 
         protected void OnDrawGizmos()
@@ -78,8 +81,7 @@ namespace Lost.Haven
 
             if (this.setScaleOnTeleport)
             {
-                // TODO [bgish]: Get the HavenRig and set the scale
-                // CoroutineRunner.Instance.ExecuteDelayed(0.1f, () => this.rigScale);
+                CoroutineRunner.Instance.ExecuteDelayed(0.1f, () => HavenRig.GetRig().SetScale(this.rigScale));
             }
 
             this.OnTeleport?.Invoke(interactor, teleportRequest);
