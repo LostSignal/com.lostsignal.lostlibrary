@@ -9,13 +9,11 @@ namespace Lost
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using TMPro;
+    using Lost.Haven;
     using UnityEngine;
 
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
     using UnityEngine.InputSystem.UI;
-    using UnityEngine.UI;
-    using UnityEngine.XR.Interaction.Toolkit.UI;
 #endif
 
     public class XRManager : Manager<XRManager>

@@ -1,5 +1,5 @@
 {
-    "name": "XRI Default Input Actions",
+    "name": "Haven Input Actions",
     "maps": [
         {
             "name": "XRI HMD",
@@ -258,6 +258,17 @@
                 },
                 {
                     "name": "",
+                    "id": "2a8ccd81-a7ab-437d-8511-21646f89e9a8",
+                    "path": "<Keyboard>/f",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "487f4f2e-9e9b-49aa-b0f2-4037a24624f5",
                     "path": "<XRController>{LeftHand}/triggerPressed",
                     "interactions": "",
@@ -269,11 +280,33 @@
                 },
                 {
                     "name": "",
+                    "id": "6cb7ede0-36dc-43c7-b7d5-5dff43d0bb10",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Activate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "39aa1724-a43c-4afc-aba4-cb859e3202b7",
                     "path": "<XRController>{LeftHand}/Primary2DAxis",
                     "interactions": "",
                     "processors": "",
                     "groups": "Generic XR Controller",
+                    "action": "Translate Anchor",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "48b83713-07a5-4173-9b49-c06feb9457c2",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -491,11 +524,33 @@
                 },
                 {
                     "name": "",
+                    "id": "7114f474-c71e-4e38-a149-ea14c9f88191",
+                    "path": "<Keyboard>/leftCtrl",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Teleport Mode Activate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "de466e6e-12bf-46a1-b0fd-ffbc343f3399",
                     "path": "<XRController>{RightHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "Generic XR Controller",
+                    "action": "Teleport Mode Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9f6a07f9-44c7-4264-b247-eb2d7afa4def",
+                    "path": "<Keyboard>/leftCtrl",
+                    "interactions": "Press(behavior=1)",
+                    "processors": "",
+                    "groups": "",
                     "action": "Teleport Mode Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -518,6 +573,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Generic XR Controller",
+                    "action": "Teleport Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9720af33-d3ff-4450-b6a5-f6f4ec35e98e",
+                    "path": "<Keyboard>/leftCtrl",
+                    "interactions": "Press(behavior=1)",
+                    "processors": "",
+                    "groups": "",
                     "action": "Teleport Select",
                     "isComposite": false,
                     "isPartOfComposite": false

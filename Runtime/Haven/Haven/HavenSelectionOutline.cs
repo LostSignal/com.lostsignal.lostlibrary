@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Haven
+namespace Lost.Haven
 {
     using UnityEngine;
 

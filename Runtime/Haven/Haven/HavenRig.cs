@@ -6,11 +6,12 @@
 
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
 
-namespace HavenXR
+namespace Lost.Haven
 {
     using Lost;
     using System.Collections;
     using UnityEngine;
+    using UnityEngine.UI;
     using UnityEngine.XR.Interaction.Toolkit;
 
     public class HavenRig : MonoBehaviour
@@ -87,6 +88,10 @@ namespace HavenXR
             else if (device.XRType == XRType.Pancake)
             {
                 this.pancakeController.enabled = true;
+
+                // For some reason Pancake doesn't properly set the camera Y offset, so doing it manually
+                this.genericXRRig.cameraFloorOffsetObject.transform.localPosition =
+                    this.genericXRRig.cameraFloorOffsetObject.transform.localPosition.SetY(this.genericXRRig.cameraYOffset);
             }
             else if (device.XRType == XRType.ARHanheld)
             {
@@ -100,6 +105,7 @@ namespace HavenXR
             {
                 throw new System.NotImplementedException();
             }
+
         }
     }
 }

@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Lost
+namespace Lost.Haven
 {
     [UnityEngine.AddComponentMenu("")]
 #if USING_UNITY_XR_INTERACTION_TOOLKIT

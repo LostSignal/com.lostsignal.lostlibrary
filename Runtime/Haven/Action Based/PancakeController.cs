@@ -6,13 +6,14 @@
 
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
 
-namespace HavenXR
+namespace Lost.Haven
 {
     using System.Collections;
     using Lost;
     using UnityEngine;
     using UnityEngine.InputSystem;
     using UnityEngine.InputSystem.XR;
+    using UnityEngine.UI;
     using UnityEngine.XR.Interaction.Toolkit;
 
     //// NOTE [bgish]:  In ActionBasedControllerManager.cs in OnUpdateTeleportState function, need to delay the
@@ -41,6 +42,13 @@ namespace HavenXR
         [SerializeField] private Vector3 teleportLookAtForward = new Vector3(0.0f, 0.5f, 1.0f);
         [SerializeField] private float teleportVelocity = 6.5f;
         [SerializeField] private float teleportGravity = 9.8f;
+
+        [Header("Reticle")]
+        [SerializeField] private Canvas reticleCanvas;
+        [SerializeField] private Image reticleImage;
+        [SerializeField] private XRRayInteractor reticleRayInteractor;
+        [SerializeField] private Color reticleEnabledColor = Color.green;
+        [SerializeField] private Color reticleDisabledColor = Color.gray;
 #pragma warning restore 0649
 
         // Head
@@ -67,6 +75,12 @@ namespace HavenXR
         private float rotationX;
         private float rotationY;
         private bool hasFocus = true;
+
+        private void Awake()
+        {
+            // Making sure reticle is off by default
+            this.SelectExited(null);
+        }
 
         private void Start()
         {
@@ -140,6 +154,12 @@ namespace HavenXR
             {
                 this.StartCoroutine(DisableLineRenderer());
             }
+
+            // Setting up the reticle events
+            this.reticleRayInteractor.hoverEntered.AddListener(this.HoverEntered);
+            this.reticleRayInteractor.hoverExited.AddListener(this.HoverExited);
+            this.reticleRayInteractor.selectEntered.AddListener(this.SelectEntered);
+            this.reticleRayInteractor.selectExited.AddListener(this.SelectExited);
 
             IEnumerator DisableLineRenderer()
             {
@@ -292,6 +312,26 @@ namespace HavenXR
             this.leftHand.transform.rotation = this.headTransform.rotation;
             this.rightHand.transform.position = this.headTransform.position + (this.headTransform.rotation * this.teleportControllerOffset);
             this.rightHand.transform.rotation = this.headTransform.rotation * Quaternion.LookRotation(this.teleportLookAtForward);
+        }
+
+        private void HoverEntered(HoverEnterEventArgs _)
+        {
+            this.reticleImage.color = this.reticleEnabledColor;
+        }
+
+        private void HoverExited(HoverExitEventArgs _)
+        {
+            this.reticleImage.color = this.reticleDisabledColor;
+        }
+
+        private void SelectEntered(SelectEnterEventArgs _)
+        {
+            this.reticleCanvas.enabled = false;
+        }
+
+        private void SelectExited(SelectExitEventArgs _)
+        {
+            this.reticleCanvas.enabled = true;
         }
     }
 }

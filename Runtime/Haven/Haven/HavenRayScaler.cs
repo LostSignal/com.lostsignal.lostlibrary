@@ -6,7 +6,7 @@
 
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
 
-namespace HavenXR
+namespace Lost.Haven
 {
     using Lost;
     using UnityEngine;

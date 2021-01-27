@@ -6,7 +6,7 @@
 
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
 
-namespace HavenXR
+namespace Lost.Haven
 {
     using Lost.Networking;
     using UnityEngine;
@@ -48,11 +48,11 @@ namespace HavenXR
                 Debug.LogError($"{this.name} has XRGrabHookup component, but CanChangeOwner = false.", this);
             }
 
-            this.xrGrabInteractable.onSelectEntered.AddListener(this.OnSelectEntered);
-            this.xrGrabInteractable.onSelectExited.AddListener(this.OnSelectExited);
+            this.xrGrabInteractable.selectEntered.AddListener(this.OnSelectEntered);
+            this.xrGrabInteractable.selectExited.AddListener(this.OnSelectExited);
         }
 
-        private void OnSelectEntered(XRBaseInteractor _)
+        private void OnSelectEntered(SelectEnterEventArgs _)
         {
             if (Time.realtimeSinceStartup - this.awakeTime > 1.0f)
             {
@@ -60,7 +60,7 @@ namespace HavenXR
             }
         }
 
-        private void OnSelectExited(XRBaseInteractor _)
+        private void OnSelectExited(SelectExitEventArgs _)
         {
             if (Time.realtimeSinceStartup - this.awakeTime > 1.0f)
             {

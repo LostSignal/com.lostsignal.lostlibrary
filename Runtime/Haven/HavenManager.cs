@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace HavenXR
+namespace Lost.Haven
 {
     using Lost;
 

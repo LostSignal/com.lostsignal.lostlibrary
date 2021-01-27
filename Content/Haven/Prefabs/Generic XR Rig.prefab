@@ -2350,3 +2350,8 @@ MonoBehaviour:
   teleportLookAtForward: {x: 0, y: 0.5, z: 1}
   teleportVelocity: 6.5
   teleportGravity: 9.8
+  reticleCanvas: {fileID: 0}
+  reticleImage: {fileID: 0}
+  reticleRayInteractor: {fileID: 0}
+  reticleEnabledColor: {r: 0, g: 1, b: 0, a: 1}
+  reticleDisabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}

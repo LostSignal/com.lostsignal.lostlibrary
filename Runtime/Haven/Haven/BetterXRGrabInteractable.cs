@@ -10,7 +10,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 ////               that once those bugs are fixed, I can delete this class and have HavenGrabbable inherit that instead.
 ////
 
-namespace HavenXR
+namespace Lost.Haven
 {
     /// <summary>
     /// Interactable component that allows basic "grab" functionality.

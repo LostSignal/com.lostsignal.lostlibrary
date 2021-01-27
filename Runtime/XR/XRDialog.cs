@@ -135,7 +135,7 @@ namespace Lost
                     if (this.xrGrabInteractable == null)
                     {
                         this.xrGrabInteractable = this.GetOrAddComponent<XRGrabInteractable>();
-                        this.xrGrabInteractable.onSelectEntered.AddListener((interactor) => this.hasBeenGrabbed = true);
+                        this.xrGrabInteractable.selectEntered.AddListener((interactor) => this.hasBeenGrabbed = true);
 
                         this.xrGrabInteractable.attachEaseInTime = -1.0f;
                         this.xrGrabInteractable.movementType = XRBaseInteractable.MovementType.Instantaneous;
