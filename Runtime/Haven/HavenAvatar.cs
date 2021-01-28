@@ -167,8 +167,8 @@ namespace Lost.Haven
 
         private void UpdateControllers(bool isPancake)
         {
-            this.leftController.gameObject.SetActive(this.isPancake == false);
-            this.rightController.gameObject.SetActive(this.isPancake == false);
+            this.leftController.gameObject.SetActive(isPancake == false);
+            this.rightController.gameObject.SetActive(isPancake == false);
         }
     }
 }
