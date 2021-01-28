@@ -19,13 +19,18 @@ namespace Lost.Haven
     public class HavenAvatar : MonoBehaviour
     {
 #pragma warning disable 0649
+        [SerializeField] private Transform leftController;
+        [SerializeField] private Transform rightController;
+
         [SerializeField] private Renderer[] allRenderers;
         [SerializeField] private Renderer[] tintedMeshRenderers;
-        [SerializeField][HideInInspector] private NetworkIdentity networkIdentity;
-        [SerializeField][HideInInspector] private DissonancePlayerTracker dissonancePlayerTracker;
+        [SerializeField] [HideInInspector] private NetworkIdentity networkIdentity;
+        [SerializeField] [HideInInspector] private DissonancePlayerTracker dissonancePlayerTracker;
 #pragma warning restore 0649
 
         private HavenRig havenRig;
+        private Color avatarColor;
+        private bool isPancake;
         private bool isOwner;
 
         public long OwnerId => this.networkIdentity.OwnerId;
@@ -39,15 +44,7 @@ namespace Lost.Haven
         private void Awake()
         {
             this.OnValidate();
-
-            // Hiding all the renderers
-            if (this.allRenderers != null)
-            {
-                for (int i = 0; i < this.allRenderers.Length; i++)
-                {
-                    this.allRenderers[i].enabled = false;
-                }
-            }
+            this.ShowAvatar(false);
         }
 
         private void OnEnable()
@@ -82,10 +79,17 @@ namespace Lost.Haven
 
                 if (this.havenRig != null)
                 {
-                    this.transform.position = this.havenRig.transform.position;
-                    this.transform.rotation = this.havenRig.transform.rotation;
+                    this.transform.position = this.havenRig.RigCamera.transform.position;
+                    this.transform.rotation = this.havenRig.RigCamera.transform.rotation;
+                    this.transform.localScale = new Vector3(this.havenRig.RigScale, this.havenRig.RigScale, this.havenRig.RigScale);
 
-                    //// TODO [bgish]: Make sure to update any controllers as well
+                    if (this.isPancake == false)
+                    {
+                        this.leftController.position = this.havenRig.LeftController.position;
+                        this.leftController.rotation = this.havenRig.LeftController.rotation;
+                        this.rightController.position = this.havenRig.RightController.position;
+                        this.rightController.rotation = this.havenRig.RightController.rotation;
+                    }
                 }
             }
         }
@@ -109,16 +113,26 @@ namespace Lost.Haven
                         userInfo.CustomData.ContainsKey("Color") &&
                         userInfo.CustomData.ContainsKey("Platform"))
                     {
+                        this.avatarColor = ColorUtil.ParseColorHexString(userInfo.CustomData["Color"]);
+                        this.isPancake = userInfo.CustomData["Platform"] == "Pancake";
+
+                        this.UpdateControllers(this.isPancake);
+                        this.SetAvatarColor(this.avatarColor);
+                        this.SetAvatarName(userInfo);
+                        this.ShowAvatar(true);
+
+                        //// TODO [bgish]: Start coroutine for updating Audio
+
                         break;
                     }
                 }
 
                 yield return null;
             }
+        }
 
-            // TODO [bgish]: Show all ui/rederers
-            Color avatarColor = ColorUtil.ParseColorHexString(userInfo.CustomData["Color"]);
-
+        private void SetAvatarColor(Color avatarColor)
+        {
             if (this.tintedMeshRenderers != null)
             {
                 foreach (var meshRenderer in this.tintedMeshRenderers)
@@ -126,17 +140,35 @@ namespace Lost.Haven
                     meshRenderer.material.color = avatarColor;
                 }
             }
+        }
 
-            //// TODO [bgish]: Set the Avatar Display Name
+        private void SetAvatarName(UserInfo userInfo)
+        {
+            string displayName = userInfo.GetDisplayName();
 
-            // TODO [bgish]: Show all ui/meshes associated with this avatar
+            if (string.IsNullOrWhiteSpace(displayName))
+            {
+                displayName = $"Player{userInfo.GetPlayFabId().Substring(0, 4)}";
+            }
+
+            //// TODO [bgish]: Put facing text object above head and set to this
+        }
+
+        private void ShowAvatar(bool show)
+        {
             if (this.allRenderers != null)
             {
                 for (int i = 0; i < this.allRenderers.Length; i++)
                 {
-                    this.allRenderers[i].enabled = true;
+                    this.allRenderers[i].enabled = show;
                 }
             }
+        }
+
+        private void UpdateControllers(bool isPancake)
+        {
+            this.leftController.gameObject.SetActive(this.isPancake == false);
+            this.rightController.gameObject.SetActive(this.isPancake == false);
         }
     }
 }
