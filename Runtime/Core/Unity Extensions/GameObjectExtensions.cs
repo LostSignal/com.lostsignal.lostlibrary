@@ -135,7 +135,10 @@ namespace Lost
 
         private static void PrivateSetLayerRecursively(GameObject gameObject, int layer)
         {
-            gameObject.layer = layer;
+            if (gameObject.layer != layer)
+            {
+                gameObject.layer = layer;
+            }
 
             for (int i = 0; i < gameObject.transform.childCount; i++)
             {

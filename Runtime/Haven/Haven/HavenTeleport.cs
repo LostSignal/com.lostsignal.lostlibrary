@@ -22,34 +22,47 @@ namespace Lost.Haven
 
 #pragma warning disable 0649
         [SerializeField] private TeleportType type;
-        [SerializeField] bool setScaleOnTeleport;
-        [SerializeField] float rigScale = 1.0f;
+        [SerializeField] private bool setScaleOnTeleport;
+        [SerializeField] private float rigScale = 1.0f;
 
         [Tooltip("The Transform that represents the teleportation destination.")]
-        [SerializeField] Transform teleportAnchorTransform;
+        [SerializeField] private Transform anchorOverrideTransform;
 #pragma warning restore 0649
 
         public System.Action<XRBaseInteractor, TeleportRequest> OnTeleport;
 
-        private Transform TeleportAnchorTransform => this.teleportAnchorTransform != null ? this.teleportAnchorTransform : this.transform;
+        private Transform AnchorOverrideTransform => this.anchorOverrideTransform != null ? this.anchorOverrideTransform : this.transform;
 
         private void OnValidate()
         {
+            if (this.interactionManager != null)
+            {
+                this.interactionManager = null;
+            }
+
+            if (this.interactionLayerMask != LayerMask.GetMask(HavenRig.TelportLayer))
+            {
+                this.interactionLayerMask = LayerMask.GetMask(HavenRig.TelportLayer);
+            }
+
+            if (this.teleportTrigger != TeleportTrigger.OnSelectExited)
+            {
+                this.teleportTrigger = TeleportTrigger.OnSelectExited;
+            }
+
+            if (this.teleportationProvider != null)
+            {
+                this.teleportationProvider = null;
+            }
+
+            // Making sure this object is on the HavenRig Teleport Layer
+            this.gameObject.SetLayerRecursively(LayerMask.NameToLayer(HavenRig.TelportLayer));
+
             // Auto populating a collider if it already exists
             if (this.GetComponent<Collider>() != null && this.colliders != null && this.colliders.Count == 0)
             {
                 this.colliders.Add(this.GetComponent<Collider>());
             }
-
-            // Making sure this object is on the HavenRig Teleport Layer
-            var teleportLayer = LayerMask.NameToLayer(HavenRig.TelportLayer);
-            if (this.gameObject.layer != teleportLayer)
-            {
-                this.gameObject.layer = teleportLayer;
-            }
-
-            // Making sure the interaction layer mask only cares about the teleport layer
-            this.interactionLayerMask = LayerMask.GetMask(HavenRig.TelportLayer);
         }
 
         protected void OnDrawGizmos()
@@ -57,8 +70,8 @@ namespace Lost.Haven
             if (this.type == TeleportType.Anchor)
             {
                 Gizmos.color = Color.blue;
-                GizmoHelpers.DrawWireCubeOriented(this.TeleportAnchorTransform.position, this.TeleportAnchorTransform.rotation, 1f);
-                GizmoHelpers.DrawAxisArrows(this.TeleportAnchorTransform, 1f);
+                GizmoHelpers.DrawWireCubeOriented(this.AnchorOverrideTransform.position, this.AnchorOverrideTransform.rotation, 1f);
+                GizmoHelpers.DrawAxisArrows(this.AnchorOverrideTransform, 1f);
             }
         }
 
@@ -71,8 +84,8 @@ namespace Lost.Haven
             }
             else if (this.type == TeleportType.Anchor)
             {
-                teleportRequest.destinationPosition = this.TeleportAnchorTransform.position;
-                teleportRequest.destinationRotation = this.TeleportAnchorTransform.rotation;
+                teleportRequest.destinationPosition = this.AnchorOverrideTransform.position;
+                teleportRequest.destinationRotation = this.AnchorOverrideTransform.rotation;
             }
             else
             {
