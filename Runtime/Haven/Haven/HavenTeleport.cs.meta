@@ -3,7 +3,11 @@ guid: a89d16e0cb2df59419b6e58db827e901
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - m_InteractionManager: {instanceID: 0}
+  - m_CustomReticle: {fileID: 3819676577015031517, guid: 967d6ba5934e95a4dba738bf95136ce8, type: 3}
+  - m_TeleportationProvider: {instanceID: 0}
+  - anchorOverrideTransform: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
