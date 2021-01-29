@@ -49,8 +49,8 @@ namespace Lost.Haven
 
                 foreach (var teleport in GameObject.FindObjectsOfType<BaseTeleportationInteractable>(true))
                 {
-                    teleport.interactionManager = xrInteractionManagerInstance;
                     teleport.teleportationProvider = teleportProvider;
+                    teleport.interactionManager = xrInteractionManagerInstance;
                 }
             }
         }

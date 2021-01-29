@@ -35,6 +35,11 @@ namespace Lost.Haven
 
         private void OnValidate()
         {
+            if (Application.isPlaying)
+            {
+                return;
+            }
+
             if (this.interactionManager != null)
             {
                 this.interactionManager = null;
@@ -59,9 +64,14 @@ namespace Lost.Haven
             this.gameObject.SetLayerRecursively(LayerMask.NameToLayer(HavenRig.TelportLayer));
 
             // Auto populating a collider if it already exists
-            if (this.GetComponent<Collider>() != null && this.colliders != null && this.colliders.Count == 0)
+            var colliders = this.GetComponentsInChildren<Collider>();
+
+            if (colliders?.Length > 0 && this.colliders != null && this.colliders.Count == 0)
             {
-                this.colliders.Add(this.GetComponent<Collider>());
+                foreach (var collider in colliders)
+                {
+                    this.colliders.Add(collider);
+                }
             }
         }
 
