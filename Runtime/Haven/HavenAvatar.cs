@@ -12,6 +12,7 @@ namespace Lost.Haven
     using Lost;
     using Lost.DissonanceIntegration;
     using Lost.Networking;
+    using TMPro;
     using UnityEngine;
 
     [RequireComponent(typeof(NetworkIdentity))]
@@ -21,6 +22,8 @@ namespace Lost.Haven
 #pragma warning disable 0649
         [SerializeField] private Transform leftController;
         [SerializeField] private Transform rightController;
+        [SerializeField] private Canvas avatarCanvas;
+        [SerializeField] private TMP_Text displayName;
 
         [SerializeField] private Renderer[] allRenderers;
         [SerializeField] private Renderer[] tintedMeshRenderers;
@@ -89,6 +92,11 @@ namespace Lost.Haven
                         this.leftController.rotation = this.havenRig.LeftController.rotation;
                         this.rightController.position = this.havenRig.RightController.position;
                         this.rightController.rotation = this.havenRig.RightController.rotation;
+
+                        if (NetworkingManager.PrintDebugOutput)
+                        {
+                            Debug.Log($"Avatar: Head = {this.havenRig.RigCamera.transform.position}, Left = {this.havenRig.LeftController.position}, Right = {this.havenRig.RightController.position}");
+                        }
                     }
                 }
             }
@@ -151,7 +159,10 @@ namespace Lost.Haven
                 displayName = $"Player{userInfo.GetPlayFabId().Substring(0, 4)}";
             }
 
-            //// TODO [bgish]: Put facing text object above head and set to this
+            if (this.displayName)
+            {
+                this.displayName.text = displayName;
+            }
         }
 
         private void ShowAvatar(bool show)
@@ -162,6 +173,11 @@ namespace Lost.Haven
                 {
                     this.allRenderers[i].enabled = show;
                 }
+            }
+
+            if (this.avatarCanvas)
+            {
+                this.avatarCanvas.gameObject.SetActive(show);
             }
         }
 
