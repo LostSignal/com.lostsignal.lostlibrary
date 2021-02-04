@@ -24,7 +24,7 @@ namespace Lost.Networking
         private static NetworkWriter writer = new NetworkWriter();
 
 #pragma warning disable 0649
-        [HideInInspector, SerializeField] private NetworkIdentity networkIdentity;
+        [SerializeField] private NetworkIdentity networkIdentity;
 #pragma warning restore 0649
 
         private SendConfig sendConfig;
@@ -102,7 +102,7 @@ namespace Lost.Networking
         protected virtual void OnValidate()
         {
             // Making sure we have a NetworkIdentity and we belong to it (editor only)
-            if (Application.isEditor && Application.isPlaying == false)
+            if (Application.isEditor && Application.isPlaying == false && this.networkIdentity == null)
             {
                 var networkIdentity = this.GetComponentInParent<NetworkIdentity>();
 
@@ -119,7 +119,8 @@ namespace Lost.Networking
 
         protected virtual void Awake()
         {
-            this.AssertGetComponentInParent(ref this.networkIdentity);
+            this.OnValidate();
+
             Debug.Assert(this.BehaviourIndex != -1);
 
             if (this.networkIdentity == null)

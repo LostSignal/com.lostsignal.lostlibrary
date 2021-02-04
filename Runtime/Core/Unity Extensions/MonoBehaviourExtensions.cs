@@ -67,6 +67,37 @@ namespace Lost
             }
         }
 
+        public static void AssertGetComponentInChildren<T>(this MonoBehaviour monoBehaviour, ref T memberVariable)
+            where T : Component
+        {
+#if UNITY_EDITOR
+            if (monoBehaviour.gameObject.scene.IsValid() == false || UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage() != null)
+            {
+                return;
+            }
+#endif
+
+            if (memberVariable == null)
+            {
+                memberVariable = monoBehaviour.GetComponentInChildren<T>();
+
+                if (memberVariable == null)
+                {
+                    Debug.LogErrorFormat(monoBehaviour.gameObject, "{0} {1} couldn't find {2} component in children.", monoBehaviour.GetType().Name, GetFullName(monoBehaviour), typeof(T).Name);
+                }
+                else if (Application.isPlaying)
+                {
+                    Debug.LogWarningFormat(monoBehaviour.gameObject, "Unneseccasy GetComponentInChildren<{0}> call on GameObject {1}.  Should prepopulate this in editor and not at runtime.", typeof(T).Name, GetFullName(monoBehaviour));
+                }
+                else
+                {
+#if UNITY_EDITOR
+                    UnityEditor.EditorUtility.SetDirty(monoBehaviour);
+#endif
+                }
+            }
+        }
+
         public static void AssertNotNull(this MonoBehaviour monoBehaviour, object obj, string nameOfObject = null)
         {
             if (obj == null)

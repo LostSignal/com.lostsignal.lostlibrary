@@ -16,19 +16,24 @@ namespace Lost.Haven
     using UnityEngine;
 
     [RequireComponent(typeof(NetworkIdentity))]
-    [RequireComponent(typeof(DissonancePlayerTracker))]
     public class HavenAvatar : MonoBehaviour
     {
 #pragma warning disable 0649
+        [SerializeField] private NetworkIdentity networkIdentity;
+        [SerializeField] private DissonancePlayerTracker dissonancePlayerTracker;
+
+        [SerializeField] private Transform headTransform;
         [SerializeField] private Transform leftController;
         [SerializeField] private Transform rightController;
+
+        [Header("Canvas")]
         [SerializeField] private Canvas avatarCanvas;
         [SerializeField] private TMP_Text displayName;
+        [SerializeField] private Vector3 canvasGlobalOffset;
 
+        [Header("Rendering")]
         [SerializeField] private Renderer[] allRenderers;
         [SerializeField] private Renderer[] tintedMeshRenderers;
-        [SerializeField] [HideInInspector] private NetworkIdentity networkIdentity;
-        [SerializeField] [HideInInspector] private DissonancePlayerTracker dissonancePlayerTracker;
 #pragma warning restore 0649
 
         private HavenRig havenRig;
@@ -41,7 +46,7 @@ namespace Lost.Haven
         private void OnValidate()
         {
             this.AssertGetComponent(ref this.networkIdentity);
-            this.AssertGetComponent(ref this.dissonancePlayerTracker);
+            this.AssertGetComponentInChildren(ref this.dissonancePlayerTracker);
         }
 
         private void Awake()
@@ -82,16 +87,21 @@ namespace Lost.Haven
 
                 if (this.havenRig != null)
                 {
-                    this.transform.position = this.havenRig.RigCamera.transform.position;
-                    this.transform.rotation = this.havenRig.RigCamera.transform.rotation;
-                    this.transform.localScale = new Vector3(this.havenRig.RigScale, this.havenRig.RigScale, this.havenRig.RigScale);
+                    var rigScale = new Vector3(this.havenRig.RigScale, this.havenRig.RigScale, this.havenRig.RigScale);
+
+                    this.headTransform.position = this.havenRig.RigCamera.transform.position;
+                    this.headTransform.rotation = this.havenRig.RigCamera.transform.rotation;
+                    this.headTransform.localScale = rigScale;
 
                     if (this.isPancake == false)
                     {
                         this.leftController.position = this.havenRig.LeftController.position;
                         this.leftController.rotation = this.havenRig.LeftController.rotation;
+                        this.leftController.localScale = rigScale;
+
                         this.rightController.position = this.havenRig.RightController.position;
                         this.rightController.rotation = this.havenRig.RightController.rotation;
+                        this.rightController.localScale = rigScale;
 
                         if (NetworkingManager.PrintDebugOutput)
                         {
@@ -100,8 +110,13 @@ namespace Lost.Haven
                     }
                 }
             }
+            else
+            {
+                // BUG [bgish]: Does not account for rig scale
+                this.avatarCanvas.transform.position = this.headTransform.position + this.canvasGlobalOffset;
+            }
         }
-
+        
         private void UpdateObjectTracker()
         {
             ObjectTracker.UpdateRegistration(this);
