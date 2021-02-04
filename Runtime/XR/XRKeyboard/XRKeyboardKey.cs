@@ -8,18 +8,15 @@ namespace Lost
 {
     using TMPro;
     using UnityEngine;
-    using UnityEngine.UI;
+    using UnityEngine.EventSystems;
 
-    [RequireComponent(typeof(LostButton))]
-    public class XRKeyboardKey : MonoBehaviour
+    public class XRKeyboardKey : LostButton
     {
 #pragma warning disable 0649
         [SerializeField][HideInInspector] private TMP_Text text;
-        [SerializeField][HideInInspector] private Button button;
         [SerializeField][HideInInspector] private XRKeyboard xrKeyboard;
 #pragma warning restore 0649
 
-        private XRKeyboard keyboard;
         private char keyChar;
         private string keyString;
         private string secondaryKeys;
@@ -27,7 +24,6 @@ namespace Lost
 
         public void SetData(XRKeyboard keyboard, char keyChar, string keyString, System.Action<char, string> keyPressed)
         {
-            this.keyboard = keyboard;
             this.keyChar = keyChar;
             this.keyString = keyString;
             this.keyPressed = keyPressed;
@@ -42,17 +38,30 @@ namespace Lost
             this.keyPressed?.Invoke(this.keyChar, this.keyString);
         }
 
-        private void OnValidate()
+        public override void OnPointerClick(PointerEventData eventData)
         {
+            this.ProcessKeyPress();
+            base.OnPointerClick(eventData);
+        }
+
+        public override void OnPointerDown(PointerEventData eventData)
+        {
+            InputFieldTracker.ReselectLastKnownInputField();
+            base.OnPointerDown(eventData);
+        }
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
             this.AssertGetComponent(ref this.text);
-            this.AssertGetComponent(ref this.button);
             this.AssertGetComponentInParent(ref this.xrKeyboard);
         }
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             this.OnValidate();
-            this.button.onClick.AddListener(this.ProcessKeyPress);
         }
     }
 }

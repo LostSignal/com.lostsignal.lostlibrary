@@ -337,12 +337,15 @@ namespace Lost
 
                 while (true)
                 {
-                    if (xrKeyboard.Dialog.IsHidden && (InputFieldTracker.GetCurrentInputField() != null || InputFieldTracker.GetCurrentTMPInputField() != null))
+                    if (InputFieldTracker.IsInputFieldSelected && xrKeyboard.Dialog.IsHidden)
                     {
                         xrKeyboard.Dialog.Show();
                     }
 
-                    yield return WaitForUtil.Seconds(0.25f);
+                    // NOTE [bgish]: This is important and kinda hacky, we need to call InputFieldTracker.IsInputFieldSelected every
+                    //               frame if we want to properly track the last known selection of the text input.  We only care
+                    //               though if the keyboard dialog is showing, or else we can just check every quarter second.
+                    yield return xrKeyboard.Dialog.IsShowing ? null : WaitForUtil.Seconds(0.25f);
                 }
             }
         }

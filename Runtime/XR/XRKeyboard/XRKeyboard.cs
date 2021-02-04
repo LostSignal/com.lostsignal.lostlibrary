@@ -6,9 +6,7 @@
 
 namespace Lost
 {
-    using TMPro;
     using UnityEngine;
-    using UnityEngine.UI;
 
     public class XRKeyboard : DialogLogic
     {
@@ -55,15 +53,46 @@ namespace Lost
 
             var inputField = InputFieldTracker.GetCurrentInputField();
             var tmpInputField = InputFieldTracker.GetCurrentTMPInputField();
+            string currentText = null;
 
             if (inputField)
             {
-                inputField.ProcessEvent(Event.KeyboardEvent(keyString));
+                currentText = inputField.text;
             }
             else if (tmpInputField)
             {
-                tmpInputField.ProcessEvent(Event.KeyboardEvent(keyString));
+                currentText = inputField.text;
             }
+
+            if (currentText != null)
+            {
+                int caretStartIndex = Mathf.Min(InputFieldTracker.GetLastKnownSelectionAnchorPosition(), InputFieldTracker.GetLastKnownSelectionFocusPosition());
+                int caretEndIndex = Mathf.Max(InputFieldTracker.GetLastKnownSelectionAnchorPosition(), InputFieldTracker.GetLastKnownSelectionFocusPosition());
+
+                //// TODO [bgish]: Still need to handle special cases like delete/backspace
+
+                string newText = currentText;
+
+                if (caretStartIndex != caretEndIndex)
+                {
+                    newText = newText.Remove(caretStartIndex, caretEndIndex - caretStartIndex);
+                }
+
+                newText = newText.Insert(caretStartIndex, keyString);
+
+                if (inputField)
+                {
+                    inputField.text = newText;
+                    inputField.caretPosition = caretStartIndex + 1;
+                }
+                else if (tmpInputField)
+                {
+                    tmpInputField.text = newText;
+                    tmpInputField.caretPosition = caretStartIndex + 1;
+                }
+            }
+
+            InputFieldTracker.Update();
         }
 
         private void PopulateKeyboard()
