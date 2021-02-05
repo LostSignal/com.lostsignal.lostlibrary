@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: XR Dialog Settings
   m_EditorClassIdentifier: 
   settings:
-  - canvasDistanceForwards: 1.5
+  - canvasDistanceForwards: 8
     canvasDistanceUpwards: 0
     positionLerpSpeed: 2
     rotationLerpSpeed: 10

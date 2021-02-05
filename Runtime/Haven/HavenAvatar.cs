@@ -102,11 +102,6 @@ namespace Lost.Haven
                         this.rightController.position = this.havenRig.RightController.position;
                         this.rightController.rotation = this.havenRig.RightController.rotation;
                         this.rightController.localScale = rigScale;
-
-                        if (NetworkingManager.PrintDebugOutput)
-                        {
-                            Debug.Log($"Avatar: Head = {this.havenRig.RigCamera.transform.position}, Left = {this.havenRig.LeftController.position}, Right = {this.havenRig.RightController.position}");
-                        }
                     }
                 }
             }
@@ -116,7 +111,7 @@ namespace Lost.Haven
                 this.avatarCanvas.transform.position = this.headTransform.position + this.canvasGlobalOffset;
             }
         }
-        
+
         private void UpdateObjectTracker()
         {
             ObjectTracker.UpdateRegistration(this);
