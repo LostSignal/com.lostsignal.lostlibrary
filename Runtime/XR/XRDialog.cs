@@ -45,10 +45,11 @@ namespace Lost
         [SerializeField] private bool isGrabable;
 #endif
 
-        [SerializeField][HideInInspector] private Dialog dialog;
-        [SerializeField][HideInInspector] private Canvas dialogCanvas;
+        [SerializeField] [HideInInspector] private Dialog dialog;
+        [SerializeField] [HideInInspector] private Canvas dialogCanvas;
 #pragma warning restore 0649
 
+        private bool disableHeadTracking;
         private float originalPlaneDistance;
         private bool isPancakeMode;
         private bool hasBeenGrabbed;
@@ -57,6 +58,12 @@ namespace Lost
         private TrackedDeviceGraphicRaycaster trackedDeviceGraphicRaycaster;
         private XRGrabInteractable xrGrabInteractable;
 #endif
+
+        public bool DisableHeadTracking
+        {
+            get => this.disableHeadTracking;
+            set => this.disableHeadTracking = value;
+        }
 
         private void OnValidate()
         {
@@ -75,7 +82,11 @@ namespace Lost
 
         private void Update()
         {
-            if (this.hasBeenGrabbed == false)
+            if (this.disableHeadTracking || this.hasBeenGrabbed)
+            {
+                return;
+            }
+            else
             {
                 this.UpdatePosition();
             }
@@ -171,6 +182,7 @@ namespace Lost
                     this.ExecuteAtEndOfFrame(() =>
                     {
                         this.dialogCanvas.renderMode = RenderMode.WorldSpace;
+                        this.dialogCanvas.transform.localScale = new Vector3(0.001f, 0.001f, 0.001f);
 
                         // Making sure the dialog is directly in front of the camera at the settings canvas distance
                         this.dialogCanvas.transform.position =
