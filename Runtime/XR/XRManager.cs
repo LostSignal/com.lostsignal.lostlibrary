@@ -68,7 +68,7 @@ namespace Lost
                     // Printing off all our loaders
                     if (UnityEngine.XR.Management.XRGeneralSettings.Instance)
                     {
-                        var loaders = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders;
+                        var loaders = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.activeLoaders;
                         Debug.Log("XRManager: XR Loader Count - " + loaders.Count);
 
                         for (int i = 0; i < loaders.Count; i++)
@@ -245,7 +245,7 @@ namespace Lost
         private XRLoader StartLoaders()
         {
 #if USING_UNITY_XR
-            var xrLoaders = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders;
+            var xrLoaders = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.activeLoaders;
 
             foreach (var loader in Enum.GetValues(typeof(XRLoader)))
             {

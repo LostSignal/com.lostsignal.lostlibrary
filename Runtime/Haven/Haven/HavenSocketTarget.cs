@@ -17,34 +17,50 @@ namespace Lost.Haven
     public class HavenSocketTarget : MonoBehaviour
     {
 #pragma warning disable 0649
+        [Tooltip("Leave this null/empty if this target can accept any socket interactor.")]
         [SerializeField] private string socketType;
-        [SerializeField] private XRInteractableEvent socketedEvent;
+        [SerializeField] private SelectEnterEvent socketedEvent;
         [SerializeField] private bool disableSocketOnSocketed;
+
+        [HideInInspector]
+        [SerializeField] private XRBaseInteractable interactable;
 #pragma warning restore 0649
 
         public string SocketType => this.socketType;
 
-        private void Awake()
+        public bool CanSocket(HavenSocketInteractor havenSocketInteractor)
         {
-            var interactable = this.GetComponent<XRBaseInteractable>();
-            interactable.onSelectEntered.AddListener(SelectedSwitch);
+            bool isExclusiveSocket = string.IsNullOrWhiteSpace(this.socketType);
+            return havenSocketInteractor != null && (isExclusiveSocket == false || this.socketType == havenSocketInteractor.AcceptedType);
         }
 
-        private void SelectedSwitch(XRBaseInteractor interactor)
+        private void OnValidate()
         {
-            var socketInteractor = interactor as HavenExclusiveSocketInteractor;
+            this.AssertGetComponent(ref this.interactable);
+        }
 
-            if (socketInteractor == null || this.socketType != socketInteractor.AcceptedType)
+        private void Awake()
+        {
+            this.OnValidate();
+
+            this.interactable.selectEntered.AddListener(this.SelectedSwitch);
+        }
+
+        private void SelectedSwitch(SelectEnterEventArgs selectEnterEventArgs)
+        {
+            var socketInteractor = selectEnterEventArgs.interactor as HavenSocketInteractor;
+
+            if (this.CanSocket(socketInteractor) == false)
             {
                 return;
             }
 
             if (this.disableSocketOnSocketed)
             {
-                this.ExecuteDelayed(0.5f, () => socketInteractor.socketActive = false);
+                this.ExecuteDelayed(0.1f, () => socketInteractor.socketActive = false);
             }
 
-            this.socketedEvent.Invoke(interactor);
+            this.socketedEvent.Invoke(selectEnterEventArgs);
         }
     }
 }

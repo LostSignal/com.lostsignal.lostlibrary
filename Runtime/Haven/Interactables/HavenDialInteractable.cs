@@ -171,10 +171,10 @@ namespace Lost.Haven
             return base.IsSelectableBy(interactor) && (this.interactionLayerMask.value & interactorLayerMask) != 0;
         }
 
-        protected override void OnSelectEntered(XRBaseInteractor interactor)
+        protected override void OnSelectEntered(SelectEnterEventArgs selectEnterEventArgs)
         {
-            this.grabbedRotation = interactor.transform.rotation;
-            this.grabbingInteractor = interactor;
+            this.grabbedRotation = selectEnterEventArgs.interactor.transform.rotation;
+            this.grabbingInteractor = selectEnterEventArgs.interactor;
 
             // Create an object that will track the rotation
             var syncObj = new GameObject("TEMP_DialSyncTransform");
@@ -191,12 +191,12 @@ namespace Lost.Haven
                 this.syncTransform.position = this.transform.position;
             }
 
-            base.OnSelectEntered(interactor);
+            base.OnSelectEntered(selectEnterEventArgs);
         }
 
-        protected override void OnSelectExited(XRBaseInteractor interactor)
+        protected override void OnSelectExited(SelectExitEventArgs selectExitEventArgs)
         {
-            base.OnSelectExited(interactor);
+            base.OnSelectExited(selectExitEventArgs);
 
             if (this.snapOnRelease && this.steps > 0)
             {
@@ -278,7 +278,6 @@ namespace Lost.Haven
             Handles.color = new Color(1.0f, 0.0f, 0.0f, 0.5f);
             Handles.DrawSolidArc(this.transform.position, this.transform.TransformDirection(this.localRotationAxis), this.transform.TransformDirection(this.localAxisStart), this.rotationAngleMaximum, 0.2f);
         }
-
 #endif
 
         [System.Serializable]

@@ -11,8 +11,8 @@ namespace Lost.Haven
     using UnityEngine;
     using UnityEngine.XR.Interaction.Toolkit;
 
-    [AddComponentMenu("Haven XR/Socket/HXR Exclusive Socket Interactor")]
-    public class HavenExclusiveSocketInteractor : XRSocketInteractor
+    [AddComponentMenu("Haven XR/Socket/HXR Socket Interactor")]
+    public class HavenSocketInteractor : XRSocketInteractor
     {
 #pragma warning disable 0649
         [SerializeField] private string acceptedType;
@@ -29,7 +29,7 @@ namespace Lost.Haven
                 return false;
             }
 
-            return base.CanSelect(interactable) && (socketTarget.SocketType == this.acceptedType);
+            return base.CanSelect(interactable) && socketTarget.CanSocket(this);
         }
 
         public override bool CanHover(XRBaseInteractable interactable)

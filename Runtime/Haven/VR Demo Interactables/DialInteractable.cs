@@ -175,10 +175,10 @@ public class DialInteractable : XRBaseInteractable
         }
     }
 
-    protected override void OnSelectEntered(XRBaseInteractor interactor)
+    protected override void OnSelectEntered(SelectEnterEventArgs selectEnterEventArgs)
     {
-        m_GrabbedRotation = interactor.transform.rotation;
-        m_GrabbingInteractor = interactor;
+        m_GrabbedRotation = selectEnterEventArgs.interactor.transform.rotation;
+        m_GrabbingInteractor = selectEnterEventArgs.interactor;
 
         //create an object that will track the rotation
         var syncObj = new GameObject("TEMP_DialSyncTransform");
@@ -195,12 +195,12 @@ public class DialInteractable : XRBaseInteractable
             m_SyncTransform.position = transform.position;
         }
 
-        base.OnSelectEntered(interactor);
+        base.OnSelectEntered(selectEnterEventArgs);
     }
 
-    protected override void OnSelectExited(XRBaseInteractor interactor)
+    protected override void OnSelectExited(SelectExitEventArgs selectExitEventArgs)
     {
-        base.OnSelectExited(interactor);
+        base.OnSelectExited(selectExitEventArgs);
 
         if (SnapOnRelease && Steps > 0)
         {
@@ -254,7 +254,6 @@ public class DialInteractable : XRBaseInteractable
         Handles.color = new Color(1.0f, 0.0f, 0.0f, 0.5f);
         Handles.DrawSolidArc(transform.position, transform.TransformDirection(LocalRotationAxis), transform.TransformDirection(LocalAxisStart), RotationAngleMaximum, 0.2f);
     }
-
 #endif
 }
 

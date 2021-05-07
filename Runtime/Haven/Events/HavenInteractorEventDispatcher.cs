@@ -6,6 +6,8 @@
 
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
 
+//// NOTE [bgish]: WHAT IS THE PURPOSE OF THIS????  Remoe???
+
 namespace Lost.Haven
 {
     using UnityEngine;
@@ -16,13 +18,13 @@ namespace Lost.Haven
     public class HavenInteractorEventDispatcher : MonoBehaviour
     {
 #pragma warning disable 0649
-        [SerializeField] private XRInteractorEvent onSelectedEnter;
+        [SerializeField] private SelectEnterEvent onSelectedEnter;
 #pragma warning restore 0649
 
         private void Awake()
         {
             var interactor = this.GetComponent<XRBaseInteractor>();
-            interactor.onSelectEntered.AddListener(interactable => { this.onSelectedEnter.Invoke(interactable); });
+            interactor.selectEntered.AddListener(selectEnterEventArgs => { this.onSelectedEnter.Invoke(selectEnterEventArgs); });
         }
     }
 }
