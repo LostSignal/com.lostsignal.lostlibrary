@@ -48,6 +48,14 @@ namespace Lost
                 Pooler.Destroy(transform.GetChild(i).gameObject);
             }
         }
+                
+        public static void DestroyAllChildrenImmediate(this Transform transform)
+        {
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                Pooler.DestroyImmediate(transform.GetChild(i).gameObject);
+            }
+        }
 
         public static void SafeSetActive(this Transform transform, bool active)
         {
