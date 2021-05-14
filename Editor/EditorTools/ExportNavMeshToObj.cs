@@ -19,91 +19,75 @@ namespace Lost
 
     public static class ExportNavMeshToObj
     {
-        [MenuItem("Tools/Lost/Tools/Export Scene NavMesh to Mesh")]
-        private static void Export()
+        [MenuItem("Tools/Lost/Tools/Export Scene NavMesh")]
+        public static void ExportNavMeshForCurrentScene()
         {
-            UnityEngine.AI.NavMeshTriangulation triangulatedNavMesh = UnityEngine.AI.NavMesh.CalculateTriangulation();
+            var sceneNavMesh = UnityEngine.AI.NavMesh.CalculateTriangulation();
 
             Mesh mesh = new Mesh();
             mesh.name = "ExportedNavMesh";
+            mesh.vertices = sceneNavMesh.vertices;
+            mesh.triangles = sceneNavMesh.indices;
 
-            // Flipping along x-axis
-            var navMeshVerts = triangulatedNavMesh.vertices;
+            string scenPath = EditorSceneManager.GetActiveScene().path;
+            string fileName = Path.GetFileNameWithoutExtension(scenPath) + " Nav Mesh.obj";
 
-            for (int i = 0; i < navMeshVerts.Length; i++)
-            {
-                navMeshVerts[i] = navMeshVerts[i].SetX(-navMeshVerts[i].x);
-            }
-
-            // Changing triangle winding order
-            var navMeshTriangles = triangulatedNavMesh.indices;
-
-            for (int i = 0; i < navMeshTriangles.Length; i += 3)
-            {
-                int index1 = navMeshTriangles[i + 0];
-                int index2 = navMeshTriangles[i + 1];
-                int index3 = navMeshTriangles[i + 2];
-
-                navMeshTriangles[i + 0] = index3;
-                navMeshTriangles[i + 1] = index2;
-                navMeshTriangles[i + 2] = index1;
-            }
-
-            mesh.vertices = navMeshVerts;
-            mesh.triangles = navMeshTriangles;
-
-            string filename = EditorSceneManager.GetActiveScene().path;
-            filename = filename.Substring(0, filename.Length - 6); // Removing ".scene"
-            filename = filename + ".obj";
-
-            MeshToFile(mesh, filename);
-            Debug.Log("NavMesh exported to '" + filename + "'");
+            SimpleMeshToObjFile(mesh, fileName);
+            Debug.Log("Nav Mesh exported to '" + scenPath + "'");
             AssetDatabase.Refresh();
         }
 
-        private static string MeshToString(Mesh mesh)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            sb.Append("g ").Append(mesh.name).Append("\n");
-            foreach (Vector3 v in mesh.vertices)
-            {
-                sb.Append(string.Format("v {0} {1} {2}\n", v.x, v.y, v.z));
-            }
-
-            sb.Append("\n");
-
-            foreach (Vector3 v in mesh.normals)
-            {
-                sb.Append(string.Format("vn {0} {1} {2}\n", v.x, v.y, v.z));
-            }
-
-            sb.Append("\n");
-
-            foreach (Vector3 v in mesh.uv)
-            {
-                sb.Append(string.Format("vt {0} {1}\n", v.x, v.y));
-            }
-
-            for (int material = 0; material < mesh.subMeshCount; material++)
-            {
-                sb.Append("\n");
-
-                int[] triangles = mesh.GetTriangles(material);
-                for (int i = 0; i < triangles.Length; i += 3)
-                {
-                    sb.Append(string.Format("f {0}/{0}/{0} {1}/{1}/{1} {2}/{2}/{2}\n", triangles[i] + 1, triangles[i + 1] + 1, triangles[i + 2] + 1));
-                }
-            }
-
-            return sb.ToString();
-        }
-
-        private static void MeshToFile(Mesh mesh, string filename)
+        public static void SimpleMeshToObjFile(Mesh mesh, string filename)
         {
             using (StreamWriter sw = new StreamWriter(filename))
             {
                 sw.Write(MeshToString(mesh));
+            }
+
+            string MeshToString(Mesh mesh)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.Append("g ").Append(mesh.name).Append("\n");
+
+                foreach (Vector3 v in mesh.vertices)
+                {
+                    // NOTE [bgish]: Flipped X-Axis
+                    stringBuilder.Append(string.Format("v {0} {1} {2}\n", -v.x, v.y, v.z));
+                }
+
+                stringBuilder.Append("\n");
+                
+                foreach (Vector3 v in mesh.normals)
+                {
+                    // NOTE [bgish]: Flipped X-Axis
+                    stringBuilder.Append(string.Format("vn {0} {1} {2}\n", -v.x, v.y, v.z));
+                }
+                
+                stringBuilder.Append("\n");
+                
+                foreach (Vector3 v in mesh.uv)
+                {
+                    stringBuilder.Append(string.Format("vt {0} {1}\n", v.x, v.y));
+                }
+
+                for (int material = 0; material < mesh.subMeshCount; material++)
+                {
+                    stringBuilder.Append("\n");                
+
+                    int[] triangles = mesh.GetTriangles(material);
+
+                    for (int i = 0; i < triangles.Length; i += 3)
+                    {
+                        // NOTE [bgish]: Reversed Winding Order
+                        stringBuilder.Append(string.Format(
+                            "f {0}/{0}/{0} {1}/{1}/{1} {2}/{2}/{2}\n",
+                            triangles[i + 2] + 1,
+                            triangles[i + 1] + 1,
+                            triangles[i + 0] + 1));
+                    }
+                }
+
+                return stringBuilder.ToString();
             }
         }
     }
