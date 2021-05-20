@@ -9,6 +9,7 @@ namespace Lost
     using System;
     using System.Collections.Generic;
     using Lost.AppConfig;
+    using Lost.CloudBuild;
     using UnityEngine;
 
     public class UnityAnalyticsManager : Manager<UnityAnalyticsManager>

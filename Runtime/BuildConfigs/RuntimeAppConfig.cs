@@ -4,12 +4,13 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace Lost.AppConfig
 {
+    using System;
+    using System.Collections.Generic;
+    using Lost.CloudBuild;
+    using UnityEngine;
+
     [Serializable]
     public class RuntimeAppConfig
     {

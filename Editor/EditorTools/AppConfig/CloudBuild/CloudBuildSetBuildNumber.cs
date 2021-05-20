@@ -7,6 +7,7 @@
 namespace Lost
 {
     using Lost.AppConfig;
+    using Lost.CloudBuild;
     using UnityEditor;
     using UnityEditor.Build.Reporting;
     using UnityEngine;

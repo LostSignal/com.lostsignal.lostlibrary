@@ -35,7 +35,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Lost.AppConfig.MiniJSON
+namespace Lost.CloudBuild.MiniJSON
 {
     // Example usage:
     //

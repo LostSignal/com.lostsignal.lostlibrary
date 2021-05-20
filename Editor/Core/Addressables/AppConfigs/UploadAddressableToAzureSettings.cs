@@ -11,6 +11,7 @@ namespace Lost.Addressables
     using System.IO;
     using System.Linq;
     using Lost.AppConfig;
+    using Lost.CloudBuild;
     using UnityEngine;
     using UnityEditor;
     using UnityEditor.Build.Reporting;
