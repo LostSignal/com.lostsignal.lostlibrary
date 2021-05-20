@@ -24,3 +24,22 @@
   * Try to get PlayFab code (specially the caching) working in an outside C# project
 
 * Make sure all cool Lost UGUI scripts have filters to Lost folder with AddComponentMenu
+
+* Create Gameplay Events
+  * On PlayerData Loaded
+  * On PlayerData Before Save
+  * On PlayerData After Save
+  * On GameData Loaded
+  * On GameData Before Save
+  * On GameData After Save
+  * On Checkpoint Snapshot
+  * On Checkpoint Restore
+  * On Player Death
+
+* Remove WeakReference out of Experimental, shoudl be replaced with GuidBasedReferences
+
+* appconfig was renamed to bootconfig, make sure source control (and template files) ignore it
+  * add bootconfig and releaseconfig while we're at it
+
+  
+  
