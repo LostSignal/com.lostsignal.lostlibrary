@@ -22,6 +22,19 @@ namespace UnityEngine
     {
     }
 
+    public class PropertyAttribute : Attribute
+    {
+        protected PropertyAttribute()
+        {
+        }
+
+        //
+        // Summary:
+        //     Optional field to specify the order that multiple DecorationDrawers should be
+        //     drawn in.
+        public int order { get; set; }
+    }
+
     public class HeaderAttribute : System.Attribute
     {
         public HeaderAttribute(string name)

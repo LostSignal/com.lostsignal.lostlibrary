@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     public class StatusManager : Manager<StatusManager>
@@ -14,3 +16,5 @@ namespace Lost
         }
     }
 }
+
+#endif

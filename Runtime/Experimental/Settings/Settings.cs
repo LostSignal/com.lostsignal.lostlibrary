@@ -154,7 +154,7 @@ namespace Lost
             }
             else
             {
-                this.data = JsonUtility.FromJson<SettingsData>(json);
+                this.data = JsonUtil.Deserialize<SettingsData>(json);
             }
         }
 
@@ -238,7 +238,7 @@ namespace Lost
                     setting.Commit();
                 }
 
-                return JsonUtility.ToJson(this.data);
+                return JsonUtil.Serialize(this.data);
             }
         }
     }

@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using UnityEngine;
@@ -13,3 +15,5 @@ namespace Lost
         void Log(string condition, string stackTrace, LogType type);
     }
 }
+
+#endif

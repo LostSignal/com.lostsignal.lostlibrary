@@ -12,7 +12,7 @@ namespace Lost
     public class ValidatePlayFabSessionTicketSubsystem : IGameServerSubsystem
     {
 #if !UNITY
-        private PlayFab.PlayFabAuthenticationContext titleAuthenticationContext;
+        private global::PlayFab.PlayFabAuthenticationContext titleAuthenticationContext;
 #endif
 
         public void Initialize(GameServer gameServer)
@@ -45,16 +45,16 @@ namespace Lost
 #else
             if (this.titleAuthenticationContext == null)
             {
-                var getTitleAuthentication = await PlayFab.PlayFabAuthenticationAPI.GetEntityTokenAsync(new PlayFab.AuthenticationModels.GetEntityTokenRequest
+                var getTitleAuthentication = await global::PlayFab.PlayFabAuthenticationAPI.GetEntityTokenAsync(new global::PlayFab.AuthenticationModels.GetEntityTokenRequest
                 {
-                    Entity = new PlayFab.AuthenticationModels.EntityKey
+                    Entity = new global::PlayFab.AuthenticationModels.EntityKey
                     {
-                        Id = PlayFab.PlayFabSettings.staticSettings.TitleId,
+                        Id = global::PlayFab.PlayFabSettings.staticSettings.TitleId,
                         Type = "title",
                     }
                 });
 
-                this.titleAuthenticationContext = new PlayFab.PlayFabAuthenticationContext
+                this.titleAuthenticationContext = new global::PlayFab.PlayFabAuthenticationContext
                 {
                     EntityId = getTitleAuthentication.Result.Entity.Id,
                     EntityType = getTitleAuthentication.Result.Entity.Type,
@@ -62,7 +62,7 @@ namespace Lost
                 };
             }
 
-            var authenticate = await PlayFab.PlayFabServerAPI.AuthenticateSessionTicketAsync(new PlayFab.ServerModels.AuthenticateSessionTicketRequest
+            var authenticate = await global::PlayFab.PlayFabServerAPI.AuthenticateSessionTicketAsync(new global::PlayFab.ServerModels.AuthenticateSessionTicketRequest
             {
                 SessionTicket = sessionTicket,
                 AuthenticationContext = this.titleAuthenticationContext,
