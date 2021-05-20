@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using UnityEngine;
@@ -88,10 +90,15 @@ namespace Lost
             };
 
             public bool Enabled => this.enabled;
+
             public Tiinoo.DeviceConsole.DCSettings.Gesture OpenWithGesture => this.gesture;
+
             public KeyCode OpenWithKey => this.keyCode;
+
             public bool ExceptionNotification => this.exceptionNotification;
         }
         #endif
     }
 }
+
+#endif

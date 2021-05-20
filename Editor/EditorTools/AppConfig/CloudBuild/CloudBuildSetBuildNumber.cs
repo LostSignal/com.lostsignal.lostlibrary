@@ -6,7 +6,7 @@
 
 namespace Lost
 {
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using Lost.CloudBuild;
     using UnityEditor;
     using UnityEditor.Build.Reporting;
@@ -30,7 +30,7 @@ namespace Lost
         public override string DisplayName => "CloudBuild - Set Build Number";
         public override bool IsInline => false;
 
-        public override void OnPreproccessBuild(AppConfig.AppConfig appConfig, BuildReport buildReport)
+        public override void OnPreproccessBuild(BuildConfig.AppConfig appConfig, BuildReport buildReport)
         {
             var settings = appConfig.GetSettings<CloudBuildSetBuildNumber>();
 

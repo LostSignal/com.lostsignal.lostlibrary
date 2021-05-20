@@ -6,7 +6,7 @@
 
 namespace Lost.Addressables
 {
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using UnityEngine;
 
     [AppConfigSettingsOrder(7)]

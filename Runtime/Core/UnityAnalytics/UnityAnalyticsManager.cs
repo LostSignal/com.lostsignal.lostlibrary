@@ -8,7 +8,7 @@ namespace Lost
 {
     using System;
     using System.Collections.Generic;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using Lost.CloudBuild;
     using UnityEngine;
 
@@ -159,7 +159,7 @@ namespace Lost
         {
             Analytics.AnalyticsEvent.Custom("new_session", new Dictionary<string, object>
             {
-                { "active_config", RuntimeAppConfig.Instance.AppConfigName },
+                { "active_config", RuntimeBuildConfig.Instance.BuildConfigName },
                 { "app_name",  Application.productName },
                 { "app_version",  Application.version },
                 { "app_is_editor",  Application.isEditor },

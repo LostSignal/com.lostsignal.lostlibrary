@@ -7,7 +7,7 @@
 namespace Lost
 {
     using System.IO;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using UnityEngine;
 
     [AppConfigSettingsOrder(305)]
@@ -25,7 +25,7 @@ namespace Lost
         ////
         //// https://stackoverflow.com/questions/54186051/is-there-a-way-to-change-the-gradle-properties-file-in-unity
         ////
-        public override void OnPostGenerateGradleAndroidProject(AppConfig.AppConfig appConfig, string gradlePath)
+        public override void OnPostGenerateGradleAndroidProject(BuildConfig.AppConfig appConfig, string gradlePath)
         {
             var settings = appConfig.GetSettings<AndroidXSetting>();
 

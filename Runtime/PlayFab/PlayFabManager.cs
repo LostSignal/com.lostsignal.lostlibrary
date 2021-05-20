@@ -86,7 +86,7 @@ namespace Lost.PlayFab
                 PlayFabManager.Settings playfabSettings = ReleasesManager.Instance.CurrentRelease.PlayfabManagerSettings;
 
                 string catalogVersion = playfabSettings.CatalogVersion;
-                PlayFabSettings.staticSettings.TitleId = Lost.AppConfig.RuntimeAppConfig.Instance.GetString(PlayFabConfigExtensions.TitleId);
+                PlayFabSettings.staticSettings.TitleId = Lost.BuildConfig.RuntimeBuildConfig.Instance.GetString(PlayFabConfigExtensions.TitleId);
 
                 this.Login = new LoginManager(this);
 

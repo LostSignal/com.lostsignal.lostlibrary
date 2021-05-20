@@ -10,7 +10,7 @@ namespace Lost.Addressables
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using Lost.CloudBuild;
     using UnityEngine;
     using UnityEditor;

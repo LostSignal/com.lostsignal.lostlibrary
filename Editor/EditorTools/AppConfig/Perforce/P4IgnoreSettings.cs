@@ -8,7 +8,7 @@ namespace Lost
 {
     using System.IO;
     using System.Text;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using UnityEditor;
     using UnityEngine;
 
@@ -39,7 +39,7 @@ namespace Lost
             }
         }
 
-        public override void InitializeOnLoad(AppConfig.AppConfig appConfig)
+        public override void InitializeOnLoad(BuildConfig.AppConfig appConfig)
         {
             var settings = appConfig.GetSettings<P4IgnoreSettings>();
 

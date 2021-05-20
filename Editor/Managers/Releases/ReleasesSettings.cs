@@ -9,7 +9,7 @@ namespace Lost
     using System.Collections.Generic;
     using System.IO;
     using Lost.Addressables;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using UnityEditor;
     using UnityEngine;
 
@@ -35,7 +35,7 @@ namespace Lost
 
         public override bool IsInline => false;
 
-        public override void InitializeOnLoad(AppConfig.AppConfig buildConfig)
+        public override void InitializeOnLoad(BuildConfig.AppConfig buildConfig)
         {
             var settings = buildConfig.GetSettings<ReleasesSettings>();
 
@@ -45,7 +45,7 @@ namespace Lost
             }
         }
 
-        public override void GetRuntimeConfigSettings(AppConfig.AppConfig appConfig, Dictionary<string, string> runtimeConfigSettings)
+        public override void GetRuntimeConfigSettings(BuildConfig.AppConfig appConfig, Dictionary<string, string> runtimeConfigSettings)
         {
             base.GetRuntimeConfigSettings(appConfig, runtimeConfigSettings);
 
@@ -61,19 +61,19 @@ namespace Lost
             runtimeConfigSettings.Add(ReleasesManager.ReleasesCurrentRelease, JsonUtil.Serialize(LostLibrary.Releases.CurrentRelease));
         }
 
-        public override void OnUserBuildInitiated(AppConfig.AppConfig appConfig)
+        public override void OnUserBuildInitiated(BuildConfig.AppConfig appConfig)
         {
             base.OnUserBuildInitiated(appConfig);
             this.UploadReleases(appConfig);
         }
 
-        public override void OnUnityCloudBuildInitiated(AppConfig.AppConfig appConfig)
+        public override void OnUnityCloudBuildInitiated(BuildConfig.AppConfig appConfig)
         {
             base.OnUnityCloudBuildInitiated(appConfig);
             this.UploadReleases(appConfig);
         }
 
-        private void UploadReleases(AppConfig.AppConfig appConfig)
+        private void UploadReleases(BuildConfig.AppConfig appConfig)
         {
             var settings = appConfig.GetSettings<ReleasesSettings>();
 

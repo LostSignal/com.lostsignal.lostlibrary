@@ -10,7 +10,7 @@ namespace Lost
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using Lost.EditorGrid;
     using UnityEditor;
     using UnityEngine;
@@ -18,7 +18,7 @@ namespace Lost
     public class AppConfigEditorWindow : EditorWindow
     {
         private static List<Type> BuildSettingsTypes;
-        private static AppConfig.AppConfig SelectedConfig;
+        private static BuildConfig.AppConfig SelectedConfig;
 
         static AppConfigEditorWindow()
         {
@@ -119,7 +119,7 @@ namespace Lost
             }
         }
 
-        private void DrawAppConfig(AppConfig.AppConfig appConfig, SerializedProperty appConfigSerialiedProperty, float currentViewWidth)
+        private void DrawAppConfig(BuildConfig.AppConfig appConfig, SerializedProperty appConfigSerialiedProperty, float currentViewWidth)
         {
             appConfig.ShowInherited = EditorGUILayout.Toggle("Show Inherited", appConfig.ShowInherited);
             using (new EditorGUI.DisabledGroupScope(true))
@@ -142,7 +142,7 @@ namespace Lost
             }
         }
 
-        private void DrawAppConfigSettings(AppConfig.AppConfig appConfig, SerializedProperty settingsSerializedProperty, float currentViewWidth)
+        private void DrawAppConfigSettings(BuildConfig.AppConfig appConfig, SerializedProperty settingsSerializedProperty, float currentViewWidth)
         {
             List<Type> settingsToAdd = new List<Type>();
 
@@ -191,7 +191,7 @@ namespace Lost
             this.DrawSettingsButtons(appConfig, currentViewWidth, settingsToAdd);
         }
 
-        private void DrawAppConfigSettings(AppConfig.AppConfig appConfig, AppConfigSettings settings, SerializedProperty settingsSerializedProperty, bool isInherited, float currentViewWidth, out bool didDeleteSettings)
+        private void DrawAppConfigSettings(BuildConfig.AppConfig appConfig, AppConfigSettings settings, SerializedProperty settingsSerializedProperty, bool isInherited, float currentViewWidth, out bool didDeleteSettings)
         {
             didDeleteSettings = false;
 
@@ -245,7 +245,7 @@ namespace Lost
             }
         }
 
-        private void DrawSettingsButtons(AppConfig.AppConfig appConfig, float currentViewWidth, List<Type> settingsToAdd)
+        private void DrawSettingsButtons(BuildConfig.AppConfig appConfig, float currentViewWidth, List<Type> settingsToAdd)
         {
             int buttonWidth = (int)(currentViewWidth / 3.0f);
 

@@ -6,7 +6,7 @@
 
 namespace Lost
 {
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using UnityEditor;
     using UnityEngine;
 
@@ -32,7 +32,7 @@ namespace Lost
 
         public override bool IsInline => false;
 
-        public override void InitializeOnLoad(AppConfig.AppConfig buildConfig)
+        public override void InitializeOnLoad(BuildConfig.AppConfig buildConfig)
         {
             var settings = buildConfig.GetSettings<GeneralAppSettings>();
 

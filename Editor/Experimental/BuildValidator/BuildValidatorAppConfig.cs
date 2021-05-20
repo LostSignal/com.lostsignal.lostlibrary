@@ -6,7 +6,7 @@
 
 namespace Lost
 {
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using System.IO;
     using UnityEditor;
     using UnityEditor.Build.Reporting;
@@ -23,7 +23,7 @@ namespace Lost
         public override string DisplayName => "Build Validator";
         public override bool IsInline => true;
 
-        public override void OnProcessScene(AppConfig.AppConfig appConfig, Scene scene, BuildReport report)
+        public override void OnProcessScene(BuildConfig.AppConfig appConfig, Scene scene, BuildReport report)
         {
             base.OnProcessScene(appConfig, scene, report);
 
@@ -33,7 +33,7 @@ namespace Lost
             }
         }
 
-        public override void OnPreproccessBuild(AppConfig.AppConfig appConfig, BuildReport buildReport)
+        public override void OnPreproccessBuild(BuildConfig.AppConfig appConfig, BuildReport buildReport)
         {
             // Validating Prefabs
             foreach (var prefabPath in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.prefab", SearchOption.AllDirectories))

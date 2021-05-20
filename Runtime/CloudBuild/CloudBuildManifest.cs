@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost.CloudBuild
 {
     using System.Collections.Generic;
@@ -82,8 +84,7 @@ namespace Lost.CloudBuild
 
         private string GetString(string key, string defaultValue = "")
         {
-            object value;
-            if (this.dictionary.TryGetValue(key, out value))
+            if (this.dictionary.TryGetValue(key, out object value))
             {
                 return value as string;
             }
@@ -95,13 +96,11 @@ namespace Lost.CloudBuild
 
         private int GetInt(string key, int defaultValue = 0)
         {
-            object value;
-            if (this.dictionary.TryGetValue(key, out value))
+            if (this.dictionary.TryGetValue(key, out object value))
             {
                 if (value is string)
                 {
-                    int result = 0;
-                    if (int.TryParse(value as string, out result))
+                    if (int.TryParse(value as string, out int result))
                     {
                         return result;
                     }
@@ -130,3 +129,5 @@ namespace Lost.CloudBuild
         }
     }
 }
+
+#endif

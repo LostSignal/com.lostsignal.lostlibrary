@@ -7,7 +7,7 @@
 namespace Lost
 {
     using System.IO;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using UnityEditor;
     using UnityEngine;
 

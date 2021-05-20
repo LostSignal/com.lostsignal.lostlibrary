@@ -6,7 +6,7 @@
 
 namespace Lost
 {
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using Lost.PlayFab;
 
     public class GameServerProjectGenerator : CSharpProjectGenerator

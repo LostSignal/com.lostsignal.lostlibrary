@@ -8,7 +8,7 @@ namespace Lost.PlayFab
 {
     using System.Collections.Generic;
     using System.IO;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using UnityEditor.Build.Reporting;
     using UnityEngine;
 
@@ -52,7 +52,7 @@ namespace Lost.PlayFab
 
         public string AblySererKey => this.ablyServerKey;
 
-        public override void GetRuntimeConfigSettings(Lost.AppConfig.AppConfig appConfig, Dictionary<string, string> runtimeConfigSettings)
+        public override void GetRuntimeConfigSettings(Lost.BuildConfig.AppConfig appConfig, Dictionary<string, string> runtimeConfigSettings)
         {
             var playFabSettings = appConfig.GetSettings<PlayFabSettings>();
 

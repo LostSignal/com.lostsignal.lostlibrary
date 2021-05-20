@@ -9,7 +9,7 @@ namespace Lost
     using System.Collections;
     using global::PlayFab.ClientModels;
     using global::PlayFab.Internal;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using UnityEngine;
 
     public class DebugMenuManager : Manager<DebugMenuManager>
@@ -52,7 +52,7 @@ namespace Lost
 
                 if (this.showAppVersionInLowerLeftKey)
                 {
-                    debugMenu.SetText(Corner.LowerLeft, RuntimeAppConfig.Instance.VersionAndCommitId);
+                    debugMenu.SetText(Corner.LowerLeft, RuntimeBuildConfig.Instance.VersionAndCommitId);
                 }
 
                 if (this.showPlayFabIdInLowerRight)

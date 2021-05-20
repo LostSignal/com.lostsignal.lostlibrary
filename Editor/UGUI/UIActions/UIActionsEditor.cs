@@ -160,7 +160,7 @@ namespace Lost
             }
 
             stateNames = Enum.GetNames(typeof(UIActionState));
-            uiActionTypes = AppConfig.TypeUtil.GetAllTypesOf<UIAction>().ToArray();
+            uiActionTypes = BuildConfig.TypeUtil.GetAllTypesOf<UIAction>().ToArray();
             uiActionNames = uiActionTypes.Select(x => x.Name).ToArray();
         }
     }

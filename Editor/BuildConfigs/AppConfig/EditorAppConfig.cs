@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Lost.AppConfig
+namespace Lost.BuildConfig
 {
     using System;
     using System.Collections.Generic;
@@ -62,11 +62,11 @@ namespace Lost.AppConfig
             get
             {
                 // Special case if someone has deleted the last selected app config
-                if (RuntimeAppConfig.Instance != null &&
-                    string.IsNullOrEmpty(RuntimeAppConfig.Instance.AppConfigGuid) == false &&
-                    string.IsNullOrEmpty(AssetDatabase.GUIDToAssetPath(RuntimeAppConfig.Instance.AppConfigGuid)))
+                if (RuntimeBuildConfig.Instance != null &&
+                    string.IsNullOrEmpty(RuntimeBuildConfig.Instance.BuildConfigGuid) == false &&
+                    string.IsNullOrEmpty(AssetDatabase.GUIDToAssetPath(RuntimeBuildConfig.Instance.BuildConfigGuid)))
                 {
-                    RuntimeAppConfig.Instance.AppConfigGuid = null;
+                    RuntimeBuildConfig.Instance.BuildConfigGuid = null;
                 }
 
                 var instance = LostLibrary.AppConfigs;
@@ -75,11 +75,11 @@ namespace Lost.AppConfig
                 {
                     // Do nothing, already set
                 }
-                else if (RuntimeAppConfig.Instance != null && string.IsNullOrEmpty(RuntimeAppConfig.Instance.AppConfigGuid) == false)
+                else if (RuntimeBuildConfig.Instance != null && string.IsNullOrEmpty(RuntimeBuildConfig.Instance.BuildConfigGuid) == false)
                 {
                     foreach (var config in instance.AppConfigs)
                     {
-                        if (config.Id == RuntimeAppConfig.Instance.AppConfigGuid)
+                        if (config.Id == RuntimeBuildConfig.Instance.BuildConfigGuid)
                         {
                             instance.activeAppConfig = config;
                             break;
@@ -98,7 +98,7 @@ namespace Lost.AppConfig
 
         private static void WriteRuntimeConfigFile()
         {
-            RuntimeAppConfig.Reset();
+            RuntimeBuildConfig.Reset();
 
             AppConfig activeConfig = ActiveAppConfig;
 
@@ -116,18 +116,18 @@ namespace Lost.AppConfig
             }
 
             // Generating the runtime config object and serializing to json
-            var runtimeConfig = new RuntimeAppConfig(activeConfig.Id, activeConfig.SafeName, runtimeConfigValues);
+            var runtimeConfig = new RuntimeBuildConfig(activeConfig.Id, activeConfig.SafeName, runtimeConfigValues);
             string configJson = JsonUtility.ToJson(runtimeConfig);
 
             // Early out if the file file hasn't chenged
-            if (File.Exists(RuntimeAppConfig.FilePath) && File.ReadAllText(RuntimeAppConfig.FilePath) == configJson)
+            if (File.Exists(RuntimeBuildConfig.FilePath) && File.ReadAllText(RuntimeBuildConfig.FilePath) == configJson)
             {
                 return;
             }
 
-            Directory.CreateDirectory(Path.GetDirectoryName(RuntimeAppConfig.FilePath));
-            File.WriteAllText(RuntimeAppConfig.FilePath, configJson);
-            AssetDatabase.ImportAsset(RuntimeAppConfig.FilePath);
+            Directory.CreateDirectory(Path.GetDirectoryName(RuntimeBuildConfig.FilePath));
+            File.WriteAllText(RuntimeBuildConfig.FilePath, configJson);
+            AssetDatabase.ImportAsset(RuntimeBuildConfig.FilePath);
             AssetDatabase.Refresh();
         }
 

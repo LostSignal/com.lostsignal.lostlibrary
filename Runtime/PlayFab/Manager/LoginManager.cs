@@ -12,7 +12,7 @@ namespace Lost.PlayFab
     using global::PlayFab;
     using global::PlayFab.ClientModels;
     using global::PlayFab.Internal;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using UnityEngine;
 
     public enum LoginMethod

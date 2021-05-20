@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Lost.AppConfig
+namespace Lost.BuildConfig
 {
     using System;
     using System.Collections.Generic;

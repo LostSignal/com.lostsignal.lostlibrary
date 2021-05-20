@@ -6,7 +6,7 @@
 
 namespace Lost
 {
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using UnityEditor;
     using UnityEngine;
 
@@ -30,7 +30,7 @@ namespace Lost
         public override string DisplayName => "Android Keystore";
         public override bool IsInline => false;
 
-        public override void InitializeOnLoad(AppConfig.AppConfig appConfig)
+        public override void InitializeOnLoad(BuildConfig.AppConfig appConfig)
         {
             var settings = appConfig.GetSettings<AndroidKeystoreSettings>();
 

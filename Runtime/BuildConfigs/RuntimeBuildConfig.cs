@@ -1,25 +1,28 @@
 //-----------------------------------------------------------------------
-// <copyright file="RuntimeAppConfig.cs" company="DefaultCompany">
-//     Copyright (c) DefaultCompany. All rights reserved.
+// <copyright file="RuntimeBuildConfig.cs" company="Lost Signal LLC">
+//     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Lost.AppConfig
+#if UNITY
+
+namespace Lost.BuildConfig
 {
     using System;
     using System.Collections.Generic;
     using Lost.CloudBuild;
     using UnityEngine;
+    using UnityEngine.Serialization;
 
     [Serializable]
-    public class RuntimeAppConfig
+    public class RuntimeBuildConfig
     {
-        public const string FilePath = "Assets/Resources/appconfig.json";
-        public const string ResourcePath = "appconfig";
+        public const string FilePath = "Assets/Resources/buildconfig.json";
+        public const string ResourcePath = "buildconfig";
 
-        private static RuntimeAppConfig instance;
+        private static RuntimeBuildConfig instance;
 
-        public static RuntimeAppConfig Instance
+        public static RuntimeBuildConfig Instance
         {
             get
             {
@@ -29,7 +32,7 @@ namespace Lost.AppConfig
 
                     if (configJson != null && string.IsNullOrEmpty(configJson.text) == false)
                     {
-                        instance = JsonUtility.FromJson<RuntimeAppConfig>(configJson.text);
+                        instance = JsonUtility.FromJson<RuntimeBuildConfig>(configJson.text);
                     }
                 }
 
@@ -41,9 +44,13 @@ namespace Lost.AppConfig
         {
             instance = null;
         }
+        
+        [FormerlySerializedAs("appConfigGuid")]
+        [SerializeField] private string buildConfigGuid;
+        
+        [FormerlySerializedAs("appConfigName")]
+        [SerializeField] private string buildConfigName;
 
-        [SerializeField] private string appConfigGuid;
-        [SerializeField] private string appConfigName;
         [SerializeField] private List<KeyValuePair> keyValuePairs;
 
         private bool isInitialized = false;
@@ -53,14 +60,14 @@ namespace Lost.AppConfig
         private string versionAndCommitId;
         private string version;
 
-        public RuntimeAppConfig()
+        public RuntimeBuildConfig()
         {
         }
 
-        public RuntimeAppConfig(string guid, string name, Dictionary<string, string> variables)
+        public RuntimeBuildConfig(string guid, string name, Dictionary<string, string> variables)
         {
-            this.appConfigGuid = guid;
-            this.appConfigName = name;
+            this.buildConfigGuid = guid;
+            this.buildConfigName = name;
             this.cloudBuildManifest = CloudBuildManifest.Find();
 
             if (variables != null)
@@ -73,16 +80,16 @@ namespace Lost.AppConfig
             }
         }
 
-        public string AppConfigGuid
+        public string BuildConfigGuid
         {
-            get { return this.appConfigGuid; }
-            set { this.appConfigGuid = value; }
+            get => this.buildConfigGuid;
+            set => this.buildConfigGuid = value;
         }
 
-        public string AppConfigName
+        public string BuildConfigName
         {
-            get { return this.appConfigName; }
-            set { this.appConfigName = value; }
+            get => this.buildConfigName;
+            set => this.buildConfigName = value;
         }
 
         public string Version
@@ -134,8 +141,7 @@ namespace Lost.AppConfig
         {
             this.Initialize();
 
-            string value;
-            if (this.values.TryGetValue(key, out value))
+            if (this.values.TryGetValue(key, out string value))
             {
                 return value;
             }
@@ -146,10 +152,7 @@ namespace Lost.AppConfig
         public bool GetBool(string key)
         {
             this.Initialize();
-
-            string value;
-            this.values.TryGetValue(key, out value);
-
+            this.values.TryGetValue(key, out string value);
             return value == "true" || value == "True" || value == "1";
         }
 
@@ -159,7 +162,7 @@ namespace Lost.AppConfig
             {
                 this.isInitialized = true;
 
-                // caching all the key/value pairs in a dictionary
+                // Caching all the key/value pairs in a dictionary
                 this.values = new Dictionary<string, string>();
 
                 for (int i = 0; i < this.keyValuePairs.Count; i++)
@@ -204,3 +207,5 @@ namespace Lost.AppConfig
         }
     }
 }
+
+#endif

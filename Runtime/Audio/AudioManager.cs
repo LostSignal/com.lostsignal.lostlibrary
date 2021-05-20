@@ -4,12 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-//// TODO [bgish]: Make a validation system.  Needs to find every AudioBlock and make sure
-////               it has a valid ChannelId and AudioClips.
-//// TODO [bgish]: Add Components PlayAudioOnButtonClick, PlayAudioOnDialogShowHide, etc...
-//// TODO [bgish]: Make Validators that these above components piont to valid Audio Blocks
-//// TODO [bgish]: Add UI Slider and UI Toggle component for editing Audio Channels
-//// TODO [bgish]: Make Validators that these above components piont to valid Audio Blocks
+#if UNITY
 
 namespace Lost
 {
@@ -214,3 +209,5 @@ namespace Lost
         }
     }
 }
+
+#endif

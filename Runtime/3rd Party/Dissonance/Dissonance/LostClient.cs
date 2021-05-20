@@ -72,7 +72,7 @@ namespace Lost.DissonanceIntegration
 
         private void SendPacket(ArraySegment<byte> packet, bool reliable)
         {
-#if UNITY_2018_4_OR_NEWER
+#if UNITY
             this.tempMessage.PlayerId = PlayFab.PlayFabManager.Instance.User.PlayFabNumericId;
             this.tempMessage.IsReliable = reliable;
             this.tempMessage.Data = packet.ToArray();

@@ -9,7 +9,7 @@ namespace Lost
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using UnityEditor;
     using UnityEngine;
 

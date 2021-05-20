@@ -7,7 +7,7 @@
 namespace Lost
 {
     using System.Collections;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
 
     //// NEED TO MAKE A RELEASES APP CONFIG
     //// Will have the URL
@@ -39,7 +39,7 @@ namespace Lost
                 //// TODO [bgish]: Calculate and set this.CurrentRelease based on RuntimeAppConfig.Instance.Version/BuildNumber/CommitId
                 //// TODO [bgish]: Check for any force updates
 
-                this.CurrentRelease = JsonUtil.Deserialize<Release>(RuntimeAppConfig.Instance.GetString(ReleasesCurrentRelease));
+                this.CurrentRelease = JsonUtil.Deserialize<Release>(RuntimeBuildConfig.Instance.GetString(ReleasesCurrentRelease));
 
                 this.SetInstance(this);
 

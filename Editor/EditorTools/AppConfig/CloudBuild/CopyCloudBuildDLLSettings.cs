@@ -7,7 +7,7 @@
 namespace Lost
 {
     using System.IO;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using UnityEditor;
     using UnityEditor.Build.Reporting;
     using UnityEngine;
@@ -22,7 +22,7 @@ namespace Lost
         public override string DisplayName => "Copy CloudBuild DLL To StreamingAssets";
         public override bool IsInline => true;
 
-        public override void OnPreproccessBuild(AppConfig.AppConfig appConfig, BuildReport buildReport)
+        public override void OnPreproccessBuild(BuildConfig.AppConfig appConfig, BuildReport buildReport)
         {
             base.OnPreproccessBuild(appConfig, buildReport);
 

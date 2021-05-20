@@ -13,7 +13,7 @@ namespace Lost.PlayFab
     using System;
     using System.Collections.Generic;
     using System.Text;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using Lost.IAP;
     using global::PlayFab;
     using global::PlayFab.ClientModels;

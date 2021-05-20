@@ -13,7 +13,7 @@ namespace Lost
     using IO.Ably;
 #endif
 
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using Newtonsoft.Json.Linq;
     using global::PlayFab.ClientModels;
     using global::PlayFab.Internal;

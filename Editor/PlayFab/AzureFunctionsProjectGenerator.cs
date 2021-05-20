@@ -10,7 +10,7 @@ namespace Lost
     using System.IO;
     using System.Linq;
     using System.Text;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using Lost.PlayFab;
     using UnityEditor;
     using UnityEngine;

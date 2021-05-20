@@ -6,7 +6,7 @@
 
 namespace Lost
 {
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using UnityEditor;
 
     public class StrictModeSettings : AppConfigSettings
@@ -16,7 +16,7 @@ namespace Lost
 
         public bool buildInStrictMode = true;
 
-        public override BuildPlayerOptions ChangeBuildPlayerOptions(AppConfig.AppConfig appConfig, BuildPlayerOptions options)
+        public override BuildPlayerOptions ChangeBuildPlayerOptions(BuildConfig.AppConfig appConfig, BuildPlayerOptions options)
         {
             if (this.buildInStrictMode)
             {

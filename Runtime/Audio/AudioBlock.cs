@@ -4,11 +4,13 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using UnityEngine;
 
-    [CreateAssetMenu(menuName = "Lost/Audio Block")]
+    [CreateAssetMenu(menuName = "Lost/Audio/Audio Block")]
     public class AudioBlock : ScriptableObject
     {
 #pragma warning disable 0649
@@ -85,3 +87,5 @@ namespace Lost
         }
     }
 }
+
+#endif

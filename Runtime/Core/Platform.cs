@@ -4,11 +4,13 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using System;
     using System.IO;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using UnityEngine;
     using UnityEngine.Networking;
 
@@ -340,3 +342,5 @@ namespace Lost
         //// }
     }
 }
+
+#endif

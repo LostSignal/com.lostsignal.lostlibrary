@@ -7,7 +7,7 @@
 namespace Lost
 {
     using UnityEngine;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
 
     //// [AppConfigSettingsOrder(210)]
     //// public class WorkspaceOverrideSetting : AppConfigSettings

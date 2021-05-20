@@ -6,7 +6,7 @@
 
 #pragma warning disable
 
-#if !UNITY_2018_3_OR_NEWER
+#if !UNITY
 
 namespace UnityEngine.Profiling
 {

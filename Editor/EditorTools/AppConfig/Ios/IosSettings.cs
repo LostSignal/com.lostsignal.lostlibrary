@@ -6,7 +6,7 @@
 
 namespace Lost
 {
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using UnityEditor.Build.Reporting;
     using UnityEngine;
 
@@ -30,7 +30,7 @@ namespace Lost
         public override string DisplayName => "iOS Settings";
         public override bool IsInline => false;
 
-        public override void OnPostprocessBuild(AppConfig.AppConfig buildConfig, BuildReport buildReport)
+        public override void OnPostprocessBuild(BuildConfig.AppConfig buildConfig, BuildReport buildReport)
         {
             var settings = buildConfig.GetSettings<IosSettings>();
             var path = buildReport.summary.outputPath;

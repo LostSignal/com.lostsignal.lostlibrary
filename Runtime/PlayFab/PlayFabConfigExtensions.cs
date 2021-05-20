@@ -6,13 +6,13 @@
 
 namespace Lost.PlayFab
 {
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
 
     public static class PlayFabConfigExtensions
     {
         public static readonly string TitleId = "PlayFab.TitleId";
 
-        public static string GetTitleId(this RuntimeAppConfig runtimeConfig)
+        public static string GetTitleId(this RuntimeBuildConfig runtimeConfig)
         {
             return runtimeConfig.GetString(TitleId);
         }

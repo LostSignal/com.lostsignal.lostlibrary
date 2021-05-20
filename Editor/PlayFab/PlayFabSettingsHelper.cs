@@ -6,7 +6,7 @@
 
 namespace Lost.PlayFab
 {
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using System;
     using System.Reflection;
 

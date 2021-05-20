@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if USING_DISSONANCE && UNITY_2018_4_OR_NEWER
+#if USING_DISSONANCE && UNITY
 
 namespace Lost.DissonanceIntegration
 {

@@ -7,7 +7,7 @@
 namespace Lost
 {
     using Lost.Addressables;
-    using Lost.AppConfig;
+    using Lost.BuildConfig;
     using Lost.PlayFab;
     using System.IO;
     using UnityEditor;
@@ -138,7 +138,7 @@ namespace Lost
 
             if (File.Exists(editorAppConfigAssetPath) == false)
             {
-                var rootConfig = new AppConfig.AppConfig();
+                var rootConfig = new BuildConfig.AppConfig();
                 rootConfig.Name = "Root";
                 AddSetting<BundleIdentifierSetting>(rootConfig);
                 AddSetting<BuildPlayerContentSettings>(rootConfig);
@@ -147,14 +147,14 @@ namespace Lost
                 AddSetting<OverrideTemplatesSettings>(rootConfig);
                 AddSetting<CloudBuildSetBuildNumber>(rootConfig);
 
-                var devConfig = new AppConfig.AppConfig();
+                var devConfig = new BuildConfig.AppConfig();
                 devConfig.Name = "Dev";
                 devConfig.IsDefault = true;
                 devConfig.ParentId = rootConfig.Id;
                 AddSetting<DevelopmentBuildSetting>(devConfig).IsDevelopmentBuild = true;
                 AddSetting<PlayFabSettings>(devConfig).IsDevelopmentEnvironment = true;
 
-                var liveConfig = new AppConfig.AppConfig();
+                var liveConfig = new BuildConfig.AppConfig();
                 liveConfig.Name = "Live";
                 liveConfig.ParentId = rootConfig.Id;
                 AddSetting<DevelopmentBuildSetting>(liveConfig).IsDevelopmentBuild = false;
@@ -175,7 +175,7 @@ namespace Lost
 
             return editorAppConfig;
 
-            T AddSetting<T>(AppConfig.AppConfig config) where T : AppConfigSettings, new()
+            T AddSetting<T>(BuildConfig.AppConfig config) where T : AppConfigSettings, new()
             {
                 var newSettings = new T();
                 config.Settings.Add(newSettings);
