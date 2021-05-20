@@ -149,3 +149,151 @@
 		]
 	  }
 	  ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# -------------------------------------- OLD NOTES NEEDS CLEANUP --------------------------------------
+
+
+### New Unity Project Setup
+----------------------------------
+* Visual StyleCop
+* Visual Studio Spell Checker
+* Warning as Errors
+* Figure out DEFINES (APP_DEV, APP_LIVE, APP_QA, Etc)
+ 
+* P4 Setup
+  * Project Editor settings are set to "Force Text", and "Visible Meta Files"
+  * P4Connect Setup (or Native P4 Setup)
+  * Setup detection of multiple files with same name (just different casing)
+  * Setup workspace that is just the Unity folder (for Unity Cloud Build)
+     or 
+  * Copy "C:\Google Drive\lost signal\Perforce, Git, iOS, Android\Perforce\PerforcePlugin\PerforcePlugin.exe" 
+    into C:\Program Files\Unity 5.3.0f4\Editor\Data\Tools\VersionControl
+  * Project Editor settings are set to "Force Text", and "Perforce", and fill in appropiate p4 connection data
+ 
+* Unity Cloud Build
+  * Create UnityCloudBuild class (append CL to version, warnings as errors?)
+  * Create Keystore for Android
+  * Create Provisioning files for iOS
+  * Setup Unity Services Project and turn on Cloud Build
+
+
+
+
+* New Project Setup
+  * Asks for Dev/Live playfab ids - Saved to AppConfigs
+  * Asks for Releases/AssetBundle Url/Bucket Info - Saved to AppConfigs
+  * Asks for Dev/Live CosmosDB and Redis Connection Strings - Saved to Internal Title Data
+  * Copies Bootloader scene adds to project (sets as first scene in build)
+  * Creates Dev/Live AppConfig files
+  * Adds Releases Scriptable Object
+  * Adds Functions Project Generator Scriptable Object
+  * Adds Lost Server Project Generator Scriptable Object
+  
+
+### Create New Project and Getting App Setup working
+------------------------------------------------------------------
+
+  * PackageManager
+    * Addressables
+	  * Advertisement
+	  * Analytics Library
+	  * Asset Bundle Browser
+	  * In App Purchasing
+	  * Lightweight RP
+	  * Memory Profiler
+	  * TextMesh Pro
+	  * Unity User Reporting
+	  * Vector Grphics
+  
+  * Add Tiinoo To Project
+  * Add PlayFab + PlayFabEditorExtensions
+  
+  * Go To Services Tab
+    * Enable Ads, Go To Unity Web Dashboard, Click on App and go to Settings and write down ios and android ids
+	  * Enable In-App Purchasing
+  
+  * Add Lost Library
+    * Create Root/Dev/Live Configs
+    * Add DebugMenu to Resources
+    * Add To Root
+      * BundleId
+  	  * General App Settings
+  	  * Override Template Files
+  	  * Perforce
+  	  * P4 Ignore
+  	  * Lost Defines (USING_PLAYFAB_SDK, USING_UNITY_ADDRESSABLES, USING_UNTIY_ADS, USING_UNITY_ANALYTICS, USING_UNITY_PURCHASING)
+  	  * LostAds
+  	  * LostAnalytics
+  	  * LostLogging
+    * Add to Dev
+      * Development Build (Set True)
+  	  * LostDebugMenu
+  	  * Tiinoo
+    * Add to Live
+      * Development Build (Set False)
+
+  * Create IdioWordsApp class
+
+    ```csharp
+    using System.Collections;
+    using Lost;
+    using UnityEngine;
+
+    public class IdioWordsApp : SingletonGameObject<IdioWordsApp>
+    {
+        [RuntimeInitializeOnLoadMethod]
+        private static void InitializeApp()
+        {
+            IdioWordsApp.Initialize();
+        }
+
+        public void Quit()
+        {
+            Platform.QuitApplication();
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            this.StartCoroutine(this.InitializeAppCoroutine());
+        }
+
+        private IEnumerator InitializeAppCoroutine()
+        {
+            // Initialization logic goes here
+        }
+    }
+    ```
+
+### Logining In
+--------------------
+
+  * UI
+    * Add DebugMenu, ConnectToServer, MessageBox, PurchaseItem, SpinnerBox, StringInputBox to Resources
+	
+  * PlayFab
+    * Add PlayFab AppConfig to Dev and Live
+    * Create AppBackend class that inherits from PlayFabBackend
+
+
+### Cloud Build Setup
+----------------------------
+* Make sure to setup AppConfigs.SetDevConfig or else a lot of very crutial code won't be fired
+
+

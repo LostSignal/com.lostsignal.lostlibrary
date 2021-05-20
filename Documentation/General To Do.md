@@ -1,0 +1,136 @@
+
+
+
+* Remove Everything Ably
+
+* Finish AppConfig -> BuildConfig renaming (make sure it just works with older projects)
+  * appconfig was renamed to bootconfig, make sure source control (and template files) ignore it
+    * add bootconfig and releaseconfig while we're at it
+    * Also Add the following to to the ignore files
+      * "Assets/AddressableAssetsData/*"
+
+* Add Visual Scripting to Default git, p4 and plastic ignore files
+  * **/Assets/Unity.VisualScripting.Generated/*
+  * **/Assets/Unity.VisualScripting.Generated
+  * **/Assets/Unity.VisualScripting.Generated.meta
+
+* Update Bootloader system to have new BootConfig
+  * Should also contain current release info
+  * Clean out Release/AppVersion code when figured out
+  * Make sure it supports Reboot
+
+* Scan all code bad line endings and print warnings if find files with bad line endings or messed up line endings "\r\r\n"
+
+* Add UpdateManager
+  * Remove UnityTask
+  * Remove CoroutineRunner
+
+* Add com.unity.coding libary as a dependency of lost libary
+
+* Make a SafeAreaManager (will pre-built in safe area's for most popular iPhones)
+
+* LostPlayerPrefs needs a refactor
+  * DeviceStorage
+    * App Open Count
+    * Player Custom Ids
+  * PlayerStorage
+    * Stats
+    * Achievements
+  * GameStorage 
+    * Flag System
+    * Checkpoint info?  Saving and restoring to older version?
+    * CreateSnapshot()
+    * Rollback() (used by checkpoint system)
+  * Add Reset File options for each type
+  * Can DeviceStorage be reused for other systems like Analytics/Logging/PerfRecording Data, so we can save all that before sending up to the cloud?
+
+* FlagManager System (how will it work with the Player/Game Storage System?)
+
+* **CLEAN UP HAVEN CODE (remove all of the unity example projects code too)
+  * Update XR Dialog Follow Code to:
+    * https://forum.unity.com/threads/quaternion-smoothdamp.793533/
+    * https://gist.github.com/maxattack/4c7b4de00f5c1b95a33b
+
+* Turn Gameplay/Expereince/Experience.cs into "Level.cs"?
+  * Basically a Level should be a scriptable object with a Main scene and chunck scenes.
+  * Maybe even have a list of "Startup" scenes that should also be loaded
+  * This way when you load the level, we know exactly how much to load
+  * The LevelManager should handle all of these
+  * Objects should also be able to tell the LevelManager that they are "Busy" doing work and the level manager won't fade up till that work is done.
+
+* **PLAYFAB
+  * Make PlayFab an optional dependency (so wrap all playfab code around USING_PLAYFAB)
+  * Look at the WIP Folder for any CloudFunctions related code and move it into Cloud Funtions or delete it
+  * Update all PlayFab Managers to use Async instead of UnityTask
+  * Try to get PlayFab code (specially the caching) working in an outside C# project
+
+* Make sure all cool Lost UGUI scripts have filters to Lost folder with AddComponentMenu
+
+* Clean up any Behaviour code that I think shouldn't exist anymore (Maybe add ```[AddComponent("")]```)
+
+* Add ScriptableObject Event System?
+  * https://github.com/roboryantron/Unite2017
+  * Events
+    * On PlayerData Loaded
+    * On PlayerData Before Save
+    * On PlayerData After Save
+    * On GameData Loaded
+    * On GameData Before Save
+    * On GameData After Save
+    * On Checkpoint Snapshot
+    * On Checkpoint Restore
+    * On Player Death
+    * On Object Pooled
+  
+  * Make sure Bolt Graphs can listen for these
+
+* Remove WeakReference out of Experimental, shoudl be replaced with GuidBasedReferences
+
+* Add Searchable Enum Property Drawer
+  * https://github.com/roboryantron/UnityEditorJunkie/blob/master/Assets/SearchableEnum/Code/Editor/SearchableEnumDrawer.cs
+  * https://github.com/fishtopher/UnityDrawers
+  
+
+* DissonanceManager should print error if "Microphone Usage Description" is empty on iOS
+
+* LiveSwitchManger should print error if "Camera Usage Description" is empty on iOS
+
+* Local Notifications and Push Notification managers
+  * Local Notifications Manager (based on Unity's wrapper)
+  * Lost.PlayFab should look for a PushNotifications manager if USING_LOST_PUSH_NOTIFICATIONS is on
+  * Register for is ready and send up RegisterForIOSPushNotification/RegisterForAndroidPushNotification
+
+
+* SpriteAtlasLoadingManger custom editor has been broken
+* UnityPurchasingManager needs to have a "Is Enable" settings, and print errors if not properly installed
+* Add XRManagerSettings (use this instead of IsXRApp)
+* Make Settings for PlayFabAnalyticsProvider
+* Is Lost Library Codebase completely static instance free?  Can I safely reboot an app without messing this up?
+* What about Pooler system.  Should probably move that to Releases
+  * Also, how good am I about using the Pooling system in the app?
+* Get 2FA Login working (will require some anonymous functions)
+  * Will need to define these in Releases?
+* Update Reference Tool to figure out the exact location of the bad reference
+* **MAKE SURE TextObjectEditor SETS IT DIRTY WHEN IT'S SUPPOSE TO
+* Make sure BuildConfigs, GameServerGenerator, AzureFunctionsGenerator and BootConfig are 
+  all autogenerated and registered with EditorBuildSettings
+    * EditorBuildSettings.AddConfigObject(Namespace, editorAppConfig, true);
+
+* Pooling System needs to use the new Manager System
+  * Delete SingletonUtil.cs after the move is complete
+  * Need to detect if a pooled object is being destroyed?
+  * If it's not being destroyed during app shutdown then print an error (Platform.IsShuttingDown)?
+  * Would it make more sense to not put a Pooled component on the object and instead keep a HashSet of Instance Ids?
+
+
+* **MAKE LAYOUT GROUP DISABLER COMPONENT (MAYBE ALL DIALOGS HAVE THIS AS A REQUIRED COMPONENT?)
+  * This scans your dialog for all layout groups and waits x seconds before disabling them after a show
+
+* GameObjectState Component (Move, Scale, Rotate, Tint), make networkable
+    * Animator ones should have a flag, disable Animator when finished (defaulted to true)
+    * Add Showable exist in the project?
+      * Will it use ObjectState component with Show/Hide under the hood?
+
+* Scan all code bad line endings and print warnings if find files with bad line endings
+  or messed up line endings "\r\r\n"
+
