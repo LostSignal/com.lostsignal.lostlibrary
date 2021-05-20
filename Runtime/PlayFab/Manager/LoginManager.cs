@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost.PlayFab
 {
     using System;
@@ -770,3 +772,5 @@ namespace Lost.PlayFab
         }
     }
 }
+
+#endif

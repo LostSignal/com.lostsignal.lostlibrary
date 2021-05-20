@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 #if USING_UNITY_PURCHASING && !UNITY_XBOXONE && !UNITY_LUMIN
 #define PURCHASING_ENABLED
 #endif
@@ -243,3 +245,5 @@ namespace Lost
         }
     }
 }
+
+#endif

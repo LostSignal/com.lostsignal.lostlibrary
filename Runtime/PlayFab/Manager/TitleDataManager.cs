@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost.PlayFab
 {
     using System.Collections.Generic;
@@ -68,3 +70,5 @@ namespace Lost.PlayFab
         }
     }
 }
+
+#endif

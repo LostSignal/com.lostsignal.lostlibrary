@@ -27,7 +27,7 @@ namespace Lost
             return new Vector3(vector.x, vector.y, z);
         }
 
-#if UNITY_2018_3_OR_NEWER
+#if UNITY
         public static Vector2 ConvertPixelSpaceToOrthographicWorldSpace(this Vector2 vector)
         {
             return Camera.main.ScreenToWorldPoint(vector);
@@ -44,7 +44,6 @@ namespace Lost
 
             return vector.magnitude / dpi;
         }
-
 #endif
     }
 }

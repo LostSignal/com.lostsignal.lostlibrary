@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace HavenXR
 {
     using System.Collections.Generic;
@@ -112,3 +114,5 @@ namespace HavenXR
         }
     }
 }
+
+#endif

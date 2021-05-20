@@ -26,7 +26,7 @@ namespace Lost.Networking
             return Id;
         }
 
-#if UNITY_2019_3_OR_NEWER
+#if UNITY
         public void PopulateMessage(NetworkIdentity identity)
         {
             this.NetworkId = identity.NetworkId;
@@ -38,7 +38,6 @@ namespace Lost.Networking
             this.DestoryOnDisconnect = identity.DestoryOnDisconnect;
             this.CanChangeOwner = identity.CanChangeOwner;
         }
-
 #endif
 
         public override void Deserialize(NetworkReader reader)

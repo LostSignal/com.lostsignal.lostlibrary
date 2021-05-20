@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using TMPro;
@@ -60,3 +62,5 @@ namespace Lost
         }
     }
 }
+
+#endif

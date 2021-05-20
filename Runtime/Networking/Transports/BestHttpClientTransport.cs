@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if UNITY_2018_1_OR_NEWER && USING_BEST_HTTP_PRO
+#if UNITY && USING_BEST_HTTP_PRO
 
 namespace Lost.Networking
 {

@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace HavenXR
 {
     using UnityEngine;
@@ -18,3 +20,5 @@ namespace HavenXR
         public Experience Experience => this.experience;
     }
 }
+
+#endif

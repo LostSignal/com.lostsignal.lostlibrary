@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 // http://wiki.unity3d.com/index.php?title=CameraFacingBillboard&_ga=2.46806503.1571963746.1612411656-2131485283.1592860438
 
 namespace Lost
@@ -28,3 +30,5 @@ namespace Lost
         }
     }
 }
+
+#endif

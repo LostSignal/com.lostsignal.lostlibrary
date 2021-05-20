@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using UnityEngine;
@@ -26,3 +28,5 @@ namespace Lost
         }
     }
 }
+
+#endif

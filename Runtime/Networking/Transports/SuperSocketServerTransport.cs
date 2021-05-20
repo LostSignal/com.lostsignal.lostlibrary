@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if !UNITY_2018_3_OR_NEWER && USING_SUPER_SOCKET
+#if !UNITY && USING_SUPER_SOCKET
 
 namespace Lost.Networking
 {

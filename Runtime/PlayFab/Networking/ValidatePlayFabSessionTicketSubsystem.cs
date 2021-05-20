@@ -11,7 +11,7 @@ namespace Lost
 
     public class ValidatePlayFabSessionTicketSubsystem : IGameServerSubsystem
     {
-#if !UNITY_2018_3_OR_NEWER
+#if !UNITY
         private PlayFab.PlayFabAuthenticationContext titleAuthenticationContext;
 #endif
 
@@ -39,7 +39,7 @@ namespace Lost
                 return false;
             }
 
-#if UNITY_2018_3_OR_NEWER
+#if UNITY
             await Task.Delay(0);
             return true;
 #else

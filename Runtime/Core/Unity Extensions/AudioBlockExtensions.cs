@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     public static class AudioBlockExtensions
@@ -17,3 +19,5 @@ namespace Lost
         }
     }
 }
+
+#endif

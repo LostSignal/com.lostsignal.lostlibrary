@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     public static class ForcePancakeInEditorUtil
@@ -37,3 +39,5 @@ namespace Lost
 #endif
     }
 }
+
+#endif

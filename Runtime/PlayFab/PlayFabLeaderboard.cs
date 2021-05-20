@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost.PlayFab
 {
     using global::PlayFab.ClientModels;
@@ -362,3 +364,5 @@ namespace Lost.PlayFab
         }
     }
 }
+
+#endif

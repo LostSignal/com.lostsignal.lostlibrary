@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using UnityEngine.EventSystems;
@@ -15,3 +17,5 @@ namespace Lost
         }
     }
 }
+
+#endif

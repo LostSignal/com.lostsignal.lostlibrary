@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost.Friends
 {
     using System;
@@ -76,3 +78,5 @@ namespace Lost.Friends
         }
     }
 }
+
+#endif

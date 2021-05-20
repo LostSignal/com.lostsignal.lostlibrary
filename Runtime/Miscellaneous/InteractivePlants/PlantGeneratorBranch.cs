@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost.PlantGenerator
 {
     using UnityEngine;
@@ -55,3 +57,5 @@ namespace Lost.PlantGenerator
         }
     }
 }
+
+#endif

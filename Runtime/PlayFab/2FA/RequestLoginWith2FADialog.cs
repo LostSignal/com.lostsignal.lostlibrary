@@ -4,9 +4,13 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     public class RequestLoginWith2FADialog : DialogLogic
     {
     }
 }
+
+#endif

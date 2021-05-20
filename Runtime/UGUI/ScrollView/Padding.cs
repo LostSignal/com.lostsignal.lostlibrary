@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using System;
@@ -40,3 +42,5 @@ namespace Lost
         }
     }
 }
+
+#endif

@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     public class UnityIAPLoader : Loader
@@ -16,3 +18,5 @@ namespace Lost
         }
     }
 }
+
+#endif

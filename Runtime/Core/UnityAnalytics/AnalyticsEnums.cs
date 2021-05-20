@@ -8,6 +8,8 @@
 #define UNITY_ANALYTICS_SUPPORTED
 #endif
 
+#if UNITY
+
 namespace Lost.Analytics
 {
     using System;
@@ -419,3 +421,5 @@ namespace Lost.Analytics
         GameCenter = 5,
     }
 }
+
+#endif

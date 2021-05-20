@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if USING_UNITY_PURCHASING && !UNITY_XBOXONE && !UNITY_LUMIN
+#if UNITY && USING_UNITY_PURCHASING && !UNITY_XBOXONE && !UNITY_LUMIN
 #define PURCHASING_ENABLED
 #endif
 

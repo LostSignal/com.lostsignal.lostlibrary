@@ -1,6 +1,6 @@
 #pragma warning disable
 
-#if USING_UNITY_XR_INTERACTION_TOOLKIT
+#if UNITY && USING_UNITY_XR_INTERACTION_TOOLKIT
 
 using Test;
 using UnityEngine;

@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace HavenXR
 {
     using System;
@@ -135,3 +137,5 @@ namespace HavenXR
         }
     }
 }
+
+#endif

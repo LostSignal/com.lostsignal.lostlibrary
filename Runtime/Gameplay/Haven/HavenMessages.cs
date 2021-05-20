@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost.Haven
 {
     using Lost;
@@ -36,3 +38,5 @@ namespace Lost.Haven
         }
     }
 }
+
+#endif

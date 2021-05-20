@@ -25,7 +25,7 @@ namespace Lost.Networking
             return Id;
         }
 
-#if UNITY_2018_4_OR_NEWER
+#if UNITY
 
         public void PopulateMessage(NetworkIdentity identity)
         {

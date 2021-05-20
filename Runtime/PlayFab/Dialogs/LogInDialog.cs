@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost.PlayFab
 {
     using System.Collections;
@@ -210,3 +212,5 @@ namespace Lost.PlayFab
         }
     }
 }
+
+#endif

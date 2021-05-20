@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace HavenXR
 {
     using UnityEngine;
@@ -30,3 +32,5 @@ namespace HavenXR
         }
     }
 }
+
+#endif

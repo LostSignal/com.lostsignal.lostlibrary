@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     public static class LostMessages
@@ -34,3 +36,5 @@ namespace Lost
         }
     }
 }
+
+#endif

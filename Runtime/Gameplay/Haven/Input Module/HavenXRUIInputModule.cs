@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost.Haven
 {
     [UnityEngine.AddComponentMenu("")]
@@ -15,3 +17,5 @@ namespace Lost.Haven
     {
     }
 }
+
+#endif

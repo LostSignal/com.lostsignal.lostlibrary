@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if UNITY_2019_3_OR_NEWER
+#if UNITY
 
 namespace Lost.Networking
 {

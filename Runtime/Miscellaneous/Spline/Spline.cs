@@ -1,3 +1,11 @@
+//-----------------------------------------------------------------------
+// <copyright file="Spline.cs" company="Lost Signal LLC">
+//     Copyright (c) Lost Signal LLC. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+#if UNITY
+
 namespace Lost
 {
     using System.Linq;
@@ -173,3 +181,5 @@ namespace Lost
         #endif
     }
 }
+
+#endif

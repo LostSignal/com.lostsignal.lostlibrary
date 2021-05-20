@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using System.Collections;
@@ -55,3 +57,5 @@ namespace Lost
         }
     }
 }
+
+#endif

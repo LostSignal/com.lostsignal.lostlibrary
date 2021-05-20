@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost.PlayFab
 {
     public class TitleNewsManager
@@ -16,3 +18,5 @@ namespace Lost.PlayFab
         }
     }
 }
+
+#endif

@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost.Haven
 {
     using UnityEngine;
@@ -13,10 +15,12 @@ namespace Lost.Haven
     {
         public Renderer rendererToSet;
         public Color color;
-        
+
         public void SetColor()
         {
             this.rendererToSet.material.color = this.color;
         }
     }
 }
+
+#endif

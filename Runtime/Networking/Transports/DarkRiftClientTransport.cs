@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if USING_DARKRIFT_2
+#if UNITY && USING_DARKRIFT_2
 
 namespace Lost.Networking
 {

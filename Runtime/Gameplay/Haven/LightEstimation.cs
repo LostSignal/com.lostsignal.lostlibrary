@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if USING_UNITY_AR_FOUNDATION
+#if UNITY && USING_UNITY_AR_FOUNDATION
 
 ////
 //// Taken from Unity's AR Foundation Samples

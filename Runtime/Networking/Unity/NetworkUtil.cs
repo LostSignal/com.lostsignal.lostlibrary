@@ -4,9 +4,6 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-
-#if UNITY_2018_3_OR_NEWER
-
 namespace Lost.Networking
 {
     public static class NetworkUtil
@@ -29,5 +26,3 @@ namespace Lost.Networking
         }
     }
 }
-
-#endif

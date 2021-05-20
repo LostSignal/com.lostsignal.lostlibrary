@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if USING_UNITY_XR_INTERACTION_TOOLKIT
+#if UNITY && USING_UNITY_XR_INTERACTION_TOOLKIT
 
 namespace Lost.Haven
 {
@@ -19,11 +19,11 @@ namespace Lost.Haven
 #pragma warning disable 0649
         [Header("Haven Variables")]
         [SerializeField] private bool isOffsetGrabbable = true;
-        
+
         [Header("Hover")]
         [SerializeField] private UnityEvent onHoverStart;
         [SerializeField] private UnityEvent onHoverStop;
-        
+
         [Header("Grab")]
         [SerializeField] private UnityEvent onGrabStart;
         [SerializeField] private UnityEvent onGrabStop;
@@ -68,7 +68,7 @@ namespace Lost.Haven
             this.usingNetworking = this.networkIdentity != null;
             this.originalTightenPosition = this.tightenPosition;
             this.awakeTime = Time.realtimeSinceStartup;
-            
+
             this.firstHoverEntered.AddListener(this.HoverStart);
             this.lastHoverExited.AddListener(this.HoverStop);
             this.selectEntered.AddListener(this.GrabStart);
@@ -114,7 +114,7 @@ namespace Lost.Haven
 
             base.OnSelectExited(selectExitedEventArgs);
         }
-        
+
         private void HoverStart(HoverEnterEventArgs hoverEnterEventArgs)
         {
             if (this.isBeingGrabbed == false)

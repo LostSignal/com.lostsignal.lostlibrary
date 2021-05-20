@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     public enum AdWatchedResult
@@ -26,3 +28,5 @@ namespace Lost
         void ShowAd(string placementId, bool isRewarded, System.Action<AdWatchedResult> watchResultCallback);
     }
 }
+
+#endif

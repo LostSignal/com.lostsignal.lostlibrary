@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost.Friends
 {
     using UnityEngine;
@@ -13,3 +15,5 @@ namespace Lost.Friends
     {
     }
 }
+
+#endif
