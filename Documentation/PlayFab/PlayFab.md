@@ -1,12 +1,10 @@
-   * PlayFab
-      * Talk to them about PlayerInbox and persistent connection
-      * Make a better TitleData wrapper (remove version, have PF class cache files)
-        * Add PF.GetTitleData(bool usedCachedVersion)
-      * Need system where the client queries PlayFab with it's version, and playfab returns
-        the title data version, asset bundle location and whether or not an update is required.
-        And if an update is required, it should return the links to the app.
-
-
+* PlayFab
+  * Talk to them about PlayerInbox and persistent connection
+  * Make a better TitleData wrapper (remove version, have PF class cache files)
+    * Add PF.GetTitleData(bool usedCachedVersion)
+  * Need system where the client queries PlayFab with it's version, and playfab returns
+    the title data version, asset bundle location and whether or not an update is required.
+    And if an update is required, it should return the links to the app.
 
 * Make a better version of the TitleDataWrapper scriptable object
   * Update PlayFabServer class to have GetJson(bool useCachedIfAvailable)

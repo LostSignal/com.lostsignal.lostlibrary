@@ -1,3 +1,4 @@
+
 * Advanced Canvas Scaler
   * Safe Area System (for iPhone X)
   * Dialog Update (DialogLogic, DialogReference, Covered/Uncovered events, screen analytics, transition manager)

@@ -11,10 +11,6 @@
   
 * Bootload is always run at startup (unless you're running from the editor and your scene is in the IgnoreBootloader list in the bootconfig).
   
-
-
-
-
 * ------------------------------------------------------------------------------------------------------------------
 
 * BootConfig Class (Stored in Streaming Assets)

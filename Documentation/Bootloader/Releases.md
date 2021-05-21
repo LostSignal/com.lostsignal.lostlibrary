@@ -86,3 +86,20 @@ changed, then reboot the app.
           * Live Config
             * RequestLogin
             * Login
+
+
+### What's New System
+--------------------------
+* AppVersion
+   * int CloudScriptRevision;
+   * string CatalogVersion;
+   * bool DataOnlyBuild;
+   * LocString Description;
+   * LocString[] BulletPoints;
+   * bool IsLive;
+   * bool ForceToUpdate;
+   * Add a Coming soon field?
+   * AssetBundle Version?!?!?!?!?
+   
+* What's New System (apart of AppSettings?)
+* Make a what's new Dialog (it can probably take care determining if it has shown that info yet)
