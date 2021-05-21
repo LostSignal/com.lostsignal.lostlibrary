@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Rules for StyleCop.Analyzers" Description="Code analysis rules for StyleCop.Analyzers.csproj." ToolsVersion="14.0">
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA1305" Action="Warning" />  <!-- The name of a field or variable in C# uses Hungarian notation. -->
+    <Rule Id="SA1412" Action="Warning" />  <!-- The encoding of the file is not UTF-8 with byte order mark. -->
+    <Rule Id="SA1600" Action="None" />     <!-- A C# code element is missing a documentation header. -->
+    <Rule Id="SA1601" Action="None" />     <!-- A C# partial element is missing a documentation header. -->
+    <Rule Id="SA1609" Action="Warning" />  <!-- The Xml header documentation for a C# property does not contain a <value> tag. -->
+  </Rules>
+</RuleSet>
