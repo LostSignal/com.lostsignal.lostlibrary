@@ -278,6 +278,7 @@ namespace Lost.Haven
             Handles.color = new Color(1.0f, 0.0f, 0.0f, 0.5f);
             Handles.DrawSolidArc(this.transform.position, this.transform.TransformDirection(this.localRotationAxis), this.transform.TransformDirection(this.localAxisStart), this.rotationAngleMaximum, 0.2f);
         }
+
 #endif
 
         [System.Serializable]

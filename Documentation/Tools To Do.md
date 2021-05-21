@@ -27,6 +27,7 @@
 
 * NEED PROJECT AUDITOR TOOL
   * Audio, Meshes, Normal Maps, Etc
+  * Scan all code bad line endings and print warnings if find files with bad line endings or messed up line endings "\r\r\n"
 
 * NEED SCENE REPORT TOOL
   * Make tool that goes over every Canvas in scene and makes sure every RectTransform as 1,1,1 scale and the Z < 100
@@ -57,11 +58,6 @@
     * Active Animators, Timelines, Skined Mesh Renderers
     * Physics
       * Active Rigidbodies (non-kinematic)
-
-* NEED REMOTE TOGGLE TOOL
-  * Connects to unity and gets all objects in teh scene
-  * Lets you remotely enable/disable gameobjects
-
 
 
 

@@ -58,6 +58,7 @@ namespace Lost.CloudFunctions
 
             return true;
         }
+
 #endif
 
         public override void Initialize()

@@ -44,10 +44,10 @@ namespace Lost.BuildConfig
         {
             instance = null;
         }
-        
+
         [FormerlySerializedAs("appConfigGuid")]
         [SerializeField] private string buildConfigGuid;
-        
+
         [FormerlySerializedAs("appConfigName")]
         [SerializeField] private string buildConfigName;
 

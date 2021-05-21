@@ -254,6 +254,7 @@ public class DialInteractable : XRBaseInteractable
         Handles.color = new Color(1.0f, 0.0f, 0.0f, 0.5f);
         Handles.DrawSolidArc(transform.position, transform.TransformDirection(LocalRotationAxis), transform.TransformDirection(LocalAxisStart), RotationAngleMaximum, 0.2f);
     }
+
 #endif
 }
 

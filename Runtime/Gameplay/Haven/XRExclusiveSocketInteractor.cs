@@ -1,4 +1,3 @@
-
 #if UNITY && USING_UNITY_XR_INTERACTION_TOOLKIT
 
 using UnityEngine;

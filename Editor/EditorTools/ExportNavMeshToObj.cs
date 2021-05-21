@@ -56,15 +56,15 @@ namespace Lost
                 }
 
                 stringBuilder.Append("\n");
-                
+
                 foreach (Vector3 v in mesh.normals)
                 {
                     // NOTE [bgish]: Flipped X-Axis
                     stringBuilder.Append(string.Format("vn {0} {1} {2}\n", -v.x, v.y, v.z));
                 }
-                
+
                 stringBuilder.Append("\n");
-                
+
                 foreach (Vector3 v in mesh.uv)
                 {
                     stringBuilder.Append(string.Format("vt {0} {1}\n", v.x, v.y));
@@ -72,7 +72,7 @@ namespace Lost
 
                 for (int material = 0; material < mesh.subMeshCount; material++)
                 {
-                    stringBuilder.Append("\n");                
+                    stringBuilder.Append("\n");
 
                     int[] triangles = mesh.GetTriangles(material);
 

@@ -46,7 +46,7 @@ namespace Lost
                 {
                     importer.AddRemap(new AssetImporter.SourceAssetIdentifier(material), material);
                 }
-                
+
                 EditorUtility.SetDirty(importer);
                 importer.SaveAndReimport();
             }
@@ -58,13 +58,13 @@ namespace Lost
             var gameObject = Selection.activeObject as GameObject;
             var meshFilter = gameObject.GetComponent<MeshFilter>();
             var savePath = EditorUtility.SaveFilePanel("Save OBJ", Path.GetDirectoryName(gameObject.scene.path), $"{gameObject.name}.obj", "obj");
-            
+
             if (string.IsNullOrEmpty(savePath) == false)
             {
                 ExportMeshFilterToObjFile(meshFilter, savePath);
             }
         }
-         
+
         //// http://wiki.unity3d.com/index.php?title=ObjExporter
         private static string MeshFilterToString(MeshFilter meshFilter, string mtlFileNameNoExtension = null)
         {
@@ -77,10 +77,10 @@ namespace Lost
             {
                 stringBuilder.Append($"mtllib ./{mtlFileNameNoExtension}.mtl\n");
             }
-            
+
             stringBuilder.Append("g ").Append(meshFilter.name).Append("\n");
 
-            foreach(Vector3 v in mesh.vertices)
+            foreach (Vector3 v in mesh.vertices)
             {
                 // NOTE [bgish]: Flipping the X axis
                 stringBuilder.Append(string.Format("v {0} {1} {2}\n", -v.x, v.y, v.z));
@@ -88,7 +88,7 @@ namespace Lost
 
             stringBuilder.Append("\n");
 
-            foreach(Vector3 v in mesh.normals)
+            foreach (Vector3 v in mesh.normals)
             {
                 // NOTE [bgish]: Flipping the X axis
                 stringBuilder.Append(string.Format("vn {0} {1} {2}\n", -v.x, v.y, v.z));
@@ -101,22 +101,22 @@ namespace Lost
                 stringBuilder.Append(string.Format("vt {0} {1}\n", v.x, v.y));
             }
 
-            for (int material = 0; material < mesh.subMeshCount; material ++)
+            for (int material = 0; material < mesh.subMeshCount; material++)
             {
                 stringBuilder.Append("\n");
                 stringBuilder.Append("usemtl ").Append(materials[material].name).Append("\n");
                 stringBuilder.Append("usemap ").Append(materials[material].name).Append("\n");
- 
+
                 int[] triangles = mesh.GetTriangles(material);
 
                 for (int i = 0; i < triangles.Length; i += 3)
                 {
                     // NOTE [bgish]: Changing winding order
                     stringBuilder.Append(
-                        string.Format("f {0}/{0}/{0} {1}/{1}/{1} {2}/{2}/{2}\n", 
-                        triangles[i + 2] + 1,
-                        triangles[i + 1] + 1,
-                        triangles[i + 0] + 1));
+                        string.Format("f {0}/{0}/{0} {1}/{1}/{1} {2}/{2}/{2}\n",
+                            triangles[i + 2] + 1,
+                            triangles[i + 1] + 1,
+                            triangles[i + 0] + 1));
                 }
             }
 

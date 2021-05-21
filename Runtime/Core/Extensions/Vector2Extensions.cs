@@ -44,6 +44,7 @@ namespace Lost
 
             return vector.magnitude / dpi;
         }
+
 #endif
     }
 }

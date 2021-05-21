@@ -114,7 +114,6 @@ namespace Lost.Haven
             {
                 throw new System.NotImplementedException();
             }
-
         }
     }
 }

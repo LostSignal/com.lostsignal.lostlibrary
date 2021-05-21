@@ -1,6 +1,4 @@
 
-
-
 * Remove Everything Ably
 
 * Finish AppConfig -> BuildConfig renaming (make sure it just works with older projects)
@@ -18,8 +16,6 @@
   * Should also contain current release info
   * Clean out Release/AppVersion code when figured out
   * Make sure it supports Reboot
-
-* Scan all code bad line endings and print warnings if find files with bad line endings or messed up line endings "\r\r\n"
 
 * Add UpdateManager
   * Remove UnityTask

@@ -38,6 +38,7 @@ namespace Lost.Networking
             this.DestoryOnDisconnect = identity.DestoryOnDisconnect;
             this.CanChangeOwner = identity.CanChangeOwner;
         }
+
 #endif
 
         public override void Deserialize(NetworkReader reader)
