@@ -142,9 +142,6 @@ namespace Lost
                 rootConfig.Name = "Root";
                 AddSetting<BundleIdentifierSetting>(rootConfig);
                 AddSetting<BuildPlayerContentSettings>(rootConfig);
-                AddSetting<GeneralAppSettings>(rootConfig);
-                AddSetting<ReleasesSettings>(rootConfig);
-                AddSetting<OverrideTemplatesSettings>(rootConfig);
                 AddSetting<CloudBuildSetBuildNumber>(rootConfig);
 
                 var devConfig = new BuildConfig.AppConfig();

@@ -16,9 +16,10 @@ namespace Lost
         {
             base.OnInspectorGUI();
 
-            // var textAsset = this.target as TextAsset;
-            // textAsset.text = EditorGUILayout.TextArea(textAsset.text);
-            // textAsset.
+            if (GUI.changed)
+            {
+                EditorUtility.SetDirty(this.target);
+            }
         }
     }
 }
