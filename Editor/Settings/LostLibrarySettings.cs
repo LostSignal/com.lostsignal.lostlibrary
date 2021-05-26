@@ -377,12 +377,18 @@ namespace Lost
 
         public void AddAnalyzersToCSProjects()
         {
-            if (this.analyzers.Count == 0)
+            foreach (var csProjFile in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.csproj"))
             {
-                return;
+                foreach (var analyzer in this.analyzers)
+                {
+                    var fileName = Path.GetFileNameWithoutExtension(csProjFile);
+
+                    if (analyzer.CSProjects.Contains(fileName))
+                    {
+                        // Debug.Log($"Add {analyzer.Name} to {fileName}");
+                    }
+                }
             }
-
-
         }
 
         private TextAsset GetTemplateTextAsset(string assetPath)
