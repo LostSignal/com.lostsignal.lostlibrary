@@ -30,21 +30,8 @@ namespace Lost
 
             IEnumerator InitializeCoroutine()
             {
-                //// var url = RuntimeAppConfig.Instance.GetString(ReleasesUrlKey).AppendIfDoesntExist("/");
-                //// var machineName = RuntimeAppConfig.Instance.GetString(ReleasesMachineNameKey);
-                ////
-                //// var fullUrl = Platform.IsUnityCloudBuild ?
-                ////     $"{url}{ReleasesJsonFileName}" :
-                ////     $"{url}{machineName}/{ReleasesJsonFileName}";
-                ////
-                //// TODO [bgish]: Download Releases.json using the fullUrl
-                //// TODO [bgish]: Calculate and set this.CurrentRelease based on RuntimeAppConfig.Instance.Version/BuildNumber/CommitId
-                //// TODO [bgish]: Check for any force updates
-
-                this.CurrentRelease = JsonUtil.Deserialize<Release>(RuntimeBuildConfig.Instance.GetString(ReleasesCurrentRelease));
-
+                this.CurrentRelease = Releases.GetCurrentRelease();
                 this.SetInstance(this);
-
                 yield break;
             }
         }

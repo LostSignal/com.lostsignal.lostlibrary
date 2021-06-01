@@ -11,6 +11,7 @@ namespace Lost
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
     using Lost.Haven;
     using UnityEngine;
 
@@ -171,28 +172,41 @@ namespace Lost
             void MoveLoaderToTop(XRLoader loader)
             {
                 string loaderName = this.GetLoaderName(loader);
-
                 if (loaderName == null)
                 {
                     Debug.LogError($"Unkonwn XRLoader Type \"{xrLoader}\" encountered");
                     return;
                 }
 
-                for (int i = 0; i < UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders.Count; i++)
-                {
-                    var unityXRLoader = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders[i];
+                var activeLoaders = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.activeLoaders;
+                var reorderedLoaders = new List<UnityEngine.XR.Management.XRLoader>(activeLoaders.Count);
+                var foundLoader = false;
 
-                    if (unityXRLoader?.name == loaderName)
+                foreach (var xrLoader in activeLoaders)
+                {
+                    if (xrLoader.name == loaderName)
                     {
-                        UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders.RemoveAt(i);
-                        UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.loaders.Insert(0, unityXRLoader);
-                        return;
+                        reorderedLoaders.Insert(0, xrLoader);
+                        foundLoader = true;
+                    }
+                    else
+                    {
+                        reorderedLoaders.Add(xrLoader);
                     }
                 }
 
-                Debug.LogError($"Unable to find XR Loader in the XR Settings {loaderName}");
-            }
+                bool trySetSuccess = UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.TrySetLoaders(reorderedLoaders);
 
+                if (trySetSuccess == false)
+                {
+                    Debug.LogError($"Unable to set our new XR Laoder order!");
+                }
+
+                if (foundLoader == false)
+                {
+                    Debug.LogError($"Unable to find XR Loader in the XR Settings {loaderName}");
+                }
+            }
 #endif
         }
 

@@ -9,7 +9,6 @@
 namespace Lost
 {
     using System.Collections.Generic;
-    using Lost.PlayFab;
     using UnityEngine;
     using UnityEngine.SceneManagement;
 
