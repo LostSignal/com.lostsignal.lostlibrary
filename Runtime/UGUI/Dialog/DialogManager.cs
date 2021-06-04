@@ -73,7 +73,7 @@ namespace Lost
                 if (dailogLogicComponent)
                 {
                     var newDialog = GameObject.Instantiate(prefab);
-                    SceneManager.MoveGameObjectToScene(newDialog.gameObject, SceneManager.GetSceneByName("Bootloader"));
+                    SceneManager.MoveGameObjectToScene(newDialog.gameObject, DialogManager.Instance.gameObject.scene);
                     return newDialog.GetComponent<T>();
                 }
             }

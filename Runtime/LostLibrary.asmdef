@@ -14,7 +14,10 @@
         "GUID:e40ba710768534012815d3193fa296cb",
         "GUID:61106e8dfb7a4e64a96af0eccfe1209f",
         "GUID:75469ad4d38634e559750d17036d5f7c",
-        "GUID:fe685ec1767f73d42b749ea8045bfe43"
+        "GUID:fe685ec1767f73d42b749ea8045bfe43",
+        "GUID:21b0c8d1703a94250bfac916590cea4f",
+        "GUID:ea715009a4efd4c6cbc85be3ae097dd3",
+        "GUID:315d634a9ac6d460a9515f5a56be6311"
     ],
     "includePlatforms": [],
     "excludePlatforms": [
@@ -86,6 +89,11 @@
             "name": "com.unity.xr.interaction.toolkit",
             "expression": "0.0.0",
             "define": "USING_UNITY_XR_INTERACTION_TOOLKIT"
+        },
+        {
+            "name": "com.unity.visualscripting",
+            "expression": "0.0.0",
+            "define": "USING_VISUAL_SCRIPTING"
         }
     ],
     "noEngineReferences": false

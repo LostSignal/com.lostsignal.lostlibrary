@@ -379,7 +379,7 @@ namespace Lost
             {
                 if (DialogManager.IsInitialized == false)
                 {
-                    Bootloader.OnBoot += this.Show;
+                    Bootloader.OnManagersReady += this.Show;
                 }
                 else
                 {
@@ -409,7 +409,7 @@ namespace Lost
 
         private void OnDestroy()
         {
-            Bootloader.OnBoot -= this.Show;
+            Bootloader.OnManagersReady -= this.Show;
         }
 
         private void StartHibernateMonitorCoroutine(Dialog dialog)

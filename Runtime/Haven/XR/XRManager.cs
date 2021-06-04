@@ -55,17 +55,13 @@ namespace Lost
 
             IEnumerator Coroutine()
             {
-                yield return CoroutineRunner.WaitForInitialization();
-
                 if (this.printDebugInfo)
                 {
+                    // Registering for events
                     UnityEngine.XR.XRDevice.deviceLoaded += (device) => Debug.Log($"XRManager: Device Loaded - {device}");
                     UnityEngine.XR.InputDevices.deviceConnected += (device) => Debug.Log($"XRManager: Device Connected - {device.name}");
                     UnityEngine.XR.InputDevices.deviceConfigChanged += (device) => Debug.Log($"XRManager: Device Config Changed - {device}");
-                }
 
-                if (this.printDebugInfo)
-                {
                     Debug.Log($"XRManager: SystemInfo.deviceName - {SystemInfo.deviceName}");
 
                     // Printing off all our loaders
@@ -99,10 +95,10 @@ namespace Lost
                 else
                 {
                     this.StartUnityXR(this.StartLoaders());
-                    this.ExecuteDelayed(1.0f, this.FinishInitialization);
+                    yield return WaitForUtil.Seconds(1.0f);
+                    this.FinishInitialization();
                 }
             }
-
 #endif
         }
 

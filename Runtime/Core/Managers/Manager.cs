@@ -9,9 +9,20 @@
 namespace Lost
 {
     using System.Collections;
+    using System.Collections.Generic;
     using UnityEngine;
 
     public delegate void OnManagerInitializedDelegate();
+
+    public static class ManagerList
+    {
+        static ManagerList()
+        {
+            Bootloader.OnReset += Managers.Clear;
+        }
+
+        public static List<IManager> Managers = new List<IManager>();
+    }
 
     public abstract class Manager<T> : MonoBehaviour, IManager
         where T : MonoBehaviour
@@ -57,6 +68,11 @@ namespace Lost
             return IsInitialized || this.enabled == false;
         }
 
+        protected virtual void Awake()
+        {
+            ManagerList.Managers.Add(this);
+        }
+
         protected virtual void Start()
         {
             this.RunInitialization();
@@ -69,6 +85,12 @@ namespace Lost
         protected virtual void OnDisable()
         {
             Instance = null;
+            onInitialized = null;
+        }
+
+        protected virtual void OnDestory()
+        {
+            ManagerList.Managers.Remove(this);
         }
 
         protected void SetInstance(T instance)

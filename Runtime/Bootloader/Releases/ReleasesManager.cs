@@ -8,19 +8,26 @@
 
 namespace Lost
 {
+    using System;
     using System.Collections;
-    using Lost.BuildConfig;
+    using UnityEngine;
 
+    ////
     //// NEED TO MAKE A RELEASES APP CONFIG
     //// Will have the URL
     //// WIll have the blob storage upload info
     ////
     public class ReleasesManager : Manager<ReleasesManager>
     {
-        public const string ReleasesJsonFileName = "Releases.json";
-        public const string ReleasesUrlKey = "Releases.URL";
-        public const string ReleasesMachineNameKey = "Releases.MachineName";
-        public const string ReleasesCurrentRelease = "Releases.CurrentRelease";
+        public enum StorageLocation
+        {
+            Resources,
+            PlayFab,
+        }
+
+        #pragma warning disable 0649
+        [SerializeField] private StorageLocation storageLocation;
+        #pragma warning restore 0649
 
         public Release CurrentRelease { get; private set; }
 
@@ -30,8 +37,21 @@ namespace Lost
 
             IEnumerator InitializeCoroutine()
             {
-                this.CurrentRelease = Releases.GetCurrentRelease();
+                if (this.storageLocation == StorageLocation.Resources)
+                {
+                    this.CurrentRelease = Releases.GetCurrentReleaseFromResources();
+                }
+                else if (this.storageLocation == StorageLocation.PlayFab)
+                {
+                    throw new NotImplementedException();
+                }
+                else
+                {
+                    throw new Exception($"Unknown StorageLocation {this.storageLocation} Found!");
+                }
+                
                 this.SetInstance(this);
+
                 yield break;
             }
         }

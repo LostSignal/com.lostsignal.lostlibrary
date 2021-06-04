@@ -16,7 +16,7 @@ namespace Lost.Haven
     {
         private void Awake()
         {
-            Bootloader.OnBoot += this.Initialize;
+            Bootloader.OnManagersReady += this.Initialize;
         }
 
         private void Initialize()

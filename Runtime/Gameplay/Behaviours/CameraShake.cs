@@ -45,12 +45,12 @@ namespace Lost
 
         private void OnEnable()
         {
-            Bootloader.OnBoot += this.UpdateObjectTracker;
+            Bootloader.OnManagersReady += this.UpdateObjectTracker;
         }
 
         private void OnDisable()
         {
-            Bootloader.OnBoot -= this.UpdateObjectTracker;
+            Bootloader.OnManagersReady -= this.UpdateObjectTracker;
             this.UpdateObjectTracker();
         }
 
