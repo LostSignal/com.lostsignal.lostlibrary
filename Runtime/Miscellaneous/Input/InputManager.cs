@@ -11,7 +11,7 @@ namespace Lost
     using System.Collections.Generic;
     using UnityEngine;
 
-    public class InputManager : Manager<InputManager>
+    public sealed class InputManager : Manager<InputManager>
     {
         private const int InputCacheSize = 20;
 

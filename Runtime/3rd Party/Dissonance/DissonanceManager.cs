@@ -11,7 +11,7 @@ namespace Lost.DissonanceIntegration
     using Lost.PlayFab;
     using UnityEngine;
 
-    public class DissonanceManager : Manager<DissonanceManager>
+    public sealed class DissonanceManager : Manager<DissonanceManager>
     {
 #pragma warning disable 0649
         [SerializeField] private GameObject dissonanceCommsPrefab;

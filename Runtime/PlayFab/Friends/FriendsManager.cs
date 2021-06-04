@@ -14,7 +14,7 @@ namespace Lost.Friends
     using Lost.CloudFunctions.Friends;
     using UnityEngine;
 
-    public class FriendsManager : Manager<FriendsManager>
+    public sealed class FriendsManager : Manager<FriendsManager>
     {
 #pragma warning disable 0649
         [SerializeField] private RealtimeMessageManager messageManager;

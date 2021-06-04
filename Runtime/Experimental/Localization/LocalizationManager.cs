@@ -8,7 +8,7 @@
 
 namespace Lost
 {
-    public class LocalizationManager : Manager<LocalizationManager>
+    public sealed class LocalizationManager : Manager<LocalizationManager>
     {
         public override void Initialize()
         {

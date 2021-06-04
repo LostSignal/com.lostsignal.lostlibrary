@@ -11,7 +11,7 @@ namespace Lost
     using System;
     using System.Collections.Generic;
 
-    public class AdsManager : Manager<AdsManager>
+    public sealed class AdsManager : Manager<AdsManager>
     {
         private IAdProvider provider;
 

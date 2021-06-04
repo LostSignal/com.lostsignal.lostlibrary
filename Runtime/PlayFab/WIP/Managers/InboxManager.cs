@@ -8,7 +8,7 @@
 
 namespace Lost
 {
-    public class InboxManager : Manager<InboxManager>
+    public sealed class InboxManager : Manager<InboxManager>
     {
         public override void Initialize()
         {

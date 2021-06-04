@@ -12,7 +12,7 @@ namespace Lost
     using System.Collections;
     using UnityEngine;
 
-    public class ScreenSizeManager : Manager<ScreenSizeManager>
+    public sealed class ScreenSizeManager : Manager<ScreenSizeManager>
     {
         public override void Initialize()
         {

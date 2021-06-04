@@ -10,7 +10,7 @@ namespace Lost
 {
     using System.Collections;
 
-    public class AddressablesManager : Manager<AddressablesManager>
+    public sealed class AddressablesManager : Manager<AddressablesManager>
     {
         public override void Initialize()
         {

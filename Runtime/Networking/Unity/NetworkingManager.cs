@@ -30,7 +30,7 @@ namespace Lost.Networking
 
     public delegate void ConnectedUsersUpdatedDelegate();
 
-    public class NetworkingManager : Manager<NetworkingManager>
+    public sealed class NetworkingManager : Manager<NetworkingManager>
     {
         private static readonly string ValidMatchNameCharacters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 

@@ -8,7 +8,7 @@ namespace Lost
 {
     public class EditorEvents
     {
-        public class OnUnityLoadedAttribute : System.Attribute
+        public class OnDomainReloadAttribute : System.Attribute
         {
         }
 
@@ -17,6 +17,14 @@ namespace Lost
         }
 
         public class OnPostprocessBuildAttribute : System.Attribute
+        {
+        }
+
+        public class OnPostGenerateGradleAndroidProjectAttribute : System.Attribute
+        {
+        }
+
+        public class OnProcessSceneAttribute : System.Attribute
         {
         }
 

@@ -14,7 +14,7 @@ namespace Lost
     using UnityEngine;
     using UnityEngine.U2D;
 
-    public class SpriteAtlasLoadingManager : Manager<SpriteAtlasLoadingManager>
+    public sealed class SpriteAtlasLoadingManager : Manager<SpriteAtlasLoadingManager>
     {
         private Dictionary<string, Action<SpriteAtlas>> unknownAtlasRequests = new Dictionary<string, Action<SpriteAtlas>>();
         private Dictionary<string, Atlas> atlasesMap = null;

@@ -10,7 +10,7 @@ namespace Lost
     using System.Collections.Generic;
     using UnityEngine;
 
-    public class GuidManager : Manager<GuidManager>
+    public sealed class GuidManager : Manager<GuidManager>
     {
         private Dictionary<string, GuidComponent> guids = new Dictionary<string, GuidComponent>();
 

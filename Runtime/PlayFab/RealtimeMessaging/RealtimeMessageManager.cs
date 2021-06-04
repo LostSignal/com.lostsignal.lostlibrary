@@ -23,7 +23,7 @@ namespace Lost
     using Lost.PlayFab;
     using System.Collections;
 
-    public class RealtimeMessageManager : Manager<RealtimeMessageManager>
+    public sealed class RealtimeMessageManager : Manager<RealtimeMessageManager>
     {
 #if USING_ABLY
         private Dictionary<string, Type> messageTypes = new Dictionary<string, Type>();

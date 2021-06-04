@@ -9,6 +9,7 @@
 namespace Lost
 {
     using System.Collections;
+    using System.Runtime.CompilerServices;
     using UnityEngine;
 
     public delegate void OnManagerInitializedDelegate();
@@ -16,11 +17,21 @@ namespace Lost
     public abstract class Manager<T> : MonoBehaviour, IManager
         where T : MonoBehaviour
     {
+        private static T instance;
+
         private bool hasInitializationRun;
+        
+        public static bool IsInitialized
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => instance != null;
+        }
 
-        public static bool IsInitialized => Instance != null;
-
-        public static T Instance { get; private set; }
+        public static T Instance
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => instance;
+        }
 
         public static event OnManagerInitializedDelegate OnInitialized
         {
@@ -71,14 +82,14 @@ namespace Lost
         {
             ManagerTracker.RemoveManager(this);
 
-            Instance = null;
+            instance = null;
             onInitialized = null;
         }
 
-        protected void SetInstance(T instance)
+        protected void SetInstance(T newInstance)
         {
             Debug.Assert(Instance == null, $"Manager {typeof(T).Name}'s Instance is not null!");
-            Instance = instance;
+            instance = newInstance;
             onInitialized?.Invoke();
         }
 

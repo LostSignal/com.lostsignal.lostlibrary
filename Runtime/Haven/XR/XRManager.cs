@@ -19,7 +19,7 @@ namespace Lost
     using UnityEngine.InputSystem.UI;
 #endif
 
-    public class XRManager : Manager<XRManager>
+    public sealed class XRManager : Manager<XRManager>
     {
 #pragma warning disable 0649
         [SerializeField] private XRDevice pancake;

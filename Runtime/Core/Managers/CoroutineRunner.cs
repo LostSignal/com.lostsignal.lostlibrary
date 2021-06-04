@@ -11,7 +11,7 @@ namespace Lost
     using System.Collections;
     using UnityEngine;
 
-    public class CoroutineRunner : Manager<CoroutineRunner>
+    public sealed class CoroutineRunner : Manager<CoroutineRunner>
     {
         public static Coroutine Start(IEnumerator coroutine)
         {

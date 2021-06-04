@@ -14,7 +14,7 @@ namespace Lost
     using Lost.BuildConfig;
     using UnityEngine;
 
-    public class DebugMenuManager : Manager<DebugMenuManager>
+    public sealed class DebugMenuManager : Manager<DebugMenuManager>
     {
 #pragma warning disable 0649
         [SerializeField] private bool developmentBuildsOnly = true;

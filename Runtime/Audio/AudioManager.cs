@@ -11,7 +11,7 @@ namespace Lost
     using System.Collections.Generic;
     using UnityEngine;
 
-    public class AudioManager : Manager<AudioManager>
+    public sealed class AudioManager : Manager<AudioManager>
     {
 #pragma warning disable 0649
         [SerializeField] private AudioSource audioSourcePrefab;

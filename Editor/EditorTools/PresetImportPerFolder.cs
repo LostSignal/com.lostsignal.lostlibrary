@@ -22,9 +22,9 @@ namespace Lost
             if (assetImporter.importSettingsMissing)
             {
                 // Get the current imported asset folder.
-                var path = Path.GetDirectoryName(assetPath);
+                var path = Path.GetDirectoryName(assetPath).Replace("\\", "/");
 
-                if (path == "ProjectSettings")
+                if (path == "ProjectSettings" || path.StartsWith("Packages/"))
                 {
                     return;
                 }

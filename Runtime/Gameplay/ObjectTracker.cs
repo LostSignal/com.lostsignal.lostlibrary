@@ -12,7 +12,7 @@ namespace Lost
     using System.Collections.Generic;
     using UnityEngine;
 
-    public class ObjectTracker : Manager<ObjectTracker>
+    public sealed class ObjectTracker : Manager<ObjectTracker>
     {
         private Dictionary<Type, List<object>> objects = new Dictionary<Type, List<object>>();
 

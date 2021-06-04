@@ -13,7 +13,7 @@ namespace Lost
 
     // https://stackoverflow.com/questions/53046670/how-to-get-values-from-methods-written-in-ios-plugin-in-unity
     // https://medium.com/@nosuchstudio/how-to-access-gps-location-in-unity-521f1371a7e3
-    public class GPSManager : Manager<GPSManager>
+    public sealed class GPSManager : Manager<GPSManager>
     {
 #pragma warning disable 0649
         [SerializeField] private GPSAccuracy accuracy;

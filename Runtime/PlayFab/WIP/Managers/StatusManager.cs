@@ -8,7 +8,7 @@
 
 namespace Lost
 {
-    public class StatusManager : Manager<StatusManager>
+    public sealed class StatusManager : Manager<StatusManager>
     {
         public override void Initialize()
         {

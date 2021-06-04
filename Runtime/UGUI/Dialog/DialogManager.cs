@@ -12,7 +12,7 @@ namespace Lost
     using UnityEngine;
     using UnityEngine.SceneManagement;
 
-    public class DialogManager : Manager<DialogManager>
+    public sealed class DialogManager : Manager<DialogManager>
     {
         //// TODO [bgish]: Update GetDialog to look out for these types and create them on the fly if needed
 #pragma warning disable 0649

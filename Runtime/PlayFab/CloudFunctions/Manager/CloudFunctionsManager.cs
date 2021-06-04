@@ -15,7 +15,7 @@ namespace Lost.CloudFunctions
     using Lost.PlayFab;
     using UnityEngine;
 
-    public class CloudFunctionsManager : Manager<CloudFunctionsManager>
+    public sealed class CloudFunctionsManager : Manager<CloudFunctionsManager>
     {
 #if UNITY_EDITOR
         private static string TitleEntityTokenCache = null;

@@ -17,7 +17,7 @@ namespace Lost
     //// Will have the URL
     //// WIll have the blob storage upload info
     ////
-    public class ReleasesManager : Manager<ReleasesManager>
+    public sealed class ReleasesManager : Manager<ReleasesManager>
     {
         public enum StorageLocation
         {

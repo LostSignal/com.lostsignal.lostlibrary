@@ -30,7 +30,7 @@ namespace Lost
     using UnityEngine;
     
     [DefaultExecutionOrder(-1000)]
-    public class UpdateManager : Manager<UpdateManager>
+    public sealed class UpdateManager : Manager<UpdateManager>
     {
         private static List<FunctionCall> functions = new List<FunctionCall>();
 

@@ -20,7 +20,7 @@ namespace Lost.IAP
     using UnityEngine.Purchasing;
 #endif
 
-    public class UnityPurchasingManager : Manager<UnityPurchasingManager>
+    public sealed class UnityPurchasingManager : Manager<UnityPurchasingManager>
 #if PURCHASING_ENABLED
         , IStoreListener
 #endif

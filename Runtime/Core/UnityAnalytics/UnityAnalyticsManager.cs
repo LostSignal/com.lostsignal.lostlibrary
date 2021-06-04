@@ -14,7 +14,7 @@ namespace Lost
     using Lost.CloudBuild;
     using UnityEngine;
 
-    public class UnityAnalyticsManager : Manager<UnityAnalyticsManager>
+    public sealed class UnityAnalyticsManager : Manager<UnityAnalyticsManager>
     {
         private static readonly string AnonymousIdKey = "AnnonymousId";
         private static readonly float NewSessionWaitTimeInSeconds = 30.0f;

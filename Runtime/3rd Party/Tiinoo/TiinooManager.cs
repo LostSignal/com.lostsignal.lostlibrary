@@ -10,7 +10,7 @@ namespace Lost
 {
     using UnityEngine;
 
-    public class TiinooManager : Manager<TiinooManager>
+    public sealed class TiinooManager : Manager<TiinooManager>
     {
         #if USING_TIINOO
         #pragma warning disable 0649, 0414

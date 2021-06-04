@@ -13,7 +13,7 @@ namespace Lost
     using System.Collections.Generic;
     using UnityEngine;
 
-    public class LoggingManager : Manager<LoggingManager>
+    public sealed class LoggingManager : Manager<LoggingManager>
     {
         private const string logEventName = "log_event";
         private const string logTypeName = "log_type";

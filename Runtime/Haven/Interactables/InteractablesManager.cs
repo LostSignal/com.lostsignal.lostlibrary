@@ -12,7 +12,7 @@ namespace HavenXR
     using Lost;
     using UnityEngine;
 
-    public class InteractablesManager : Manager<InteractablesManager>, InputHandler
+    public sealed class InteractablesManager : Manager<InteractablesManager>, InputHandler
     {
         private Camera mainCamera;
         private int layer;

@@ -12,17 +12,52 @@ namespace Lost
     using UnityEditor.Build;
     using UnityEditor.Build.Reporting;
     using UnityEngine;
+    using UnityEngine.SceneManagement;
+
+    #if UNITY_ANDROID
+    using UnityEditor.Android;
+    #endif
 
     [InitializeOnLoad]
-    public class EditorEventsExecutor : IPreprocessBuildWithReport, IPostprocessBuildWithReport
+    public class EditorEventsExecutor :
+        #if UNITY_ANDROID
+        IPostGenerateGradleAndroidProject,
+        #endif
+        IPreprocessBuildWithReport,
+        IPostprocessBuildWithReport,
+        IProcessSceneWithReport
     {
         public int callbackOrder => 10;
 
+        int IOrderedCallback.callbackOrder => throw new NotImplementedException();
+
         static EditorEventsExecutor()
 	    {
-		    EditorApplication.delayCall += () => ExecuteAttribute<EditorEvents.OnUnityLoadedAttribute>();
+		    EditorApplication.delayCall += () => ExecuteAttribute<EditorEvents.OnDomainReloadAttribute>();
             EditorApplication.playModeStateChanged += PlayModeStateChanged;
 	    }
+
+        void IPreprocessBuildWithReport.OnPreprocessBuild(BuildReport report)
+        {
+            ExecuteAttribute<EditorEvents.OnPreprocessBuildAttribute>(report);
+        }
+
+        void IPostprocessBuildWithReport.OnPostprocessBuild(BuildReport report)
+        {
+            ExecuteAttribute<EditorEvents.OnPostprocessBuildAttribute>(report);
+        }
+
+        void IProcessSceneWithReport.OnProcessScene(Scene scene, BuildReport report)
+        {
+            ExecuteAttribute<EditorEvents.OnProcessSceneAttribute>(scene, report);
+        }
+        
+        #if UNITY_ANDROID
+        void IPostGenerateGradleAndroidProject.OnPostGenerateGradleAndroidProject(string gradlePath)
+        {
+            ExecuteAttribute<EditorEvents.OnPostGenerateGradleAndroidProjectAttribute>(gradlePath);
+        }
+        #endif
 
         private static void PlayModeStateChanged(PlayModeStateChange state)
         {
@@ -37,7 +72,19 @@ namespace Lost
 	        }
         }
 
-        private static void ExecuteAttribute<T>() where T : System.Attribute
+        private static void WaitForPlayModeExit()
+        {
+            if (Application.isPlaying)
+            {
+                EditorApplication.delayCall += WaitForPlayModeExit;
+            }
+            else
+            {
+                ExecuteAttribute<EditorEvents.OnExitPlayModeAttribute>();
+            }
+        }
+
+        private static void ExecuteAttribute<T>(params object[] parameters) where T : System.Attribute
         {
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
@@ -69,6 +116,7 @@ namespace Lost
                         {
                             try
                             {
+                                // TODO [bgish]: Pass in parameters if they match
                                 method.Invoke(null, null);
                             }
                             catch (Exception ex)
@@ -79,28 +127,6 @@ namespace Lost
                         }
                     }
                 }
-            }
-        }
-
-        void IPreprocessBuildWithReport.OnPreprocessBuild(BuildReport report)
-        {
-            ExecuteAttribute<EditorEvents.OnPreprocessBuildAttribute>();
-        }
-
-        void IPostprocessBuildWithReport.OnPostprocessBuild(BuildReport report)
-        {
-            ExecuteAttribute<EditorEvents.OnPostprocessBuildAttribute>();
-        }
-
-        private static void WaitForPlayModeExit()
-        {
-            if (Application.isPlaying)
-            {
-                EditorApplication.delayCall += WaitForPlayModeExit;
-            }
-            else
-            {
-                ExecuteAttribute<EditorEvents.OnExitPlayModeAttribute>();
             }
         }
     }
