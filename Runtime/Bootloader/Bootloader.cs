@@ -21,10 +21,12 @@ namespace Lost
 
     public class Bootloader : MonoBehaviour
     {
+        public const string BootloaderResourceName = "Bootloader";
+
         public enum ManagersLocation
         {
+            ResourcesPrefabName,
             SceneName,
-            // ResourcesPrefabName,
             // AddressablesPrefab,
             // AddressablesScene,
         }
@@ -32,13 +34,18 @@ namespace Lost
         private static event BootloaderDelegate onManagersReady;
         private static bool areManagersInitialized;
         private static Bootloader bootloaderInstance;
+        private static GameObject managersInstance;
 
 #pragma warning disable 0649
+        [Header("Reboot")]
+        [SerializeField] private string rebootSceneName = "Main";
+
+        [Header("Managers")]
         [SerializeField] private ManagersLocation managersLocation;
-        [SerializeField] private string managersSceneName;
-        // [SerializeField] private string managersResourcesPrefabName;
-        // [SerializeField] private LazyAsset<Bootloader> managersAddressablesPrefab;
-        // [SerializeField] private LazyScene managersAddressablesScene;
+        [SerializeField] private string managersResourcesPrefabName = "Managers";
+        [SerializeField] private string managersSceneName = "Managers";
+        //// [SerializeField] private LazyGameObject managersAddressablesPrefab;
+        //// [SerializeField] private LazyScene managersAddressablesScene;
 
         [Header("Loading UI")]
         [SerializeField] private bool dontShowLoadingInEditor = true;
@@ -82,7 +89,7 @@ namespace Lost
 
         public static void Reboot()
         {
-            SceneManager.LoadScene(0, LoadSceneMode.Single);
+            SceneManager.LoadScene(bootloaderInstance.rebootSceneName, LoadSceneMode.Single);
 
             // Destory old bootloader instance
             ResetBootloader();
@@ -92,29 +99,30 @@ namespace Lost
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void BootBootloader()
         {
-            var bootloaderPrefab = Resources.Load<Bootloader>("Bootloader");
+            var bootloaderPrefab = Resources.Load<Bootloader>(BootloaderResourceName);
 
             if (ShouldInstantiateBootloader(bootloaderPrefab))
             {
                 bootloaderInstance = GameObject.Instantiate(bootloaderPrefab);
+                bootloaderInstance.name = BootloaderResourceName;
                 GameObject.DontDestroyOnLoad(bootloaderInstance);
             }
-        }
 
-        private static bool ShouldInstantiateBootloader(Bootloader bootloaderPrefab)
-        {
-            #if UNITY_EDITOR
-            var activeSceneName = SceneManager.GetActiveScene().name;
-            foreach (var sceneToIgnore in bootloaderPrefab.scenesToIgnore)
+            bool ShouldInstantiateBootloader(Bootloader bootloaderPrefab)
             {
-                if (activeSceneName == sceneToIgnore.name)
+                #if UNITY_EDITOR
+                var activeSceneName = SceneManager.GetActiveScene().name;
+                foreach (var sceneToIgnore in bootloaderPrefab.scenesToIgnore)
                 {
-                    return false;
+                    if (activeSceneName == sceneToIgnore.name)
+                    {
+                        return false;
+                    }
                 }
-            }
-            #endif
+                #endif
 
-            return true;
+                return true;
+            }
         }
 
         [EditorEvents.OnExitPlayMode]
@@ -132,14 +140,27 @@ namespace Lost
                 }
             }
 
+            if (managersInstance != null)
+            {
+                if (Application.isPlaying)
+                {
+                    GameObject.Destroy(managersInstance);
+                }
+                else
+                {
+                    GameObject.DestroyImmediate(managersInstance);
+                }
+            }
+
             areManagersInitialized = false;
             onManagersReady = null;
             bootloaderInstance = null;
+            managersInstance = null;
 
             OnReset?.Invoke();
         }
 
-        // ----------------------------------------------------------------------------------------------------------------
+        //// ----------------------------------------------------------------------------------------------------------------
 
         private bool ShowLoadingInEditor => Application.isEditor == false || this.dontShowLoadingInEditor == false;
 
@@ -150,10 +171,9 @@ namespace Lost
 
         private void OnDestroy()
         {
-            if (this.ShowLoadingInEditor)
-            {
-                //this.startupScene.Release();
-            }
+            //// Clean up lazy assets only if they were instantiated
+            //// this.managersAddressablesPrefab.Release();
+            //// this.managersAddressablesScene.Release();
         }
 
         private IEnumerator Bootup()
@@ -176,38 +196,18 @@ namespace Lost
                 yield return null;
             }
 
-            // TODO [bgish]: Initialize Addressables based on ReleaseManager.CurrentRelease
+            yield return ReleasesManager.Instance.ShowForceUpdateDialog();
+
+            while (AddressablesManager.IsInitialized == false)
+            {
+                yield return null;
+            }
 
             yield return this.StartManagers();
 
             float startTime = Time.realtimeSinceStartup;
 
-            // Getting all the managers and waiting for them to finish initializing
-            List<IManager> managers = new List<IManager>(ManagerList.Managers);
-            List<IManager> managersToRemove = new List<IManager>(managers.Count);
-            int initialManagersCount = managers.Count;
-
-            while (managers.Count > 0)
-            {
-                managersToRemove.Clear();
-
-                foreach (var manager in managers)
-                {
-                    if (manager.IsManagerInitialized())
-                    {
-                        managersToRemove.Add(manager);
-                    }
-                }
-
-                foreach (var managerToRemvoe in managersToRemove)
-                {
-                    managers.Remove(managerToRemvoe);
-                }
-
-                ProgressUpdated?.Invoke(1.0f - (managers.Count / (float)initialManagersCount));
-
-                yield return null;
-            }
+            yield return WaitForManagersToInitialize();
 
             //// // If the only scene open is the bootloader scene, then lets load the startup scene
             //// if (SceneManager.sceneCount == 1 && this.startupScene != null && this.startupScene.AssetGuid.IsNullOrWhitespace() == false)
@@ -241,7 +241,7 @@ namespace Lost
             // We're done!  Fire the OnBooted event
             areManagersInitialized = true;
 
-            Debug.Log("Bootloader.OnBooted()");
+            Debug.Log("Bootloader.OnManagersReady()");
             onManagersReady?.Invoke();
 
             // Doing a little cleanup before giving user control
@@ -258,13 +258,63 @@ namespace Lost
         {
             switch (this.managersLocation)
             {
+                case ManagersLocation.ResourcesPrefabName:
+                    {
+                        managersInstance = GameObject.Instantiate(Resources.Load<GameObject>(this.managersResourcesPrefabName));
+                        managersInstance.name = this.managersResourcesPrefabName;
+                        DontDestroyOnLoad(managersInstance);
+                        break;
+                    }
+
                 case ManagersLocation.SceneName:
-                    yield return SceneManager.LoadSceneAsync(this.managersSceneName, LoadSceneMode.Additive);
-                    break;
+                    {
+                        bool sceneAlreadyLoaded = false;
+
+                        for (int i = 0; i < SceneManager.sceneCount; i++)
+                        {
+                            sceneAlreadyLoaded |= SceneManager.GetSceneAt(i).name == this.managersSceneName;
+                        }
+
+                        if (sceneAlreadyLoaded == false)
+                        {
+                            yield return SceneManager.LoadSceneAsync(this.managersSceneName, LoadSceneMode.Additive);
+                        }
+                        
+                        break;
+                    }
 
                 default:
                     Debug.LogError($"Unknown ManagerLocation {this.managersLocation} Found!");
                     break;
+            }
+        }
+
+        private IEnumerator WaitForManagersToInitialize()
+        {
+            List<IManager> managers = new List<IManager>(ManagerTracker.Managers);
+            List<IManager> managersToRemove = new List<IManager>(managers.Count);
+            int initialManagersCount = managers.Count;
+
+            while (managers.Count > 0)
+            {
+                managersToRemove.Clear();
+
+                foreach (var manager in managers)
+                {
+                    if (manager.IsManagerInitialized())
+                    {
+                        managersToRemove.Add(manager);
+                    }
+                }
+
+                foreach (var managerToRemvoe in managersToRemove)
+                {
+                    managers.Remove(managerToRemvoe);
+                }
+
+                ProgressUpdated?.Invoke(1.0f - (managers.Count / (float)initialManagersCount));
+
+                yield return null;
             }
         }
     }

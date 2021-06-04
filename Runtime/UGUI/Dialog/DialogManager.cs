@@ -21,6 +21,7 @@ namespace Lost
 
         private Dictionary<System.Type, DialogLogic> dialogTypes = new Dictionary<System.Type, DialogLogic>();
         private LinkedList<Dialog> dialogs = new LinkedList<Dialog>();
+        private List<DialogLogic> instantiatedDialogs = new List<DialogLogic>();
 
         public static void RegisterDialog(DialogLogic dialogLogic)
         {
@@ -73,6 +74,8 @@ namespace Lost
                 if (dailogLogicComponent)
                 {
                     var newDialog = GameObject.Instantiate(prefab);
+                    newDialog.gameObject.name = newDialog.gameObject.name.Substring(0, newDialog.gameObject.name.Length - "(Clone)".Length);
+                    DialogManager.Instance.instantiatedDialogs.Add(newDialog);
                     SceneManager.MoveGameObjectToScene(newDialog.gameObject, DialogManager.Instance.gameObject.scene);
                     return newDialog.GetComponent<T>();
                 }
@@ -129,6 +132,19 @@ namespace Lost
             }
         }
 
+        private void OnDestroy()
+        {
+            // Making sure we destory all dialogs we created
+            foreach (var dialog in this.instantiatedDialogs)
+            {
+                if (dialog)
+                {
+                    GameObject.Destroy(dialog.gameObject);
+                }
+            }
+
+            this.instantiatedDialogs.Clear();
+        }
 #endif
     }
 }

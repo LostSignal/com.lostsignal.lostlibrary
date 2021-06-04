@@ -55,6 +55,17 @@ namespace Lost
                 yield break;
             }
         }
+
+        public Coroutine ShowForceUpdateDialog()
+        {
+            return this.StartCoroutine(Coroutine());
+
+            IEnumerator Coroutine()
+            {
+                // TODO [bgish]: Implement
+                yield break;
+            }
+        }
     }
 }
 

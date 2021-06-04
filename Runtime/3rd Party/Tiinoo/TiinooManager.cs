@@ -62,7 +62,14 @@ namespace Lost
             this.SetInstance(this);
         }
 
-        #if USING_TIINOO
+        private void OnDestroy()
+        {
+            #if USING_TIINOO
+            Tiinoo.DeviceConsole.DCLoader.Unload();
+            #endif
+        }
+
+#if USING_TIINOO
         [System.Serializable]
         public class Settings
         {

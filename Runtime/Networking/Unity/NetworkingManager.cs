@@ -370,10 +370,8 @@ namespace Lost.Networking
             this.ShutdownClientAndServer();
         }
 
-        protected override void Awake()
+        private void Awake()
         {
-            base.Awake();
-
             this.originalRunInBackground = Application.runInBackground;
         }
 
