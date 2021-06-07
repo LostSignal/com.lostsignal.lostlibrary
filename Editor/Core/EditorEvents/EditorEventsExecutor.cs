@@ -79,12 +79,12 @@ namespace Lost
 
             void ExecuteMethod(MethodInfo method)
             {
-                var args = method.GetGenericArguments();
+                var methodParameters = method.GetParameters();
 
                 // Special Case for Android Gradle builds
                 if (typeof(T) == typeof(EditorEvents.OnPostGenerateGradleAndroidProjectAttribute) &&
-                    args?.Length == 1 &&
-                    args[0] == typeof(string))
+                    methodParameters?.Length == 1 &&
+                    methodParameters[0].ParameterType == typeof(string))
                 {   
                     method.Invoke(null, parameters);
                     return;
@@ -93,8 +93,8 @@ namespace Lost
                 // Special Case for Pre/Post Process Build
                 if ((typeof(T) == typeof(EditorEvents.OnPreprocessBuildAttribute) ||
                     typeof(T) == typeof(EditorEvents.OnPostprocessBuildAttribute)) &&
-                    args?.Length == 1 &&
-                    args[0] == typeof(BuildReport))
+                    methodParameters?.Length == 1 &&
+                    methodParameters[0].ParameterType == typeof(BuildReport))
                 {
                     method.Invoke(null, parameters);
                     return;
@@ -106,25 +106,31 @@ namespace Lost
                     var scene = parameters[0];
                     var buildReport = parameters[1];
 
-                    if (args?.Length == 1 && args[0] == typeof(Scene))
+                    if (methodParameters?.Length == 1 &&
+                        methodParameters[0].ParameterType == typeof(Scene))
                     {
                         // Scene
                         method.Invoke(null, new object[] { scene });
                         return;
                     }
-                    else if (args?.Length == 1 && args[0] == typeof(BuildReport))
+                    else if (methodParameters?.Length == 1 &&
+                             methodParameters[0].ParameterType == typeof(BuildReport))
                     {
                         // BuildReport
                         method.Invoke(null, new object[] { buildReport });
                         return;
                     }
-                    else if (args?.Length == 2 && args[0] == typeof(BuildReport) && args[1] == typeof(Scene))
+                    else if (methodParameters?.Length == 2 &&
+                             methodParameters[0].ParameterType == typeof(BuildReport) &&
+                             methodParameters[1].ParameterType == typeof(Scene))
                     {
                         // BuildReport, Scene
                         method.Invoke(null, new object[] { buildReport, scene });
                         return;
                     }
-                    else if (args?.Length == 2 && args[0] == typeof(Scene) && args[1] == typeof(BuildReport))
+                    else if (methodParameters?.Length == 2 &&
+                             methodParameters[0].ParameterType == typeof(Scene) &&
+                             methodParameters[1].ParameterType == typeof(BuildReport))
                     {
                         // Scene, BuildReport
                         method.Invoke(null, new object[] { scene, buildReport });
