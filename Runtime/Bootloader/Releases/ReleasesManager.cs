@@ -39,7 +39,7 @@ namespace Lost
             {
                 if (this.storageLocation == StorageLocation.Resources)
                 {
-                    this.CurrentRelease = Releases.GetCurrentReleaseFromResources();
+                    this.CurrentRelease = ReleaseLocator.GetCurrentReleaseFromResources();
                 }
                 else if (this.storageLocation == StorageLocation.PlayFab)
                 {
