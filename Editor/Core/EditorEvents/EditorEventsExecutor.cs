@@ -7,6 +7,7 @@
 namespace Lost
 {
     using System;
+    using System.Linq;
     using System.Reflection;
     using UnityEditor;
     using UnityEditor.Build;
@@ -14,9 +15,8 @@ namespace Lost
     using UnityEngine;
     using UnityEngine.SceneManagement;
 
-    #if UNITY_ANDROID
+#if UNITY_ANDROID
     using UnityEditor.Android;
-    using System.Linq;
 #endif
 
     [InitializeOnLoad]
@@ -81,31 +81,58 @@ namespace Lost
             {
                 var args = method.GetGenericArguments();
 
-                if (typeof(T) == typeof(EditorEvents.OnPostGenerateGradleAndroidProjectAttribute))
+                // Special Case for Android Gradle builds
+                if (typeof(T) == typeof(EditorEvents.OnPostGenerateGradleAndroidProjectAttribute) &&
+                    args?.Length == 1 &&
+                    args[0] == typeof(string))
+                {   
+                    method.Invoke(null, parameters);
+                    return;
+                }
+
+                // Special Case for Pre/Post Process Build
+                if ((typeof(T) == typeof(EditorEvents.OnPreprocessBuildAttribute) ||
+                    typeof(T) == typeof(EditorEvents.OnPostprocessBuildAttribute)) &&
+                    args?.Length == 1 &&
+                    args[0] == typeof(BuildReport))
                 {
-                    // Special Case for Android Gradle builds
-                    if (args?.Length == 1 && args[0] == typeof(string) && parameters?.Length == 1 && parameters[0] is string)
+                    method.Invoke(null, parameters);
+                    return;
+                }
+
+                // Special Case for Process Scene
+                if (typeof(T) == typeof(EditorEvents.OnProcessSceneAttribute))
+                {                    
+                    var scene = parameters[0];
+                    var buildReport = parameters[1];
+
+                    if (args?.Length == 1 && args[0] == typeof(Scene))
                     {
-                        method.Invoke(null, parameters);
+                        // Scene
+                        method.Invoke(null, new object[] { scene });
+                        return;
+                    }
+                    else if (args?.Length == 1 && args[0] == typeof(BuildReport))
+                    {
+                        // BuildReport
+                        method.Invoke(null, new object[] { buildReport });
+                        return;
+                    }
+                    else if (args?.Length == 2 && args[0] == typeof(BuildReport) && args[1] == typeof(Scene))
+                    {
+                        // BuildReport, Scene
+                        method.Invoke(null, new object[] { buildReport, scene });
+                        return;
+                    }
+                    else if (args?.Length == 2 && args[0] == typeof(Scene) && args[1] == typeof(BuildReport))
+                    {
+                        // Scene, BuildReport
+                        method.Invoke(null, new object[] { scene, buildReport });
+                        return;
                     }
                 }
-                else if (typeof(T) == typeof(EditorEvents.OnPreprocessBuildAttribute) || typeof(T) == typeof(EditorEvents.OnPostprocessBuildAttribute))
-                {
-                    // Special Case for Pre/Post Process Build
-                    if (args?.Length == 1 && args[0] == typeof(BuildReport) && parameters?.Length == 1 && parameters[0] is BuildReport)
-                    {
-                        method.Invoke(null, parameters);
-                    }
-                }
-                else if (typeof(T) == typeof(EditorEvents.OnProcessSceneAttribute))
-                {
-                    // Special Case for Pre/Post Process Build
-                    // TODO [bgish]: Implement
-                }
-                else
-                {
-                    method.Invoke(null, null);
-                }
+
+                method.Invoke(null, null);
             }
         }
 
@@ -124,12 +151,12 @@ namespace Lost
             ExecuteAttribute<EditorEvents.OnProcessSceneAttribute>(scene, report);
         }
         
-        #if UNITY_ANDROID
+#if UNITY_ANDROID
         void IPostGenerateGradleAndroidProject.OnPostGenerateGradleAndroidProject(string gradlePath)
         {
             ExecuteAttribute<EditorEvents.OnPostGenerateGradleAndroidProjectAttribute>(gradlePath);
         }
-        #endif
+ #endif
 
         private static void PlayModeStateChanged(PlayModeStateChange state)
         {
