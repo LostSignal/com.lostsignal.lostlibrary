@@ -9,11 +9,10 @@ namespace Lost.PlayFab
     using System.Collections.Generic;
     using System.IO;
     using Lost.BuildConfig;
-    using UnityEditor.Build.Reporting;
     using UnityEngine;
 
-    [AppConfigSettingsOrder(500)]
-    public class PlayFabSettings : AppConfigSettings
+    [BuildConfigSettingsOrder(500)]
+    public class PlayFabSettings : BuildConfigSettings
     {
 #pragma warning disable 0649
         [SerializeField] private string titleId;
@@ -52,9 +51,9 @@ namespace Lost.PlayFab
 
         public string AblySererKey => this.ablyServerKey;
 
-        public override void GetRuntimeConfigSettings(Lost.BuildConfig.AppConfig appConfig, Dictionary<string, string> runtimeConfigSettings)
+        public override void GetRuntimeConfigSettings(Lost.BuildConfig.BuildConfig buildConfig, Dictionary<string, string> runtimeConfigSettings)
         {
-            var playFabSettings = appConfig.GetSettings<PlayFabSettings>();
+            var playFabSettings = buildConfig.GetSettings<PlayFabSettings>();
 
             if (playFabSettings == null)
             {
@@ -64,9 +63,10 @@ namespace Lost.PlayFab
             runtimeConfigSettings.Add(PlayFabConfigExtensions.TitleId, playFabSettings.titleId);
         }
 
-        public override void OnPostprocessBuild(AppConfig appConfig, BuildReport buildReport)
+        [EditorEvents.OnPostprocessBuild]
+        private static void OnPostprocessBuild()
         {
-            var playFabSettings = appConfig.GetSettings<PlayFabSettings>();
+            var playFabSettings = EditorBuildConfigs.GetActiveSettings<PlayFabSettings>();
 
             if (playFabSettings == null || LostLibrary.AzureFunctionsProjectGenerator == null)
             {
@@ -78,21 +78,19 @@ namespace Lost.PlayFab
             //// TODO [bgish]: If Platform.IsUnityCloudBuild, check if Upload was successful and fail the build if it wasn't
         }
 
-        public override void InitializeOnLoad(AppConfig appConfig)
+        [EditorEvents.OnDomainReload]
+        private static void OnDomainReload()
         {
-            var playfabSettings = appConfig.GetSettings<PlayFabSettings>();
+            var playfabSettings = EditorBuildConfigs.GetActiveSettings<PlayFabSettings>();
 
             if (playfabSettings == null)
             {
                 return;
             }
 
-            if (playfabSettings != null)
-            {
-                global::PlayFab.PlayFabSettings.staticSettings.TitleId = playfabSettings.titleId;
-                global::PlayFab.PlayFabSettings.staticSettings.DeveloperSecretKey = playfabSettings.secretKey;
-            }
-
+            global::PlayFab.PlayFabSettings.staticSettings.TitleId = playfabSettings.titleId;
+            global::PlayFab.PlayFabSettings.staticSettings.DeveloperSecretKey = playfabSettings.secretKey;
+            
             if (LostLibrary.AzureFunctionsProjectGenerator != null)
             {
                 GenerateLaunchSettingsForAzureFunctionsProject(playfabSettings);

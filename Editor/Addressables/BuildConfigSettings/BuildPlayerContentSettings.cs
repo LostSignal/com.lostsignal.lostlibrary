@@ -9,8 +9,8 @@ namespace Lost.Addressables
     using Lost.BuildConfig;
     using UnityEngine;
 
-    [AppConfigSettingsOrder(7)]
-    public class BuildPlayerContentSettings : AppConfigSettings
+    [BuildConfigSettingsOrder(7)]
+    public class BuildPlayerContentSettings : BuildConfigSettings
     {
 #pragma warning disable 0649
         [SerializeField] private bool buildPlayerContentOnBuild = true;
@@ -20,21 +20,13 @@ namespace Lost.Addressables
 
         public override bool IsInline => true;
 
-        public override void OnUnityCloudBuildInitiated(AppConfig appConfig)
+        [EditorEvents.OnUserBuildInitiated]
+        [EditorEvents.OnCloudBuildInitiated]
+        private static void BuildPlayerContent()
         {
-            this.BuildPlayerContent(appConfig);
-        }
+            var settings = EditorBuildConfigs.GetActiveSettings<BuildPlayerContentSettings>();
 
-        public override void OnUserBuildInitiated(AppConfig appConfig)
-        {
-            this.BuildPlayerContent(appConfig);
-        }
-
-        private void BuildPlayerContent(AppConfig appConfig)
-        {
-            var settings = EditorAppConfig.ActiveAppConfig?.GetSettings<BuildPlayerContentSettings>();
-
-            if (settings.buildPlayerContentOnBuild)
+            if (settings != null && settings.buildPlayerContentOnBuild)
             {
                 UnityEditor.AddressableAssets.Settings.AddressableAssetSettings.BuildPlayerContent();
             }

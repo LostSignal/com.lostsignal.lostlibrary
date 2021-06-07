@@ -13,8 +13,8 @@ namespace Lost
     ////
     //// // NOTE [bgish]: Possibly look into EditorUserSettings.semanticMergeMode more in the future
     ////
-    //// [AppConfigSettingsOrder(200)]
-    //// public class PerforceSettings : AppConfigSettings
+    //// [BuildConfigSettingsOrder(200)]
+    //// public class PerforceSettings : BuildConfigSettings
     //// {
     ////     public enum BuildNumberType
     ////     {

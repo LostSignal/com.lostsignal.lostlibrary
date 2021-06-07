@@ -9,8 +9,8 @@ namespace Lost
     //// using Lost.AppConfig;
     //// using UnityEngine;
     ////
-    //// [AppConfigSettingsOrder(350)]
-    //// public class GooglePlayUploadSettings : AppConfigSettings
+    //// [BuildConfigSettingsOrder(350)]
+    //// public class GooglePlayUploadSettings : BuildConfigSettings
     //// {
     ////     #pragma warning disable 0649
     ////     [SerializeField] private string username;

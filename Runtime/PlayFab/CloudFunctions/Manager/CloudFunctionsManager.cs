@@ -51,7 +51,7 @@ namespace Lost.CloudFunctions
             {
                 UnityEngine.Debug.LogError(
                     "PlayFab Title Id and/or Developer Secret Key Not Set!  Localhost Azure Functions will not work. \n" +
-                    "Do you have an active AppConfig with PlayFab Settings added and filled out?");
+                    "Do you have an active BuildConfig with PlayFab Settings added and filled out?");
 
                 return false;
             }

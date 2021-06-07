@@ -24,11 +24,11 @@ namespace Lost.PlayFab
 
                     // Setting the DeveloperSecretKey
                     FieldInfo developerSecretKeyField = t.GetField("DeveloperSecretKey", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-                    developerSecretKeyField.SetValue(null, EditorAppConfig.ActiveAppConfig.GetSettings<PlayFabSettings>().SecretKey);
+                    developerSecretKeyField.SetValue(null, EditorBuildConfigs.ActiveBuildConfig.GetSettings<PlayFabSettings>().SecretKey);
 
                     // Setting the TitleId
                     FieldInfo titleIdField = t.GetField("TitleId", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-                    titleIdField.SetValue(null, EditorAppConfig.ActiveAppConfig.GetSettings<PlayFabSettings>().TitleId);
+                    titleIdField.SetValue(null, EditorBuildConfigs.ActiveBuildConfig.GetSettings<PlayFabSettings>().TitleId);
                 }
             }
         }

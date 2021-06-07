@@ -12,6 +12,14 @@ namespace Lost
         {
         }
 
+        public class OnUserBuildInitiatedAttribute : System.Attribute
+        {
+        }
+
+        public class OnCloudBuildInitiatedAttribute : System.Attribute
+        {
+        }
+
         public class OnPreprocessBuildAttribute : System.Attribute
         {
         }

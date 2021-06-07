@@ -11,8 +11,8 @@
 //     using Lost.BuildConfig;
 //     using UnityEngine;
 // 
-//     [AppConfigSettingsOrder(15)]
-//     public class ReleasesSettings : AppConfigSettings
+//     [BuildConfigSettingsOrder(15)]
+//     public class ReleasesSettings : BuildConfigSettings
 //     {
 // #pragma warning disable 0649
 //         [SerializeField] private string releasesUrl;

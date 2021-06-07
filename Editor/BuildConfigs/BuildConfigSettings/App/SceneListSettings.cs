@@ -10,8 +10,8 @@ namespace Lost
     //// using UnityEngine;
     //// using UnityEngine.SceneManagement;
     ////
-    //// [AppConfigSettingsOrder(30)]
-    //// public class SceneListSettings : AppConfigSettings
+    //// [BuildConfigSettingsOrder(30)]
+    //// public class SceneListSettings : BuildConfigSettings
     //// {
     ////     #pragma warning disable 0649
     ////     [SerializeField] private bool overrideSceneList;

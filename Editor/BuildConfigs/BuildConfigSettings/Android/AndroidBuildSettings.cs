@@ -9,8 +9,8 @@ namespace Lost
     //// using Lost.AppConfig;
     //// using UnityEngine;
     ////
-    //// [AppConfigSettingsOrder(300)]
-    //// public class AndroidBuildSettings : AppConfigSettings
+    //// [BuildConfigSettingsOrder(300)]
+    //// public class AndroidBuildSettings : BuildConfigSettings
     //// {
     ////     public enum BuildType
     ////     {

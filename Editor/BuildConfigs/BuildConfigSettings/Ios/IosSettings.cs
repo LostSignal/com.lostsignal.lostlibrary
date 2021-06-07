@@ -10,8 +10,8 @@ namespace Lost
     using UnityEditor.Build.Reporting;
     using UnityEngine;
 
-    [AppConfigSettingsOrder(420)]
-    public class IosSettings : AppConfigSettings
+    [BuildConfigSettingsOrder(420)]
+    public class IosSettings : BuildConfigSettings
     {
         public enum IOSPushNotificationType
         {
@@ -30,9 +30,16 @@ namespace Lost
         public override string DisplayName => "iOS Settings";
         public override bool IsInline => false;
 
-        public override void OnPostprocessBuild(BuildConfig.AppConfig buildConfig, BuildReport buildReport)
+        [EditorEvents.OnPostprocessBuild]
+        private static void OnPostprocessBuild(BuildReport buildReport)
         {
-            var settings = buildConfig.GetSettings<IosSettings>();
+            var settings = EditorBuildConfigs.GetActiveSettings<IosSettings>();
+
+            if (settings == null)
+            {
+                return;
+            }
+
             var path = buildReport.summary.outputPath;
 
             if (settings == null || buildReport.summary.platform != UnityEditor.BuildTarget.iOS)
@@ -40,11 +47,11 @@ namespace Lost
                 return;
             }
 
-            this.DisableBitCode(settings, path);
-            this.EnableIOSPushNotifications(settings, path);
+            DisableBitCode(settings, path);
+            EnableIOSPushNotifications(settings, path);
         }
 
-        private void DisableBitCode(IosSettings settings, string path)
+        private static void DisableBitCode(IosSettings settings, string path)
         {
             if (settings.disableIOSBitCode == false)
             {
@@ -67,7 +74,7 @@ namespace Lost
         }
 
         // Majority of this code was thanks to the com.unity.mobile.notifications package
-        private void EnableIOSPushNotifications(IosSettings settings, string buildPath)
+        private static void EnableIOSPushNotifications(IosSettings settings, string buildPath)
         {
             #if UNITY_IOS
 

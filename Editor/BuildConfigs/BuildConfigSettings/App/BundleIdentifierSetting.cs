@@ -10,8 +10,8 @@ namespace Lost
     using UnityEditor;
     using UnityEngine;
 
-    [AppConfigSettingsOrder(5)]
-    public class BundleIdentifierSetting : AppConfigSettings
+    [BuildConfigSettingsOrder(5)]
+    public class BundleIdentifierSetting : BuildConfigSettings
     {
 #pragma warning disable 0649
         [SerializeField] private string bundleId;
@@ -21,9 +21,15 @@ namespace Lost
 
         public override bool IsInline => true;
 
-        public override void InitializeOnLoad(BuildConfig.AppConfig appConfig)
+        [EditorEvents.OnDomainReload]
+        private static void OnDomainReload()
         {
-            var setting = appConfig.GetSettings<BundleIdentifierSetting>();
+            var setting = EditorBuildConfigs.GetActiveSettings<BundleIdentifierSetting>();
+
+            if (setting == null)
+            {
+                return;
+            }
 
             foreach (var buildTargetGroup in BuildTargetGroupUtil.GetValid())
             {

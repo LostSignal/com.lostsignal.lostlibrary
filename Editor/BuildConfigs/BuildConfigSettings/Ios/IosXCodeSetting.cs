@@ -9,8 +9,8 @@
 ////     using Lost.AppConfig;
 ////     using UnityEngine;
 ////
-////     [AppConfigSettingsOrder(400)]
-////     public class IosXCodeSetting : AppConfigSettings
+////     [BuildConfigSettingsOrder(400)]
+////     public class IosXCodeSetting : BuildConfigSettings
 ////     {
 ////         #pragma warning disable 0649
 ////         [SerializeField] private string xcodeVersion;

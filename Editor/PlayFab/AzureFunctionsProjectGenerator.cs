@@ -33,11 +33,11 @@ namespace Lost
         [ExposeInEditor("Register Cloud Functions with PlayFab")]
         public async void UploadFunctionsToPlayFab()
         {
-            var playFabSettings = EditorAppConfig.ActiveAppConfig.GetSettings<PlayFabSettings>();
+            var playFabSettings = EditorBuildConfigs.ActiveBuildConfig.GetSettings<PlayFabSettings>();
 
             if (playFabSettings == null || string.IsNullOrEmpty(playFabSettings.FunctionsSite) || string.IsNullOrEmpty(playFabSettings.FunctionsHostKey))
             {
-                Debug.LogError("PlayFabSettings AppConfig must define functions site and host key.");
+                Debug.LogError("PlayFabSettings BuildConfig must define functions site and host key.");
                 return;
             }
 

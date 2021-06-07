@@ -10,8 +10,8 @@ namespace Lost
     using UnityEditor;
     using UnityEngine;
 
-    [AppConfigSettingsOrder(10)]
-    public class DevelopmentBuildSetting : AppConfigSettings
+    [BuildConfigSettingsOrder(10)]
+    public class DevelopmentBuildSetting : BuildConfigSettings
     {
 #pragma warning disable 0649
         [SerializeField] private bool isDevelopmentBuild;
@@ -27,23 +27,32 @@ namespace Lost
 
         public override bool IsInline => true;
 
-        public override void InitializeOnLoad(BuildConfig.AppConfig appConfig)
+        // NOTE [bgish]: Should this be on User/Cloud build initiated instead?
+        [EditorEvents.OnDomainReload]
+        private static void OnDomainReload()
         {
-            // var settings = appConfig.GetSettings<DevelopmentBuildSetting>();
-            // EditorUserBuildSettings.development = settings.isDevelopmentBuild;
+            //// var settings = EditorAppConfig.GetActiveSettings<DevelopmentBuildSetting>();
+            //// 
+            //// if (settings != null)
+            //// {
+            ////     EditorUserBuildSettings.development = settings.isDevelopmentBuild;
+            //// }
         }
 
-        public override BuildPlayerOptions ChangeBuildPlayerOptions(BuildConfig.AppConfig appConfig, BuildPlayerOptions buildPlayerOptions)
+        public override BuildPlayerOptions ChangeBuildPlayerOptions(BuildConfig.BuildConfig buildConfig, BuildPlayerOptions buildPlayerOptions)
         {
-            // var settings = appConfig.GetSettings<DevelopmentBuildSetting>();
+            // var settings =  EditorAppConfig.GetActiveSettings<DevelopmentBuildSetting>();
             //
-            // if (settings.isDevelopmentBuild)
+            // if (settings != null)
             // {
-            //     buildPlayerOptions.options |= BuildOptions.Development;
-            // }
-            // else
-            // {
-            //     buildPlayerOptions.options &= ~BuildOptions.Development;
+            //     if (settings.isDevelopmentBuild)
+            //     {
+            //         buildPlayerOptions.options |= BuildOptions.Development;
+            //     }
+            //     else
+            //     {
+            //         buildPlayerOptions.options &= ~BuildOptions.Development;
+            //     }
             // }
             //
 

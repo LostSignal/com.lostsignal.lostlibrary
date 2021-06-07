@@ -12,8 +12,8 @@ namespace Lost
     using UnityEditor.Build.Reporting;
     using UnityEngine;
 
-    [AppConfigSettingsOrder(275)]
-    public class CloudBuildSetBuildNumber : AppConfigSettings
+    [BuildConfigSettingsOrder(275)]
+    public class CloudBuildSetBuildNumber : BuildConfigSettings
     {
         public enum BuildNumberType
         {
@@ -30,16 +30,17 @@ namespace Lost
         public override string DisplayName => "CloudBuild - Set Build Number";
         public override bool IsInline => false;
 
-        public override void OnPreproccessBuild(BuildConfig.AppConfig appConfig, BuildReport buildReport)
+        [EditorEvents.OnPreprocessBuild]
+        private static void OnPreproccessBuild()
         {
-            var settings = appConfig.GetSettings<CloudBuildSetBuildNumber>();
+            var settings = EditorBuildConfigs.GetActiveSettings<CloudBuildSetBuildNumber>();
 
             if (settings == null)
             {
                 return;
             }
 
-            int buildNumber = this.GetBuildNumber(settings);
+            int buildNumber = GetBuildNumber(settings);
 
             if (buildNumber != -1)
             {
@@ -48,7 +49,7 @@ namespace Lost
             }
         }
 
-        private int GetBuildNumber(CloudBuildSetBuildNumber settings)
+        private static int GetBuildNumber(CloudBuildSetBuildNumber settings)
         {
             if (Platform.IsUnityCloudBuild == false)
             {

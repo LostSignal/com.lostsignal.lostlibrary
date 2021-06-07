@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="AppConfigEditorWindow.cs" company="Lost Signal LLC">
+// <copyright file="BuildConfigEditorWindow.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -15,36 +15,36 @@ namespace Lost
     using UnityEditor;
     using UnityEngine;
 
-    public class AppConfigEditorWindow : EditorWindow
+    public class BuildConfigEditorWindow : EditorWindow
     {
         private static List<Type> BuildSettingsTypes;
-        private static BuildConfig.AppConfig SelectedConfig;
+        private static BuildConfig.BuildConfig SelectedConfig;
 
-        static AppConfigEditorWindow()
+        static BuildConfigEditorWindow()
         {
             BuildSettingsTypes = new List<Type>();
 
-            foreach (var t in TypeUtil.GetAllTypesOf<AppConfigSettings>())
+            foreach (var t in TypeUtil.GetAllTypesOf<BuildConfigSettings>())
             {
                 BuildSettingsTypes.Add(t);
             }
 
             BuildSettingsTypes = BuildSettingsTypes.OrderBy((t) =>
             {
-                var attribute = t.GetCustomAttributes(typeof(AppConfigSettingsOrderAttribute), true).FirstOrDefault() as AppConfigSettingsOrderAttribute;
+                var attribute = t.GetCustomAttributes(typeof(BuildConfigSettingsOrderAttribute), true).FirstOrDefault() as BuildConfigSettingsOrderAttribute;
                 return attribute == null ? 1000 : attribute.Order;
             }).ToList();
         }
 
-        [MenuItem("Tools/Lost/Tools/App Configs Editor")]
+        [MenuItem("Tools/Lost/Tools/Build Configs Editor")]
         public static void ShowWindow()
         {
-            EditorWindow.GetWindow<AppConfigEditorWindow>(false, "App Configs");
+            EditorWindow.GetWindow<BuildConfigEditorWindow>(false, "Build Configs");
         }
 
         private void OnGUI()
         {
-            var appConfigs = LostLibrary.AppConfigs.AppConfigs;
+            var buildConfigs = LostLibrary.BuildConfigs.BuildConfigs;
 
             float columnWidth = 150;
             float padding = 3;
@@ -64,21 +64,21 @@ namespace Lost
                 itemStyle.active.background = itemStyle.normal.background;
                 itemStyle.margin = new RectOffset(0, 0, 0, 0);
 
-                if (appConfigs.IsNullOrEmpty() == false)
+                if (buildConfigs.IsNullOrEmpty() == false)
                 {
-                    foreach (var appConfig in appConfigs.OrderBy(x => x.FullName))
+                    foreach (var buildConfig in buildConfigs.OrderBy(x => x.FullName))
                     {
-                        GUI.backgroundColor = (appConfig == SelectedConfig) ? color_selected : Color.clear;
+                        GUI.backgroundColor = (buildConfig == SelectedConfig) ? color_selected : Color.clear;
 
                         StringBuilder depthString = new StringBuilder();
-                        for (int i = 0; i < appConfig.Depth * 4; i++)
+                        for (int i = 0; i < buildConfig.Depth * 4; i++)
                         {
                             depthString.Append(" ");
                         }
 
-                        if (GUILayout.Button(depthString + appConfig.Name, itemStyle))
+                        if (GUILayout.Button(depthString + buildConfig.Name, itemStyle))
                         {
-                            SelectedConfig = appConfig;
+                            SelectedConfig = buildConfig;
                         }
 
                         GUI.backgroundColor = color_default; //this is to avoid affecting other GUIs outside of the list
@@ -93,16 +93,16 @@ namespace Lost
 
             using (new GUILayout.AreaScope(new Rect(rightSideX, rightSideY, rightSideWidth, rightSideHeight)))
             {
-                SerializedObject editorAppConfigsSO = new SerializedObject(LostLibrary.AppConfigs);
-                SerializedProperty appConfigsSerializedProperty = editorAppConfigsSO.FindProperty("appConfigs");
+                SerializedObject editorBuildConfigsSO = new SerializedObject(LostLibrary.BuildConfigs);
+                SerializedProperty buildConfigsSerializedProperty = editorBuildConfigsSO.FindProperty("buildConfigs");
 
                 SerializedProperty selectSerializedProperty = null;
 
                 if (SelectedConfig != null)
                 {
-                    for (int i = 0; i < appConfigsSerializedProperty.arraySize; i++)
+                    for (int i = 0; i < buildConfigsSerializedProperty.arraySize; i++)
                     {
-                        var element = appConfigsSerializedProperty.GetArrayElementAtIndex(i);
+                        var element = buildConfigsSerializedProperty.GetArrayElementAtIndex(i);
 
                         if (element.FindPropertyRelative("id").stringValue == SelectedConfig.Id)
                         {
@@ -113,42 +113,42 @@ namespace Lost
 
                     using (new LabelWidthScope(220))
                     {
-                        this.DrawAppConfig(SelectedConfig, selectSerializedProperty, rightSideWidth);
+                        this.DrawBuildConfig(SelectedConfig, selectSerializedProperty, rightSideWidth);
                     }
                 }
             }
         }
 
-        private void DrawAppConfig(BuildConfig.AppConfig appConfig, SerializedProperty appConfigSerialiedProperty, float currentViewWidth)
+        private void DrawBuildConfig(BuildConfig.BuildConfig buildConfig, SerializedProperty buildConfigSerialiedProperty, float currentViewWidth)
         {
-            appConfig.ShowInherited = EditorGUILayout.Toggle("Show Inherited", appConfig.ShowInherited);
+            buildConfig.ShowInherited = EditorGUILayout.Toggle("Show Inherited", buildConfig.ShowInherited);
             using (new EditorGUI.DisabledGroupScope(true))
             {
-                EditorGUILayout.TextField("Id", appConfig.Id);
+                EditorGUILayout.TextField("Id", buildConfig.Id);
             }
 
-            appConfig.Name = EditorGUILayout.TextField("Name", appConfig.Name);
-            appConfig.ParentId = EditorGUILayout.TextField("Parent Id", appConfig.ParentId);
-            EditorGUILayout.PropertyField(appConfigSerialiedProperty.FindPropertyRelative("customDefines"));
+            buildConfig.Name = EditorGUILayout.TextField("Name", buildConfig.Name);
+            buildConfig.ParentId = EditorGUILayout.TextField("Parent Id", buildConfig.ParentId);
+            EditorGUILayout.PropertyField(buildConfigSerialiedProperty.FindPropertyRelative("customDefines"));
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
 
-            this.DrawAppConfigSettings(appConfig, appConfigSerialiedProperty.FindPropertyRelative("settings"), currentViewWidth);
+            this.DrawBuildConfigSettings(buildConfig, buildConfigSerialiedProperty.FindPropertyRelative("settings"), currentViewWidth);
 
             if (GUI.changed)
             {
-                EditorUtility.SetDirty(LostLibrary.AppConfigs);
+                EditorUtility.SetDirty(LostLibrary.BuildConfigs);
             }
         }
 
-        private void DrawAppConfigSettings(BuildConfig.AppConfig appConfig, SerializedProperty settingsSerializedProperty, float currentViewWidth)
+        private void DrawBuildConfigSettings(BuildConfig.BuildConfig buildConfig, SerializedProperty settingsSerializedProperty, float currentViewWidth)
         {
             List<Type> settingsToAdd = new List<Type>();
 
             foreach (var settingsType in BuildSettingsTypes)
             {
-                AppConfigSettings settings = appConfig.GetSettings(settingsType, out bool isInherited);
+                BuildConfigSettings settings = buildConfig.GetSettings(settingsType, out bool isInherited);
 
                 if (settings == null)
                 {
@@ -157,7 +157,7 @@ namespace Lost
                 else
                 {
                     // Checking if we should skip this
-                    if (isInherited && appConfig.ShowInherited == false)
+                    if (isInherited && buildConfig.ShowInherited == false)
                     {
                         continue;
                     }
@@ -174,7 +174,7 @@ namespace Lost
                         }
                     }
 
-                    this.DrawAppConfigSettings(appConfig, settings, currentSettings, isInherited, currentViewWidth, out bool didDeleteSettings);
+                    this.DrawBuildConfigSettings(buildConfig, settings, currentSettings, isInherited, currentViewWidth, out bool didDeleteSettings);
 
                     if (didDeleteSettings)
                     {
@@ -188,10 +188,10 @@ namespace Lost
             EditorGUILayout.Space();
 
             EditorGUILayout.LabelField("Settings");
-            this.DrawSettingsButtons(appConfig, currentViewWidth, settingsToAdd);
+            this.DrawSettingsButtons(buildConfig, currentViewWidth, settingsToAdd);
         }
 
-        private void DrawAppConfigSettings(BuildConfig.AppConfig appConfig, AppConfigSettings settings, SerializedProperty settingsSerializedProperty, bool isInherited, float currentViewWidth, out bool didDeleteSettings)
+        private void DrawBuildConfigSettings(BuildConfig.BuildConfig buildConfig, BuildConfigSettings settings, SerializedProperty settingsSerializedProperty, bool isInherited, float currentViewWidth, out bool didDeleteSettings)
         {
             didDeleteSettings = false;
 
@@ -217,14 +217,14 @@ namespace Lost
                 {
                     if (ButtonUtil.DrawAddButton(buttonRect))
                     {
-                        appConfig.Settings.Add(Activator.CreateInstance(settings.GetType()) as AppConfigSettings);
+                        buildConfig.Settings.Add(Activator.CreateInstance(settings.GetType()) as BuildConfigSettings);
                     }
                 }
                 else
                 {
                     if (ButtonUtil.DrawDeleteButton(buttonRect))
                     {
-                        appConfig.Settings.Remove(settings);
+                        buildConfig.Settings.Remove(settings);
                         didDeleteSettings = true;
                         return;
                     }
@@ -245,7 +245,7 @@ namespace Lost
             }
         }
 
-        private void DrawSettingsButtons(BuildConfig.AppConfig appConfig, float currentViewWidth, List<Type> settingsToAdd)
+        private void DrawSettingsButtons(BuildConfig.BuildConfig buildConfig, float currentViewWidth, List<Type> settingsToAdd)
         {
             int buttonWidth = (int)(currentViewWidth / 3.0f);
 
@@ -273,7 +273,7 @@ namespace Lost
 
                         if (GUILayout.Button(buttonName, GUILayout.Width(buttonWidth)))
                         {
-                            appConfig.Settings.Add(Activator.CreateInstance(settingsType) as AppConfigSettings);
+                            buildConfig.Settings.Add(Activator.CreateInstance(settingsType) as BuildConfigSettings);
                         }
                     }
                 }

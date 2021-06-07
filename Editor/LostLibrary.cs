@@ -13,15 +13,17 @@ namespace Lost
     using UnityEditor;
     using UnityEngine;
 
+    // [InitializeOnLoad]
     public static class LostLibrary
     {
-        private static readonly string EditorAppConfigBuildSettingsId = "com.lostsignal.appconfig";
+        private static readonly string OldEditorAppConfigBuildSettingsId = "com.lostsignal.appconfig";
+        private static readonly string EditorBuildConfigsBuildSettingsId = "com.lostsignal.buildconfigs";
         private static readonly string ReleasesEditorBuildSettingsId = "com.lostsignal.releases";
         private static readonly string GameServerEditorBuildSettingsId = "com.lostsignal.gameserver";
         private static readonly string AzureFunctionsEditorBuildSettingsId = "com.lostsignal.azurefunctions";
 
         private static readonly string LostLibraryAssetsPath = "Assets/Editor/com.lostsignal.lostlibrary";
-        private static readonly string AppConfigsAssetName = "AppConfigs.asset";
+        private static readonly string BuildConfigsAssetName = "BuildConfigs.asset";
         private static readonly string ReleasesAssetName = "Releases.asset";
         private static readonly string GameServerAssetName = "GameServerGenerator.asset";
         private static readonly string AzureFunctionsAssetName = "AzureFunctionsGenerator.asset";
@@ -32,7 +34,7 @@ namespace Lost
             EditorApplication.delayCall += () =>
             {
                 var relases = Releases;
-                var appConfigs = AppConfigs;
+                var buildConfigs = BuildConfigs;
                 var gameServerGenerator = GameServerProjectGenerator;
                 var azureFunctionsGenerator = AzureFunctionsProjectGenerator;
             };
@@ -52,34 +54,41 @@ namespace Lost
             }
         }
 
-        public static EditorAppConfig AppConfigs
+        public static EditorBuildConfigs BuildConfigs
         {
             get
             {
-                if (EditorBuildSettings.TryGetConfigObject(EditorAppConfigBuildSettingsId, out EditorAppConfig editorAppConfig) == false || !editorAppConfig)
+                // Moving build configs if was once using the old system
+                if (EditorBuildSettings.TryGetConfigObject(OldEditorAppConfigBuildSettingsId, out EditorBuildConfigs editorBuildConfigs))
                 {
-                    editorAppConfig = CreateEditorAppConfig();
-                    EditorBuildSettings.AddConfigObject(EditorAppConfigBuildSettingsId, editorAppConfig, true);
-                    EditorAppConfigFileBuidler.GenerateAppConfigsFile();
+                    EditorBuildSettings.AddConfigObject(EditorBuildConfigsBuildSettingsId, editorBuildConfigs, false);
+                    EditorBuildSettings.RemoveConfigObject(OldEditorAppConfigBuildSettingsId);
                 }
 
-                if (editorAppConfig)
+                if (EditorBuildSettings.TryGetConfigObject(EditorBuildConfigsBuildSettingsId, out editorBuildConfigs) == false || !editorBuildConfigs)
                 {
-                    if (editorAppConfig.AppConfigs == null || editorAppConfig.AppConfigs.Count == 0)
+                    editorBuildConfigs = CreateEditorBuildConfigs();
+                    EditorBuildSettings.AddConfigObject(EditorBuildConfigsBuildSettingsId, editorBuildConfigs, true);
+                    EditorBuildConfigFileBuidler.GenerateBuildConfigsFile();
+                }
+
+                if (editorBuildConfigs)
+                {
+                    if (editorBuildConfigs.BuildConfigs == null || editorBuildConfigs.BuildConfigs.Count == 0)
                     {
-                        Debug.LogError("AppConfigs doesn't have any valid configs in it's list.");
+                        Debug.LogError("BuildConfigs doesn't have any valid configs in it's list.");
                     }
-                    else if (editorAppConfig.DefaultAppConfig == null)
+                    else if (editorBuildConfigs.DefaultBuildConfig == null)
                     {
-                        Debug.LogError("AppConfigs doesn't have a valid default config.");
+                        Debug.LogError("BuildConfigs doesn't have a valid default config.");
                     }
-                    else if (editorAppConfig.RootAppConfig == null)
+                    else if (editorBuildConfigs.RootBuildConfig == null)
                     {
-                        Debug.LogError("EditorAppConfig doesn't have a valid root config.");
+                        Debug.LogError("EditorBuildConfig doesn't have a valid root config.");
                     }
                 }
 
-                return editorAppConfig;
+                return editorBuildConfigs;
             }
         }
 
@@ -130,49 +139,49 @@ namespace Lost
             return releasesObject;
         }
 
-        private static EditorAppConfig CreateEditorAppConfig()
+        private static EditorBuildConfigs CreateEditorBuildConfigs()
         {
-            string editorAppConfigAssetPath = GetAssetPath(AppConfigsAssetName);
+            string editorBuildConfigAssetPath = GetAssetPath(BuildConfigsAssetName);
 
-            EditorAppConfig editorAppConfig;
+            EditorBuildConfigs editorBuildConfigs;
 
-            if (File.Exists(editorAppConfigAssetPath) == false)
+            if (File.Exists(editorBuildConfigAssetPath) == false)
             {
-                var rootConfig = new BuildConfig.AppConfig();
+                var rootConfig = new BuildConfig.BuildConfig();
                 rootConfig.Name = "Root";
                 AddSetting<BundleIdentifierSetting>(rootConfig);
                 AddSetting<BuildPlayerContentSettings>(rootConfig);
                 AddSetting<CloudBuildSetBuildNumber>(rootConfig);
 
-                var devConfig = new BuildConfig.AppConfig();
+                var devConfig = new BuildConfig.BuildConfig();
                 devConfig.Name = "Dev";
                 devConfig.IsDefault = true;
                 devConfig.ParentId = rootConfig.Id;
                 AddSetting<DevelopmentBuildSetting>(devConfig).IsDevelopmentBuild = true;
                 AddSetting<PlayFabSettings>(devConfig).IsDevelopmentEnvironment = true;
 
-                var liveConfig = new BuildConfig.AppConfig();
+                var liveConfig = new BuildConfig.BuildConfig();
                 liveConfig.Name = "Live";
                 liveConfig.ParentId = rootConfig.Id;
                 AddSetting<DevelopmentBuildSetting>(liveConfig).IsDevelopmentBuild = false;
                 AddSetting<PlayFabSettings>(liveConfig).IsDevelopmentEnvironment = false;
 
                 // Creating the AppConfigs scriptable object
-                editorAppConfig = ScriptableObject.CreateInstance<EditorAppConfig>();
-                editorAppConfig.AppConfigs.Add(rootConfig);
-                editorAppConfig.AppConfigs.Add(devConfig);
-                editorAppConfig.AppConfigs.Add(liveConfig);
+                editorBuildConfigs = ScriptableObject.CreateInstance<EditorBuildConfigs>();
+                editorBuildConfigs.BuildConfigs.Add(rootConfig);
+                editorBuildConfigs.BuildConfigs.Add(devConfig);
+                editorBuildConfigs.BuildConfigs.Add(liveConfig);
 
-                CreateAsset(editorAppConfig, editorAppConfigAssetPath);
+                CreateAsset(editorBuildConfigs, editorBuildConfigAssetPath);
             }
             else
             {
-                editorAppConfig = AssetDatabase.LoadAssetAtPath<EditorAppConfig>(editorAppConfigAssetPath);
+                editorBuildConfigs = AssetDatabase.LoadAssetAtPath<EditorBuildConfigs>(editorBuildConfigAssetPath);
             }
 
-            return editorAppConfig;
+            return editorBuildConfigs;
 
-            T AddSetting<T>(BuildConfig.AppConfig config) where T : AppConfigSettings, new()
+            T AddSetting<T>(BuildConfig.BuildConfig config) where T : BuildConfigSettings, new()
             {
                 var newSettings = new T();
                 config.Settings.Add(newSettings);

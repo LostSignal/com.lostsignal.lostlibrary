@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="BuildValidatorAppConfig.cs" company="Lost Signal LLC">
+// <copyright file="BuildValidatorSettings.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -13,8 +13,8 @@ namespace Lost
     using UnityEngine;
     using UnityEngine.SceneManagement;
 
-    [AppConfigSettingsOrder(2000)]
-    public class BuildValidatorAppConfig : AppConfigSettings
+    [BuildConfigSettingsOrder(2000)]
+    public class BuildValidatorSettings : BuildConfigSettings
     {
 #pragma warning disable 0649
         [SerializeField] private bool warningsAsErrors;
@@ -23,24 +23,38 @@ namespace Lost
         public override string DisplayName => "Build Validator";
         public override bool IsInline => true;
 
-        public override void OnProcessScene(BuildConfig.AppConfig appConfig, Scene scene, BuildReport report)
+        [EditorEvents.OnProcessScene]
+        private static void OnProcessScene(Scene scene, BuildReport report)
         {
-            base.OnProcessScene(appConfig, scene, report);
+            var settings = EditorBuildConfigs.GetActiveSettings<BuildValidatorSettings>();
+
+            if (settings == null)
+            {
+                return;
+            }
 
             foreach (var rootGameObject in scene.GetRootGameObjects())
             {
-                this.ValidateComponents(rootGameObject.GetComponentsInChildren(typeof(Component), true));
+                ValidateComponents(rootGameObject.GetComponentsInChildren(typeof(Component), true));
             }
         }
 
-        public override void OnPreproccessBuild(BuildConfig.AppConfig appConfig, BuildReport buildReport)
+        [EditorEvents.OnPreprocessBuild]
+        private static void OnPreproccessBuild()
         {
+            var settings = EditorBuildConfigs.GetActiveSettings<BuildValidatorSettings>();
+
+            if (settings == null)
+            {
+                return;
+            }
+
             // Validating Prefabs
             foreach (var prefabPath in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.prefab", SearchOption.AllDirectories))
             {
                 var prefab = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(prefabPath);
 
-                this.ValidateComponents(prefab.GetComponentsInChildren(typeof(Component), true));
+                ValidateComponents(prefab.GetComponentsInChildren(typeof(Component), true));
             }
 
             // Scriptable Objects
@@ -49,21 +63,21 @@ namespace Lost
                 var scriptableObject = AssetDatabase.LoadAssetAtPath(scriptableObjectPath, typeof(UnityEngine.ScriptableObject));
                 var serializedObject = new SerializedObject(scriptableObject);
 
-                this.ValidateSerializedObject(serializedObject);
+                ValidateSerializedObject(serializedObject);
             }
         }
 
-        private void ValidateComponents(Component[] components)
+        private static void ValidateComponents(Component[] components)
         {
             foreach (var component in components)
             {
                 SerializedObject serializedObject = new SerializedObject(component);
 
-                this.ValidateSerializedObject(serializedObject);
+                ValidateSerializedObject(serializedObject);
             }
         }
 
-        private void ValidateSerializedObject(SerializedObject serializedObject)
+        private static void ValidateSerializedObject(SerializedObject serializedObject)
         {
             // Validate this object
             (serializedObject.targetObject as IValidate)?.Validate();

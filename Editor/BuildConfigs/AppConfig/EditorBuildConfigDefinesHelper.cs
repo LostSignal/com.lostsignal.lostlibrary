@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="EditorAppConfigDefinesHelper.cs" company="DefaultCompany">
+// <copyright file="EditorBuildConfigDefinesHelper.cs" company="DefaultCompany">
 //     Copyright (c) DefaultCompany. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -10,11 +10,11 @@ namespace Lost.BuildConfig
     using System.Linq;
     using UnityEditor;
 
-    public static class EditorAppConfigDefinesHelper
+    public static class EditorBuildConfigDefinesHelper
     {
         public static void UpdateProjectDefines()
         {
-            if (EditorAppConfig.ActiveAppConfig == null || LostLibrary.AppConfigs.AppConfigs == null)
+            if (EditorBuildConfigs.ActiveBuildConfig == null || LostLibrary.BuildConfigs.BuildConfigs == null)
             {
                 return;
             }
@@ -22,8 +22,8 @@ namespace Lost.BuildConfig
             HashSet<string> activeDefines = new HashSet<string>();
             HashSet<string> definesToRemove = new HashSet<string>();
 
-            GetActiveDefines(EditorAppConfig.ActiveAppConfig, activeDefines);
-            GetAllDefines(LostLibrary.AppConfigs.AppConfigs, definesToRemove);
+            GetActiveDefines(EditorBuildConfigs.ActiveBuildConfig, activeDefines);
+            GetAllDefines(LostLibrary.BuildConfigs.BuildConfigs, definesToRemove);
 
             foreach (var define in activeDefines)
             {
@@ -47,29 +47,29 @@ namespace Lost.BuildConfig
             }
         }
 
-        private static void GetActiveDefines(AppConfig appConfig, HashSet<string> defines)
+        private static void GetActiveDefines(BuildConfig buildConfig, HashSet<string> defines)
         {
-            if (appConfig != null)
+            if (buildConfig != null)
             {
-                if (appConfig.Defines != null)
+                if (buildConfig.Defines != null)
                 {
-                    foreach (var define in appConfig.Defines)
+                    foreach (var define in buildConfig.Defines)
                     {
                         defines.Add(define);
                     }
                 }
 
-                GetActiveDefines(appConfig.Parent, defines);
+                GetActiveDefines(buildConfig.Parent, defines);
             }
         }
 
-        private static void GetAllDefines(List<AppConfig> appConfigs, HashSet<string> defines)
+        private static void GetAllDefines(List<BuildConfig> buildConfigs, HashSet<string> defines)
         {
-            foreach (var appConfig in appConfigs)
+            foreach (var buildConfig in buildConfigs)
             {
-                if (appConfig != null && appConfig.Defines != null)
+                if (buildConfig != null && buildConfig.Defines != null)
                 {
-                    foreach (var define in appConfig.Defines)
+                    foreach (var define in buildConfig.Defines)
                     {
                         defines.Add(define);
                     }

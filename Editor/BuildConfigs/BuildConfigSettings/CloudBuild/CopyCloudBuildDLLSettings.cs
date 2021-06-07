@@ -9,11 +9,10 @@ namespace Lost
     using System.IO;
     using Lost.BuildConfig;
     using UnityEditor;
-    using UnityEditor.Build.Reporting;
     using UnityEngine;
 
-    [AppConfigSettingsOrder(15)]
-    public class CopyCloudBuildDLLSettings : AppConfigSettings
+    [BuildConfigSettingsOrder(15)]
+    public class CopyCloudBuildDLLSettings : BuildConfigSettings
     {
         #pragma warning disable 0649
         [SerializeField] private bool copyCloudBuildDLLToStreamingAssets = true;
@@ -22,11 +21,12 @@ namespace Lost
         public override string DisplayName => "Copy CloudBuild DLL To StreamingAssets";
         public override bool IsInline => true;
 
-        public override void OnPreproccessBuild(BuildConfig.AppConfig appConfig, BuildReport buildReport)
+        [EditorEvents.OnPreprocessBuild]
+        private static void OnPreproccessBuild()
         {
-            base.OnPreproccessBuild(appConfig, buildReport);
+            var settings = EditorBuildConfigs.GetActiveSettings<CopyCloudBuildDLLSettings>();
 
-            if (this.copyCloudBuildDLLToStreamingAssets == false || Platform.IsUnityCloudBuild == false)
+            if (settings == null || settings.copyCloudBuildDLLToStreamingAssets == false || Platform.IsUnityCloudBuild == false)
             {
                 return;
             }

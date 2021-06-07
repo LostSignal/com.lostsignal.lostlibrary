@@ -9,14 +9,14 @@ namespace Lost
     using Lost.BuildConfig;
     using UnityEditor;
 
-    public class StrictModeSettings : AppConfigSettings
+    public class StrictModeSettings : BuildConfigSettings
     {
         public override string DisplayName => "Build Strict Mode";
         public override bool IsInline => true;
 
         public bool buildInStrictMode = true;
 
-        public override BuildPlayerOptions ChangeBuildPlayerOptions(BuildConfig.AppConfig appConfig, BuildPlayerOptions options)
+        public override BuildPlayerOptions ChangeBuildPlayerOptions(BuildConfig.BuildConfig buildConfig, BuildPlayerOptions options)
         {
             if (this.buildInStrictMode)
             {

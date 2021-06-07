@@ -13,10 +13,9 @@ namespace Lost.Addressables
     using Lost.CloudBuild;
     using UnityEngine;
     using UnityEditor;
-    using UnityEditor.Build.Reporting;
 
-    [AppConfigSettingsOrder(90)]
-    public class UploadAddressableToS3Settings : AppConfigSettings
+    [BuildConfigSettingsOrder(90)]
+    public class UploadAddressableToS3Settings : BuildConfigSettings
     {
         #pragma warning disable 0649
         [SerializeField] public string AssetBundleFolderName = "S3";
@@ -35,7 +34,7 @@ namespace Lost.Addressables
         {
             get
             {
-                var s3Settings = EditorAppConfig.ActiveAppConfig?.GetSettings<UploadAddressableToS3Settings>();
+                var s3Settings = EditorBuildConfigs.GetActiveSettings<UploadAddressableToS3Settings>();
                 return s3Settings?.AssetBundleFolderName;
             }
         }
@@ -45,13 +44,21 @@ namespace Lost.Addressables
         {
             get
             {
-                var s3Settings = EditorAppConfig.ActiveAppConfig?.GetSettings<UploadAddressableToS3Settings>();
+                var s3Settings = EditorBuildConfigs.GetActiveSettings<UploadAddressableToS3Settings>();
                 return s3Settings != null ? (s3Settings.DownloadUrl + "/" + GetKeyPrefix(s3Settings)) : null;
             }
         }
 
-        public override void OnPostprocessBuild(AppConfig appConfig, BuildReport buildReport)
+        [EditorEvents.OnPostprocessBuild]
+        private static void OnPostprocessBuild()
         {
+            var settings = EditorBuildConfigs.GetActiveSettings<UploadAddressableToS3Settings>();
+
+            if (settings == null)
+            {
+                return;
+            }
+
             var s3Settings = GetSettings();
 
             var s3Config = new S3.Config
@@ -83,7 +90,7 @@ namespace Lost.Addressables
 
         private static UploadAddressableToS3Settings GetSettings()
         {
-            return EditorAppConfig.ActiveAppConfig?.GetSettings<UploadAddressableToS3Settings>();
+            return EditorBuildConfigs.ActiveBuildConfig?.GetSettings<UploadAddressableToS3Settings>();
         }
 
         private bool IsBeingUsedByAddressableSystem()

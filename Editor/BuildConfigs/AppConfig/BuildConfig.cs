@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="AppConfig.cs" company="DefaultCompany">
+// <copyright file="BuildConfig.cs" company="DefaultCompany">
 //     Copyright (c) DefaultCompany. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -12,10 +12,10 @@ namespace Lost.BuildConfig
     using UnityEngine;
 
     [Serializable]
-    public class AppConfig
+    public class BuildConfig
     {
 #pragma warning disable 0649
-        [SerializeReference] private List<AppConfigSettings> settings = new List<AppConfigSettings>();
+        [SerializeReference] private List<BuildConfigSettings> settings = new List<BuildConfigSettings>();
         [SerializeField] private string id = Guid.NewGuid().ToString();
         [SerializeField] private string name;
         [SerializeField] private bool isDefault;
@@ -52,12 +52,12 @@ namespace Lost.BuildConfig
             get
             {
                 int depth = 0;
-                var appConfig = this;
+                var buildConfig = this;
 
-                while (appConfig.Parent != null)
+                while (buildConfig.Parent != null)
                 {
                     depth++;
-                    appConfig = appConfig.Parent;
+                    buildConfig = buildConfig.Parent;
                 }
 
                 return depth;
@@ -70,7 +70,7 @@ namespace Lost.BuildConfig
             set => this.parentId = value;
         }
 
-        public AppConfig Parent => LostLibrary.AppConfigs.AppConfigs.FirstOrDefault(x => x.Id == this.parentId);
+        public BuildConfig Parent => LostLibrary.BuildConfigs.BuildConfigs.FirstOrDefault(x => x.Id == this.parentId);
 
         public bool IsDefault
         {
@@ -80,7 +80,7 @@ namespace Lost.BuildConfig
 
         public List<string> Defines => this.customDefines;
 
-        public List<AppConfigSettings> Settings => this.settings;
+        public List<BuildConfigSettings> Settings => this.settings;
 
         public string SafeName => this.name?.Replace(" ", string.Empty) ?? string.Empty;
 
@@ -90,18 +90,18 @@ namespace Lost.BuildConfig
             set => this.showInherited = value;
         }
 
-        public T GetSettings<T>() where T : AppConfigSettings
+        public T GetSettings<T>() where T : BuildConfigSettings
         {
             return this.GetSettings(typeof(T)) as T;
         }
 
-        public AppConfigSettings GetSettings(System.Type type)
+        public BuildConfigSettings GetSettings(System.Type type)
         {
             bool isInherited;
             return GetSettings(type, out isInherited);
         }
 
-        public AppConfigSettings GetSettings(System.Type type, out bool isInherited)
+        public BuildConfigSettings GetSettings(System.Type type, out bool isInherited)
         {
             if (this.settings != null)
             {
@@ -119,7 +119,7 @@ namespace Lost.BuildConfig
             return RecursiveGetSettings(this.Parent, type);
         }
 
-        private AppConfigSettings RecursiveGetSettings(AppConfig parentBuildConfig, System.Type type)
+        private BuildConfigSettings RecursiveGetSettings(BuildConfig parentBuildConfig, System.Type type)
         {
             if (parentBuildConfig == null)
             {

@@ -13,7 +13,7 @@ namespace Lost
     {
         protected override void WriteFile(string filePath, string contents)
         {
-            var playfab = EditorAppConfig.ActiveAppConfig.GetSettings<PlayFabSettings>();
+            var playfab = EditorBuildConfigs.ActiveBuildConfig.GetSettings<PlayFabSettings>();
 
             contents = contents
                 .Replace("__PLAYFAB_TITLE_ID__", playfab.TitleId)

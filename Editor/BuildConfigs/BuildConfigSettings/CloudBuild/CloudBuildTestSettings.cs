@@ -12,7 +12,7 @@ namespace Lost
     using UnityEditor.Build.Reporting;
     using UnityEngine;
 
-    //// public class CloudBuildTestSettings : AppConfigSettings
+    //// public class CloudBuildTestSettings : BuildConfigSettings
     //// {
     ////     public override string DisplayName => "Cloud Build Test";
     ////     public override bool IsInline => false;

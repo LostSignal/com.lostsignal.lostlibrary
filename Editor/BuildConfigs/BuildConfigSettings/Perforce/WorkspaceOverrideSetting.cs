@@ -9,8 +9,8 @@ namespace Lost
     using UnityEngine;
     using Lost.BuildConfig;
 
-    //// [AppConfigSettingsOrder(210)]
-    //// public class WorkspaceOverrideSetting : AppConfigSettings
+    //// [BuildConfigSettingsOrder(210)]
+    //// public class WorkspaceOverrideSetting : BuildConfigSettings
     //// {
     ////     #pragma warning disable 0649
     ////     [SerializeField] private string workspace;

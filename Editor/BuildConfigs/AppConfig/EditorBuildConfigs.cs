@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="EditorAppConfig.cs" company="DefaultCompany">
+// <copyright file="EditorBuildConfigs.cs" company="DefaultCompany">
 //     Copyright (c) DefaultCompany. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -10,10 +10,9 @@ namespace Lost.BuildConfig
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using Lost.Addressables;
-    using PlayFab;
     using UnityEditor;
     using UnityEngine;
+    using UnityEngine.Serialization;
 
     // TODO [bgish]: Must make sure all AppConfigs are in the appConfigs list
     // TODO [bgish]: Must make sure there is only one root config (and make sure the rootConfig is set to that) - Possibly rename to Default config
@@ -29,35 +28,35 @@ namespace Lost.BuildConfig
     //               Like on hover don't accept it.
 
     [InitializeOnLoad]
-    public class EditorAppConfig : ScriptableObject
+    public class EditorBuildConfigs : ScriptableObject
     {
-        private static readonly string CSharpFileName = "AppConfigsMenuItems.cs";
+        private static readonly string CSharpFileName = "BuildConfigsMenuItems.cs";
 
 #pragma warning disable 0649
-        [SerializeField] private List<AppConfig> appConfigs = new List<AppConfig>();
+        [FormerlySerializedAs("appConfigs")]
+        [SerializeField] private List<BuildConfig> buildConfigs = new List<BuildConfig>();
 #pragma warning restore 0649
 
-        [NonSerialized] private AppConfig activeAppConfig;
+        [NonSerialized] private BuildConfig activeBuildConfig;
 
-        static EditorAppConfig()
+        static EditorBuildConfigs()
         {
-            EditorApplication.delayCall += InitializeOnLoad;
             BuildPlayerWindow.RegisterBuildPlayerHandler(BuildPlayerHandler);
             BuildPlayerWindow.RegisterGetBuildPlayerOptionsHandler(BuildPlayerOptionsHandler);
         }
 
-        public List<AppConfig> AppConfigs => this.appConfigs;
+        public List<BuildConfig> BuildConfigs => this.buildConfigs;
 
-        public AppConfig RootAppConfig => this.appConfigs.FirstOrDefault(x => string.IsNullOrEmpty(x.ParentId));
+        public BuildConfig RootBuildConfig => this.buildConfigs.FirstOrDefault(x => string.IsNullOrEmpty(x.ParentId));
 
-        public AppConfig DefaultAppConfig => this.appConfigs.Where(x => x.IsDefault).FirstOrDefault();
+        public BuildConfig DefaultBuildConfig => this.buildConfigs.Where(x => x.IsDefault).FirstOrDefault();
 
-        public static string AppConfigScriptPath
+        public static string BuildConfigsScriptPath
         {
-            get { return Path.Combine(Path.GetDirectoryName(LostLibrary.AppConfigs.GetPath()), CSharpFileName); }
+            get { return Path.Combine(Path.GetDirectoryName(LostLibrary.BuildConfigs.GetPath()), CSharpFileName); }
         }
 
-        public static AppConfig ActiveAppConfig
+        public static BuildConfig ActiveBuildConfig
         {
             get
             {
@@ -69,38 +68,50 @@ namespace Lost.BuildConfig
                     RuntimeBuildConfig.Instance.BuildConfigGuid = null;
                 }
 
-                var instance = LostLibrary.AppConfigs;
+                var instance = LostLibrary.BuildConfigs;
 
-                if (instance.activeAppConfig != null)
+                if (instance.activeBuildConfig != null)
                 {
                     // Do nothing, already set
                 }
                 else if (RuntimeBuildConfig.Instance != null && string.IsNullOrEmpty(RuntimeBuildConfig.Instance.BuildConfigGuid) == false)
                 {
-                    foreach (var config in instance.AppConfigs)
+                    foreach (var config in instance.BuildConfigs)
                     {
                         if (config.Id == RuntimeBuildConfig.Instance.BuildConfigGuid)
                         {
-                            instance.activeAppConfig = config;
+                            instance.activeBuildConfig = config;
                             break;
                         }
                     }
                 }
                 else
                 {
-                    instance.activeAppConfig = instance.DefaultAppConfig;
+                    instance.activeBuildConfig = instance.DefaultBuildConfig;
                     WriteRuntimeConfigFile();
                 }
 
-                return instance.activeAppConfig;
+                return instance.activeBuildConfig;
             }
+        }
+
+        public static T GetActiveSettings<T>() where T : BuildConfigSettings
+        {
+            var activeConfig = ActiveBuildConfig;
+
+            if (activeConfig != null)
+            {
+                return activeConfig.GetSettings<T>();
+            }
+
+            return null;
         }
 
         private static void WriteRuntimeConfigFile()
         {
             RuntimeBuildConfig.Reset();
 
-            AppConfig activeConfig = ActiveAppConfig;
+            BuildConfig activeConfig = ActiveBuildConfig;
 
             if (activeConfig == null)
             {
@@ -133,22 +144,17 @@ namespace Lost.BuildConfig
 
         public static void SetActiveConfig(string guid)
         {
-            foreach (var config in LostLibrary.AppConfigs.AppConfigs)
+            foreach (var config in LostLibrary.BuildConfigs.BuildConfigs)
             {
                 if (config.Id == guid)
                 {
-                    LostLibrary.AppConfigs.activeAppConfig = config;
-                    EditorAppConfig.InitializeOnLoad();
+                    LostLibrary.BuildConfigs.activeBuildConfig = config;
 
-                    if (Platform.IsUnityCloudBuild)
+                    EditorBuildConfigs.OnDomainReload();
+
+                    if (Platform.IsUnityCloudBuild || Application.isBatchMode)
                     {
-                        var activeConfig = EditorAppConfig.ActiveAppConfig;
-
-                        // Telling all the app configs that a unity cloud build is about to begin
-                        foreach (var settings in EditorAppConfig.GetActiveConfigSettings())
-                        {
-                            settings.OnUnityCloudBuildInitiated(activeConfig);
-                        }
+                        EditorEventsExecutor.ExecuteAttribute<EditorEvents.OnCloudBuildInitiatedAttribute>();
                     }
 
                     break;
@@ -158,19 +164,19 @@ namespace Lost.BuildConfig
 
         public static bool IsActiveConfig(string guid)
         {
-            return guid == EditorAppConfig.ActiveAppConfig.Id;
+            return guid == EditorBuildConfigs.ActiveBuildConfig.Id;
         }
 
-        public static IEnumerable<AppConfigSettings> GetActiveConfigSettings()
+        public static IEnumerable<BuildConfigSettings> GetActiveConfigSettings()
         {
-            var activeConfig = ActiveAppConfig;
+            var activeConfig = ActiveBuildConfig;
 
             if (activeConfig == null)
             {
                 yield break;
             }
 
-            foreach (var type in TypeUtil.GetAllTypesOf<AppConfigSettings>())
+            foreach (var type in TypeUtil.GetAllTypesOf<BuildConfigSettings>())
             {
                 var settings = activeConfig.GetSettings(type);
 
@@ -188,16 +194,12 @@ namespace Lost.BuildConfig
 
         private static void BuildPlayerHandler(BuildPlayerOptions options)
         {
-            var activeConfig = EditorAppConfig.ActiveAppConfig;
+            var activeConfig = EditorBuildConfigs.ActiveBuildConfig;
 
-            // Telling all the app configs that a user has started a build
-            foreach (var settings in EditorAppConfig.GetActiveConfigSettings())
-            {
-                settings.OnUserBuildInitiated(activeConfig);
-            }
+            EditorEventsExecutor.ExecuteAttribute<EditorEvents.OnUserBuildInitiatedAttribute>();
 
             // Telling all the app configs to update player options
-            foreach (var settings in EditorAppConfig.GetActiveConfigSettings())
+            foreach (var settings in EditorBuildConfigs.GetActiveConfigSettings())
             {
                 options = settings.ChangeBuildPlayerOptions(activeConfig, options);
             }
@@ -205,10 +207,11 @@ namespace Lost.BuildConfig
             BuildPipeline.BuildPlayer(options);
         }
 
-        [MenuItem("Tools/Lost/Work In Progress/InitializeOnLoad and OnAppSetingsChanged")]
-        private static void InitializeOnLoad()
+        [EditorEvents.OnDomainReload]
+        [MenuItem("Tools/Lost/Work In Progress/OnDomainReload and OnAppSetingsChanged")]
+        private static void OnDomainReload()
         {
-            if (LostLibrary.AppConfigs == null)
+            if (LostLibrary.BuildConfigs == null)
             {
                 return;
             }
@@ -219,14 +222,7 @@ namespace Lost.BuildConfig
             List<string> definesBefore = new List<string>();
             BuildTargetGroupUtil.GetValid().ForEach(x => definesBefore.Add(PlayerSettings.GetScriptingDefineSymbolsForGroup(x)));
 
-            EditorAppConfigDefinesHelper.UpdateProjectDefines();
-
-            var activeConfig = ActiveAppConfig;
-
-            foreach (var settings in GetActiveConfigSettings())
-            {
-                settings.InitializeOnLoad(activeConfig);
-            }
+            EditorBuildConfigDefinesHelper.UpdateProjectDefines();
 
             // Recording defines after we've possibly altered them
             List<string> definesAfter = new List<string>();
@@ -257,28 +253,15 @@ namespace Lost.BuildConfig
             // TODO [bgish]: Write out the MenuItems class? (force recompile if new)
         }
 
+        [EditorEvents.OnEnterPlayMode]
         private static void PlayModeStateChanged(PlayModeStateChange state)
         {
-            if (EditorApplication.isPlaying == false && EditorApplication.isPlayingOrWillChangePlaymode)
+            if (LostLibrary.BuildConfigs == null)
             {
-                WriteRuntimeConfigFile();
-
-                var activeConfig = EditorAppConfig.ActiveAppConfig;
-
-                foreach (var settings in EditorAppConfig.GetActiveConfigSettings())
-                {
-                    settings.OnEnteringPlayMode(activeConfig);
-                }
+                return;
             }
-            else if (state == PlayModeStateChange.ExitingPlayMode)
-            {
-                var activeConfig = EditorAppConfig.ActiveAppConfig;
 
-                foreach (var settings in EditorAppConfig.GetActiveConfigSettings())
-                {
-                    settings.OnExitingPlayMode(activeConfig);
-                }
-            }
+            WriteRuntimeConfigFile();
         }
     }
 }

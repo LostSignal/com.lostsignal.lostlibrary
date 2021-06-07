@@ -9,8 +9,8 @@ namespace Lost
     //// using Lost.AppConfig;
     //// using UnityEngine;
     ////
-    //// [AppConfigSettingsOrder(25)]
-    //// public class CodeAnalysisSettings : AppConfigSettings
+    //// [BuildConfigSettingsOrder(25)]
+    //// public class CodeAnalysisSettings : BuildConfigSettings
     //// {
     ////     #pragma warning disable 0649
     ////     [SerializeField] private bool runUnitTests;

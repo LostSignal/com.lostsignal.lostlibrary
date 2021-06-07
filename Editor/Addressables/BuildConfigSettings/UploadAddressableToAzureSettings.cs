@@ -14,15 +14,14 @@ namespace Lost.Addressables
     using Lost.CloudBuild;
     using UnityEngine;
     using UnityEditor;
-    using UnityEditor.Build.Reporting;
 
     ////
     //// TODO [bgish]: Since all AssetBundles have their Hash appended to the name, before uploading any files to Azure, we
     ////                 should get the list of all existing asset bundles and make sure to not send up any duplicates,
     ////
 
-    [AppConfigSettingsOrder(95)]
-    public class UploadAddressableToAzureSettings : AppConfigSettings
+    [BuildConfigSettingsOrder(95)]
+    public class UploadAddressableToAzureSettings : BuildConfigSettings
     {
         #pragma warning disable 0649
         [SerializeField] private string assetBundleFolderName = "AssetBundles/Azure";
@@ -41,7 +40,7 @@ namespace Lost.Addressables
         {
             get
             {
-                var azureSettings = EditorAppConfig.ActiveAppConfig?.GetSettings<UploadAddressableToAzureSettings>();
+                var azureSettings = EditorBuildConfigs.GetActiveSettings<UploadAddressableToAzureSettings>();
                 return azureSettings?.CalculateBuildPath();
             }
         }
@@ -51,26 +50,20 @@ namespace Lost.Addressables
         {
             get
             {
-                var azureSettings = EditorAppConfig.ActiveAppConfig?.GetSettings<UploadAddressableToAzureSettings>();
+                var azureSettings = EditorBuildConfigs.GetActiveSettings<UploadAddressableToAzureSettings>();
                 return azureSettings != null ? (SanitizeAndRemoveTrailingForwardSlash(azureSettings.downloadUrl) + "/" + GetBlobPrefix(azureSettings)) : null;
             }
         }
 
-        public override void OnUnityCloudBuildInitiated(AppConfig appConfig)
+        [EditorEvents.OnPostprocessBuild]
+        private static void OnPostprocessBuild()
         {
-            // Making sure the addressables are built
-            UnityEditor.AddressableAssets.Settings.AddressableAssetSettings.BuildPlayerContent();
-        }
+            var uploadToAzureSettings = EditorBuildConfigs.GetActiveSettings<UploadAddressableToAzureSettings>();
 
-        public override void OnUserBuildInitiated(AppConfig appConfig)
-        {
-            // Making sure the addressables are built
-            UnityEditor.AddressableAssets.Settings.AddressableAssetSettings.BuildPlayerContent();
-        }
-
-        public override void OnPostprocessBuild(AppConfig appConfig, BuildReport buildReport)
-        {
-            var uploadToAzureSettings = appConfig.GetSettings<UploadAddressableToAzureSettings>();
+            if (uploadToAzureSettings == null)
+            {
+                return;
+            }
 
             var azureConfig = new AzureStorage.Config
             {
@@ -84,7 +77,7 @@ namespace Lost.Addressables
 
             if (Directory.Exists(assetBundlePath) == false)
             {
-                if (this.IsBeingUsedByAddressableSystem())
+                if (IsBeingUsedByAddressableSystem())
                 {
                     Debug.LogErrorFormat("Unable to Upload AssetBundles To Azure.  Directory {0} does not exist.", assetBundlePath);
                 }
@@ -179,10 +172,10 @@ namespace Lost.Addressables
             return SanitizeAndRemoveTrailingForwardSlash(this.assetBundleFolderName) + "/" + EditorUserBuildSettings.activeBuildTarget;
         }
 
-        private bool IsBeingUsedByAddressableSystem()
+        private static bool IsBeingUsedByAddressableSystem()
         {
             UnityEditor.AddressableAssets.Settings.AddressableAssetSettings settings = UnityEditor.AddressableAssets.AddressableAssetSettingsDefaultObject.Settings;
-            string buildPath = this.GetType().FullName + "." + nameof(BuildPath);
+            string buildPath = typeof(UploadAddressableToAzureSettings).FullName + "." + nameof(BuildPath);
 
             if (settings == null)
             {

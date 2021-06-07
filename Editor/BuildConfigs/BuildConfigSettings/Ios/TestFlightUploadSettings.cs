@@ -56,8 +56,8 @@
 ////     using Lost.AppConfig;
 ////     using UnityEngine;
 ////
-////     [AppConfigSettingsOrder(430)]
-////     public class TestFlightUploadSettings : AppConfigSettings
+////     [BuildConfigSettingsOrder(430)]
+////     public class TestFlightUploadSettings : BuildConfigSettings
 ////     {
 ////         #pragma warning disable 0649
 ////         [SerializeField] private string username;

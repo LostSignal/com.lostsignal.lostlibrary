@@ -12,8 +12,8 @@ namespace Lost
     using UnityEditor;
     using UnityEngine;
 
-    [AppConfigSettingsOrder(220)]
-    public class P4IgnoreSettings : AppConfigSettings
+    [BuildConfigSettingsOrder(220)]
+    public class P4IgnoreSettings : BuildConfigSettings
     {
         private static readonly string p4IngnoreEditorPref = "P4IgnoreFileName";
 
@@ -39,9 +39,10 @@ namespace Lost
             }
         }
 
-        public override void InitializeOnLoad(BuildConfig.AppConfig appConfig)
+        [EditorEvents.OnDomainReload]
+        public static void ApplyCurrentSettings()
         {
-            var settings = appConfig.GetSettings<P4IgnoreSettings>();
+            var settings = EditorBuildConfigs.GetActiveSettings<P4IgnoreSettings>();
 
             if (settings == null)
             {
@@ -55,11 +56,11 @@ namespace Lost
 
             if (settings.autosetP4IgnoreVariable)
             {
-                this.SetP4IgnoreFileVariable(settings.p4IgnoreFileName);
+                SetP4IgnoreFileVariable(settings.p4IgnoreFileName);
             }
         }
 
-        private void SetP4IgnoreFileVariable(string p4IgnoreFileName)
+        private static void SetP4IgnoreFileVariable(string p4IgnoreFileName)
         {
             if (Application.platform == RuntimePlatform.WindowsEditor)
             {
@@ -78,7 +79,7 @@ namespace Lost
             EditorPrefs.SetString(p4IngnoreEditorPref, string.Empty);
         }
 
-        private string GetCurrentP4IgnoreVariable()
+        private static string GetCurrentP4IgnoreVariable()
         {
             var currentP4IgnoreFileName = EditorPrefs.GetString(p4IngnoreEditorPref, null);
 
@@ -103,7 +104,7 @@ namespace Lost
             return currentP4IgnoreFileName;
         }
 
-        private string GetCurrentP4IgnoreVariableWindows()
+        private static string GetCurrentP4IgnoreVariableWindows()
         {
             try
             {
@@ -123,7 +124,7 @@ namespace Lost
             }
         }
 
-        private string GetCurrentP4IgnoreVariableMac()
+        private static string GetCurrentP4IgnoreVariableMac()
         {
             var p4environmentFile = Path.Combine(System.Environment.GetEnvironmentVariable("HOME"), ".p4enviro");
 
@@ -141,7 +142,7 @@ namespace Lost
             return null;
         }
 
-        private void SetP4IgnoreVariableForWindows(string p4ignoreFileName)
+        private static void SetP4IgnoreVariableForWindows(string p4ignoreFileName)
         {
             try
             {
@@ -153,7 +154,7 @@ namespace Lost
             }
         }
 
-        private void SetP4IgnoreVariableForMac(string p4ignoreFileName)
+        private static void SetP4IgnoreVariableForMac(string p4ignoreFileName)
         {
             var p4environmentFile = Path.Combine(System.Environment.GetEnvironmentVariable("HOME"), ".p4enviro");
             var p4IgnoreLine = "P4IGNORE=" + p4ignoreFileName;

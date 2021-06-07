@@ -25,7 +25,7 @@
 ////     using UnityEngine;
 ////     using UnityEngine.Purchaseing;
 ////
-////     [AppConfigSettingsOrder()]
+////     [BuildConfigSettingsOrder()]
 ////     public class AndroidStoreSettings : BuildConfigSettings, IPreprocessBuild
 ////     {
 ////         #pragma warning disable 0649

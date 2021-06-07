@@ -15,8 +15,8 @@ namespace Lost
     //// //// bool useCacheServer
     //// //// string ip;
     ////
-    //// [AppConfigSettingsOrder(15)]
-    //// public class CacheServerSettings : AppConfigSettings
+    //// [BuildConfigSettingsOrder(15)]
+    //// public class CacheServerSettings : BuildConfigSettings
     //// {
     ////     #pragma warning disable 0649
     ////     [SerializeField] private string cacheServerIp;

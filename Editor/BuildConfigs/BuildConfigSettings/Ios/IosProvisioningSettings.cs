@@ -9,8 +9,8 @@ namespace Lost
     using Lost.BuildConfig;
     using UnityEngine;
 
-    [AppConfigSettingsOrder(410)]
-    public class IosProvisioningSettings : AppConfigSettings
+    [BuildConfigSettingsOrder(410)]
+    public class IosProvisioningSettings : BuildConfigSettings
     {
         #pragma warning disable 0649
         [SerializeField] private string provisitionProfile; // relative path

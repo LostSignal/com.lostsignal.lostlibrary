@@ -10,8 +10,8 @@ namespace Lost
     using UnityEditor;
     using UnityEngine;
 
-    [AppConfigSettingsOrder(310)]
-    public class AndroidKeystoreSettings : AppConfigSettings
+    [BuildConfigSettingsOrder(310)]
+    public class AndroidKeystoreSettings : BuildConfigSettings
     {
         #pragma warning disable 0649
         #if UNITY_2019_1_OR_NEWER
@@ -30,9 +30,10 @@ namespace Lost
         public override string DisplayName => "Android Keystore";
         public override bool IsInline => false;
 
-        public override void InitializeOnLoad(BuildConfig.AppConfig appConfig)
+        [EditorEvents.OnDomainReload]
+        private static void OnDomainReload()
         {
-            var settings = appConfig.GetSettings<AndroidKeystoreSettings>();
+            var settings = EditorBuildConfigs.GetActiveSettings<AndroidKeystoreSettings>();
 
             if (settings != null)
             {
