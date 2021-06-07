@@ -65,6 +65,8 @@ Thumbs.db
 Desktop.ini
 packages-lock.json
 launchSettings.json
-appconfig.json
-appconfig.json.meta
+buildconfig.json
+buildconfig.json.meta
+release.json
+release.json.meta
 .vsconfig

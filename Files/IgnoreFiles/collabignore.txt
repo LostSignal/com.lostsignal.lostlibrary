@@ -38,16 +38,40 @@ Assets/StreamingAssets/com.unity.addressables.meta
 AssetBundles/*
 
 # ================================= #
-# AppConfig for Windows and Mac     #
+# BuildConfig for Windows and Mac   #
 # ================================= #
 
 # Windows
-Assets\Resources\appconfig.json
-Assets\Resources\appconfig.json.meta
+Assets\Resources\buildconfig.json
+Assets\Resources\buildconfig.json.meta
 
 # Mac
-Assets/Resources/appconfig.json
-Assets/Resources/appconfig.json.meta
+Assets/Resources/buildconfig.json
+Assets/Resources/buildconfig.json.meta
+
+# ================================= #
+# Release for Windows and Mac     #
+# ================================= #
+
+# Windows
+Assets\Resources\release.json
+Assets\Resources\release.json.meta
+
+# Mac
+Assets/Resources/release.json
+Assets/Resources/release.json.meta
+
+# ==================================== #
+# Visual Scripting for Windows and Mac #
+# ==================================== #
+
+# Windows
+Assets\Unity.VisualScripting.Generated\*
+Assets\Unity.VisualScripting.Generated.meta
+
+# Mac
+Assets/Unity.VisualScripting.Generated/*
+Assets/Unity.VisualScripting.Generated.meta
 
 # ================================= #
 # Asset Bundles for Windows and Mac #
