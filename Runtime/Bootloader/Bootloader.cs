@@ -164,6 +164,10 @@ namespace Lost
 
         private bool ShowLoadingInEditor => Application.isEditor == false || this.dontShowLoadingInEditor == false;
 
+        public ManagersLocation Location => this.managersLocation;
+
+        public string ManagersPrefabResourceName => this.managersResourcesPrefabName;
+
         private void Start()
         {
             this.StartCoroutine(this.Bootup());
