@@ -19,8 +19,18 @@ namespace Lost
         [SerializeField] private string appleAppStoreId = null;
         [SerializeField] private string googlePlayAppStoreId = null;
 #pragma warning restore 0649, 0414
+        
+#if UNITY_EDITOR && !USING_UNITY_ADS
+        
+        [ShowEditorError("This provider will not work unless you the Unity Ads package added through the Package Manager.")]
+        [ExposeInEditor("Add Unity Ads Package")]
+        private void AddUsingUsingUnityAdsDefine()
+        {
+            PackageManagerUtil.Add("com.unity.ads");
+        }
 
-#if UNITY_EDITOR
+#elif UNITY_EDITOR && USING_UNITY_ADS
+
         [ExposeInEditor("Open Unity Ads Dashboard")]
         private void OpenUnityAdsDashboard()
         {
@@ -32,43 +42,24 @@ namespace Lost
 
 #endif
 
-#if !USING_UNITY_ADS
-        [ExposeInEditor("Add USING_UNITY_ADS Define")]
-        private void AddUsingUsingUnityAdsDefine()
-        {
-            ProjectDefinesHelper.AddDefineToProject("USING_UNITY_ADS");
-        }
-
-#endif
-
         private void OnEnable()
         {
-#if !USING_UNITY_ADS
-
-            Debug.LogError("Trying to UnityAdsProvider without the Unity Ads Package", this);
-#else
-
+#if USING_UNITY_ADS
             AdsManager.OnInitialized += () =>
             {
 #if UNITY_IOS
-
                 if (string.IsNullOrWhiteSpace(this.appleAppStoreId) == false && UnityEngine.Advertisements.Advertisement.isInitialized == false)
                 {
                     UnityEngine.Advertisements.Advertisement.Initialize(this.appleAppStoreId);
                 }
-
 #elif UNITY_ANDROID
-
                 if (string.IsNullOrWhiteSpace(this.googlePlayAppStoreId) == false && UnityEngine.Advertisements.Advertisement.isInitialized == false)
                 {
                     UnityEngine.Advertisements.Advertisement.Initialize(this.googlePlayAppStoreId);
                 }
-
 #endif
-
                 AdsManager.Instance.SetAdProvider(this);
             };
-
 #endif
         }
 
