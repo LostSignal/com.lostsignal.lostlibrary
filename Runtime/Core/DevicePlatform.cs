@@ -9,7 +9,7 @@ namespace Lost
     [System.Flags]
     public enum DevicePlatform
     {
-        Nothing           = 0,
+        None              = 0,
         iOS               = 1 << 0,  // UNITY_IOS / UNITY_IPHONE (Depricated)
         Android           = 1 << 1,  // UNITY_ANDROID
         Windows           = 1 << 2,  // UNITY_STANDALONE_WIN

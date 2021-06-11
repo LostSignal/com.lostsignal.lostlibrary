@@ -34,13 +34,17 @@ namespace Lost
     {
         private static List<FunctionCall> functions = new List<FunctionCall>();
 
-
         public override void Initialize()
         {
             this.SetInstance(this);
         }
 
-        
+        public Channel GetOrCreateChannel(string channelName, int callsPerSecond)
+        {
+            // If it makes one at runtime, print warning (channel created at runtime, make ahead of time to reduce GC)
+            throw new System.NotImplementedException();
+        }
+
         public void CreateChannel(string channelName, int callsPerSecond)
         {
             // If it makes one at runtime, print warning (channel created at runtime, make ahead of time to reduce GC)
@@ -52,13 +56,12 @@ namespace Lost
             throw new System.NotImplementedException();
         }
 
-
-        public class Channel
-        {
-            public string Name;
-            public int CallFrequency;
-            public List<FunctionCall> Functions;
-        }
+        // public class Channel
+        // {
+        //     public string Name;
+        //     public int CallFrequency;
+        //     public List<FunctionCall> Functions;
+        // }
         
         public void RegisterFunction(System.Action<float> function, int callFrequency)
         {
