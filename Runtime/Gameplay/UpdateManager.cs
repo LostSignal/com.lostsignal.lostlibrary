@@ -36,6 +36,7 @@ namespace Lost
 
         public override void Initialize()
         {
+            Debug.Log("UpdateManager.Initialize");
             this.SetInstance(this);
         }
 
@@ -123,7 +124,7 @@ namespace Lost
     public struct Callback
     {
         public int Id;
-        public Action Action;
+        public Action<float> Action;
         public float LastCalledTime;
         public string Description;         // Editor Only
         public UnityEngine.Object Context; // Editor Only
@@ -195,10 +196,12 @@ namespace Lost
         private void Run(int runCount)
         {
             while (runCount > 0 && nextIndexToRun >= 0)
-            {  
+            {
                 try
                 {
-                    this.callbacks[nextIndexToRun].Action?.Invoke();
+                    float now = Time.realtimeSinceStartup;
+                    float deltaTime = this.callbacks[nextIndexToRun].LastCalledTime - Time.deltaTime; // TODO [bgish]: Calculuate this...
+                    this.callbacks[nextIndexToRun].Action?.Invoke(deltaTime);
                 }
                 catch (Exception ex)
                 {
@@ -211,17 +214,17 @@ namespace Lost
             }
         }
     
-        public CallbackReceipt AddCallback(Action action, string description, UnityEngine.Object context)
+        public CallbackReceipt AddCallback(Action<float> action, string description, UnityEngine.Object context)
         {
             int callbackIndex = this.callbacks.Count;
             int callbackId = ++this.currentId;
         
             this.callbacks.Add(new Callback
             {
-              Id = callbackId,
-              Action = action,
-              Description = description,
-              Context = context,
+                Id = callbackId,
+                Action = action,
+                Description = description,
+                Context = context,
             });
       
             idToIndexMap.Add(callbackId, callbackIndex);

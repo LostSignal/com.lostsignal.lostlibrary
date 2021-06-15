@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="PlayerProximity.cs" company="Lost Signal">
 //     Copyright (c) Lost Signal. All rights reserved.
 // </copyright>
@@ -9,6 +9,9 @@ namespace Lost
     using UnityEngine;
     using UnityEngine.Events;
 
+    ////
+    //// TODO [bgish]: Combine OnPlayerEnterExit with this class to be more generic, then remove OnPlayerEnterExit
+    ////
     public class PlayerProximity : MonoBehaviour
     {
         private const string ChannelLow = "PlayerProximity.Low";
@@ -20,8 +23,8 @@ namespace Lost
         #pragma warning disable 0649
         [SerializeField] private Frequency frequency;
         [SerializeField] private Bounds bounds;
-        [SerializeField] private UnityEvent onPlayerEnter;
-        [SerializeField] private UnityEvent onPlayerExit;
+        [SerializeField] private UnityEvent onEnterProximity;
+        [SerializeField] private UnityEvent onExitProximity;
         #pragma warning restore 0649
 
         private bool hasPlayerEntered;
@@ -35,7 +38,13 @@ namespace Lost
 
         private void Awake()
         {
+            // CAN THE BOOTLOADER SYSTEM INSURE THIS ALWAYS WORKS?
+            AwakeManager.Instance.QueueWork(this.Initialize, "PlayerProximity.Awake", this);
+
+            Bootloader.OnManagersReady += this.Initialize;
             // UpdateManager.OnInitialize(this.Initialize);
+
+
         }
 
         private void Initialize()
@@ -84,12 +93,12 @@ namespace Lost
             if (this.hasPlayerEntered == false && isPlayerInside)
             {
                 this.hasPlayerEntered = true;
-                this.onPlayerEnter?.Invoke();
+                this.onEnterProximity?.Invoke();
             }
             else if (this.hasPlayerEntered && isPlayerInside == false)
             {
                 this.hasPlayerEntered = false;
-                this.onPlayerExit?.Invoke();
+                this.onExitProximity?.Invoke();
             }
         }
 

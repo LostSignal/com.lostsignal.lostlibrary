@@ -49,7 +49,7 @@ namespace Lost
             this.SetInstance(this);
         }
 
-        private void DoWork()
+        private void DoWork(float deltaTime)
         {
             bool foundMainCharacter = false;
 

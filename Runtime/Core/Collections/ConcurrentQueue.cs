@@ -6,7 +6,6 @@
 
 namespace Lost
 {
-    using System.Collections.Generic;
     using UnityEngine;
 
     public class ConcurrentQueue<T>
@@ -14,7 +13,7 @@ namespace Lost
         private readonly object itemsLock = new object();
 
         [SerializeField]
-        private Queue<T> items = new Queue<T>();
+        private System.Collections.Generic.Queue<T> items = new System.Collections.Generic.Queue<T>();
 
         public bool TryDequeue(out T output)
         {

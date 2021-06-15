@@ -68,7 +68,7 @@ namespace Lost
             return IsInitialized || this.enabled == false;
         }
 
-        protected virtual void Start()
+        protected virtual void Awake()
         {
             this.RunInitialization();
         }
