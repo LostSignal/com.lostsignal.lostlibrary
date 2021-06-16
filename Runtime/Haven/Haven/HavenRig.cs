@@ -11,12 +11,23 @@ namespace Lost.Haven
     using Lost;
     using System.Collections;
     using UnityEngine;
-    using UnityEngine.UI;
     using UnityEngine.XR.Interaction.Toolkit;
 
     public class HavenRig : MonoBehaviour
     {
         public const string TelportLayer = "Teleport";
+
+        private static HavenRig instance;
+
+        static HavenRig()
+        {
+            Bootloader.OnReset += Reset;
+
+            void Reset()
+            {
+                instance = null;
+            }
+        }
 
 #pragma warning disable 0649
         [Header("Rigs")]
@@ -29,25 +40,15 @@ namespace Lost.Haven
 
         public static IEnumerator WaitForRig()
         {
-            while (true)
+            while (instance == null)
             {
-                if (ObjectTracker.Instance && ObjectTracker.Instance.GetFirstObject<HavenRig>() != null)
-                {
-                    yield break;
-                }
-
                 yield return null;
             }
         }
 
         public static HavenRig GetRig()
         {
-            if (ObjectTracker.Instance)
-            {
-                return ObjectTracker.Instance.GetFirstObject<HavenRig>();
-            }
-
-            return null;
+            return instance;
         }
 
         public Camera RigCamera => this.rigCamera;
@@ -72,18 +73,18 @@ namespace Lost.Haven
 
         private void OnEnable()
         {
-            Bootloader.OnManagersReady += this.UpdateObjectTracker;
+            if (instance != null)
+            {
+                Debug.LogError("HavenRig is already registered, this HavenRig will be ignored!", this);
+                return;
+            }
+
+            instance = this;
         }
 
         private void OnDisable()
         {
-            Bootloader.OnManagersReady -= this.UpdateObjectTracker;
-            this.UpdateObjectTracker();
-        }
-
-        private void UpdateObjectTracker()
-        {
-            ObjectTracker.UpdateRegistration(this);
+            instance = null;
         }
 
         private void Initialize()

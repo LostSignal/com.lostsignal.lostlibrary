@@ -12,8 +12,8 @@ namespace Lost
 
     public class OnPlayerEnterExit : MonoBehaviour
     {
-        private static Channel HighPriorityChannel;
-        private static Channel LowPriorityChannel;
+        private static UpdateChannel HighPriorityChannel;
+        private static UpdateChannel LowPriorityChannel;
         //private static bool AreStaticsInitialized;
 
         // Reset is called on reboot and leaving editor mode
@@ -23,8 +23,8 @@ namespace Lost
 
             void Reset()
             {
-                HighPriorityChannel = default(Channel);
-                LowPriorityChannel = default(Channel);
+                HighPriorityChannel = default(UpdateChannel);
+                LowPriorityChannel = default(UpdateChannel);
                 //AreStaticsInitialized = false;
             }
         }
@@ -45,7 +45,7 @@ namespace Lost
         private CallbackReceipt receipt;
         private bool isPlayerInside;
  
-        private Channel CurrentChannel
+        private UpdateChannel CurrentChannel
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => this.isPlayerInside ? HighPriorityChannel : LowPriorityChannel;

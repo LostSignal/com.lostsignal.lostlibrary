@@ -35,10 +35,10 @@ namespace Lost
         private static List<FunctionCall> functions = new List<FunctionCall>();
 
         #pragma warning disable 0649
-        [SerializeField] private List<Channel> channels = new List<Channel>();
+        [SerializeField] private List<UpdateChannel> channels = new List<UpdateChannel>();
         #pragma warning restore 0649
 
-        private Dictionary<string, Channel> channelMap = new Dictionary<string, Channel>();
+        private Dictionary<string, UpdateChannel> channelMap = new Dictionary<string, UpdateChannel>();
 
         public override void Initialize()
         {
@@ -51,33 +51,21 @@ namespace Lost
             this.SetInstance(this);
         }
 
-        public Channel GetOrCreateChannel(string channelName, int startingCapacity, int callsPerSecond)
+        public UpdateChannel GetOrCreateChannel(string channelName, int startingCapacity, float desiredDeltaTime = 0.0f)
         {
-            if (this.channelMap.TryGetValue(channelName, out Channel channel))
+            if (this.channelMap.TryGetValue(channelName, out UpdateChannel channel))
             {
                 return channel;
             }
             else
             {
                 Debug.LogWarning($"Channel {channelName} created at runtime.  Should register this ahead of time to limit GC allocations.");
-                var newChannel = new Channel(channelName, startingCapacity, callsPerSecond);
+                var newChannel = new UpdateChannel(channelName, startingCapacity, desiredDeltaTime);
                 this.channelMap.Add(newChannel.Name, newChannel);
                 return newChannel;
             }
         }
 
-        public void Register(string channelName, System.Action<float> function)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        // public class Channel
-        // {
-        //     public string Name;
-        //     public int CallFrequency;
-        //     public List<FunctionCall> Functions;
-        // }
-        
         public void RegisterFunction(System.Action<float> function, int callFrequency)
         {
             UnregisterFunction(function);
@@ -131,8 +119,19 @@ namespace Lost
 
     public struct CallbackReceipt
     {
-        public Channel Channel;
+        public static readonly CallbackReceipt Default = default(CallbackReceipt);
+
+        public bool IsValid;
+        public UpdateChannel Channel;
         public int Id;
+
+        public void Cancel()
+        {
+            if (this.Channel != null)
+            {
+                this.Channel.RemoveCallback(ref this);
+            }
+        }
     }
     
     public struct Callback
@@ -140,36 +139,11 @@ namespace Lost
         public int Id;
         public Action<float> Action;
         public float LastCalledTime;
-
-        #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        public string Description;
         public UnityEngine.Object Context;
-        #endif
-
-        public void Invoke()
-        {
-            try
-            {
-                float now = Time.realtimeSinceStartup;
-                float deltaTime = now - this.LastCalledTime;
-                this.LastCalledTime = now;
-                this.Action?.Invoke(deltaTime);
-            }
-            catch (Exception ex)
-            {
-                #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                Debug.LogError($"UpdateManager caught an exception: {this.Description}", this.Context);
-                Debug.LogException(ex, this.Context);
-                #else
-                Debug.LogError("UpdateManager caught an exception!");
-                Debug.LogException(ex);
-                #endif
-            }
-        }
     }
 
     [Serializable]
-    public class Channel
+    public class UpdateChannel
     {
         private static readonly Callback DefaultCallback = default(Callback);
 
@@ -185,7 +159,7 @@ namespace Lost
 
         public string Name => this.name;
     
-        public Channel(string name, int startingCapactiy, float runAllEveryXSeconds)
+        public UpdateChannel(string name, int startingCapactiy, float desiredDeltaTime)
         {
             this.name = name;
             this.callbacks = new Callback[startingCapacity];
@@ -242,15 +216,36 @@ namespace Lost
         {
             while (runCount > 0 && nextIndexToRun >= 0)
             {
-                this.callbacks[nextIndexToRun].Invoke();
+                try
+                {
+                    float now = Time.realtimeSinceStartup;
+                    float deltaTime = now - this.callbacks[nextIndexToRun].LastCalledTime;
+                    this.callbacks[nextIndexToRun].LastCalledTime = now;
+                    this.callbacks[nextIndexToRun].Action?.Invoke(deltaTime);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"UpdateManager Channel {this.Name} caught an exception.", this.callbacks[nextIndexToRun].Context);
+                    Debug.LogException(ex, this.callbacks[nextIndexToRun].Context);
+                }
+
                 this.nextIndexToRun--;
                 this.currentRunCount++;
                 runCount--;
             }
         }
     
-        public CallbackReceipt AddCallback(Action<float> action, string description, UnityEngine.Object context)
+        public void RegisterCallback(ref CallbackReceipt callbackReceipt, Action<float> action, UnityEngine.Object context)
         {
+            if (callbackReceipt.Channel == this)
+            {
+                return;
+            }
+            else if (callbackReceipt.Channel != null)
+            {
+                callbackReceipt.Cancel();
+            }
+
             int callbackIndex = this.count++;
 
             if (callbackIndex >= this.callbacks.Length)
@@ -265,16 +260,15 @@ namespace Lost
             {
                 Id = callbackId,
                 Action = action,
-                Description = description,
                 Context = context,
                 LastCalledTime = Time.realtimeSinceStartup,
             };
       
             idToIndexMap.Add(callbackId, callbackIndex);
-            return new CallbackReceipt { Channel = this, Id = callbackId };
+            callbackReceipt = new CallbackReceipt { Channel = this, Id = callbackId };
         }
     
-        public void RemoveCallback(CallbackReceipt receipt)
+        public void RemoveCallback(ref CallbackReceipt receipt)
         {
             if (idToIndexMap.TryGetValue(receipt.Id, out int index))
             {
@@ -292,6 +286,8 @@ namespace Lost
                 this.idToIndexMap.Remove(callbackToRemove.Id);
                 this.callbacks[lastCallbackIndex] = DefaultCallback;
                 this.count--;
+
+                receipt = CallbackReceipt.Default;
             }
         }
     }

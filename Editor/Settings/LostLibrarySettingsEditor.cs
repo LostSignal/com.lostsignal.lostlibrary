@@ -46,7 +46,11 @@ namespace Lost
         private SerializedProperty templateStateMachineBehaviour;
         private SerializedProperty templateSubStateMachineBehaviour;
         private SerializedProperty templateEditorTestScript;
-        
+
+        // PlasticSCM Settings
+        private SerializedProperty plasticAutoSetFileCasingError;
+        private SerializedProperty plasticAutoSetYamlMergeToolPath;
+
         // Analyzers
         private SerializedProperty analyzers;
 
@@ -145,6 +149,10 @@ namespace Lost
             this.templateStateMachineBehaviour = this.lostLibrarySerializedObject.FindProperty("templateStateMachineBehaviour");
             this.templateSubStateMachineBehaviour = this.lostLibrarySerializedObject.FindProperty("templateSubStateMachineBehaviour");
             this.templateEditorTestScript = this.lostLibrarySerializedObject.FindProperty("templateEditorTestScript");
+
+            // PlasticSCM Settings
+            this.plasticAutoSetFileCasingError = this.lostLibrarySerializedObject.FindProperty("plasticAutoSetFileCasingError");
+            this.plasticAutoSetYamlMergeToolPath = this.lostLibrarySerializedObject.FindProperty("plasticAutoSetYamlMergeToolPath");
             
             // Source Control Ignore File
             this.sourceControlType = this.lostLibrarySerializedObject.FindProperty("sourceControlType");
@@ -308,6 +316,8 @@ namespace Lost
                     else if (sourceControl == LostLibrarySettings.SourceControlType.Plastic)
                     {
                         EditorGUILayout.PropertyField(this.ignoreTemplatePlastic);
+                        EditorGUILayout.PropertyField(this.plasticAutoSetFileCasingError);
+                        EditorGUILayout.PropertyField(this.plasticAutoSetYamlMergeToolPath);
                     }
                     else if (sourceControl == LostLibrarySettings.SourceControlType.Perforce)
                     {

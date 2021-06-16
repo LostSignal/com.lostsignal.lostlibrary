@@ -10,53 +10,86 @@ namespace Lost
 {
     using UnityEngine;
 
+    ////
+    //// NOTE [bgish]: This is really old code, should eventually delete this in favor of just using Cinemachine
+    ////
     public class CameraShake : MonoBehaviour
     {
+        private static ComponentTracker<CameraShake> Shakers = new ComponentTracker<CameraShake>(5);
+
 #pragma warning disable 0649
         [SerializeField] private float shakeTime = 0.25f;
         [SerializeField] private float shakeAmount = 0.2f;
+
+        [HideInInspector] 
+        [SerializeField] private Transform myTransform;
 #pragma warning restore 0649
 
+        private bool isInitialized;
+        private UpdateChannel updateChannel;
+        private CallbackReceipt receipt;
         private float currentShakeTime;
         private Vector3 originalPosition;
-
+        
         public static void Shake()
         {
-            foreach (var cameraShake in ObjectTracker.Instance.GetObjects<CameraShake>())
+            for (int i = 0; i < Shakers.Count; i++)
             {
-                cameraShake.PrivateShake();
+                Shakers[i].PrivateShake();
+            }
+        }
+
+        private void OnValidate()
+        {
+            this.AssertGetComponent(ref this.myTransform);
+        }
+
+        private void Awake()
+        {
+            AwakeManager.Instance.QueueWork(this.Initialize, "CameraShake.Awake", this);
+        }
+
+        private void Initialize()
+        {
+            if (this.isInitialized == false)
+            {
+                this.isInitialized = true;
+                this.OnValidate();
+                this.updateChannel = UpdateManager.Instance.GetOrCreateChannel("Camera Shake", 5);
             }
         }
 
         private void PrivateShake()
         {
+            this.Initialize();
             this.currentShakeTime = this.shakeTime;
-            this.originalPosition = this.transform.localPosition;
+            this.originalPosition = this.myTransform.localPosition;
+            this.updateChannel.RegisterCallback(ref this.receipt, this.DoWork, this);
         }
 
-        private void Update()
+        private void DoWork(float deltaTime)
         {
             if (this.currentShakeTime > 0.0f)
             {
-                this.transform.localPosition = this.originalPosition + (Random.insideUnitSphere * this.shakeAmount);
-                this.currentShakeTime -= Time.deltaTime;
+                this.myTransform.localPosition = this.originalPosition + (Random.insideUnitSphere * this.shakeAmount);
+                this.currentShakeTime -= deltaTime;
+            }
+            else
+            {
+                this.myTransform.localPosition = this.originalPosition;
+                this.receipt.Cancel();
             }
         }
 
         private void OnEnable()
         {
-            Bootloader.OnManagersReady += this.UpdateObjectTracker;
+            Shakers.Add(this);
         }
 
         private void OnDisable()
         {
-            Bootloader.OnManagersReady -= this.UpdateObjectTracker;
-            this.UpdateObjectTracker();
-        }
-
-        private void UpdateObjectTracker()
-        {
-            ObjectTracker.UpdateRegistration(this);
+            Shakers.Remove(this);
+            this.receipt.Cancel();
         }
     }
 }

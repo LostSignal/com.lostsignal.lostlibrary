@@ -18,10 +18,9 @@ namespace Lost
         private const string ChannelMediumName = "PlayerProximity.Medium";
         private const string ChannelHighName = "PlayerProximity.High";
 
-        private static bool AreStaticsInitialized;
-        private static Channel ChannelLow;
-        private static Channel ChannelMedium;
-        private static Channel ChannelHigh;
+        private static UpdateChannel ChannelLow;
+        private static UpdateChannel ChannelMedium;
+        private static UpdateChannel ChannelHigh;
 
         static PlayerProximity()
         {
@@ -29,7 +28,6 @@ namespace Lost
 
             void Reset()
             {
-                AreStaticsInitialized = false;
                 ChannelLow = null;
                 ChannelMedium = null;
                 ChannelHigh = null;
@@ -42,7 +40,8 @@ namespace Lost
         [SerializeField] private UnityEvent onEnterProximity;
         [SerializeField] private UnityEvent onExitProximity;
         #pragma warning restore 0649
-
+        
+        private CallbackReceipt callbackReceipt;
         private bool hasPlayerEntered;
 
         public enum Frequency
@@ -54,43 +53,40 @@ namespace Lost
 
         private void Awake()
         {
-            // CAN THE BOOTLOADER SYSTEM INSURE THIS ALWAYS WORKS?
             AwakeManager.Instance.QueueWork(this.Initialize, "PlayerProximity.Awake", this);
+        }
 
-            Bootloader.OnManagersReady += this.Initialize;
-            // UpdateManager.OnInitialize(this.Initialize);
-
-
+        private void OnDestroy()
+        {
+            this.callbackReceipt.Cancel();
         }
 
         private void Initialize()
         {
-            if (AreStaticsInitialized == false)
+            if (ChannelLow == null)
             {
-                AreStaticsInitialized = true;
-
-                ChannelLow = UpdateManager.Instance.GetOrCreateChannel(ChannelLowName, 100, 1);
-                ChannelMedium = UpdateManager.Instance.GetOrCreateChannel(ChannelMediumName, 100, 3);
-                ChannelHigh = UpdateManager.Instance.GetOrCreateChannel(ChannelHighName, 100, 10);
+                ChannelLow = UpdateManager.Instance.GetOrCreateChannel(ChannelLowName, 100, 1.0f);
+                ChannelMedium = UpdateManager.Instance.GetOrCreateChannel(ChannelMediumName, 100, 0.33f);
+                ChannelHigh = UpdateManager.Instance.GetOrCreateChannel(ChannelHighName, 100, 0.0f);
             }
 
             switch (this.frequency)
             {
                 case Frequency.Low:
                     {
-                        ChannelLow.AddCallback(this.PeriodicUpdate, "PlayerProximity.Low", this);
+                        ChannelLow.RegisterCallback(ref this.callbackReceipt, this.PeriodicUpdate, this);
                         break;
                     }
 
                 case Frequency.Medium:
                     { 
-                        ChannelMedium.AddCallback(this.PeriodicUpdate, "PlayerProximity.Medium", this);
+                        ChannelMedium.RegisterCallback(ref this.callbackReceipt, this.PeriodicUpdate, this);
                         break;
                     }
 
                 case Frequency.High:
                     {
-                        ChannelHigh.AddCallback(this.PeriodicUpdate, "PlayerProximity.High", this);
+                        ChannelHigh.RegisterCallback(ref this.callbackReceipt, this.PeriodicUpdate, this);
                         break;
                     }
 

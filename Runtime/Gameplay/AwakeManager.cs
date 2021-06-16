@@ -53,7 +53,8 @@ namespace Lost
         #pragma warning restore 0649
         
         private Queue<Callback> callbackQueue;
-        private Channel awakeManagerChannel;
+        private CallbackReceipt callbackReceipt;
+        private UpdateChannel awakeManagerChannel;
 
         // Stats
         #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -85,7 +86,7 @@ namespace Lost
             void RegisterWithUpdateManager()
             {
                 this.awakeManagerChannel = UpdateManager.Instance.GetOrCreateChannel("AwakeManager", 1, 1000);
-                this.awakeManagerChannel.AddCallback(this.DoWork, "AwakeManager", this);
+                this.awakeManagerChannel.RegisterCallback(ref this.callbackReceipt, this.DoWork, this);
             }
         }
 

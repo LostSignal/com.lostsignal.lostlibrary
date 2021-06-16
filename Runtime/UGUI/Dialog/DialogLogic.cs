@@ -8,6 +8,7 @@
 
 namespace Lost
 {
+    using System.Runtime.CompilerServices;
     using UnityEngine;
 
     //// NOTE [bgish]: Possible Future Events
@@ -27,15 +28,13 @@ namespace Lost
 
         public Dialog Dialog
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get { return this.dialog; }
         }
 
         protected virtual void Awake()
         {
-            if (this.dialog == null)
-            {
-                this.dialog = this.GetComponent<Dialog>();
-            }
+            this.OnValidate();
 
             this.dialog.OnShow.AddListener(this.OnShow);
             this.dialog.OnHide.AddListener(this.OnHide);
@@ -61,9 +60,9 @@ namespace Lost
         {
         }
 
-        private void Reset()
+        private void OnValidate()
         {
-            this.dialog = this.GetComponent<Dialog>();
+            this.AssertGetComponent(ref this.dialog);
         }
     }
 }

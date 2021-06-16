@@ -18,6 +18,8 @@ namespace Lost.Haven
     [RequireComponent(typeof(NetworkIdentity))]
     public class HavenAvatar : MonoBehaviour
     {
+        public static ComponentTracker<HavenAvatar> Avatars = new ComponentTracker<HavenAvatar>(20);
+
 #pragma warning disable 0649
         [SerializeField] private NetworkIdentity networkIdentity;
         [SerializeField] private DissonancePlayerTracker dissonancePlayerTracker;
@@ -57,13 +59,12 @@ namespace Lost.Haven
 
         private void OnEnable()
         {
-            Bootloader.OnManagersReady += this.UpdateObjectTracker;
+            Avatars.Add(this);
         }
 
         private void OnDisable()
         {
-            Bootloader.OnManagersReady -= this.UpdateObjectTracker;
-            this.UpdateObjectTracker();
+            Avatars.Remove(this);
         }
 
         private void Start()
@@ -80,9 +81,9 @@ namespace Lost.Haven
         {
             if (this.isOwner)
             {
-                if (this.havenRig == null && ObjectTracker.IsInitialized)
+                if (this.havenRig == null && HavenRig.GetRig())
                 {
-                    this.havenRig = ObjectTracker.Instance.GetFirstObject<HavenRig>();
+                    this.havenRig = HavenRig.GetRig();
                 }
 
                 if (this.havenRig != null)
@@ -110,11 +111,6 @@ namespace Lost.Haven
                 // BUG [bgish]: Does not account for rig scale
                 this.avatarCanvas.transform.position = this.headTransform.position + this.canvasGlobalOffset;
             }
-        }
-
-        private void UpdateObjectTracker()
-        {
-            ObjectTracker.UpdateRegistration(this);
         }
 
         private IEnumerator ShowAvatarCoroutine()

@@ -63,6 +63,9 @@ namespace Lost
             // Auto set p4 environment variable
             settings.AutoSetP4IgnoreEnvironmentVariable();
 
+            // Auto set PlasticSCM settings
+            settings.AutoSetPlasticSCMSettings();
+
             LineEndingsMode Convert(LineEndings lineEndings)
             {
                 switch (lineEndings)
@@ -124,6 +127,10 @@ namespace Lost
         [SerializeField] private TextAsset templateStateMachineBehaviour;
         [SerializeField] private TextAsset templateSubStateMachineBehaviour;
         [SerializeField] private TextAsset templateEditorTestScript;
+
+        // PlasticSCM Settings
+        [SerializeField] private bool plasticAutoSetFileCasingError;
+        [SerializeField] private bool plasticAutoSetYamlMergeToolPath;
 
         // Analyzers
         [SerializeField] private List<Analyzer> analyzers;
@@ -201,6 +208,10 @@ namespace Lost
             this.useEditorConfig = true;
             this.editorConfigFileName = ".editorconfig";
             this.editorConfigTemplate = EditorUtil.GetAssetByGuid<TextAsset>("f6c774b1ff43524428c88bc6afaca2d7");
+
+            // PlasticSCM Settings
+            this.plasticAutoSetFileCasingError = true;
+            this.plasticAutoSetYamlMergeToolPath = true;
 
             // Analyzers
             this.analyzers = new List<Analyzer>
@@ -313,6 +324,16 @@ namespace Lost
                     Debug.LogError("Unable To Set P4IGNORE Variable.  Is P4 installed?");
                 }
             }
+        }
+
+        public void AutoSetPlasticSCMSettings()
+        {
+            if (this.sourceControlType != SourceControlType.Plastic)
+            {
+                return;
+            }
+
+            PlasticSCM.UpdateClientConfigSettings(PlasticSCM.GetClientConfigPath(), this.plasticAutoSetFileCasingError, this.plasticAutoSetYamlMergeToolPath);
         }
 
         public void GenerateSourceControlIgnoreFile()

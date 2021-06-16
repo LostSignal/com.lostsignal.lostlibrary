@@ -12,49 +12,52 @@ namespace Lost.Networking
 
     public class NetworkTransformAnchor : MonoBehaviour
     {
-        public static NetworkTransformAnchor GetAnchor()
+        private static Transform anchorTransform;
+
+        static NetworkTransformAnchor()
         {
-            return ObjectTracker.Instance.GetFirstObject<NetworkTransformAnchor>();
+            Bootloader.OnReset += Reset;
+
+            void Reset()
+            {
+                anchorTransform = null;
+            }
         }
 
         public static Vector3 InverseTransformPosition(Vector3 worldSpace)
         {
-            var anchor = GetAnchor();
-            return anchor ? anchor.transform.InverseTransformPoint(worldSpace) : worldSpace;
+            return anchorTransform ? anchorTransform.InverseTransformPoint(worldSpace) : worldSpace;
         }
 
         public static Quaternion InverseTransformRotation(Quaternion worldRotation)
         {
-            var anchor = GetAnchor();
-            return anchor ? Quaternion.Inverse(anchor.transform.rotation) * worldRotation : worldRotation;
+            return anchorTransform ? Quaternion.Inverse(anchorTransform.rotation) * worldRotation : worldRotation;
         }
 
         public static Vector3 TransformPosition(Vector3 anchorSpacePosition)
         {
-            var anchor = GetAnchor();
-            return anchor ? anchor.transform.TransformPoint(anchorSpacePosition) : anchorSpacePosition;
+            return anchorTransform ? anchorTransform.TransformPoint(anchorSpacePosition) : anchorSpacePosition;
         }
 
         public static Quaternion TransformRotation(Quaternion anchorSpaceRotation)
         {
-            var anchor = GetAnchor();
-            return anchor ? anchor.transform.rotation * anchorSpaceRotation : anchorSpaceRotation;
+            return anchorTransform ? anchorTransform.rotation * anchorSpaceRotation : anchorSpaceRotation;
         }
 
         private void OnEnable()
         {
-            Bootloader.OnManagersReady += this.UpdateObjectTracker;
+            if (anchorTransform)
+            {
+                Debug.LogError("NetworkTransformAnchor is already registered, this NetworkTransformAnchor will be ignored!", this);
+                return;
+            }
+
+            anchorTransform = this.transform;
         }
 
         private void OnDisable()
         {
-            Bootloader.OnManagersReady -= this.UpdateObjectTracker;
-            this.UpdateObjectTracker();
-        }
-
-        private void UpdateObjectTracker()
-        {
-            ObjectTracker.UpdateRegistration(this);
+            anchorTransform = null;
         }
     }
 }
