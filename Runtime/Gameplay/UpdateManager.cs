@@ -34,22 +34,36 @@ namespace Lost
     {
         private static List<FunctionCall> functions = new List<FunctionCall>();
 
+        #pragma warning disable 0649
+        [SerializeField] private List<Channel> channels = new List<Channel>();
+        #pragma warning restore 0649
+
+        private Dictionary<string, Channel> channelMap = new Dictionary<string, Channel>();
+
         public override void Initialize()
         {
+            for (int i = 0; i < this.channels.Count; i++)
+            {
+                this.channelMap.Add(this.channels[i].Name, this.channels[i]);
+            }
+
             Debug.Log("UpdateManager.Initialize");
             this.SetInstance(this);
         }
 
-        public Channel GetOrCreateChannel(string channelName, int callsPerSecond)
+        public Channel GetOrCreateChannel(string channelName, int startingCapacity, int callsPerSecond)
         {
-            // If it makes one at runtime, print warning (channel created at runtime, make ahead of time to reduce GC)
-            throw new System.NotImplementedException();
-        }
-
-        public void CreateChannel(string channelName, int callsPerSecond)
-        {
-            // If it makes one at runtime, print warning (channel created at runtime, make ahead of time to reduce GC)
-            throw new System.NotImplementedException();
+            if (this.channelMap.TryGetValue(channelName, out Channel channel))
+            {
+                return channel;
+            }
+            else
+            {
+                Debug.LogWarning($"Channel {channelName} created at runtime.  Should register this ahead of time to limit GC allocations.");
+                var newChannel = new Channel(channelName, startingCapacity, callsPerSecond);
+                this.channelMap.Add(newChannel.Name, newChannel);
+                return newChannel;
+            }
         }
 
         public void Register(string channelName, System.Action<float> function)
@@ -126,24 +140,55 @@ namespace Lost
         public int Id;
         public Action<float> Action;
         public float LastCalledTime;
-        public string Description;         // Editor Only
-        public UnityEngine.Object Context; // Editor Only
+
+        #if UNITY_EDITOR || DEVELOPMENT_BUILD
+        public string Description;
+        public UnityEngine.Object Context;
+        #endif
+
+        public void Invoke()
+        {
+            try
+            {
+                float now = Time.realtimeSinceStartup;
+                float deltaTime = now - this.LastCalledTime;
+                this.LastCalledTime = now;
+                this.Action?.Invoke(deltaTime);
+            }
+            catch (Exception ex)
+            {
+                #if UNITY_EDITOR || DEVELOPMENT_BUILD
+                Debug.LogError($"UpdateManager caught an exception: {this.Description}", this.Context);
+                Debug.LogException(ex, this.Context);
+                #else
+                Debug.LogError("UpdateManager caught an exception!");
+                Debug.LogException(ex);
+                #endif
+            }
+        }
     }
 
     [Serializable]
     public class Channel
     {
+        private static readonly Callback DefaultCallback = default(Callback);
+
         #pragma warning disable 0649
+        [SerializeField] private string name;
         [SerializeField] private int startingCapacity = 10;
         #pragma warning restore 0649
 
         private Dictionary<int, int> idToIndexMap = new Dictionary<int, int>();
-        private List<Callback> callbacks;
+        private Callback[] callbacks;
         private int currentId;
+        private int count;
+
+        public string Name => this.name;
     
-        public Channel(int startingCapactiy, float runAllEveryXSeconds)
-        { 
-            callbacks = new List<Callback>(startingCapacity);
+        public Channel(string name, int startingCapactiy, float runAllEveryXSeconds)
+        {
+            this.name = name;
+            this.callbacks = new Callback[startingCapacity];
         }
     
         private float runAllEveryXSeconds;
@@ -153,7 +198,7 @@ namespace Lost
     
         public void Run(float deltaTime)
         {
-            if (this.callbacks.Count == 0)
+            if (this.count == 0)
             {
                 return;
             }
@@ -176,7 +221,7 @@ namespace Lost
             currentDeltaTime += deltaTime;
       
             // NOTE [bgish]: May need to make sure currentDeltaTime / runAllEveryXSeconds is never more than 1
-            int desiredRunCount = Mathf.CeilToInt(currentDeltaTime / runAllEveryXSeconds) * this.callbacks.Count;
+            int desiredRunCount = Mathf.CeilToInt(currentDeltaTime / runAllEveryXSeconds) * this.count;
             int runCount = desiredRunCount - currentRunCount;
       
             if (runCount == 0) return;
@@ -188,7 +233,7 @@ namespace Lost
     
         private void Reset()
         {
-             nextIndexToRun = this.callbacks.Count - 1; 
+             nextIndexToRun = this.count - 1; 
              currentRunCount = 0;
              currentDeltaTime = 0.0f;
         }
@@ -197,17 +242,7 @@ namespace Lost
         {
             while (runCount > 0 && nextIndexToRun >= 0)
             {
-                try
-                {
-                    float now = Time.realtimeSinceStartup;
-                    float deltaTime = this.callbacks[nextIndexToRun].LastCalledTime - Time.deltaTime; // TODO [bgish]: Calculuate this...
-                    this.callbacks[nextIndexToRun].Action?.Invoke(deltaTime);
-                }
-                catch (Exception ex)
-                {
-                    // LOG AND CONTINUE
-                }
-                
+                this.callbacks[nextIndexToRun].Invoke();
                 this.nextIndexToRun--;
                 this.currentRunCount++;
                 runCount--;
@@ -216,16 +251,24 @@ namespace Lost
     
         public CallbackReceipt AddCallback(Action<float> action, string description, UnityEngine.Object context)
         {
-            int callbackIndex = this.callbacks.Count;
+            int callbackIndex = this.count++;
+
+            if (callbackIndex >= this.callbacks.Length)
+            {
+                Debug.LogError($"Channel {this.name} had to increase it's size.  You should register the channel with the UpdateManager and increase it's initial capacity.");
+                Array.Resize(ref this.callbacks, this.callbacks.Length * 2);
+            }
+
             int callbackId = ++this.currentId;
         
-            this.callbacks.Add(new Callback
+            this.callbacks[callbackIndex] = new Callback
             {
                 Id = callbackId,
                 Action = action,
                 Description = description,
                 Context = context,
-            });
+                LastCalledTime = Time.realtimeSinceStartup,
+            };
       
             idToIndexMap.Add(callbackId, callbackIndex);
             return new CallbackReceipt { Channel = this, Id = callbackId };
@@ -235,19 +278,20 @@ namespace Lost
         {
             if (idToIndexMap.TryGetValue(receipt.Id, out int index))
             {
-                 var lastCallbackIndex = this.callbacks.Count - 1;
-                 var callbackToRemove = this.callbacks[index];
+                var lastCallbackIndex = this.count - 1;
+                var callbackToRemove = this.callbacks[index];
           
-                 if (index != lastCallbackIndex)
-                 {
-                   var lastCallback = this.callbacks[lastCallbackIndex];
+                if (index != lastCallbackIndex)
+                {
+                    var lastCallback = this.callbacks[lastCallbackIndex];
 
-                   this.callbacks[index] = lastCallback;
-                   this.idToIndexMap[lastCallback.Id] = index;
-                 }
+                    this.callbacks[index] = lastCallback;
+                    this.idToIndexMap[lastCallback.Id] = index;
+                }
           
-                 this.idToIndexMap.Remove(callbackToRemove.Id);
-                 this.callbacks.RemoveAt(lastCallbackIndex);
+                this.idToIndexMap.Remove(callbackToRemove.Id);
+                this.callbacks[lastCallbackIndex] = DefaultCallback;
+                this.count--;
             }
         }
     }

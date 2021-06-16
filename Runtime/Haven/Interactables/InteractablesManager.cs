@@ -28,8 +28,10 @@ namespace HavenXR
             this.SetInstance(this);
         }
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             int layerNumber = LayerMask.NameToLayer(Interactable.LayerName);
 
             if (layerNumber == -1)

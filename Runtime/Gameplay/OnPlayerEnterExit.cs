@@ -14,7 +14,7 @@ namespace Lost
     {
         private static Channel HighPriorityChannel;
         private static Channel LowPriorityChannel;
-        private static bool AreStaticsInitialized;
+        //private static bool AreStaticsInitialized;
 
         // Reset is called on reboot and leaving editor mode
         static OnPlayerEnterExit()
@@ -25,7 +25,7 @@ namespace Lost
             {
                 HighPriorityChannel = default(Channel);
                 LowPriorityChannel = default(Channel);
-                AreStaticsInitialized = false;
+                //AreStaticsInitialized = false;
             }
         }
 

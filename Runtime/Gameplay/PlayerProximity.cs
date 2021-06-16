@@ -14,11 +14,27 @@ namespace Lost
     ////
     public class PlayerProximity : MonoBehaviour
     {
-        private const string ChannelLow = "PlayerProximity.Low";
-        private const string ChannelMedium = "PlayerProximity.Medium";
-        private const string ChannelHigh = "PlayerProximity.High";
+        private const string ChannelLowName = "PlayerProximity.Low";
+        private const string ChannelMediumName = "PlayerProximity.Medium";
+        private const string ChannelHighName = "PlayerProximity.High";
 
-        private static bool UpdateChannelsCreated;
+        private static bool AreStaticsInitialized;
+        private static Channel ChannelLow;
+        private static Channel ChannelMedium;
+        private static Channel ChannelHigh;
+
+        static PlayerProximity()
+        {
+            Bootloader.OnReset += Reset;
+
+            void Reset()
+            {
+                AreStaticsInitialized = false;
+                ChannelLow = null;
+                ChannelMedium = null;
+                ChannelHigh = null;
+            }
+        }
 
         #pragma warning disable 0649
         [SerializeField] private Frequency frequency;
@@ -49,32 +65,32 @@ namespace Lost
 
         private void Initialize()
         {
-            if (UpdateChannelsCreated == false)
+            if (AreStaticsInitialized == false)
             {
-                UpdateChannelsCreated = true;
+                AreStaticsInitialized = true;
 
-                UpdateManager.Instance.CreateChannel(ChannelLow, 1);
-                UpdateManager.Instance.CreateChannel(ChannelMedium, 3);
-                UpdateManager.Instance.CreateChannel(ChannelHigh, 10);
+                ChannelLow = UpdateManager.Instance.GetOrCreateChannel(ChannelLowName, 100, 1);
+                ChannelMedium = UpdateManager.Instance.GetOrCreateChannel(ChannelMediumName, 100, 3);
+                ChannelHigh = UpdateManager.Instance.GetOrCreateChannel(ChannelHighName, 100, 10);
             }
 
             switch (this.frequency)
             {
                 case Frequency.Low:
                     {
-                        UpdateManager.Instance.Register(ChannelLow, this.PeriodicUpdate);
+                        ChannelLow.AddCallback(this.PeriodicUpdate, "PlayerProximity.Low", this);
                         break;
                     }
 
                 case Frequency.Medium:
                     { 
-                        UpdateManager.Instance.Register(ChannelMedium, this.PeriodicUpdate);
+                        ChannelMedium.AddCallback(this.PeriodicUpdate, "PlayerProximity.Medium", this);
                         break;
                     }
 
                 case Frequency.High:
                     {
-                        UpdateManager.Instance.Register(ChannelHigh, this.PeriodicUpdate);
+                        ChannelHigh.AddCallback(this.PeriodicUpdate, "PlayerProximity.High", this);
                         break;
                     }
 

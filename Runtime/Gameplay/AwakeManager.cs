@@ -49,7 +49,7 @@ namespace Lost
         #pragma warning disable 0649
         [SerializeField] private int initialCapacity = 250;
         [SerializeField] private double maxMilliseconds = 0.1f;
-        [SerializeField] private bool printDebugOutput = false;
+        //[SerializeField] private bool printDebugOutput = false;
         #pragma warning restore 0649
         
         private Queue<Callback> callbackQueue;
@@ -60,7 +60,9 @@ namespace Lost
         private float maxQueuedTime = float.MinValue;
         private float totalQueuedTime = 0.0f;
         private int totalCallbacksProcessed = 0;
+        #pragma warning disable IDE0052  // Suppressing the warning, because eventurally we'll send this info via log and/or analytic
         private float averageQueuedTime = 0.0f;
+        #pragma warning restore IDE0052
         #endif
 
         public bool IsProcessing
@@ -82,7 +84,7 @@ namespace Lost
 
             void RegisterWithUpdateManager()
             {
-                this.awakeManagerChannel = UpdateManager.Instance.GetOrCreateChannel("AwakeManager", 1000);
+                this.awakeManagerChannel = UpdateManager.Instance.GetOrCreateChannel("AwakeManager", 1, 1000);
                 this.awakeManagerChannel.AddCallback(this.DoWork, "AwakeManager", this);
             }
         }
