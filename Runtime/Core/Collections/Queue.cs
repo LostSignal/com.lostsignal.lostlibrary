@@ -40,7 +40,7 @@ namespace Lost
             this.count = 0;
         }
 
-        public void Enqueue(T element)
+        public int Enqueue(T element)
         {
             if (this.Count == this.capacity)
             {               
@@ -51,6 +51,8 @@ namespace Lost
             int index = (this.startIndex + count) % this.capacity;
             this.elements[index] = element;
             this.count++;
+
+            return index;
         }
 
         public T Dequeue()
@@ -67,6 +69,16 @@ namespace Lost
             this.count--;
 
             return value;
+        }
+
+        public T GetElementAt(int index)
+        {
+            return this.elements[index];
+        }
+
+        public void DeleteElementAt(int index)
+        {
+            this.elements[index] = DefaultElement;
         }
 
         private void Grow()

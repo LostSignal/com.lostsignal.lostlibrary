@@ -13,9 +13,10 @@ namespace Lost
     ////
     //// NOTE [bgish]: This is really old code, should eventually delete this in favor of just using Cinemachine
     ////
-    public class CameraShake : MonoBehaviour
+    public sealed class CameraShake : LoadBalancedMonoBehaviour
     {
-        private static ComponentTracker<CameraShake> Shakers = new ComponentTracker<CameraShake>(5);
+        private static readonly ComponentTracker<CameraShake> Shakers = new ComponentTracker<CameraShake>(5);
+        private static readonly string CameraShakeUpdateChannel = "CameraShake";
 
 #pragma warning disable 0649
         [SerializeField] private float shakeTime = 0.25f;
@@ -25,12 +26,10 @@ namespace Lost
         [SerializeField] private Transform myTransform;
 #pragma warning restore 0649
 
-        private bool isInitialized;
-        private UpdateChannel updateChannel;
-        private CallbackReceipt receipt;
         private float currentShakeTime;
         private Vector3 originalPosition;
-        
+        private bool isInitialized;
+
         public static void Shake()
         {
             for (int i = 0; i < Shakers.Count; i++)
@@ -39,35 +38,24 @@ namespace Lost
             }
         }
 
+        public override string Name => nameof(CameraShake);
+
+        public override bool RunAwake => true;
+
+        public override bool RunStart => false;
+
         private void OnValidate()
         {
             this.AssertGetComponent(ref this.myTransform);
         }
 
-        private void Awake()
+        protected override void LoadBalancedAwake()
         {
-            AwakeManager.Instance.QueueWork(this.Initialize, "CameraShake.Awake", this);
+            this.OnValidate();
+            this.isInitialized = true;
         }
 
-        private void Initialize()
-        {
-            if (this.isInitialized == false)
-            {
-                this.isInitialized = true;
-                this.OnValidate();
-                this.updateChannel = UpdateManager.Instance.GetOrCreateChannel("Camera Shake", 5);
-            }
-        }
-
-        private void PrivateShake()
-        {
-            this.Initialize();
-            this.currentShakeTime = this.shakeTime;
-            this.originalPosition = this.myTransform.localPosition;
-            this.updateChannel.RegisterCallback(ref this.receipt, this.DoWork, this);
-        }
-
-        private void DoWork(float deltaTime)
+        protected override void DoWork(float deltaTime)
         {
             if (this.currentShakeTime > 0.0f)
             {
@@ -77,8 +65,20 @@ namespace Lost
             else
             {
                 this.myTransform.localPosition = this.originalPosition;
-                this.receipt.Cancel();
+                this.StopUpdating();
             }
+        }
+
+        private void PrivateShake()
+        {
+            if (this.isInitialized == false)
+            {
+                return;
+            }
+
+            this.currentShakeTime = this.shakeTime;
+            this.originalPosition = this.myTransform.localPosition;
+            this.StartUpadating(CameraShakeUpdateChannel);
         }
 
         private void OnEnable()
@@ -89,7 +89,6 @@ namespace Lost
         private void OnDisable()
         {
             Shakers.Remove(this);
-            this.receipt.Cancel();
         }
     }
 }

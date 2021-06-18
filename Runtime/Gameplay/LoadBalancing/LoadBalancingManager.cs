@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="AwakeManager.cs" company="Lost Signal LLC">
+// <copyright file="LoadBalancingManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -15,35 +15,17 @@ namespace Lost
     ////               making our own Coroutine system is not trivial though, so not sure if that is the 
     ////               best solution.
     //// 
-    public class AwakeManager : Manager<AwakeManager>
+    public abstract class LoadBalancingManager<T> : Manager<T>
+        where T : MonoBehaviour
     {
+        public abstract string Name { get; }
+
         private struct Callback
         {
             public Action Action;
-        
-            #if UNITY_EDITOR || DEVELOPMENT_BUILD
             public float QueuedTime;
             public UnityEngine.Object Context;
             public string Description;
-            #endif
-
-            public void Invoke()
-            {
-                try
-                {
-                    this.Action?.Invoke();
-                }
-                catch (Exception ex)
-                {
-                    #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                    Debug.LogError($"AwakeManager Caught an Exception: {this.Description}", this.Context);
-                    Debug.LogException(ex, this.Context);
-                    #else
-                    Debug.LogError("AwakeManager Caught an Exception");
-                    Debug.LogException(ex);
-                    #endif
-                }
-            }
         }
 
         #pragma warning disable 0649
@@ -53,19 +35,17 @@ namespace Lost
         #pragma warning restore 0649
         
         private Queue<Callback> callbackQueue;
-        private CallbackReceipt callbackReceipt;
-        private UpdateChannel awakeManagerChannel;
+        private UpdateChannelReceipt updateReceipt;
+        private UpdateChannel updateChannel;
 
         // Stats
-        #if UNITY_EDITOR || DEVELOPMENT_BUILD
         private float maxQueuedTime = float.MinValue;
         private float totalQueuedTime = 0.0f;
         private int totalCallbacksProcessed = 0;
         #pragma warning disable IDE0052  // Suppressing the warning, because eventurally we'll send this info via log and/or analytic
         private float averageQueuedTime = 0.0f;
         #pragma warning restore IDE0052
-        #endif
-
+        
         public bool IsProcessing
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -80,31 +60,27 @@ namespace Lost
             // AwakeManager is meant for gameplay elements, don't initialize till all managers are ready
             Bootloader.OnManagersReady += RegisterWithUpdateManager;
 
-            Debug.Log("AwakeManager.Initialize");
-            this.SetInstance(this);
-
             void RegisterWithUpdateManager()
             {
-                this.awakeManagerChannel = UpdateManager.Instance.GetOrCreateChannel("AwakeManager", 1, 1000);
-                this.awakeManagerChannel.RegisterCallback(ref this.callbackReceipt, this.DoWork, this);
+                this.updateChannel = UpdateManager.Instance.GetChannel(this.Name);
+                this.updateReceipt = this.updateChannel.RegisterCallback(this.DoWork, this);
             }
         }
 
-        public void QueueWork(Action action, string description, UnityEngine.Object context)
+        public LoadBalancerReceipt QueueWork(Action action, string description, UnityEngine.Object context)
         {
-            this.callbackQueue.Enqueue(new Callback
+            int index = this.callbackQueue.Enqueue(new Callback
             {
                 Action = action,
-
-                #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 Description = description,
                 Context = context,
                 QueuedTime = Time.realtimeSinceStartup,
-                #endif
             });
+
+            return LoadBalancerReceipt.New(index, context, this.CancelReceipt);
         }
 
-        private void DoWork(float deltaTime)
+        protected virtual void DoWork(float deltaTime)
         {
             if (this.callbackQueue.IsEmpty)
             {
@@ -116,11 +92,25 @@ namespace Lost
             while (this.callbackQueue.Count > 0 && DateTime.Now.Subtract(startTime).TotalMilliseconds < this.maxMilliseconds)
             {
                 Callback callback = this.callbackQueue.Dequeue();
-                callback.Invoke();
+
+                // Making sure this callback wasn't deleted
+                if (callback.Action == null)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    callback.Action.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"{this.Name} Caught an Exception: {callback.Description}", callback.Context);
+                    Debug.LogException(ex, callback.Context);
+                }
 
                 //// TODO [bgish]: Track the QueueTime and keep some stats on average/max time something sat in the queue
                 //// TODO [bgish]: Maybe also track when a level activation has happened and the time it took to process that activation
-                #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 float totalQueuedTime = Time.realtimeSinceStartup - callback.QueuedTime;
 
                 if (totalQueuedTime > this.maxQueuedTime)
@@ -131,13 +121,28 @@ namespace Lost
                 this.totalQueuedTime += totalQueuedTime;
                 this.totalCallbacksProcessed++;
                 this.averageQueuedTime = this.totalQueuedTime / this.totalCallbacksProcessed;
-                #endif
+            }
+        }
+
+        private void CancelReceipt(int index, UnityEngine.Object context)
+        {
+            var callback = this.callbackQueue.GetElementAt(index);
+
+            if (callback.Context == context)
+            {
+                this.callbackQueue.DeleteElementAt(index);
             }
         }
 
         private void OnQueueGrow()
         {
-            Debug.LogWarning("AwakeManager Queue had to increase in size!  It's recommended to increase the initial capacity so this doesn't happen at runtime.");
+            Debug.LogWarning($"{this.Name} Queue had to increase in size!  It's recommended to increase the initial capacity so this doesn't happen at runtime.");
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            this.updateReceipt.Cancel();
         }
     }
 }

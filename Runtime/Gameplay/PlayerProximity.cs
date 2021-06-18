@@ -12,96 +12,48 @@ namespace Lost
     ////
     //// TODO [bgish]: Combine OnPlayerEnterExit with this class to be more generic, then remove OnPlayerEnterExit
     ////
-    public class PlayerProximity : MonoBehaviour
+    public sealed class PlayerProximity : LoadBalancedMonoBehaviour
     {
-        private const string ChannelLowName = "PlayerProximity.Low";
-        private const string ChannelMediumName = "PlayerProximity.Medium";
-        private const string ChannelHighName = "PlayerProximity.High";
-
-        private static UpdateChannel ChannelLow;
-        private static UpdateChannel ChannelMedium;
-        private static UpdateChannel ChannelHigh;
-
-        static PlayerProximity()
+        private static readonly string[] PlayerProximityChannels = new string[]
         {
-            Bootloader.OnReset += Reset;
+            "PlayerProximity.Low",
+            "PlayerProximity.Medium",
+            "PlayerProximity.High",
+        };
 
-            void Reset()
-            {
-                ChannelLow = null;
-                ChannelMedium = null;
-                ChannelHigh = null;
-            }
+        public enum Frequency
+        {
+            Low = 0,
+            Medium = 1,
+            High = 2,
         }
 
         #pragma warning disable 0649
-        [SerializeField] private Frequency frequency;
+        [SerializeField] private Frequency defaultFrequency;
         [SerializeField] private Bounds bounds;
         [SerializeField] private UnityEvent onEnterProximity;
         [SerializeField] private UnityEvent onExitProximity;
         #pragma warning restore 0649
         
-        private CallbackReceipt callbackReceipt;
+        private string currentUpdateChannelName;
         private bool hasPlayerEntered;
 
-        public enum Frequency
+        public override string Name => nameof(PlayerProximity);
+        
+        public override bool RunAwake => true;
+
+        public override bool RunStart => false;
+
+        protected override void LoadBalancedAwake()
         {
-            Low,
-            Medium,
-            High,
+            this.DoWork(0.0f);
         }
 
-        private void Awake()
-        {
-            AwakeManager.Instance.QueueWork(this.Initialize, "PlayerProximity.Awake", this);
-        }
-
-        private void OnDestroy()
-        {
-            this.callbackReceipt.Cancel();
-        }
-
-        private void Initialize()
-        {
-            if (ChannelLow == null)
-            {
-                ChannelLow = UpdateManager.Instance.GetOrCreateChannel(ChannelLowName, 100, 1.0f);
-                ChannelMedium = UpdateManager.Instance.GetOrCreateChannel(ChannelMediumName, 100, 0.33f);
-                ChannelHigh = UpdateManager.Instance.GetOrCreateChannel(ChannelHighName, 100, 0.0f);
-            }
-
-            switch (this.frequency)
-            {
-                case Frequency.Low:
-                    {
-                        ChannelLow.RegisterCallback(ref this.callbackReceipt, this.PeriodicUpdate, this);
-                        break;
-                    }
-
-                case Frequency.Medium:
-                    { 
-                        ChannelMedium.RegisterCallback(ref this.callbackReceipt, this.PeriodicUpdate, this);
-                        break;
-                    }
-
-                case Frequency.High:
-                    {
-                        ChannelHigh.RegisterCallback(ref this.callbackReceipt, this.PeriodicUpdate, this);
-                        break;
-                    }
-
-                default:
-                    {
-                        Debug.LogError($"PlayerProximity encountered unknown frequency type {this.frequency}.", this);
-                        break;
-                    }
-            }
-        }
-
-        private void PeriodicUpdate(float deltaTime)
+        protected override void DoWork(float deltaTime)
         {
             bool isPlayerInside = this.IsInsideBounds();
-
+            
+            // Determining Whether to fire events
             if (this.hasPlayerEntered == false && isPlayerInside)
             {
                 this.hasPlayerEntered = true;
@@ -111,6 +63,18 @@ namespace Lost
             {
                 this.hasPlayerEntered = false;
                 this.onExitProximity?.Invoke();
+            }
+
+            // Figuring out if the update channel needs to change based on player position / facing
+            Frequency frequency = this.defaultFrequency;
+
+            // TODO [bgish]: Implement...
+
+            string newUpdateChanel = PlayerProximityChannels[(int)frequency];
+            if (this.currentUpdateChannelName != newUpdateChanel)
+            {
+                this.currentUpdateChannelName = newUpdateChanel;
+                this.StartUpadating(newUpdateChanel);
             }
         }
 

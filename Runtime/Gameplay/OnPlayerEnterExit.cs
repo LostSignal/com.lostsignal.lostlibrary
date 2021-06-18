@@ -42,7 +42,7 @@ namespace Lost
         [SerializeField] private UnityEvent onPlayerExit;
         #pragma warning restore 0649
     
-        private CallbackReceipt receipt;
+        private UpdateChannelReceipt receipt;
         private bool isPlayerInside;
  
         private UpdateChannel CurrentChannel
