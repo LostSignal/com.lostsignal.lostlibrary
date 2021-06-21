@@ -25,6 +25,18 @@ namespace Lost
         {
             if (this.RunAwake)
             {
+                if (Bootloader.AreManagersReady == false)
+                {
+                    Bootloader.OnManagersReady += OnManagersReady;
+                }
+                else
+                {
+                    this.awakeReceipt = AwakeManager.Instance.QueueWork(RunAwake, this.Name, this);
+                }
+            }
+
+            void OnManagersReady()
+            {
                 this.awakeReceipt = AwakeManager.Instance.QueueWork(RunAwake, this.Name, this);
             }
 
@@ -38,6 +50,18 @@ namespace Lost
         protected virtual void Start()
         {
             if (this.RunStart)
+            {
+                if (Bootloader.AreManagersReady == false)
+                {
+                    Bootloader.OnManagersReady += OnManagersReady;
+                }
+                else
+                {
+                    this.startReceipt = StartManager.Instance.QueueWork(RunStart, this.name, this);
+                }
+            }
+
+            void OnManagersReady()
             {
                 this.startReceipt = StartManager.Instance.QueueWork(RunStart, this.name, this);
             }

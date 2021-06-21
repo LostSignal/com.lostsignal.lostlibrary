@@ -23,10 +23,19 @@ namespace Lost
             public UnityEngine.Object Context;
         }
 
+        public enum UpdateType
+        {
+            Update,
+            FixedUpdate,
+            LateUpdate,
+        }
+
         private static readonly Callback DefaultCallback = default(Callback);
 
         #pragma warning disable 0649
         [SerializeField] private string name;
+        [SerializeField] private float desiredDeltaTime = 0.0f;
+        [SerializeField] private UpdateType updateType;
         [SerializeField] private int startingCapacity = 10;
         #pragma warning restore 0649
 
@@ -36,7 +45,9 @@ namespace Lost
         private int count;
 
         public string Name => this.name;
-    
+
+        public UpdateType Type => this.updateType;
+
         public UpdateChannel(string name, int startingCapactiy, float desiredDeltaTime)
         {
             this.name = name;

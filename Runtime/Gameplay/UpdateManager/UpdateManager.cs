@@ -46,12 +46,43 @@ namespace Lost
         #pragma warning restore 0649
 
         private Dictionary<string, UpdateChannel> channelMap = new Dictionary<string, UpdateChannel>();
+        
+        private List<UpdateChannel> updateChannels = new List<UpdateChannel>(50);
+        private List<UpdateChannel> fixedUpdateChannels = new List<UpdateChannel>(50);
+        private List<UpdateChannel> lateUpdateChannels = new List<UpdateChannel>(50);
 
         public override void Initialize()
         {
             for (int i = 0; i < this.channels.Count; i++)
             {
                 this.channelMap.Add(this.channels[i].Name, this.channels[i]);
+
+                switch (this.channels[i].Type)
+                {
+                    case UpdateChannel.UpdateType.Update:
+                        {
+                            this.updateChannels.Add(this.channels[i]);
+                            break;
+                        }
+                        
+                    case UpdateChannel.UpdateType.FixedUpdate:
+                        {
+                            this.fixedUpdateChannels.Add(this.channels[i]);
+                            break;
+                        }
+
+                    case UpdateChannel.UpdateType.LateUpdate:
+                        {
+                            this.lateUpdateChannels.Add(this.channels[i]);
+                            break;
+                        }
+
+                    default:
+                        {
+                            Debug.LogError($"{nameof(UpdateManager)} Found Unknown {nameof(UpdateChannel.UpdateType)} {this.channels[i].Type}.  This channel will be ignored.");
+                            break;
+                        }
+                }
             }
 
             Debug.Log("UpdateManager.Initialize");
@@ -97,6 +128,9 @@ namespace Lost
 
         private void Update()
         {
+            this.UpdateChannels(this.updateChannels, UpdateChannel.UpdateType.Update, Time.deltaTime);
+
+            // NOTE [bgish]: The below code is old and should migrate to channel code once we move Bolt Periodic Update node to channels
             var realtimeSinceStartup = Time.realtimeSinceStartup;
 
             for (int i = 0; i < functions.Count; i++)
@@ -110,6 +144,24 @@ namespace Lost
                     functionCall.Function.Invoke(deltaTime);
                     functions[i] = functionCall;
                 }
+            }
+        }
+
+        private void FixedUpdate()
+        {
+            this.UpdateChannels(this.fixedUpdateChannels, UpdateChannel.UpdateType.FixedUpdate, Time.fixedDeltaTime);
+        }
+
+        private void LateUpdate()
+        {
+            this.UpdateChannels(this.lateUpdateChannels, UpdateChannel.UpdateType.LateUpdate, Time.deltaTime);
+        }
+
+        private void UpdateChannels(List<UpdateChannel> channels, UpdateChannel.UpdateType updateType, float deltaTime)
+        {
+            for (int i = 0; i < channels.Count; i++)
+            {
+                channels[i].Run(deltaTime);
             }
         }
     }

@@ -8,6 +8,7 @@
 
 namespace Lost
 {
+    using System.Runtime.CompilerServices;
     using UnityEngine;
 
     [CreateAssetMenu(menuName = "Lost/Audio/Audio Block")]
@@ -32,16 +33,34 @@ namespace Lost
             RoundRobin,
         }
 
-        public string ChannelId => this.channelId;
+        public string ChannelId
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => this.channelId;
+        }
 
         public void Play()
         {
-            AudioManager.Instance.Play(this);
+            if (AudioManager.IsInitialized)
+            {
+                AudioManager.Instance.Play(this);
+            }
+            else
+            {
+                Debug.LogError($"Tried to play AudioBlock {this.name} before AudioManager was initialized.", this);
+            }
         }
 
         public void Play(Vector3 position)
         {
-            AudioManager.Instance.Play(this, position);
+            if (AudioManager.IsInitialized)
+            {
+                AudioManager.Instance.Play(this, position);
+            }
+            else
+            {
+                Debug.LogError($"Tried to play AudioBlock {this.name} before AudioManager was initialized.", this);
+            }
         }
 
         public AudioClip GetAudioClip()

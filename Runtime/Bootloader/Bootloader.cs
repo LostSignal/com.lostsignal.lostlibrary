@@ -96,6 +96,12 @@ namespace Lost
             BootBootloader();
         }
 
+        public static bool AreManagersReady
+        {
+            [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+            get => areManagersInitialized;
+        }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void BootBootloader()
         {

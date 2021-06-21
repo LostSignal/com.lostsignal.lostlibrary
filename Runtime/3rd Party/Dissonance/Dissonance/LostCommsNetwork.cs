@@ -38,7 +38,7 @@ namespace Lost.DissonanceIntegration
         {
             if (this.IsInitialized)
             {
-                if (NetworkingManager.Instance && NetworkingManager.Instance.HasJoinedServer)
+                if (NetworkingManager.IsInitialized && NetworkingManager.Instance.HasJoinedServer)
                 {
                     if (this.hasClientStarted == false)
                     {

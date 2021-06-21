@@ -18,13 +18,14 @@ namespace Lost
         where T : MonoBehaviour
     {
         private static T instance;
+        private static bool isInitialized;
 
         private bool hasInitializationRun;
         
         public static bool IsInitialized
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => instance != null;
+            get => isInitialized;
         }
 
         public static T Instance
@@ -83,6 +84,7 @@ namespace Lost
             ManagerTracker.RemoveManager(this);
 
             instance = null;
+            isInitialized = false;
             onInitialized = null;
         }
 
@@ -90,6 +92,7 @@ namespace Lost
         {
             Debug.Assert(Instance == null, $"Manager {typeof(T).Name}'s Instance is not null!");
             instance = newInstance;
+            isInitialized = true;
             onInitialized?.Invoke();
         }
 
