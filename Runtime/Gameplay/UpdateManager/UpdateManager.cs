@@ -4,24 +4,34 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-// Should Loadbalances themselves register with the update manager
-// If that's the case, most classes just have loadbanalancer and don't care about the update manager
-//    They register them, then the update manager can call things like stop LBs (durring load times)
-// 
-// Right now LBs assume that you Invoke and remove, this doesn't make sense for long running things
-// 
-// Can I use the trick of Replacing the last item with the currently deleted one?
-// 
-//
-// Need a Delay Execute function as well
-//
-// What's the best way to handle Creating Channels
-// What's the best way to handle adding/removing udpate functions
-//
-// How will LostActions work?  They go over multiple frames but must be called every frame
-//   * Need load balancer that must go through all items?
-//
-// Manager Queue up Callbacks then pass them to LoadBalancerManager when ready?
+//// 
+//// 
+//// 
+//// Should Loadbalances themselves register with the update manager
+//// If that's the case, most classes just have loadbanalancer and don't care about the update manager
+////    They register them, then the update manager can call things like stop LBs (durring load times)
+//// 
+//// Right now LBs assume that you Invoke and remove, this doesn't make sense for long running things
+//// 
+//// Can I use the trick of Replacing the last item with the currently deleted one?
+//// 
+////
+//// Need a Delay Execute function as well
+////
+//// What's the best way to handle Creating Channels
+//// What's the best way to handle adding/removing udpate functions
+////
+//// How will LostActions work?  They go over multiple frames but must be called every frame
+////   * Need load balancer that must go through all items?
+////
+//// Manager Queue up Callbacks then pass them to LoadBalancerManager when ready?
+//// 
+//// * Can I make a whole new "Update Manager" window in Unity's profiler that lets me see all my channels and how much time they're taking?
+//// 
+//// 
+//// 
+//// 
+
 
 #define ENABLE_PROFILING
 
