@@ -6,11 +6,15 @@
 
 #if UNITY
 
+#define ENABLE_PROFILING
+
 namespace Lost
 {
     using System;
     using System.Collections.Generic;
+    using System.Runtime.CompilerServices;
     using UnityEngine;
+    using UnityEngine.Profiling;
 
     [Serializable]
     public class UpdateChannel
@@ -38,6 +42,10 @@ namespace Lost
         [SerializeField] private UpdateType updateType;
         [SerializeField] private int startingCapacity = 10;
         #pragma warning restore 0649
+        
+        #if ENABLE_PROFILING
+        private CustomSampler customSampler;
+        #endif
 
         private Dictionary<int, int> idToIndexMap = new Dictionary<int, int>();
         private Callback[] callbacks;
@@ -48,12 +56,31 @@ namespace Lost
 
         public UpdateType Type => this.updateType;
 
+        public float DesiredDeltaTime
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => this.desiredDeltaTime;
+        }
+
+        public CustomSampler CustomSampler
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => this.customSampler;
+        }
+
         public UpdateChannel(string name, int startingCapactiy, float desiredDeltaTime)
         {
             this.name = name;
             this.callbacks = new Callback[startingCapacity];
         }
-    
+
+        #if ENABLE_PROFILING
+        public void InitializeSampler()
+        {
+            this.customSampler = CustomSampler.Create(this.name);
+        }
+        #endif
+
         private float runAllEveryXSeconds;
         private int nextIndexToRun;
         private int currentRunCount;

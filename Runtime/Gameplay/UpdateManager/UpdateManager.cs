@@ -23,6 +23,8 @@
 //
 // Manager Queue up Callbacks then pass them to LoadBalancerManager when ready?
 
+#define ENABLE_PROFILING
+
 namespace Lost
 {
     using System;
@@ -55,6 +57,10 @@ namespace Lost
         {
             for (int i = 0; i < this.channels.Count; i++)
             {
+                #if ENABLE_PROFILING
+                this.channels[i].InitializeSampler();
+                #endif
+
                 this.channelMap.Add(this.channels[i].Name, this.channels[i]);
 
                 switch (this.channels[i].Type)
@@ -130,21 +136,21 @@ namespace Lost
         {
             this.UpdateChannels(this.updateChannels, UpdateChannel.UpdateType.Update, Time.deltaTime);
 
-            // NOTE [bgish]: The below code is old and should migrate to channel code once we move Bolt Periodic Update node to channels
-            var realtimeSinceStartup = Time.realtimeSinceStartup;
-
-            for (int i = 0; i < functions.Count; i++)
-            {
-                var functionCall = functions[i];
-                var deltaTime = realtimeSinceStartup - functionCall.LastCallTime;
-
-                if (deltaTime > (1.0f / functionCall.CallFrequency))
-                {
-                    functionCall.LastCallTime = realtimeSinceStartup;
-                    functionCall.Function.Invoke(deltaTime);
-                    functions[i] = functionCall;
-                }
-            }
+            //// // NOTE [bgish]: The below code is old and should migrate to channel code once we move Bolt Periodic Update node to channels
+            //// var realtimeSinceStartup = Time.realtimeSinceStartup;
+            //// 
+            //// for (int i = 0; i < functions.Count; i++)
+            //// {
+            ////     var functionCall = functions[i];
+            ////     var deltaTime = realtimeSinceStartup - functionCall.LastCallTime;
+            //// 
+            ////     if (deltaTime > (1.0f / functionCall.CallFrequency))
+            ////     {
+            ////         functionCall.LastCallTime = realtimeSinceStartup;
+            ////         functionCall.Function.Invoke(deltaTime);
+            ////         functions[i] = functionCall;
+            ////     }
+            //// }
         }
 
         private void FixedUpdate()
@@ -161,7 +167,15 @@ namespace Lost
         {
             for (int i = 0; i < channels.Count; i++)
             {
+                #if ENABLE_PROFILING
+                channels[i].CustomSampler.Begin();
+                #endif
+
                 channels[i].Run(deltaTime);
+
+                #if ENABLE_PROFILING
+                channels[i].CustomSampler.End();
+                #endif
             }
         }
     }

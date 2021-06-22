@@ -14,6 +14,12 @@ namespace Lost
     ////
     public sealed class PlayerProximity : LoadBalancedMonoBehaviour
     {
+        // private bool enterHighPriBasedOnDistance;
+        // private bool radius;
+
+        // private bool enterHighPriBasedOnView;
+        // private bool viewingAngle;
+
         private static readonly string[] PlayerProximityChannels = new string[]
         {
             "PlayerProximity.Low",
@@ -51,7 +57,7 @@ namespace Lost
 
         protected override void DoWork(float deltaTime)
         {
-            bool isPlayerInside = this.IsInsideBounds();
+            bool isPlayerInside = this.IsInProximity();
             
             // Determining Whether to fire events
             if (this.hasPlayerEntered == false && isPlayerInside)
@@ -68,7 +74,10 @@ namespace Lost
             // Figuring out if the update channel needs to change based on player position / facing
             Frequency frequency = this.defaultFrequency;
 
-            // TODO [bgish]: Implement...
+            if (frequency != Frequency.High)
+            {
+                frequency = this.IsInHighProximity() ? Frequency.High : frequency;
+            }
 
             string newUpdateChanel = PlayerProximityChannels[(int)frequency];
             if (this.currentUpdateChannelName != newUpdateChanel)
@@ -78,7 +87,12 @@ namespace Lost
             }
         }
 
-        private bool IsInsideBounds()
+        private bool IsInProximity()
+        {
+            return false;
+        }
+
+        private bool IsInHighProximity()
         {
             return false;
         }
