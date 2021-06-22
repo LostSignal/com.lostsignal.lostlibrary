@@ -13,6 +13,20 @@ namespace Lost
 
     public static class TransformExtensions
     {
+        public static string GetFullPathWithSceneName(this Transform transform)
+        {
+            return CalculateFullPath(transform);
+
+            string CalculateFullPath(Transform transform)
+            {
+                string parentName = transform.parent == null ?
+                    transform.gameObject.scene.name :
+                    CalculateFullPath(transform.parent);
+
+                return parentName + "/" + transform.name;
+            }
+        }
+
         public static Transform FindChildRecursive(this Transform transform, string childName)
         {
             if (transform)

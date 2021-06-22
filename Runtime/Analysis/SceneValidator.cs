@@ -10,6 +10,7 @@ namespace Lost
 {
     using System;
     using System.Collections.Generic;
+    using UnityEngine.SceneManagement;
     using UnityEngine;
 
     //// ### Scene Validator
@@ -43,16 +44,93 @@ namespace Lost
     {
         #if UNITY_EDITOR
 
+        [EditorEvents.OnProcessScene]
+        private static void OnProcessScene(Scene scene)
+        {
+            var sceneValidators = GameObject.FindObjectsOfType<SceneValidator>();
+
+            foreach (var sceneValidator in sceneValidators)
+            {
+                if (sceneValidator.gameObject.scene == scene)
+                {
+                    sceneValidator.ProcessAll();
+                }
+            }
+        }
+
         #pragma warning disable 0649
         [SerializeReference] private List<Validator> validators;
         #pragma warning restore 0649
+
+        public List<Validator> Validators => this.validators;
+
+        public void ProcessAll()
+        {
+            var errors = new List<Error>();
+
+            foreach (var validator in this.validators)
+            {
+                if (validator.IsActive == false)
+                {
+                    continue;
+                }
+
+                validator.Run(errors);
+            }
+            
+            this.PrintErrors(errors);
+        }
+
+        public void ForceProcessIndex(int index)
+        {
+            var errors = new List<Error>();
+            this.validators[index].Run(errors);
+            this.PrintErrors(errors);
+        }
 
         private void OnValidate()
         {
             this.validators = this.validators ?? new List<Validator>();
 
-            // Get all classes that implement Validator
-            // Add them to the validators list if an instace of them doesn't already exist in the list
+            var validatorClassTypes = UnityEditor.TypeCache.GetTypesDerivedFrom<Validator>();
+
+            bool validatorsChanged = false;
+
+            foreach (var validatorClassType in validatorClassTypes)
+            {
+                // Determining if validatorClassType is already in this list
+                bool validatorInList = false;
+                foreach (var validator in this.validators)
+                {
+                    if (validator.GetType() == validatorClassType)
+                    {
+                        validatorInList = true;
+                        break;
+                    }
+                }
+
+                // If it's not in the list, then add a new instance of it
+                if (validatorInList == false)
+                {
+                    var newValidator = Activator.CreateInstance(validatorClassType) as Validator;
+                    newValidator.Initialize(this);
+                    this.validators.Add(newValidator);
+                    validatorsChanged = true;
+                }
+            }
+
+            if (validatorsChanged)
+            {
+                UnityEditor.EditorUtility.SetDirty(this);
+            }
+        }
+        
+        private void PrintErrors(List<Error> errors)
+        {
+            foreach (var error in errors)
+            {
+                Debug.LogError($"{error.Name}\n{error.Description}", error.AffectedObject);
+            }
         }
 
         [Serializable]
@@ -60,32 +138,55 @@ namespace Lost
         {
             #pragma warning disable 0649
             [ReadOnly]
-            [SerializeField] protected string name;
-            [SerializeField] protected bool disableValidator;
-            [SerializeField] protected GameObject objectsToIgnore;
+            [SerializeField] protected SceneValidator parent;
+            [SerializeField] protected bool isActive;
+            [SerializeField] protected List<GameObject> objectsToIgnore;
             #pragma warning restore 0649
 
-            public string Name => this.name;
-
-            public bool DisableValidator => this.disableValidator;
-
-            public GameObject ObjectsToIgnore => this.objectsToIgnore;
-
-            public virtual List<Error> Run()
+            public void Initialize(SceneValidator parent)
             {
-                return null;
+                this.parent = parent;
+                this.isActive = true;
+                this.objectsToIgnore = new List<GameObject>();
+            }
+
+            public abstract string DisplayName { get; }
+                        
+            public bool IsActive
+            {
+                get => this.isActive;
+                set => this.isActive = value;
+            }
+
+            public abstract void Run(List<Error> errorResults);
+
+            protected IEnumerable<T> FindObjectsOfType<T>(bool includeInactive) where T : Component
+            {
+                foreach (var component in GameObject.FindObjectsOfType<T>(includeInactive))
+                {
+                    // making sure this belongs to the currently active scene and it shouldn't be ignored
+                    bool isSameScene = component.gameObject.scene != this.parent.gameObject.scene;
+                    bool isIgnoredObject = this.objectsToIgnore.Contains(component.gameObject);
+
+                    if (isSameScene || isIgnoredObject)
+                    {
+                        continue;
+                    }
+
+                    yield return component;
+                }
             }
         }
 
         public class Error
         {
+            public UnityEngine.Object AffectedObject { get; set; }
             public string Name { get; set; }
             public string Description { get; set; }
-            public GameObject AffectedObject { get; set; }
         }
 
         #endif
-    }
+    }   
 }
 
 #endif
