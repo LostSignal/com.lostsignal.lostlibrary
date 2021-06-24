@@ -34,6 +34,50 @@ namespace Lost
     //// * Should we have a "loading" layer, and during level load we only render stuff on that layer?
     ////
 
+    //// Full Fade Down = Fade Down + Incremetnal GC + Unload Unused Assets
+
+    //// * LevelManager
+    ////   * LoadLevel(blah, skipStagging = false)
+    ////   * If Editor
+    ////     * Instant Fade Down
+    ////     * Wait for Managers
+    ////     * Run Level Load Requested with currently active scene as the arguments
+    ////       * It won't actually load it since it's already loaded
+    //// 
+    //// ---
+    //// 
+    //// Level Load Requested
+    ////   Full Fade Down
+    ////   Turn on Loading Area
+    ////   Teleport to Loading Area
+    ////   Fade Up
+    ////   On Complete => Level Transition Begin
+    ////   
+    //// Level Load Begin
+    ////   Download
+    ////   Load Level
+    ////   Activate Level
+    ////   Wait for OnManagersReady To Complete?  Or just till there are no load balancers done?
+    ////     Some system will need to load chuncks depending on the players position, what will they hook into to load the chuncks?
+    ////     The chunk system will need to look at the Starting position to figure out what chunks to load
+    ////   Full Fade Down
+    ////   Teleport to starting posotion
+    ////   Fade Up
+    ////   On Complete => Level Transition Finish
+    ////     
+    //// Level Load Finish
+    ////   ??? (AI Start?)
+  
+
+
+
+
+
+
+
+
+
+
 
     public class LevelManager : Manager<LevelManager>
     {

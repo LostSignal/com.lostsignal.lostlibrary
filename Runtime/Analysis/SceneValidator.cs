@@ -21,7 +21,6 @@ namespace Lost
     //// * FPS Below 60 Error
     //// * General LogError/Exception/Warning Error (if not one of the above)
     //// 
-    //// 
     //// ### Build Validation
     //// * If build spits out any Debug.LogError like this, then it needs to be reported
     ////   * Failed to create Physics Mesh from source mesh "Roof_LOD0". One of the triangles is too large. It's recommended to tesselate the large triangles.
