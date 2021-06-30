@@ -14,6 +14,10 @@ namespace Lost
     using UnityEngine;
 
     //// ### Scene Validator
+    ////   * Make custom window that holds all the errors (instead of printing them to the screen)
+    ////   * Each Error has an "Ignore" and "Fix" buttons (if it can fix it)
+    ////     * Usefull for things like "Uneccessary Raycast Target Validator"
+    ////
     //// * Missing Behaviour Errors
     ////   * The referenced script on this Behaviour (Game Object 'Oroshi Footstep Decal') is missing!
     //// * Bad Collider Error
