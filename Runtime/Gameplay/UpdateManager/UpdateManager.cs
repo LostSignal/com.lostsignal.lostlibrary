@@ -67,6 +67,8 @@ namespace Lost
         {
             for (int i = 0; i < this.channels.Count; i++)
             {
+                this.channels[i].Initialize();
+
                 #if ENABLE_PROFILING
                 this.channels[i].InitializeSampler();
                 #endif

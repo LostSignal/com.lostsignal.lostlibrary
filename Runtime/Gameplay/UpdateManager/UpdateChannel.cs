@@ -68,10 +68,12 @@ namespace Lost
             get => this.customSampler;
         }
 
-        public UpdateChannel(string name, int startingCapactiy, float desiredDeltaTime)
+        public void Initialize()
         {
-            this.name = name;
-            this.callbacks = new Callback[startingCapacity];
+            if (this.callbacks == null || this.callbacks.Length != startingCapacity)
+            {
+                this.callbacks = new Callback[startingCapacity];
+            }
         }
 
         #if ENABLE_PROFILING

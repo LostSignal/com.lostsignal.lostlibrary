@@ -37,8 +37,6 @@ namespace Lost
                 var buildConfigs = BuildConfigs;
                 var gameServerGenerator = GameServerProjectGenerator;
                 var azureFunctionsGenerator = AzureFunctionsProjectGenerator;
-
-                CreateBootloaderAndManagers();
             };
         }
 
@@ -152,6 +150,7 @@ namespace Lost
                 var rootConfig = new BuildConfig.BuildConfig();
                 rootConfig.Name = "Root";
                 AddSetting<BundleIdentifierSetting>(rootConfig);
+                AddSetting<BootloaderSettings>(rootConfig);
                 AddSetting<BuildPlayerContentSettings>(rootConfig);
                 AddSetting<CloudBuildSetBuildNumber>(rootConfig);
 
@@ -227,27 +226,6 @@ namespace Lost
             return azureFunctionsGeneratorObject;
         }
 
-        private static void CreateBootloaderAndManagers()
-        {
-            var bootloader = Resources.Load<Bootloader>(Bootloader.BootloaderResourceName);
-            if (bootloader == null)
-            {
-                bootloader = GameObject.Instantiate(AssetDatabase.LoadAssetAtPath<Bootloader>(AssetDatabase.GUIDToAssetPath("e64035672fd9d3848956e0518ca53808")));
-                CreateAsset(bootloader, $"Assets/Resources/{Bootloader.BootloaderResourceName}.prefab");
-            }
-
-            if (bootloader.Location == Bootloader.ManagersLocation.ResourcesPrefabName)
-            {
-                var managers = Resources.Load<GameObject>(bootloader.ManagersPrefabResourceName);
-
-                if (managers == null)
-                {
-                    managers = GameObject.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath("ebe6a31cc5c4ac74ab8dae1375be0b50")));
-                    CreateAsset(managers, $"Assets/Resources/{bootloader.ManagersPrefabResourceName}.prefab");
-                }
-            }
-        }
-
         private static void CreateAsset(UnityEngine.Object asset, string path)
         {
             AssetDatabase.CreateAsset(asset, path);
@@ -268,5 +246,16 @@ namespace Lost
 
             return assetPath;
         }
+
+        //// TODO [bgish]: Need to make a button somewhere in Bootloader Settings for creating these assets.  Should also
+        ////               prompt user for the location instead of hard coding it.
+        //// private static void CreateBootloaderAndManagers()
+        //// {
+        ////     var bootloader = GameObject.Instantiate(AssetDatabase.LoadAssetAtPath<Bootloader>(AssetDatabase.GUIDToAssetPath("e64035672fd9d3848956e0518ca53808")));
+        ////     CreateAsset(bootloader, $"Assets/Resources/Bootloader.prefab");
+        //// 
+        ////     var managers = GameObject.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath("ebe6a31cc5c4ac74ab8dae1375be0b50")));
+        ////     CreateAsset(managers, $"Assets/Resources/Managers.prefab");
+        //// }
     }
 }

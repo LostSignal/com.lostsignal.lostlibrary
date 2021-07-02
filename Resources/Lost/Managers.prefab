@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 2124505964}
   - component: {fileID: 2838258163818257770}
   - component: {fileID: 2055421150431086328}
-  - component: {fileID: 2124505965}
   - component: {fileID: 2124505960}
   - component: {fileID: 6355152330399952020}
   - component: {fileID: 3067315423471510257}
@@ -114,18 +113,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb91539e842118e4d9cefdddb46c85c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2124505965
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2124505958}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 045e7d218ba29ca43872e63d9c811331, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2124505960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,6 +182,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5126069171558145974}
+  - component: {fileID: 3572347313567001802}
+  - component: {fileID: 7485268916338812050}
+  - component: {fileID: 1958063719488766471}
+  - component: {fileID: 8113480771974476851}
   - component: {fileID: 5126069171558145950}
   - component: {fileID: 5126069171558145934}
   - component: {fileID: 2968509094606122130}
@@ -224,6 +215,81 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3572347313567001802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5126069171558145975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea29712024fb4644fb61cd52dbbe28e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  channels:
+  - name: AwakeManager
+    desiredDeltaTime: 0
+    startingCapacity: 1
+  - name: StartManager
+    desiredDeltaTime: 0
+    startingCapacity: 1
+  - name: DelayExecuteManager
+    desiredDeltaTime: 0
+    startingCapacity: 1
+  - name: PlayerProximity.Low
+    desiredDeltaTime: 1
+    startingCapacity: 500
+  - name: PlayerProximity.Medium
+    desiredDeltaTime: 0.2
+    startingCapacity: 100
+  - name: PlayerProximity.High
+    desiredDeltaTime: 0
+    startingCapacity: 25
+  - name: CameraShake
+    desiredDeltaTime: 0
+    startingCapacity: 5
+--- !u!114 &7485268916338812050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5126069171558145975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa380e20ecb5d0a4eb264657124dd1a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialCapacity: 250
+  maxMilliseconds: 0.10000000149011612
+--- !u!114 &1958063719488766471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5126069171558145975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8a1cfb5b31e462479b8fce680c434de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialCapacity: 250
+  maxMilliseconds: 0.10000000149011612
+--- !u!114 &8113480771974476851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5126069171558145975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb7f9d90622c236419354647689bc0d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialCapacity: 50
 --- !u!114 &5126069171558145950
 MonoBehaviour:
   m_ObjectHideFlags: 0

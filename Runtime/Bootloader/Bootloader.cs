@@ -8,6 +8,7 @@
 
 namespace Lost
 {
+    using Lost.BuildConfig;
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
@@ -21,11 +22,19 @@ namespace Lost
 
     public class Bootloader : MonoBehaviour
     {
-        public const string BootloaderResourceName = "Bootloader";
+        public const string BootloaderResourcePathSetting = "Bootloader.ResourcePath";
+        public const string BootloaderRebootSceneName = "Bootloader.RebootSceneName";
+        public const string BootloaderManagersLocation = "Bootloader.ManagersLocation";
+        public const string BootloaderManagersPath = "Bootloader.ManagersPath";
+
+        public const string LostBootloaderResourcePath = "Lost/Bootloader";
+        public const string LostManagersResourcePath = "Lost/Managers";
+
+        public const string DefaultRebootSceneName = "Main";
 
         public enum ManagersLocation
         {
-            ResourcesPrefabName,
+            ResourcesPath,
             SceneName,
             // AddressablesPrefab,
             // AddressablesScene,
@@ -37,16 +46,6 @@ namespace Lost
         private static GameObject managersInstance;
 
 #pragma warning disable 0649
-        [Header("Reboot")]
-        [SerializeField] private string rebootSceneName = "Main";
-
-        [Header("Managers")]
-        [SerializeField] private ManagersLocation managersLocation;
-        [SerializeField] private string managersResourcesPrefabName = "Managers";
-        [SerializeField] private string managersSceneName = "Managers";
-        //// [SerializeField] private LazyGameObject managersAddressablesPrefab;
-        //// [SerializeField] private LazyScene managersAddressablesScene;
-
         [Header("Loading UI")]
         [SerializeField] private bool dontShowLoadingInEditor = true;
         [SerializeField] private float minimumLoadingDialogTime;
@@ -89,7 +88,9 @@ namespace Lost
 
         public static void Reboot()
         {
-            SceneManager.LoadScene(bootloaderInstance.rebootSceneName, LoadSceneMode.Single);
+            string rebootSceneName = RuntimeBuildConfig.Instance.GetString(Bootloader.BootloaderRebootSceneName);
+
+            SceneManager.LoadScene(rebootSceneName, LoadSceneMode.Single);
 
             // Destory old bootloader instance
             ResetBootloader();
@@ -105,12 +106,32 @@ namespace Lost
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void BootBootloader()
         {
-            var bootloaderPrefab = Resources.Load<Bootloader>(BootloaderResourceName);
+            string bootloaderResourcePath = RuntimeBuildConfig.Instance.GetString(BootloaderResourcePathSetting);
+            string managersLocation = RuntimeBuildConfig.Instance.GetString(BootloaderManagersLocation);
+            string managersPath = RuntimeBuildConfig.Instance.GetString(BootloaderManagersPath);
+            string rebootSceneName = RuntimeBuildConfig.Instance.GetString(Bootloader.BootloaderRebootSceneName);
+
+            if (string.IsNullOrWhiteSpace(bootloaderResourcePath) ||
+                string.IsNullOrWhiteSpace(managersLocation) ||
+                string.IsNullOrWhiteSpace(managersPath) ||
+                string.IsNullOrWhiteSpace(rebootSceneName))
+            {
+                Debug.LogError("Failed To Boot - Bootloader and/or Manager info is Empty! Do you have an active build config with the Bootloader Settings added?");
+                return;
+            }
+
+            var bootloaderPrefab = Resources.Load<Bootloader>(bootloaderResourcePath);
+
+            if (bootloaderPrefab == null)
+            {
+                Debug.LogError($"Failed To Boot - Unable to load Bootloader Prefab \"{bootloaderResourcePath}\".");
+                return;
+            }
 
             if (ShouldInstantiateBootloader(bootloaderPrefab))
             {
                 bootloaderInstance = GameObject.Instantiate(bootloaderPrefab);
-                bootloaderInstance.name = BootloaderResourceName;
+                bootloaderInstance.name = bootloaderInstance.name.Replace("(Clone)", string.Empty);
                 GameObject.DontDestroyOnLoad(bootloaderInstance);
             }
 
@@ -169,10 +190,6 @@ namespace Lost
         //// ----------------------------------------------------------------------------------------------------------------
 
         private bool ShowLoadingInEditor => Application.isEditor == false || this.dontShowLoadingInEditor == false;
-
-        public ManagersLocation Location => this.managersLocation;
-
-        public string ManagersPrefabResourceName => this.managersResourcesPrefabName;
 
         private void Start()
         {
@@ -253,6 +270,7 @@ namespace Lost
 
             Debug.Log("Bootloader.OnManagersReady()");
             onManagersReady?.Invoke();
+            onManagersReady = null;
 
             // Doing a little cleanup before giving user control
             System.GC.Collect();
@@ -266,12 +284,21 @@ namespace Lost
 
         private IEnumerator StartManagers()
         {
-            switch (this.managersLocation)
+            if (int.TryParse(RuntimeBuildConfig.Instance.GetString(BootloaderManagersLocation), out int maangersLocationIntValue) == false)
             {
-                case ManagersLocation.ResourcesPrefabName:
+                Debug.LogError($"Unable to startup Managers.  ManagerLocation was not a valid int \"{BootloaderManagersLocation}\"", this);
+                yield break;
+            }
+
+            var managersLocation = (ManagersLocation)maangersLocationIntValue;
+            var managersPath = RuntimeBuildConfig.Instance.GetString(BootloaderManagersPath);
+
+            switch (managersLocation)
+            {
+                case ManagersLocation.ResourcesPath:
                     {
-                        managersInstance = GameObject.Instantiate(Resources.Load<GameObject>(this.managersResourcesPrefabName));
-                        managersInstance.name = this.managersResourcesPrefabName;
+                        managersInstance = GameObject.Instantiate(Resources.Load<GameObject>(managersPath));
+                        managersInstance.name = managersInstance.name.Replace("(Clone)", string.Empty);
                         DontDestroyOnLoad(managersInstance);
                         break;
                     }
@@ -282,19 +309,19 @@ namespace Lost
 
                         for (int i = 0; i < SceneManager.sceneCount; i++)
                         {
-                            sceneAlreadyLoaded |= SceneManager.GetSceneAt(i).name == this.managersSceneName;
+                            sceneAlreadyLoaded |= SceneManager.GetSceneAt(i).name == managersPath;
                         }
 
                         if (sceneAlreadyLoaded == false)
                         {
-                            yield return SceneManager.LoadSceneAsync(this.managersSceneName, LoadSceneMode.Additive);
+                            yield return SceneManager.LoadSceneAsync(managersPath, LoadSceneMode.Additive);
                         }
                         
                         break;
                     }
 
                 default:
-                    Debug.LogError($"Unknown ManagerLocation {this.managersLocation} Found!");
+                    Debug.LogError($"Unknown ManagerLocation {managersLocation} Found!");
                     break;
             }
         }

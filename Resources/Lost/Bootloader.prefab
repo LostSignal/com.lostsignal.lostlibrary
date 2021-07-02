@@ -141,7 +141,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rebootSceneName: Main
-  managersLocation: 0
+  managersLocation: 1
   managersResourcesPrefabName: Managers
   managersSceneName: Managers
   dontShowLoadingInEditor: 1
