@@ -103,7 +103,6 @@ namespace Lost
                 }
             }
 
-            Debug.Log("UpdateManager.Initialize");
             this.SetInstance(this);
         }
 

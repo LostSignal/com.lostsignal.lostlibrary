@@ -22,22 +22,23 @@ namespace Lost
 
     public class Bootloader : MonoBehaviour
     {
+        // RuntimeConfig Settings Keys
         public const string BootloaderResourcePathSetting = "Bootloader.ResourcePath";
         public const string BootloaderRebootSceneName = "Bootloader.RebootSceneName";
         public const string BootloaderManagersLocation = "Bootloader.ManagersLocation";
         public const string BootloaderManagersPath = "Bootloader.ManagersPath";
 
+        // Default Values
         public const string LostBootloaderResourcePath = "Lost/Bootloader";
         public const string LostManagersResourcePath = "Lost/Managers";
-
         public const string DefaultRebootSceneName = "Main";
 
         public enum ManagersLocation
         {
             ResourcesPath,
             SceneName,
-            // AddressablesPrefab,
-            // AddressablesScene,
+            //// AddressablesPrefab,
+            //// AddressablesScene,
         }
 
         private static event BootloaderDelegate onManagersReady;
@@ -267,8 +268,6 @@ namespace Lost
 
             // We're done!  Fire the OnBooted event
             areManagersInitialized = true;
-
-            Debug.Log("Bootloader.OnManagersReady()");
             onManagersReady?.Invoke();
             onManagersReady = null;
 
