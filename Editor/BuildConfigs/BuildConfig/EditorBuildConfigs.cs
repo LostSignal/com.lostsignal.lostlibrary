@@ -128,7 +128,7 @@ namespace Lost.BuildConfig
 
             // Generating the runtime config object and serializing to json
             var runtimeConfig = new RuntimeBuildConfig(activeConfig.Id, activeConfig.SafeName, runtimeConfigValues);
-            string configJson = JsonUtility.ToJson(runtimeConfig);
+            string configJson = JsonUtility.ToJson(runtimeConfig, true);
 
             // Early out if the file file hasn't chenged
             if (File.Exists(RuntimeBuildConfig.FilePath) && File.ReadAllText(RuntimeBuildConfig.FilePath) == configJson)
