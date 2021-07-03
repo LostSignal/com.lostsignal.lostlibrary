@@ -16,12 +16,12 @@ namespace Lost
             this.SetInstance(this);
         }
 
-        protected override void DoWork(float deltaTime)
+        public override void DoUpdate(float deltaTime)
         {
             // Start Manager should only do work if all of the AwakeManager has been processed
             if (AwakeManager.IsInitialized && AwakeManager.Instance.IsProcessing == false)
             {
-                base.DoWork(deltaTime);
+                base.DoUpdate(deltaTime);
             }
         }
     }

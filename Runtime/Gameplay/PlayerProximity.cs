@@ -52,10 +52,10 @@ namespace Lost
 
         protected override void LoadBalancedAwake()
         {
-            this.DoWork(0.0f);
+            this.DoUpdate(0.0f);
         }
 
-        protected override void DoWork(float deltaTime)
+        public override void DoUpdate(float deltaTime)
         {
             bool isPlayerInside = this.IsInProximity();
             

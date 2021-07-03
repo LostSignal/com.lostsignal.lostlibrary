@@ -15,7 +15,7 @@ namespace Lost
     ////               making our own Coroutine system is not trivial though, so not sure if that is the 
     ////               best solution.
     //// 
-    public abstract class LoadBalancingManager<T> : Manager<T>
+    public abstract class LoadBalancingManager<T> : Manager<T>, IUpdatable
         where T : MonoBehaviour
     {
         public abstract string Name { get; }
@@ -63,7 +63,7 @@ namespace Lost
             void RegisterWithUpdateManager()
             {
                 this.updateChannel = UpdateManager.Instance.GetChannel(this.Name);
-                this.updateReceipt = this.updateChannel.RegisterCallback(this.DoWork, this);
+                this.updateReceipt = this.updateChannel.RegisterCallback(this, this);
             }
         }
 
@@ -80,7 +80,7 @@ namespace Lost
             return LoadBalancerReceipt.New(index, context, this.CancelReceipt);
         }
 
-        protected virtual void DoWork(float deltaTime)
+        public virtual void DoUpdate(float deltaTime)
         {
             if (this.callbackQueue.IsEmpty)
             {

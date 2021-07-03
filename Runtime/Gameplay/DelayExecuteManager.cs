@@ -9,7 +9,7 @@ namespace Lost
     using System;
     using UnityEngine;
 
-    public class DelayExecuteManager : Manager<DelayExecuteManager>
+    public class DelayExecuteManager : Manager<DelayExecuteManager>, IUpdatable
     {
         private const string ChannelName = nameof(DelayExecuteManager);
 
@@ -46,7 +46,7 @@ namespace Lost
                 }
                 else
                 {
-                    this.updateReceipt = updateChannel.RegisterCallback(this.DoWork, this);
+                    this.updateReceipt = updateChannel.RegisterCallback(this, this);
                 }
             }
         }
@@ -62,7 +62,7 @@ namespace Lost
             this.delayedActions[this.count++] = new DelayedAction { ExecuteTime = Time.realtimeSinceStartup + seconds, Action = action };
         }
 
-        private void DoWork(float deltaTime)
+        void IUpdatable.DoUpdate(float deltaTime)
         {
             float currentTime = Time.realtimeSinceStartup;
             int i = 0;

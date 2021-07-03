@@ -16,13 +16,18 @@ namespace Lost
     using UnityEngine;
     using UnityEngine.Profiling;
 
+    public interface IUpdatable
+    {
+        void DoUpdate(float deltaTime);
+    }
+
     [Serializable]
     public class UpdateChannel
     {
         private struct Callback
         {
             public int Id;
-            public Action<float> Action;
+            public IUpdatable Updatable;
             public float LastCalledTime;
             public UnityEngine.Object Context;
         }
@@ -139,7 +144,7 @@ namespace Lost
                     float now = Time.realtimeSinceStartup;
                     float deltaTime = now - this.callbacks[nextIndexToRun].LastCalledTime;
                     this.callbacks[nextIndexToRun].LastCalledTime = now;
-                    this.callbacks[nextIndexToRun].Action?.Invoke(deltaTime);
+                    this.callbacks[nextIndexToRun].Updatable?.DoUpdate(deltaTime);
                 }
                 catch (Exception ex)
                 {
@@ -153,7 +158,7 @@ namespace Lost
             }
         }
     
-        public UpdateChannelReceipt RegisterCallback(Action<float> action, UnityEngine.Object context)
+        public UpdateChannelReceipt RegisterCallback(IUpdatable updatable, UnityEngine.Object context)
         {
             int callbackIndex = this.count++;
 
@@ -168,7 +173,7 @@ namespace Lost
             this.callbacks[callbackIndex] = new Callback
             {
                 Id = callbackId,
-                Action = action,
+                Updatable = updatable,
                 Context = context,
                 LastCalledTime = Time.realtimeSinceStartup,
             };

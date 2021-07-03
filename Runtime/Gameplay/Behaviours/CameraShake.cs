@@ -55,7 +55,7 @@ namespace Lost
             this.isInitialized = true;
         }
 
-        protected override void DoWork(float deltaTime)
+        public override void DoUpdate(float deltaTime)
         {
             if (this.currentShakeTime > 0.0f)
             {

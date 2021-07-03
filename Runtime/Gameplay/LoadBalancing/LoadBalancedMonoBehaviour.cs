@@ -8,7 +8,7 @@ namespace Lost
 {
     using UnityEngine;
 
-    public abstract class LoadBalancedMonoBehaviour : MonoBehaviour
+    public abstract class LoadBalancedMonoBehaviour : MonoBehaviour, IUpdatable
     {
         private LoadBalancerReceipt awakeReceipt;
         private LoadBalancerReceipt startReceipt;
@@ -20,6 +20,8 @@ namespace Lost
         public abstract bool RunAwake { get; }
 
         public abstract bool RunStart { get; }
+
+        public abstract void DoUpdate(float deltaTime);
 
         protected virtual void Awake()
         {
@@ -90,7 +92,7 @@ namespace Lost
             this.updateReceipt.Cancel();
             this.currentUpdateChannelName = updateChannelName;
             var updateChannel = UpdateManager.Instance.GetChannel(updateChannelName);
-            this.updateReceipt = updateChannel.RegisterCallback(this.DoWork, this);
+            this.updateReceipt = updateChannel.RegisterCallback(this, this);
         }
 
         protected void StopUpdating()
@@ -104,10 +106,6 @@ namespace Lost
         }
 
         protected virtual void LoadBalancedStart()
-        {
-        }
-
-        protected virtual void DoWork(float deltaTime)
         {
         }
     }
