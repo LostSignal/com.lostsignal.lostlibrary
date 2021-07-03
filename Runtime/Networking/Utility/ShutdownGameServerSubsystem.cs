@@ -16,6 +16,8 @@ namespace Lost.Networking
         private bool haveUsersEverJoined = false;
         private bool hasShutdownServer = false;
         private int currentUserCount = 0;
+        
+        public string Name => nameof(ShutdownGameServerSubsystem);
 
         public void Initialize(GameServer gameServer)
         {

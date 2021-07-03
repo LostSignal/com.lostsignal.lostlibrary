@@ -18,7 +18,7 @@ namespace Lost.Haven
     [RequireComponent(typeof(NetworkIdentity))]
     public class HavenAvatar : MonoBehaviour
     {
-        public static ComponentTracker<HavenAvatar> Avatars = new ComponentTracker<HavenAvatar>(20);
+        public static ObjectTracker<HavenAvatar> Avatars = new ObjectTracker<HavenAvatar>(20);
 
 #pragma warning disable 0649
         [SerializeField] private NetworkIdentity networkIdentity;

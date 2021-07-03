@@ -52,7 +52,7 @@ namespace Lost.Networking
             behaviourDataMessage.DataKey = key;
             behaviourDataMessage.DataValue = value;
 
-            this.Identity.SendMessage(behaviourDataMessage, this.sendConfig.SendReliable);
+            this.Identity.SendNetworkMessage(behaviourDataMessage, this.sendConfig.SendReliable);
         }
 
         public void SendNetworkBehaviourMessage(bool forceReliable = false)
@@ -68,7 +68,7 @@ namespace Lost.Networking
                 behaviourMessage.DataLength = writer.Position;
                 behaviourMessage.DataBytes = writer.RawBuffer;
 
-                this.Identity.SendMessage(behaviourMessage, forceReliable ? true : this.sendConfig.SendReliable);
+                this.Identity.SendNetworkMessage(behaviourMessage, forceReliable ? true : this.sendConfig.SendReliable);
             }
         }
 

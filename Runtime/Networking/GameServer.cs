@@ -30,10 +30,10 @@ namespace Lost.Networking
         // Subsystem Tracking
         private List<IGameServerSubsystem> subsystems = new List<IGameServerSubsystem>();
 
-        private ConcurrentList<UserInfo> failedJoinConnectionIds = new ConcurrentList<UserInfo>();
+        private ConcurrentList<UserInfo> failedJoinConnectionIds = new ConcurrentList<UserInfo>(20);
         private List<UserInfo> failed = new List<UserInfo>();
 
-        private ConcurrentList<UserInfo> successfulJoinUserInfos = new ConcurrentList<UserInfo>();
+        private ConcurrentList<UserInfo> successfulJoinUserInfos = new ConcurrentList<UserInfo>(20);
         private List<UserInfo> successes = new List<UserInfo>();
 
         // tracking data
@@ -580,7 +580,7 @@ namespace Lost.Networking
             {
                 if (await subsystem.AllowPlayerToJoin(userInfo) == false)
                 {
-                    Debug.LogError($"Subsystem {subsystem.GetType().Name} failed user {userInfo.UserId}");
+                    Debug.LogError($"Subsystem {subsystem.Name} failed user {userInfo.UserId}");
                     this.failedJoinConnectionIds.Add(userInfo);
                     return;
                 }

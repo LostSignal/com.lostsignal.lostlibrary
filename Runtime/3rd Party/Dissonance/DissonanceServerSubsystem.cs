@@ -16,6 +16,8 @@ namespace Lost.DissonanceIntegration
         private LostServer dissonanceServer = null;
         private GameServer gameServer = null;
 
+        public string Name => nameof(DissonanceServerSubsystem);
+
         public void Initialize(GameServer gameServer)
         {
             this.gameServer = gameServer;

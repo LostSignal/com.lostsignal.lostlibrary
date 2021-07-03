@@ -16,10 +16,12 @@ namespace Lost
         [SerializeField] private bool autoOrient = true;
         [SerializeField] private Vector3 inHandle = new Vector3(0, 0, -0.25f);
         [SerializeField] private Vector3 outHandle = new Vector3(0, 0, 0.25f);
+
+        [SerializeField] [HideInInspector] private Transform myTransform;
+        [SerializeField] [HideInInspector] private Spline parent;
         #pragma warning restore 0649
 
         private bool isIntialized;
-        private Spline parent;
         private SplinePoint nextPoint;
         private float length;
 
@@ -63,29 +65,29 @@ namespace Lost
                 return;
             }
 
-            this.parent = this.GetComponentInParent<Spline>();
-
-            Debug.Assert(parent != null, "SplinePoint must be directly under a Spline object.", this);
-
-            int myIndex = this.transform.GetSiblingIndex();
-
-            // testing if we're the last one in the spline
-            if (myIndex == this.parent.transform.childCount - 1)
-            {
-                this.nextPoint = this.parent.IsLooping ? this.parent.transform.GetChild(0).GetComponent<SplinePoint>() : null;
-            }
-            else
-            {
-                this.nextPoint = this.parent.transform.GetChild(myIndex + 1).GetComponent<SplinePoint>();
-            }
-
-            if (this.nextPoint != null)
-            {
-                this.length = this.GetLengthBetweenSplinePoints(this, this.nextPoint);
-            }
-
-
             this.isIntialized = true;
+
+            this.OnValidate();
+
+            int splinePointCount = this.parent.GetSplinePointCount();
+            int myIndex = this.parent.GetSplinePointIndex(this);
+            bool isLastSplinePoint = myIndex == splinePointCount - 1;
+
+            // If we've hit the end of the spline, early out
+            if (isLastSplinePoint && this.parent.IsLooping == false)
+            {
+                return;
+            }
+
+            int nextIndex = (myIndex + 1) % splinePointCount;
+            this.nextPoint = this.parent.GetSplinePoint(nextIndex);
+            this.length = this.GetLengthBetweenSplinePoints(this, this.nextPoint);
+        }
+
+        private void OnValidate()
+        {
+            this.AssertGetComponent(ref this.myTransform);
+            this.AssertGetComponentInParent(ref this.parent);
         }
 
         private void Awake()

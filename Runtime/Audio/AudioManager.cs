@@ -14,28 +14,28 @@ namespace Lost
     public sealed class AudioManager : Manager<AudioManager>
     {
 #pragma warning disable 0649
-        [SerializeField] private AudioSource audioSourcePrefab;
-        [SerializeField] private int initialAudioSourcePoolSize = 10;
+        [SerializeField] private Transform audioPool;
         [SerializeField] private int audioSourcePoolGrowSize = 10;
-        [SerializeField] private string[] channelIds = new string[] { "SFX", "Music" };
+        [SerializeField] private List<AudioSource> audioSourcePoolItems;
+        [SerializeField] private AudioSource audioSourcePrefab;
+        [SerializeField] private List<AudioChannel> audioChannels;
 #pragma warning restore 0649
-
-        private Dictionary<string, Channel> channelsHash;
-        private List<AudioSource> audioSourcePool;
-        private List<Channel> channelsList;
-        private GameObject audioPool;
-
+        
+        private HashSet<int> audioChannelsIntanceIds = new HashSet<int>();
+        
         public override void Initialize()
         {
-            this.audioPool = new GameObject("Audio Pool");
-            this.audioPool.transform.SetParent(this.transform);
-
-            // Initializing the audio source pool
-            this.audioSourcePool = new List<AudioSource>(this.initialAudioSourcePoolSize);
-
-            for (int i = 0; i < this.initialAudioSourcePoolSize; i++)
+            // Making sure our pool of audio sources is disabled at startup
+            for (int i = 0; i < this.audioSourcePoolItems.Count; i++)
             {
-                this.AddToPool();
+                this.audioSourcePoolItems[i].enabled = false;
+            }
+
+            // TODO [bgish]: This should not happen till the player settings are loaded (right now uses LostPlayerPrefs)
+            for (int i = 0; i < this.audioChannels.Count; i++)
+            {
+                this.audioChannelsIntanceIds.Add(this.audioChannels[i].GetInstanceID());
+                this.audioChannels[i].Load();
             }
 
             this.SetInstance(this);
@@ -53,15 +53,21 @@ namespace Lost
 
         public void Play(AudioBlock audioBlock, Vector3 position, bool usePosition)
         {
-            Channel channel = this.GetAudioChannel(audioBlock.ChannelId);
+            AudioChannel channel = audioBlock.AudioChannel;
 
             if (channel == null)
             {
-                Debug.LogError($"AudioBlock {audioBlock.name} Failed.  Unkonwn Channel Id {audioBlock.ChannelId}");
+                Debug.LogError($"AudioBlock {audioBlock.name} failed to play.  It does not have a valid AudioChannel.", audioBlock);
                 return;
             }
 
-            if (channel.IsMuted)
+            if (this.audioChannelsIntanceIds.Contains(channel.GetInstanceID()) == false)
+            {
+                Debug.LogError($"AudioBlock {audioBlock.name} failed to play because it's AudioChannel {channel.name} Is not registered with the AudioManager.", audioBlock);
+                return;
+            }
+
+            if (channel.IsMuted || channel.Volume == 0.0f)
             {
                 return;
             }
@@ -78,33 +84,10 @@ namespace Lost
 
         public void SaveAudioSettings()
         {
-            foreach (var channel in this.channelsList)
+            foreach (var audioChannel in this.audioChannels)
             {
-                channel.Save();
+                audioChannel.Save();
             }
-        }
-
-        private Channel GetAudioChannel(string channelId)
-        {
-            if (this.channelsHash == null || this.channelsList == null)
-            {
-                this.channelsHash = new Dictionary<string, Channel>();
-                this.channelsList = new List<Channel>();
-
-                foreach (var id in this.channelIds)
-                {
-                    var channel = new Channel(id);
-                    this.channelsHash.Add(id, channel);
-                    this.channelsList.Add(channel);
-                }
-            }
-
-            if (this.channelsHash.TryGetValue(channelId, out Channel result))
-            {
-                return result;
-            }
-
-            return null;
         }
 
         //// TODO [bgish]: This can be highly optimized.  Picking up where we last left off, or having
@@ -112,100 +95,29 @@ namespace Lost
         ////               works for now though, so going with it.
         private AudioSource GetAudioSource()
         {
-            int poolCount = this.audioSourcePool.Count;
+            int poolCount = this.audioSourcePoolItems.Count;
 
             for (int i = 0; i < poolCount; i++)
             {
-                if (this.audioSourcePool[i].isPlaying == false)
+                if (this.audioSourcePoolItems[i].isPlaying == false)
                 {
-                    return this.audioSourcePool[i];
+                    return this.audioSourcePoolItems[i];
                 }
             }
 
             // If we got here, then we need to grow the pool
-            this.audioSourcePool.Capacity = this.audioSourcePool.Count + this.audioSourcePoolGrowSize;
+            Debug.LogError("AudioManager Pool Forced to Grow. Please set initial capacity ahead of time so this doesn't happen at runtime.", this);
+            this.audioSourcePoolItems.Capacity = this.audioSourcePoolItems.Count + this.audioSourcePoolGrowSize;
 
             for (int i = 0; i < this.audioSourcePoolGrowSize; i++)
             {
-                this.AddToPool();
+                var poolItem = GameObject.Instantiate(this.audioSourcePrefab, this.audioPool.transform);
+                poolItem.enabled = false;
+                poolItem.name = new BetterStringBuilder().Append("Audio Source ").Append(this.audioSourcePoolItems.Count).ToString();
+                this.audioSourcePoolItems.Add(poolItem);
             }
 
-            return this.audioSourcePool[poolCount];
-        }
-
-        private void AddToPool()
-        {
-            var poolItem = GameObject.Instantiate(this.audioSourcePrefab, this.audioPool.transform);
-            poolItem.gameObject.SetActive(false);
-            poolItem.name = "Audio Source " + this.audioSourcePool.Count;
-            this.audioSourcePool.Add(poolItem);
-        }
-
-        public class Channel
-        {
-            private float volume;
-            private bool isMuted;
-            private string volumeKey;
-            private string isMutedKey;
-
-            public Channel(string id)
-            {
-                this.Id = id;
-                this.IsDirty = false;
-                this.volumeKey = $"AudioChannel.{this.Id}.Volume";
-                this.isMutedKey = $"AudioChannel.{this.Id}.IsMuted";
-                this.volume = LostPlayerPrefs.GetInt(this.volumeKey, 100) / 100.0f;
-                this.isMuted = LostPlayerPrefs.GetBool(this.isMutedKey, false);
-            }
-
-            public string Id { get; private set; }
-
-            public bool IsDirty { get; private set; }
-
-            public float Volume
-            {
-                get
-                {
-                    return this.volume;
-                }
-
-                set
-                {
-                    if (this.volume != value)
-                    {
-                        this.IsDirty = true;
-                        this.volume = value;
-                    }
-                }
-            }
-
-            public bool IsMuted
-            {
-                get
-                {
-                    return this.isMuted;
-                }
-
-                set
-                {
-                    if (this.isMuted != value)
-                    {
-                        this.IsDirty = true;
-                        this.isMuted = value;
-                    }
-                }
-            }
-
-            public void Save()
-            {
-                if (this.IsDirty)
-                {
-                    this.IsDirty = false;
-                    LostPlayerPrefs.SetInt(this.volumeKey, (int)(this.Volume * 100));
-                    LostPlayerPrefs.SetBool(this.isMutedKey, this.IsMuted);
-                    LostPlayerPrefs.Save();
-                }
-            }
+            return this.audioSourcePoolItems[poolCount];
         }
     }
 }

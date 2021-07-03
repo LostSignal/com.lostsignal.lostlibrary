@@ -25,6 +25,10 @@ namespace Lost
 
     public sealed class RealtimeMessageManager : Manager<RealtimeMessageManager>
     {
+        #pragma warning disable 0649
+        [SerializeField] private bool printDebugOutput;
+        #pragma warning restore 0649
+
 #if USING_ABLY
         private Dictionary<string, Type> messageTypes = new Dictionary<string, Type>();
         private HashSet<string> subscribedChannels = new HashSet<string>();
@@ -70,7 +74,8 @@ namespace Lost
         public void RegisterType<T>() where T : RealtimeMessage, new()
         {
 #if USING_ABLY
-            this.messageTypes.Add(typeof(T).Name, typeof(T));
+            var instance = Activator.CreateInstance(typeof(T)) as RealtimeMessage;
+            this.messageTypes.Add(instance.Type, typeof(T));
 #endif
         }
 
@@ -124,7 +129,10 @@ namespace Lost
 
                 // TODO [bgish]: Forward realtimeMessage onto the message subscription system
 
-                Debug.Log($"Received RealtimeMessage of type {realtimeMessageType} and json: {json}");
+                if (this.printDebugOutput)
+                {
+                    Debug.Log($"Received RealtimeMessage of type {realtimeMessageType} and json: {json}");
+                }
             }
             else
             {

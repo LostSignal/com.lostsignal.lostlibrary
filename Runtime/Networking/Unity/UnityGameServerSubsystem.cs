@@ -61,6 +61,8 @@ namespace Lost.Networking
         private GameServer gameServer;
         private long serverId = InvalidId;
 
+        public string Name => nameof(UnityGameServerSubsystem);
+
         public void Initialize(GameServer gameServer)
         {
             this.gameServer = gameServer;

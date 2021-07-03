@@ -327,9 +327,15 @@ namespace Lost
 
         private IEnumerator WaitForManagersToInitialize()
         {
-            List<IManager> managers = new List<IManager>(ManagerTracker.Managers);
-            List<IManager> managersToRemove = new List<IManager>(managers.Count);
-            int initialManagersCount = managers.Count;
+            int initialManagersCount = ManagerTracker.Managers.Count;
+            List<IManager> managers = new List<IManager>(initialManagersCount);
+            List<IManager> managersToRemove = new List<IManager>(initialManagersCount);
+
+            // Populating the manager list with all known managers
+            for (int i = 0; i < initialManagersCount; i++)
+            {
+                managers.Add(ManagerTracker.Managers[i]);
+            }
 
             while (managers.Count > 0)
             {

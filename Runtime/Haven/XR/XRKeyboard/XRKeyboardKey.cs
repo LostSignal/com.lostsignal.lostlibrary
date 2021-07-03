@@ -52,18 +52,24 @@ namespace Lost
             base.OnPointerDown(eventData);
         }
 
+#if UNITY_EDITOR
         protected override void OnValidate()
         {
             base.OnValidate();
-
-            this.AssertGetComponent(ref this.text);
-            this.AssertGetComponentInParent(ref this.xrKeyboard);
+            this.FindComponents();
         }
+#endif
 
         protected override void Awake()
         {
             base.Awake();
-            this.OnValidate();
+            this.FindComponents();
+        }
+
+        private void FindComponents()
+        {
+            this.AssertGetComponent(ref this.text);
+            this.AssertGetComponentInParent(ref this.xrKeyboard);
         }
     }
 }

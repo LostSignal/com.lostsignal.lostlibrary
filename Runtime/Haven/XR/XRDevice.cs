@@ -38,9 +38,9 @@ namespace Lost
 #pragma warning disable 0649
         [SerializeField] private XRType xrType;
         [SerializeField] private XRLoader xrLoader;
-        [SerializeField] private List<string> deviceNames = new List<string>();
-        [SerializeField] private List<string> hmdDeviceNames = new List<string>();
-        [SerializeField] private List<RuntimePlatform> platforms = new List<RuntimePlatform>();
+        [SerializeField] private List<string> deviceNames;
+        [SerializeField] private List<string> hmdDeviceNames;
+        [SerializeField] private List<RuntimePlatform> platforms;
 #pragma warning restore 0649
 
         public XRType XRType => this.xrType;
@@ -56,19 +56,19 @@ namespace Lost
         public bool IsApplicable(string deviceName, string hmdDeviceName, RuntimePlatform platform)
         {
             // Making sure platform matches
-            if (this.platforms.Count > 0 && this.platforms.Contains(platform) == false)
+            if (this.platforms?.Count > 0 && this.platforms.Contains(platform) == false)
             {
                 return false;
             }
 
             // Making sure device name matches
-            if (this.deviceNames.Count > 0 && this.deviceNames.Contains(deviceName) == false)
+            if (this.deviceNames?.Count > 0 && this.deviceNames.Contains(deviceName) == false)
             {
                 return false;
             }
 
             // Making sure hmd device names match
-            if (this.hmdDeviceNames.Count > 0 && this.hmdDeviceNames.Contains(hmdDeviceName) == false)
+            if (this.hmdDeviceNames?.Count > 0 && this.hmdDeviceNames.Contains(hmdDeviceName) == false)
             {
                 return false;
             }

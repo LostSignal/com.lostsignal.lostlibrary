@@ -303,7 +303,7 @@ namespace Lost.Networking
 
             if (len >= k_MaxStringLength)
             {
-                throw new IndexOutOfRangeException("Serialize(string) too long: " + value.Length);
+                throw new IndexOutOfRangeException($"Serialize(string) too long: {value.Length}");
             }
 
             Write((ushort)(len));

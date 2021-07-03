@@ -76,12 +76,12 @@ namespace Lost
 
         protected virtual void OnEnable()
         {
-            ManagerTracker.AddManager(this);
+            ManagerTracker.Managers.Add(this);
         }
 
         protected virtual void OnDisable()
         {
-            ManagerTracker.RemoveManager(this);
+            ManagerTracker.Managers.Remove(this);
 
             instance = null;
             isInitialized = false;
@@ -90,7 +90,7 @@ namespace Lost
 
         protected void SetInstance(T newInstance)
         {
-            Debug.Assert(Instance == null, $"Manager {typeof(T).Name}'s Instance is not null!");
+            Debug.AssertFormat(Instance == null, "Manager {0}'s Instance is not null!", typeof(T).Name);
             instance = newInstance;
             isInitialized = true;
             onInitialized?.Invoke();

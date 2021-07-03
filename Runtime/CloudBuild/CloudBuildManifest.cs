@@ -20,7 +20,7 @@ namespace Lost.CloudBuild
         private CloudBuildManifest(string json)
         {
             this.json = json;
-            this.dictionary = MiniJSON.Json.Deserialize(json) as Dictionary<string, object>;
+            this.dictionary = JsonUtil.Deserialize<Dictionary<string, object>>(json);
         }
 
         public string CloudBuildTargetName

@@ -14,6 +14,8 @@ namespace Lost
 #if !UNITY
         private global::PlayFab.PlayFabAuthenticationContext titleAuthenticationContext;
 #endif
+        
+        public string Name => nameof(ValidatePlayFabSessionTicketSubsystem);
 
         public void Initialize(GameServer gameServer)
         {

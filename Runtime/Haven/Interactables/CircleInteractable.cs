@@ -70,7 +70,7 @@ namespace HavenXR
                     }
                     else
                     {
-                        Debug.LogErrorFormat("CircleInteractable found unknown rotationalAxis {0}", this.rotationalAxis);
+                        Debug.LogError($"CircleInteractable found unknown rotationalAxis {this.rotationalAxis}", this);
                     }
 
                     this.spinningTransform.localRotation = Quaternion.Euler(localRotation);
@@ -122,7 +122,7 @@ namespace HavenXR
             }
             else
             {
-                Debug.LogErrorFormat("CircleInteractable found unknown rotationalAxis {0}", this.rotationalAxis);
+                Debug.LogError($"CircleInteractable found unknown rotationalAxis {this.rotationalAxis}", this);
                 interactablePlane = default(Plane);
             }
 

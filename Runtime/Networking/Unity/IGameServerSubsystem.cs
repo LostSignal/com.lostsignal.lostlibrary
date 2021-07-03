@@ -10,6 +10,8 @@ namespace Lost.Networking
 
     public interface IGameServerSubsystem
     {
+        string Name { get; }
+
         void Initialize(GameServer gameServer);
 
         Task<bool> Run();

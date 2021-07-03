@@ -16,7 +16,7 @@ namespace Lost.DissonanceIntegration
 
     public class LostServer : BaseServer<LostServer, LostClient, LostConn>
     {
-        private ConcurrentList<DissonanceMessage> messages = new ConcurrentList<DissonanceMessage>();
+        private ConcurrentList<DissonanceMessage> messages = new ConcurrentList<DissonanceMessage>(50);
         private GameServer gameServer;
 
         // Temp Data

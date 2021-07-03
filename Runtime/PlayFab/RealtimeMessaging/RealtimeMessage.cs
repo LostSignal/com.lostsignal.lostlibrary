@@ -8,6 +8,6 @@ namespace Lost
 {
     public abstract class RealtimeMessage
     {
-        public string Type => this.GetType().Name;
+        public abstract string Type { get; }
     }
 }

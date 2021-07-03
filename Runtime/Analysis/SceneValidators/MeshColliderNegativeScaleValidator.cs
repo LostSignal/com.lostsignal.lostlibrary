@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY_EDITOR
+
 namespace Lost
 {
     using System.Collections.Generic;
@@ -48,3 +50,5 @@ namespace Lost
         }
     }
 }
+
+#endif

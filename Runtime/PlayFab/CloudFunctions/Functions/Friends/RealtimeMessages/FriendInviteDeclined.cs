@@ -6,7 +6,8 @@
 
 namespace Lost.CloudFunctions.Friends
 {
-    public class FriendInviteDeclined : RealtimeMessage
+    public sealed class FriendInviteDeclined : RealtimeMessage
     {
+        public override string Type => nameof(FriendInviteDeclined);
     }
 }

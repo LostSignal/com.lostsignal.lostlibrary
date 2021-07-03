@@ -33,7 +33,6 @@ namespace Lost.Networking
         }
 
         private static readonly NetworkIdentityUpdate UpdateNetworkIdentityMessageCache = new NetworkIdentityUpdate();
-        private static readonly List<NetworkIdentity> FoundNetworkIdentitiesCache = new List<NetworkIdentity>();
 
         public delegate void NetworkIdentityDestroyedDelegate(long networkId);
 
@@ -83,9 +82,9 @@ namespace Lost.Networking
             {
                 foreach (var rootObject in scene.GetRootGameObjects())
                 {
-                    FoundNetworkIdentitiesCache.Clear();
-                    rootObject.GetComponentsInChildren<NetworkIdentity>(true, FoundNetworkIdentitiesCache);
-                    networkIdentities.AddRange(FoundNetworkIdentitiesCache);
+                    Lost.Caching.NetworkIdentities.Clear();
+                    rootObject.GetComponentsInChildren(true, Lost.Caching.NetworkIdentities);
+                    networkIdentities.AddRange(Lost.Caching.NetworkIdentities);
                 }
             }
         }
@@ -183,7 +182,7 @@ namespace Lost.Networking
             this.gameClient = gameClient;
         }
 
-        public void SendMessage(Message message, bool reliable = true)
+        public void SendNetworkMessage(Message message, bool reliable = true)
         {
             this.gameClient.SendMessage(message, reliable);
         }
@@ -204,7 +203,7 @@ namespace Lost.Networking
             NetworkIdentityRequestUpdateCache.DestoryOnDisconnect = this.destoryOnDisconnect;
             NetworkIdentityRequestUpdateCache.CanChangeOwner = this.canChangeOwner;
 
-            this.SendMessage(NetworkIdentityRequestUpdateCache);
+            this.SendNetworkMessage(NetworkIdentityRequestUpdateCache);
         }
 
         public int GetBehaviourIndex(NetworkBehaviour behaviour)

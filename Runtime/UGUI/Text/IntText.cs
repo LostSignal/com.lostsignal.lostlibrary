@@ -119,7 +119,7 @@ namespace Lost
             float startValue = this.intValue;
             float endValue = this.goalValue;
             float difference = endValue - startValue;
-            float animationTime = this.animationCurve.keys.Last().time;
+            float animationTime = this.animationCurve.TimeLength();
             float currentTime = 0;
 
             while (currentTime < animationTime)

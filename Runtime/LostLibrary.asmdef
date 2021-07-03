@@ -7,6 +7,7 @@
         "GUID:84651a3751eca9349aac36a66bba901b",
         "GUID:ff6de30450f3748908ff580f6ec64d9a",
         "GUID:60bfecf5cb232594891bc622f40d6bed",
+        "GUID:08d1c582746949b40ba6a45cdb776bdf",
         "GUID:c2c4797f08fb0e049af551d9a49e63e3",
         "GUID:990bca087afc58b44abfab274b5997a0",
         "GUID:33b8cd66dd96fb344a4d5704771ac2e2",
@@ -20,9 +21,7 @@
         "GUID:315d634a9ac6d460a9515f5a56be6311"
     ],
     "includePlatforms": [],
-    "excludePlatforms": [
-        "PS4"
-    ],
+    "excludePlatforms": [],
     "allowUnsafeCode": true,
     "overrideReferences": true,
     "precompiledReferences": [

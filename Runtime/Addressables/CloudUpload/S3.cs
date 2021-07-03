@@ -99,10 +99,10 @@ namespace Lost.Addressables
                 var s = www.Send();
                 #pragma warning restore
 
-                long startTick = DateTime.Now.Ticks;
+                long startTick = DateTime.UtcNow.Ticks;
                 while (!s.isDone)
                 {
-                    if (DateTime.Now.Ticks > startTick + 10L * 10000000L)
+                    if (DateTime.UtcNow.Ticks > startTick + 10L * 10000000L)
                     {
                         UnityEngine.Debug.LogWarning("Timeout");
                         break;

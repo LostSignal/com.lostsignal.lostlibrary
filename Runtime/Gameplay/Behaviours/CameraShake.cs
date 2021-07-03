@@ -15,7 +15,7 @@ namespace Lost
     ////
     public sealed class CameraShake : LoadBalancedMonoBehaviour
     {
-        private static readonly ComponentTracker<CameraShake> Shakers = new ComponentTracker<CameraShake>(5);
+        private static readonly ObjectTracker<CameraShake> Shakers = new ObjectTracker<CameraShake>(5);
         private static readonly string CameraShakeUpdateChannel = "CameraShake";
 
 #pragma warning disable 0649

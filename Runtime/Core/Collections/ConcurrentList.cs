@@ -16,10 +16,25 @@ namespace Lost
         [SerializeField]
         private List<T> items = new List<T>();
 
+        public ConcurrentList()
+        {
+            this.items = new List<T>();
+        }
+        
+        public ConcurrentList(int capacity)
+        {
+            this.items = new List<T>(capacity);
+        }
+
         public void Add(T item)
         {
             lock (this.itemsLock)
             {
+                if (this.items.Capacity == this.items.Count)
+                {
+                    Debug.LogWarning("ConcurrentList Had to grow at runtime, consider increasing it's default capacity.");
+                }
+
                 this.items.Add(item);
             }
         }

@@ -8,21 +8,24 @@
 
 namespace Lost
 {
+    using System.Collections.Generic;
     using System.Linq;
     using UnityEngine;
 
     [ExecuteInEditMode]
     public class Spline : MonoBehaviour
     {
+        private static readonly List<SplinePoint> SplinePointsCache = new List<SplinePoint>();
+
         #pragma warning disable 0649
         [SerializeField] private bool isLooping;
+        [SerializeField] [HideInInspector] private List<SplinePoint> children;
         #pragma warning restore 0649
 
-        // used to calculate the length of the spline
-        private SplinePoint[] children;
+        // Used to calculate the length of the spline
         private float splineLength;
 
-        // used for caching
+        // Used for caching
         private float lastDesiredLength = float.MaxValue;
         private float currentSplineLength = 0;
         private int cachedIndex = 0;
@@ -54,10 +57,16 @@ namespace Lost
 
         public Vector3 Evaluate(float desiredLength)
         {
-            // early out if we've reached the end
+            if (this.children.Count == 0)
+            {
+                Debug.LogError($"Trying to Evaluate Spline {this.name} which has no Spline Points.", this);
+                return Vector3.negativeInfinity;
+            }
+
+            // Early out if we've reached the end
             if (desiredLength >= this.splineLength)
             {
-                return this.isLooping ? this.children.First().transform.position : this.children.Last().transform.position;
+                return this.isLooping ? this.children[0].transform.position : this.children.Last().transform.position;
             }
 
             // if this desiredLength isn't greater than the last, then start from beginning and don't used cached values
@@ -70,7 +79,7 @@ namespace Lost
             // cache the desired length to test against for next time
             this.lastDesiredLength = desiredLength;
 
-            for (int i = cachedIndex; i < this.children.Length; i++)
+            for (int i = cachedIndex; i < this.children.Count; i++)
             {
                 float currentLength = desiredLength - this.currentSplineLength;
                 float childLength = this.children[i].Length;
@@ -90,32 +99,24 @@ namespace Lost
             return this.children[0].transform.position;
         }
 
+        public int GetSplinePointCount() => this.children.Count;
+
+        public int GetSplinePointIndex(SplinePoint splinePoint)
+        {
+            return this.children.IndexOf(splinePoint);
+        }
+
+        public SplinePoint GetSplinePoint(int index)
+        {
+            return this.children[index];
+        }
+
         private void Awake()
         {
-            if (Application.isPlaying == false)
-            {
-                // creating two spline point children if none exist in editor mode
-                if (this.GetComponentsInChildren<SplinePoint>().Length == 0)
-                {
-                    var p1 = new GameObject("SplinePoint (0)", typeof(SplinePoint));
-                    p1.transform.SetParent(this.transform);
-                    p1.transform.localPosition = Vector3.zero;
+            Debug.Assert(this.children.Count > 1, "Spline doesn't have enough child nodes.  Must have at least 2 spline points.", this);
 
-                    var p2 = new GameObject("SplinePoint (1)", typeof(SplinePoint));
-                    p2.transform.SetParent(this.transform);
-                    p2.transform.localPosition = Vector3.one;
-                }
-
-                return;
-            }
-
-            this.children = this.GetComponentsInChildren<SplinePoint>();
-
-            Debug.Assert(this.children.Length > 1, "Spline doesn't have enough child nodes.  Must have at least 2 spline points.", this);
-            Debug.Assert(this.children.Length == this.transform.childCount, "Spline contains unknown children.  All children must be of type SplinePoint.", this);
-
-            // getting the total length by summing the children
-            for (int i = 0; i < this.children.Length; i++)
+            // Getting the total length by summing the children
+            for (int i = 0; i < this.children.Count; i++)
             {
                 this.children[i].Initialize();
                 this.splineLength += this.children[i].Length;
@@ -124,7 +125,7 @@ namespace Lost
 
         private static float Interpolate(float p0, float p1, float p2, float p3, float t)
         {
-            // formula from "Cubic Bézier curves" section on http://en.wikipedia.org/wiki/B%C3%A9zier_curve
+            // Formula from "Cubic Bézier curves" section on http://en.wikipedia.org/wiki/B%C3%A9zier_curve
             return (1.0f - t) * (1.0f - t) * (1.0f - t) * p0 +
                 3 * (1.0f - t) * (1.0f - t) * t * p1 +
                 3 * (1.0f - t) * t * t * p2 +
@@ -132,18 +133,48 @@ namespace Lost
         }
 
         #if UNITY_EDITOR
+
         private void Update()
         {
-            this.AutoOrientChildPoints();
-        }
-
-        private void AutoOrientChildPoints()
-        {
-            int childCount = this.transform.childCount;
-
-            for (int currentIndex = 0; currentIndex < childCount; currentIndex++)
+            if (Application.isPlaying)
             {
-                SplinePoint currentPoint = this.transform.GetChild(currentIndex).GetComponent<SplinePoint>();
+                return;
+            }
+
+            SplinePointsCache.Clear();
+            this.GetComponentsInChildren(SplinePointsCache);
+
+            // Making sure we're initialized
+            if (this.children == null)
+            {
+                this.children = new List<SplinePoint>();
+            }
+
+            // Making sure we at least have 2 Children to work with
+            if (SplinePointsCache.Count == 0)
+            {
+                var p1 = new GameObject("SplinePoint (0)", typeof(SplinePoint));
+                p1.transform.SetParent(this.transform);
+                p1.transform.localPosition = Vector3.zero;
+
+                var p2 = new GameObject("SplinePoint (1)", typeof(SplinePoint));
+                p2.transform.SetParent(this.transform);
+                p2.transform.localPosition = Vector3.one;
+
+                return;
+            }
+
+            // If Children have changed (added/remove), then get the child list again
+            if (this.children.Count != SplinePointsCache.Count)
+            {
+                this.children.Clear();
+                this.children.AddRange(SplinePointsCache);
+            }
+
+            // Auto Orienting Child Points
+            for (int i = 0; i < this.children.Count; i++)
+            {
+                SplinePoint currentPoint = this.children[i];
 
                 if (currentPoint.AutoOrient == false)
                 {
@@ -155,18 +186,18 @@ namespace Lost
 
                 if (this.IsLooping)
                 {
-                    previousIndex = currentIndex == 0 ? childCount - 1 : currentIndex - 1;
-                    nextIndex = (currentIndex == (childCount - 1)) ? 0 : currentIndex + 1;
+                    previousIndex = i == 0 ? this.children.Count - 1 : i - 1;
+                    nextIndex = (i == (this.children.Count - 1)) ? 0 : i + 1;
                 }
                 else
                 {
-                    previousIndex = currentIndex == 0 ? 0 : currentIndex - 1;
-                    nextIndex = (currentIndex == (childCount - 1)) ? childCount - 1 : currentIndex + 1;
+                    previousIndex = i == 0 ? 0 : i - 1;
+                    nextIndex = (i == (this.children.Count - 1)) ? this.children.Count - 1 : i + 1;
                 }
 
-                Vector3 previousPosition = this.transform.GetChild(previousIndex).position;
+                Vector3 previousPosition = this.children[previousIndex].transform.position;
                 Vector3 currentPosition = currentPoint.transform.position;
-                Vector3 nextPosition = this.transform.GetChild(nextIndex).position;
+                Vector3 nextPosition = this.children[nextIndex].transform.position;
 
                 // setting the spline points rotation
                 Vector3 direction = nextPosition - previousPosition;

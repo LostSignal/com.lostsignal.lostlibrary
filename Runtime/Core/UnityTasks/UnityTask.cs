@@ -20,13 +20,13 @@ namespace Lost
     /// <typeparam name="T">The return type of the task.</typeparam>
     public class UnityTask<T> : CustomYieldInstruction, IUnityTask
     {
-        private float timeoutInSeconds;
-        private DateTime startTime;
+        private double timeoutInSeconds;
+        private double startTime;
         private T value;
 
-        private UnityTask(MonoBehaviour gameObject, IEnumerator<T> coroutine, float timeoutInSeconds)
+        private UnityTask(MonoBehaviour gameObject, IEnumerator<T> coroutine, double timeoutInSeconds)
         {
-            this.startTime = DateTime.Now;
+            this.startTime = Time.realtimeSinceStartupAsDouble;
             this.timeoutInSeconds = timeoutInSeconds;
             gameObject.StartCoroutine(this.InternalCoroutine(coroutine));
         }
@@ -112,8 +112,8 @@ namespace Lost
                     yield break;
                 }
 
-                // checking for timeout
-                if (DateTime.Now.Subtract(this.startTime).TotalSeconds > this.timeoutInSeconds)
+                // Checking for timeout
+                if (Time.realtimeSinceStartupAsDouble - this.startTime > this.timeoutInSeconds)
                 {
                     this.Exception = new UnityTaskTimeoutException();
                     this.DidTimeout = true;

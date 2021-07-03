@@ -329,7 +329,7 @@ namespace Lost.PlayFab
                 Debug.AssertFormat(catalogItem != null, "Couln't find CatalogItem {0}", e.purchasedProduct.definition.id);
 
                 Debug.AssertFormat(e.purchasedProduct.hasReceipt, "Purchased item {0} doesn't have a receipt", e.purchasedProduct.definition.id);
-                var receipt = (Dictionary<string, object>)Lost.AppConfig.MiniJSON.Json.Deserialize(e.purchasedProduct.receipt);
+                var receipt = JsonUtil.Deserialize<Dictionary<string, object>>(e.purchasedProduct.receipt);
                 Debug.AssertFormat(receipt != null, "Unable to parse receipt {0}", e.purchasedProduct.receipt);
 
                 var store = (string)receipt["Store"];
@@ -373,7 +373,7 @@ namespace Lost.PlayFab
                 }
                 else if (Platform.CurrentDevicePlatform == DevicePlatform.Android)
                 {
-                    var details = (Dictionary<string, object>)Lost.AppConfig.MiniJSON.Json.Deserialize(payload);
+                    var details = JsonUtil.Deserialize<Dictionary<string, object>>(payload);
                     Debug.AssertFormat(details != null, "Unable to parse Receipt Payload {0}", payload);
 
                     Debug.AssertFormat(details.ContainsKey("json"), "Receipt Payload doesn't have \"json\" key: {0}", payload);

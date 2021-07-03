@@ -11,7 +11,7 @@ namespace Lost
 
     public static class ColorUtil
     {
-        private static Dictionary<char, int> hexToDecimal = new Dictionary<char, int>()
+        private static readonly Dictionary<char, int> hexToDecimal = new Dictionary<char, int>()
         {
             { '0', 0 }, { '1', 1 }, { '2', 2 }, { '3', 3 }, { '4', 4 },
             { '5', 5 }, { '6', 6 }, { '7', 7 }, { '8', 8 }, { '9', 9 },
@@ -23,7 +23,7 @@ namespace Lost
             { 'f', 15 }, { 'F', 15 },
         };
 
-        private static char[] decimalToHex = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+        private static readonly char[] decimalToHex = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
         public static UnityEngine.Color ParseColorHexString(string colorHexString)
         {

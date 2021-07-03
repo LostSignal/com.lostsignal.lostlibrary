@@ -15,7 +15,7 @@ namespace Lost
     public class AudioBlock : ScriptableObject
     {
 #pragma warning disable 0649
-        [SerializeField] private string channelId;
+        [SerializeField] private AudioChannel audioChannel;
         [SerializeField] private AudioClip[] audioClips;
         [SerializeField] private float minPitch = 1.0f;
         [SerializeField] private float maxPitch = 1.0f;
@@ -33,10 +33,10 @@ namespace Lost
             RoundRobin,
         }
 
-        public string ChannelId
+        public AudioChannel AudioChannel
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => this.channelId;
+            get => this.audioChannel;
         }
 
         public void Play()

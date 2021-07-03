@@ -18,7 +18,7 @@ namespace Lost.DissonanceIntegration
     {
         public static LostClient Current { get; private set; }
 
-        private ConcurrentList<DissonanceMessage> messages = new ConcurrentList<DissonanceMessage>();
+        private ConcurrentList<DissonanceMessage> messages = new ConcurrentList<DissonanceMessage>(50);
 
         // Temp Data
         private List<DissonanceMessage> tempMessages = new List<DissonanceMessage>();

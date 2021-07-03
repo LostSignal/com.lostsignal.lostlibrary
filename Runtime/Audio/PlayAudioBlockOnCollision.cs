@@ -56,9 +56,11 @@ namespace Lost
 
             this.minimumNextPlayTime = Time.time + this.playAudioBlockCooldown;
 
-            if (other.contactCount > 0)
+            int contactsCount = other.GetContacts(Caching.ContactPointsCache);
+
+            if (contactsCount > 0)
             {
-                this.audioBlock.Play(other.contacts[0].point);
+                this.audioBlock.Play(Caching.ContactPointsCache[0].point);
             }
         }
     }

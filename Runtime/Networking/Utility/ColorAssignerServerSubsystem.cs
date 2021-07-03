@@ -35,6 +35,8 @@ namespace Lost.Networking
         private List<string> colorPool = new List<string>();
         private object colorLock = new object();
         private GameServer gameServer = null;
+        
+        public string Name => nameof(ColorAssignerServerSubsystem);
 
         public void Initialize(GameServer gameServer)
         {

@@ -363,8 +363,19 @@ namespace Lost
             Debug.AssertFormat(this.animator.HasState(0, ShowHash), this, "Dialog {0}'s Animator doesn't have a \"Show\" state.", this.gameObject.name);
             Debug.AssertFormat(this.animator.HasState(0, HideHash), this, "Dialog {0}'s Animator doesn't have a \"Hide\" state.", this.gameObject.name);
 
-            var showingParameter = this.animator.parameters.FirstOrDefault(x => x.nameHash == ShowHash);
-            Debug.AssertFormat(showingParameter != null, this, "Dialog {0}'s Animator doesn't have a \"Show\" Bool parameter.", this.gameObject.name);
+            // Making sure the Boolean Show Parameter exists
+            bool foundShowParameter = false;
+            for (int i = 0; i < this.animator.parameterCount; i++)
+            {
+                var parameter = this.animator.GetParameter(i);
+                if (parameter.nameHash == ShowHash)
+                {
+                    foundShowParameter = true;
+                    break;
+                }
+            }
+
+            Debug.AssertFormat(foundShowParameter, this, "Dialog {0}'s Animator doesn't have a \"Show\" Bool parameter.", this.gameObject.name);            
 
             // making sure the content is setup correctly
             Debug.AssertFormat(this.contentRectTransform != null, this, "Dialog {0} dosen't contain a Content object with a RectTransform.", this.gameObject.name);

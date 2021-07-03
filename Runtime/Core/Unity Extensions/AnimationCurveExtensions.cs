@@ -35,7 +35,8 @@ namespace Lost
 
         public static float TimeLength(this AnimationCurve curve)
         {
-            return curve.keys[curve.keys.Length - 1].time;
+            var keys = curve.keys;
+            return keys[keys.Length - 1].time;
         }
     }
 }

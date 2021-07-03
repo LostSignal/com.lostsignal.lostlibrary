@@ -67,7 +67,8 @@ namespace Lost.Addressables
             resource.Append("\n");
             resource.Append("comp:list");
             resource.Append("\n");
-            resource.Append("prefix:" + prefix);
+            resource.Append("prefix:");
+            resource.Append(prefix);
             resource.Append("\n");
             resource.Append("restype:container");
 
