@@ -89,9 +89,9 @@ namespace Lost
                 return;
             }
 
-            DateTime startTime = DateTime.Now;
+            double startTime = Time.realtimeSinceStartupAsDouble;
 
-            while (this.callbackQueue.Count > 0 && DateTime.Now.Subtract(startTime).TotalMilliseconds < this.maxMilliseconds)
+            while (this.callbackQueue.Count > 0 && ((Time.realtimeSinceStartupAsDouble - startTime) * 1000.0) < this.maxMilliseconds)
             {
                 Callback callback = this.callbackQueue.Dequeue();
 

@@ -8,6 +8,7 @@
 
 namespace Lost
 {
+    using System.Runtime.CompilerServices;
     using UnityEngine;
 
     public class SplinePoint : MonoBehaviour
@@ -27,35 +28,58 @@ namespace Lost
 
         public bool AutoOrient
         {
-            get { return this.autoOrient; }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => this.autoOrient;
+        }
+        
+        public Vector3 Position
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => this.myTransform.position;
+        }
+
+        public Vector3 LocalPosition
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => this.myTransform.localPosition;
+        }
+
+        public Quaternion LocalRotation
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => this.myTransform.localRotation;
         }
 
         public Vector3 InHandle
         {
-            get { return this.inHandle; }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => this.inHandle;
 
             #if UNITY_EDITOR
-            set { this.inHandle = value; }
+            set => this.inHandle = value;
             #endif
         }
 
         public Vector3 OutHandle
         {
-            get { return this.outHandle; }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => this.outHandle;
 
             #if UNITY_EDITOR
-            set { this.outHandle = value; }
+            set => this.outHandle = value;
             #endif
         }
 
         public SplinePoint Next
         {
-            get { return this.nextPoint; }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => this.nextPoint;
         }
 
         public float Length
         {
-            get { return this.length; }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => this.length;
         }
 
         public void Initialize()

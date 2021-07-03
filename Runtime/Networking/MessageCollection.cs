@@ -32,7 +32,7 @@ namespace Lost.Networking
 
             if (this.messageTypes.ContainsKey(messageId))
             {
-                Debug.LogErrorFormat("Message Type {0} Has Duplicate Id {0}", message.GetType().Name, messageId);
+                Debug.LogError($"Message Type {message.GetType().Name} Has Duplicate Id {messageId}");
                 return;
             }
 
@@ -46,7 +46,7 @@ namespace Lost.Networking
 
             if (this.messagePools.ContainsKey(messageId) == false)
             {
-                Debug.LogErrorFormat("Tried to recycle Message {0} with Id {1} without registering it!", message.GetType().Name, messageId);
+                Debug.LogError($"Tried to recycle Message {message.GetType().Name} with Id {messageId} without registering it!");
                 return;
             }
 
@@ -69,7 +69,7 @@ namespace Lost.Networking
 
             if (this.messagePools.TryGetValue(messageId, out pool) == false)
             {
-                Debug.LogErrorFormat("Tried to get Message Id {0} without registering it!", messageId);
+                Debug.LogError($"Tried to get Message Id {messageId} without registering it!");
                 return null;
             }
 
@@ -89,7 +89,7 @@ namespace Lost.Networking
                 }
                 else
                 {
-                    Debug.LogErrorFormat("Tried to get Message Id {0} without registering it!", messageId);
+                    Debug.LogError($"Tried to get Message Id {messageId} without registering it!");
                     return null;
                 }
             }

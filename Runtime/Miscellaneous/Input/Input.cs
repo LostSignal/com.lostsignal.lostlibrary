@@ -8,7 +8,7 @@
 
 namespace Lost
 {
-    using System;
+    using System.Runtime.CompilerServices;
     using UnityEngine;
 
     public enum InputState : byte
@@ -38,27 +38,90 @@ namespace Lost
     [System.Serializable]
     public class Input
     {
-        public int Id { get; private set; }
+        public int Id
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
 
-        public int UnityFingerId { get; private set; }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private set;
+        }
 
-        public InputState InputState { get; private set; }
+        public int UnityFingerId
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
 
-        public InputType InputType { get; private set; }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private set;
+        }
 
-        public InputButton InputButton { get; private set; }
+        public InputState InputState
+        { 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+            
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private set;
+        }
 
-        public Vector2 StartPosition { get; private set; }
+        public InputType InputType
+        { 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+            
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private set;
+        }
 
-        public Vector2 PreviousPosition { get; private set; }
+        public InputButton InputButton
+        { 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+            
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private set;
+        }
 
-        public Vector2 CurrentPosition { get; private set; }
+        public Vector2 StartPosition
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private set;
+        }
+
+        public Vector2 PreviousPosition
+        {    
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+            
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private set;
+        }
+
+        public Vector2 CurrentPosition
+        { 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+            
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private set;
+        }
 
         /// <summary>
         /// Gets the time this input was first pressed in milliseconds since the app started.
         /// </summary>
         /// <value>The first pressed time.</value>
-        public DateTime FirstPressed { get; private set; }
+        public double FirstPressed
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private set;
+        }
 
         /// <summary>
         /// Gets the number of milliseconds that have passed since this input was pressed.
@@ -66,7 +129,8 @@ namespace Lost
         /// <value>The elapsed pressed time in milliseconds.</value>
         public double ElapsedPressedTimeInMillis
         {
-            get { return DateTime.Now.Subtract(this.FirstPressed).TotalMilliseconds; }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => (Time.realtimeSinceStartupAsDouble - this.FirstPressed) * 1000.0;
         }
 
         /// <summary>
@@ -132,7 +196,7 @@ namespace Lost
             this.InputState = InputState.Pressed;
             this.InputType = inputType;
             this.InputButton = inputButton;
-            this.FirstPressed = DateTime.Now;
+            this.FirstPressed = Time.realtimeSinceStartupAsDouble;
         }
 
         public void Update(Vector2 position)

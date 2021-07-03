@@ -67,7 +67,7 @@ namespace Lost
         {
             if (this.audioClips == null || this.audioClips.Length == 0)
             {
-                Debug.LogError($"AudioBlock {this.name} has no AudioClip assigned.");
+                Debug.LogError($"AudioBlock {this.name} has no AudioClip assigned.", this);
                 return null;
             }
             else if (this.audioClips.Length == 1)
@@ -89,7 +89,7 @@ namespace Lost
                 }
                 else
                 {
-                    Debug.LogError($"AudioBlock {this.name} enountered unkonwn PlayType {this.playType}");
+                    Debug.LogError($"AudioBlock {this.name} enountered unkonwn PlayType {this.playType}", this);
                     return null;
                 }
             }

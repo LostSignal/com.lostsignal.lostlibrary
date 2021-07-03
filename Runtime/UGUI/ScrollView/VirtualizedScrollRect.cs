@@ -131,7 +131,7 @@ namespace Lost
             }
             else
             {
-                Debug.LogErrorFormat("VirtualizedScrollRect.CenterOnIndex incountered an unknown GrowType {0}", this.growType);
+                Debug.LogError($"VirtualizedScrollRect.CenterOnIndex incountered an unknown GrowType {this.growType}", this);
             }
         }
 
@@ -190,7 +190,7 @@ namespace Lost
 
             if (this.growType == GrowType.Horizontally)
             {
-                Debug.LogWarning("VirtualizedScrollRect has not been tested yet for Horizontal GrowType. It will probably not work.");
+                Debug.LogWarning("VirtualizedScrollRect has not been tested yet for Horizontal GrowType. It will probably not work.", this);
             }
 
             Lost.Localization.Localization.LanguagedChanged += this.ReplaceAllVisibleTiles;

@@ -9,6 +9,7 @@
 namespace Lost
 {
     using System;
+    using UnityEngine;
 
     public enum ButtonState
     {
@@ -20,8 +21,8 @@ namespace Lost
 
     public class KeyboardButton
     {
-        private DateTime pressedDateTime;
-        private DateTime releasedDateTime;
+        private double pressedTime;
+        private double releasedTime;
 
         public ButtonState State
         {
@@ -43,7 +44,7 @@ namespace Lost
             get { return this.State == ButtonState.Pressed; }
         }
 
-        public float PressedTime
+        public double PressedTime
         {
             get
             {
@@ -53,11 +54,11 @@ namespace Lost
                 }
                 else if (this.State == ButtonState.Held || this.State == ButtonState.Pressed)
                 {
-                    return (float)DateTime.Now.Subtract(this.pressedDateTime).TotalSeconds;
+                    return Time.realtimeSinceStartupAsDouble - this.pressedTime;
                 }
                 else if (this.State == ButtonState.Released)
                 {
-                    return (float)this.releasedDateTime.Subtract(this.pressedDateTime).TotalSeconds;
+                    return Time.realtimeSinceStartupAsDouble - this.pressedTime;
                 }
                 else
                 {
@@ -73,7 +74,7 @@ namespace Lost
                 if (isPressed)
                 {
                     this.State = ButtonState.Pressed;
-                    this.pressedDateTime = DateTime.Now;
+                    this.pressedTime = Time.realtimeSinceStartupAsDouble;
                 }
             }
             else if (this.State == ButtonState.Pressed)
@@ -85,7 +86,7 @@ namespace Lost
                 else
                 {
                     this.State = ButtonState.Released;
-                    this.releasedDateTime = DateTime.Now;
+                    this.releasedTime = Time.realtimeSinceStartupAsDouble;
                 }
             }
             else if (this.State == ButtonState.Held)
@@ -93,7 +94,7 @@ namespace Lost
                 if (isPressed == false)
                 {
                     this.State = ButtonState.Released;
-                    this.releasedDateTime = DateTime.Now;
+                    this.releasedTime = Time.realtimeSinceStartupAsDouble;
                 }
             }
             else if (this.State == ButtonState.Released)
@@ -101,7 +102,7 @@ namespace Lost
                 if (isPressed)
                 {
                     this.State = ButtonState.Pressed;
-                    this.pressedDateTime = DateTime.Now;
+                    this.pressedTime = Time.realtimeSinceStartupAsDouble;
                 }
                 else
                 {

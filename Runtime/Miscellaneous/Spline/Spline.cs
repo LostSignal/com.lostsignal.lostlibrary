@@ -9,7 +9,6 @@
 namespace Lost
 {
     using System.Collections.Generic;
-    using System.Linq;
     using UnityEngine;
 
     [ExecuteInEditMode]
@@ -42,10 +41,13 @@ namespace Lost
 
         public static Vector3 Interpolate(SplinePoint p1, SplinePoint p2, float percentage)
         {
-            Vector3 v1 = p1.transform.localPosition;
-            Vector3 v2 = p1.transform.localPosition + (p1.transform.localRotation * p1.OutHandle);
-            Vector3 v3 = p2.transform.localPosition + (p2.transform.localRotation * p2.InHandle);
-            Vector3 v4 = p2.transform.localPosition;
+            Vector3 p1LocalPosition = p1.LocalPosition;
+            Vector3 p2LocalPosition = p2.LocalPosition;
+
+            Vector3 v1 = p1LocalPosition;
+            Vector3 v2 = p1LocalPosition + (p1.LocalRotation * p1.OutHandle);
+            Vector3 v3 = p2LocalPosition + (p2.LocalRotation * p2.InHandle);
+            Vector3 v4 = p2LocalPosition;
 
             Vector3 interpolatedPoint = new Vector3(
                 Interpolate(v1.x, v2.x, v3.x, v4.x, percentage),
@@ -66,17 +68,17 @@ namespace Lost
             // Early out if we've reached the end
             if (desiredLength >= this.splineLength)
             {
-                return this.isLooping ? this.children[0].transform.position : this.children.Last().transform.position;
+                return this.isLooping ? this.children[0].Position : this.children[this.children.Count - 1].Position;
             }
 
-            // if this desiredLength isn't greater than the last, then start from beginning and don't used cached values
+            // If this desiredLength isn't greater than the last, then start from beginning and don't used cached values
             if (desiredLength < lastDesiredLength)
             {
                 this.cachedIndex = 0;
                 this.currentSplineLength = 0.0f;
             }
 
-            // cache the desired length to test against for next time
+            // Cache the desired length to test against for next time
             this.lastDesiredLength = desiredLength;
 
             for (int i = cachedIndex; i < this.children.Count; i++)
@@ -96,7 +98,7 @@ namespace Lost
             }
 
             Debug.LogError("Unable to correctly evaluate spline", this);
-            return this.children[0].transform.position;
+            return this.children[0].Position;
         }
 
         public int GetSplinePointCount() => this.children.Count;
@@ -195,9 +197,9 @@ namespace Lost
                     nextIndex = (i == (this.children.Count - 1)) ? this.children.Count - 1 : i + 1;
                 }
 
-                Vector3 previousPosition = this.children[previousIndex].transform.position;
-                Vector3 currentPosition = currentPoint.transform.position;
-                Vector3 nextPosition = this.children[nextIndex].transform.position;
+                Vector3 previousPosition = this.children[previousIndex].Position;
+                Vector3 currentPosition = currentPoint.Position;
+                Vector3 nextPosition = this.children[nextIndex].Position;
 
                 // setting the spline points rotation
                 Vector3 direction = nextPosition - previousPosition;
