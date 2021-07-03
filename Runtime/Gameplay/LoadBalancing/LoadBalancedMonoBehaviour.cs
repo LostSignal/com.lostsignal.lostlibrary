@@ -8,7 +8,7 @@ namespace Lost
 {
     using UnityEngine;
 
-    public abstract class LoadBalancedMonoBehaviour : MonoBehaviour, IUpdatable
+    public abstract class LoadBalancedMonoBehaviour : MonoBehaviour, IUpdatable, IAwakable, IStartable
     {
         private LoadBalancerReceipt awakeReceipt;
         private LoadBalancerReceipt startReceipt;
@@ -33,20 +33,20 @@ namespace Lost
                 }
                 else
                 {
-                    this.awakeReceipt = AwakeManager.Instance.QueueWork(RunAwake, this.Name, this);
+                    this.awakeReceipt = AwakeManager.Instance.QueueWork(this, this.Name, this);
                 }
             }
 
             void OnManagersReady()
             {
-                this.awakeReceipt = AwakeManager.Instance.QueueWork(RunAwake, this.Name, this);
+                this.awakeReceipt = AwakeManager.Instance.QueueWork(this, this.Name, this);
             }
+        }
 
-            void RunAwake()
-            {
-                this.LoadBalancedAwake();
-                this.awakeReceipt = default(LoadBalancerReceipt);
-            }
+        public void DoAwake()
+        {
+            this.LoadBalancedAwake();
+            this.awakeReceipt = default(LoadBalancerReceipt);
         }
 
         protected virtual void Start()
@@ -59,20 +59,20 @@ namespace Lost
                 }
                 else
                 {
-                    this.startReceipt = StartManager.Instance.QueueWork(RunStart, this.name, this);
+                    this.startReceipt = StartManager.Instance.QueueWork(this, this.name, this);
                 }
             }
 
             void OnManagersReady()
             {
-                this.startReceipt = StartManager.Instance.QueueWork(RunStart, this.name, this);
+                this.startReceipt = StartManager.Instance.QueueWork(this, this.name, this);
             }
+        }
 
-            void RunStart()
-            {
-                this.LoadBalancedStart();
-                this.startReceipt = default(LoadBalancerReceipt);
-            }
+        public void DoStart()
+        {
+            this.LoadBalancedStart();
+            this.startReceipt = default(LoadBalancerReceipt);
         }
 
         protected virtual void OnDestroy()

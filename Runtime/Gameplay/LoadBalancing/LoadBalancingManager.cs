@@ -15,14 +15,14 @@ namespace Lost
     ////               making our own Coroutine system is not trivial though, so not sure if that is the 
     ////               best solution.
     //// 
-    public abstract class LoadBalancingManager<T> : Manager<T>, IUpdatable
+    public abstract class LoadBalancingManager<T, I> : Manager<T>, IUpdatable
         where T : MonoBehaviour
     {
         public abstract string Name { get; }
 
         private struct Callback
         {
-            public Action Action;
+            public I Action;
             public float QueuedTime;
             public UnityEngine.Object Context;
             public string Description;
@@ -67,7 +67,7 @@ namespace Lost
             }
         }
 
-        public LoadBalancerReceipt QueueWork(Action action, string description, UnityEngine.Object context)
+        public LoadBalancerReceipt QueueWork(I action, string description, UnityEngine.Object context)
         {
             int index = this.callbackQueue.Enqueue(new Callback
             {
@@ -79,6 +79,8 @@ namespace Lost
 
             return LoadBalancerReceipt.New(index, context, this.CancelReceipt);
         }
+
+        protected abstract void Execute(I action);
 
         public virtual void DoUpdate(float deltaTime)
         {
@@ -101,7 +103,7 @@ namespace Lost
 
                 try
                 {
-                    callback.Action.Invoke();
+                    Execute(callback.Action);
                 }
                 catch (Exception ex)
                 {

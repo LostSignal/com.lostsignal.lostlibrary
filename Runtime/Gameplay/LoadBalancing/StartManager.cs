@@ -6,7 +6,12 @@
 
 namespace Lost
 {
-    public sealed class StartManager : LoadBalancingManager<StartManager>
+    public interface IStartable
+    {
+        void DoStart();
+    }
+
+    public sealed class StartManager : LoadBalancingManager<StartManager, IStartable>
     {
         public override string Name => nameof(StartManager);
         
@@ -23,6 +28,11 @@ namespace Lost
             {
                 base.DoUpdate(deltaTime);
             }
+        }
+
+        protected override void Execute(IStartable action)
+        {
+            action.DoStart();
         }
     }
 }

@@ -6,7 +6,12 @@
 
 namespace Lost
 {
-    public sealed class AwakeManager : LoadBalancingManager<AwakeManager>
+    public interface IAwakable
+    {
+        void DoAwake();
+    }
+
+    public sealed class AwakeManager : LoadBalancingManager<AwakeManager, IAwakable>
     {
         public override string Name => nameof(AwakeManager);
 
@@ -14,6 +19,11 @@ namespace Lost
         {
             base.Initialize();
             this.SetInstance(this);
+        }
+
+        protected override void Execute(IAwakable action)
+        {
+            action.DoAwake();
         }
     }
 }
