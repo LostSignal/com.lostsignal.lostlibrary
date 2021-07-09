@@ -43,6 +43,11 @@ namespace Lost.Networking
             Initialize();
         }
 
+        public void ResetBuffer(byte[] buffer)
+        {
+            m_buf.ResetBuffer(buffer);
+        }
+
         static void Initialize()
         {
             if (s_Encoding == null)

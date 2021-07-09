@@ -47,6 +47,11 @@ namespace Lost.Networking
             }
         }
 
+        public void ResetBuffer(byte[] buffer)
+        {
+            m_Buffer.ResetBuffer(buffer);
+        }
+
         public byte[] RawBuffer
         {
             get { return m_Buffer.RawBuffer; }

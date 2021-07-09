@@ -36,13 +36,19 @@ namespace Lost.Networking
 
         public NetBuffer()
         {
-            m_Buffer = new byte[k_InitialSize];
+            ResetBuffer(new byte[k_InitialSize]);
         }
 
-        // this does NOT copy the buffer
+        // This does NOT copy the buffer
         public NetBuffer(byte[] buffer)
         {
+            ResetBuffer(buffer);
+        }
+
+        public void ResetBuffer(byte[] buffer)
+        {
             m_Buffer = buffer;
+            m_Pos = 0;
         }
 
         public byte ReadByte()
