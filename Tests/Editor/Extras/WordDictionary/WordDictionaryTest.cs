@@ -14,10 +14,10 @@ namespace Lost
         [Test]
         public void Validate()
         {
-            string[] dictionaryAssetGuids = AssetDatabase.FindAssets("DefaultDictionary");
-            Assert.True(dictionaryAssetGuids.Length == 1, "Couldn't find default dictionary to test with.");
+            string dictionaryAssetPath = AssetDatabase.GUIDToAssetPath("09bf53d50e170ac4ea0f949dd001124a");
 
-            string dictionaryAssetPath = AssetDatabase.GUIDToAssetPath(dictionaryAssetGuids[0]);
+            Assert.False(string.IsNullOrWhiteSpace(dictionaryAssetPath), "Couldn't find \"English Dictionary\" to test with.");
+
             var dictionary = AssetDatabase.LoadAssetAtPath<WordDictionary>(dictionaryAssetPath);
 
             Assert.NotNull(dictionary);

@@ -192,37 +192,37 @@ namespace Lost
             }
         }
 
-        public void DeleteIntKey(string key) => this.DeleteKey(this.intData, key);
-        public void DeleteEnumKey(string key) => this.DeleteKey(this.enumData, key);
-        public void DeleteBoolKey(string key) => this.DeleteKey(this.boolData, key);
-        public void DeleteLongKey(string key) => this.DeleteKey(this.longData, key);
-        public void DeleteStringKey(string key) => this.DeleteKey(this.stringData, key);
-        public void DeleteByteArrayKey(string key) => this.DeleteKey(this.byteArrayData, key);
-        public void DeleteDateTimeKey(string key) => this.DeleteKey(this.dateTimeData, key);
+        public void DeleteInt(string key) => this.DeleteKey(this.intData, key);
+        public void DeleteEnum(string key) => this.DeleteKey(this.enumData, key);
+        public void DeleteBool(string key) => this.DeleteKey(this.boolData, key);
+        public void DeleteLong(string key) => this.DeleteKey(this.longData, key);
+        public void DeleteString(string key) => this.DeleteKey(this.stringData, key);
+        public void DeleteByteArray(string key) => this.DeleteKey(this.byteArrayData, key);
+        public void DeleteDateTime(string key) => this.DeleteKey(this.dateTimeData, key);
 
-        public int GetIntKey(string key, int defaultValue = 0) => this.GetKey(this.intData, key, defaultValue);
-        public T GetEnumtKey<T>(string key, T defaultValue = default(T)) => (T)Enum.ToObject(typeof(T), this.GetKey(this.enumData, key, Convert.ToInt32(defaultValue)));
-        public bool GetBoolKey(string key, bool defaultValue = false) => this.GetKey(this.boolData, key, defaultValue);
-        public long GetLongKey(string key, long defaultValue = 0) => this.GetKey(this.longData, key, defaultValue);
-        public string GetStringKey(string key, string defaultValue = null) => this.GetKey(this.stringData, key, defaultValue);
-        public byte[] GetByteArrayKey(string key, byte[] defaultValue = null) => this.GetKey(this.byteArrayData, key, defaultValue);
-        public DateTime GetDateTimeKey(string key, DateTime defaultValue) => this.GetKey(this.dateTimeData, key, defaultValue);
+        public int GetInt(string key, int defaultValue = 0) => this.GetKey(this.intData, key, defaultValue);
+        public T GetEnumt<T>(string key, T defaultValue = default(T)) => (T)Enum.ToObject(typeof(T), this.GetKey(this.enumData, key, Convert.ToInt32(defaultValue)));
+        public bool GetBool(string key, bool defaultValue = false) => this.GetKey(this.boolData, key, defaultValue);
+        public long GetLong(string key, long defaultValue = 0) => this.GetKey(this.longData, key, defaultValue);
+        public string GetString(string key, string defaultValue = null) => this.GetKey(this.stringData, key, defaultValue);
+        public byte[] GetByteArray(string key, byte[] defaultValue = null) => this.GetKey(this.byteArrayData, key, defaultValue);
+        public DateTime GetDateTime(string key, DateTime defaultValue) => this.GetKey(this.dateTimeData, key, defaultValue);
 
-        public bool HasIntKey(string key) => this.HasKey(this.intData, key);
-        public bool HasEnumKey(string key) => this.HasKey(this.enumData, key);
-        public bool HasBoolKey(string key) => this.HasKey(this.boolData, key);
-        public bool HasLongKey(string key) => this.HasKey(this.longData, key);
-        public bool HasStringKey(string key) => this.HasKey(this.stringData, key);
-        public bool HasByteArrayKey(string key) => this.HasKey(this.byteArrayData, key);
-        public bool HasDateTimeKey(string key) => this.HasKey(this.dateTimeData, key);
+        public bool HasInt(string key) => this.HasKey(this.intData, key);
+        public bool HasEnum(string key) => this.HasKey(this.enumData, key);
+        public bool HasBool(string key) => this.HasKey(this.boolData, key);
+        public bool HasLong(string key) => this.HasKey(this.longData, key);
+        public bool HasString(string key) => this.HasKey(this.stringData, key);
+        public bool HasByteArray(string key) => this.HasKey(this.byteArrayData, key);
+        public bool HasDateTime(string key) => this.HasKey(this.dateTimeData, key);
 
-        public void SetIntKey(string key, int value) => this.SetValueTypeKey(ref this.intData, key, value);
-        public void SetEnumKey<T>(string key, T value) => this.SetValueTypeKey(ref this.enumData, key, Convert.ToInt32(value));
-        public void SetBoolKey(string key, bool value) => this.SetValueTypeKey(ref this.boolData, key, value);
-        public void SetLongKey(string key, long value) => this.SetValueTypeKey(ref this.longData, key, value);
-        public void SetStringKey(string key, string value) => this.SetClassTypeKey(ref this.stringData, key, value);
-        public void SetByteArrayKey(string key, byte[] value) => this.SetClassTypeKey(ref this.byteArrayData, key, value);
-        public void SetDateTimeKey(string key, DateTime value) => this.SetValueTypeKey(ref this.dateTimeData, key, value);
+        public void SetInt(string key, int value) => this.SetValueTypeKey(ref this.intData, key, value);
+        public void SetEnum<T>(string key, T value) => this.SetValueTypeKey(ref this.enumData, key, Convert.ToInt32(value));
+        public void SetBool(string key, bool value) => this.SetValueTypeKey(ref this.boolData, key, value);
+        public void SetLong(string key, long value) => this.SetValueTypeKey(ref this.longData, key, value);
+        public void SetString(string key, string value) => this.SetClassTypeKey(ref this.stringData, key, value);
+        public void SetByteArray(string key, byte[] value) => this.SetClassTypeKey(ref this.byteArrayData, key, value);
+        public void SetDateTime(string key, DateTime value) => this.SetValueTypeKey(ref this.dateTimeData, key, value);
 
         private void DeleteKey<T>(Dictionary<string, T> dictionary, string key)
         {
