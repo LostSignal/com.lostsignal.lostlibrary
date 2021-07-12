@@ -34,6 +34,8 @@ namespace Lost
 
         public Action FlagsChanged;
 
+        public List<Flag> Flags => this.flags;
+
         private string DataStoreKeyName
         {
             get
@@ -145,32 +147,6 @@ namespace Lost
                 {
                     this.flagBits.Clear();
                 }
-
-                HashSet<int> ids = new HashSet<int>();
-                HashSet<string> names = new HashSet<string>();
-
-                foreach (var flag in this.flags)
-                {
-                    if (flag.Id < 0)
-                    {
-                        Debug.LogError($"FlagCollection {this.name} has a flag {flag.Name} with a negative id, this will break the flag system.", this);
-                    }
-                    else if (flag.Id > BitArray.MaxBitIndex)
-                    {
-                        Debug.LogError($"FlagCollection {this.name} has a flag {flag.Name} with an id greater than BitArray.MaxBitIndex {BitArray.MaxBitIndex}, this will break the flag system.", this);
-                    }
-                    else if (ids.Contains(flag.Id))
-                    {
-                        Debug.LogError($"FlagCollection {this.name} has a flag {flag.Name} with a duplicate id {flag.Id}, this will break the flag system.", this);
-                    }
-                    else if (names.Contains(flag.Name))
-                    {
-                        Debug.LogError($"FlagCollection {this.name} has a flag {flag.Name} with a duplicate name, this will break the flag system.", this);
-                    }
-                    
-                    ids.AddIfUnique(flag.Id);
-                    names.AddIfUnique(flag.Name);
-                }
             }
         }
 
@@ -189,14 +165,14 @@ namespace Lost
             #pragma warning disable 0649
             [SerializeField] private string name;
             [SerializeField] private int id;
-            [SerializeField] private bool isDisabled;
+            [SerializeField] private bool enabled = true;
             #pragma warning restore 0649
 
             public int Id => this.id;
 
             public string Name => this.name;
 
-            public bool IsDisabled => this.isDisabled;
+            public bool Enabled => this.enabled;
         }
     }
 }
