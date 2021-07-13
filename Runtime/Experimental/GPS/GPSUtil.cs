@@ -8,6 +8,9 @@
 
 namespace Lost
 {
+    using System;
+
+    [Serializable]
     public struct GPSLatLong
     {
         public double Latitude;

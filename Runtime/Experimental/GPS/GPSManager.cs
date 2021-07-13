@@ -28,6 +28,8 @@ namespace Lost
         //// [SerializeField] private string mustTurnOnGpsMessage = string.Empty; // TODO [bgish]: Make localized string
 
         [Header("Debug")]
+        [SerializeField] private bool allowWasdInEditor = true;
+        [SerializeField] private float latLongSpeed = 0.001f;
         [SerializeField] private List<DebugStartLocation> debugStartLocations;
 #pragma warning restore 0649
 
@@ -52,6 +54,8 @@ namespace Lost
         public bool IsStartingUp => this.serviceState == GPSServiceState.StartingUp;
 
         public bool IsStopped => this.serviceState == GPSServiceState.Stopped;
+
+        public GPSLatLong LatLong => GPSUtil.GetGPSLatLong();
 
         public bool IsPlatformSupported
         {
@@ -186,6 +190,67 @@ namespace Lost
                 this.StopGpsService();
             }
         }
+
+        #if UNITY_EDITOR
+        private void Update()
+        {
+            Vector3 movement = new Vector3();
+
+            #if USING_UNITY_INPUT_SYSTEM
+
+            if (UnityEngine.InputSystem.Keyboard.current.wKey.wasPressedThisFrame)
+            {
+                movement += new Vector3(0.0f, 1.0f, 0.0f);
+            }
+
+            if (UnityEngine.InputSystem.Keyboard.current.sKey.wasPressedThisFrame)
+            {
+                movement += new Vector3(0.0f, -1.0f, 0.0f);
+            }
+
+            if (UnityEngine.InputSystem.Keyboard.current.aKey.wasPressedThisFrame)
+            {
+                movement += new Vector3(-1.0f, 0.0f, 0.0f);
+            }
+            
+            if (UnityEngine.InputSystem.Keyboard.current.dKey.wasPressedThisFrame)
+            {
+                movement += new Vector3(1.0f, 0.0f, 0.0f);
+            }
+
+            #else
+
+            if (UnityEngine.Input.GetKeyDown(KeyCode.W))
+            {
+                movement += new Vector3(0.0f, 1.0f, 0.0f);
+            }
+
+            if (UnityEngine.Input.GetKeyDown(KeyCode.S))
+            {
+                movement += new Vector3(0.0f, -1.0f, 0.0f);
+            }
+
+            if (UnityEngine.Input.GetKeyDown(KeyCode.A))
+            {
+                movement += new Vector3(-1.0f, 0.0f, 0.0f);
+            }
+            
+            if (UnityEngine.Input.GetKeyDown(KeyCode.D))
+            {
+                movement += new Vector3(1.0f, 0.0f, 0.0f);
+            }
+
+            #endif
+
+            if (movement != Vector3.zero)
+            {
+                movement *= (this.latLongSpeed * Time.deltaTime);
+
+                var currentLatLong = GPSUtil.GetGPSLatLong();
+                GPSUtil.SetEditorLatLon(currentLatLong.Latitude + movement.x, currentLatLong.Longitude + movement.y);
+            }
+        }
+        #endif
 
         private void EnsurePlayerSettingsAreCorrect()
         {

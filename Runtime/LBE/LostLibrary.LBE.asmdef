@@ -13,11 +13,6 @@
     "defineConstraints": [],
     "versionDefines": [
         {
-            "name": "Unity",
-            "expression": "2021.1.0",
-            "define": "UNITY"
-        },
-        {
             "name": "com.google.mapssdk",
             "expression": "0.0.0",
             "define": "USING_GOOGLE_MAPS_SDK"
