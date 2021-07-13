@@ -8,7 +8,6 @@ namespace Lost
 {
     using System.Collections.Generic;
     using UnityEditor;
-    using UnityEngine;
 
     [CustomEditor(typeof(FlagCollection))]
     public class FlagCollectionEditor : Editor

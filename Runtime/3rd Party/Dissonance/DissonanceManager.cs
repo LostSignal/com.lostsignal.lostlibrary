@@ -46,8 +46,13 @@ namespace Lost.DissonanceIntegration
                 var settings = ReleasesManager.Instance.CurrentRelease.DissonanceManagerSettings;
 
 #if !USING_DISSONANCE
-                Debug.LogError("DissonanceManager is enabled, but USING_DISSONANCE define is not set.  Make sure Dissonance plugin is " +
-                    "installed and the define is set, otherwise Dissonance will not work.", this);
+
+                if (this.enabled)
+                {
+                    Debug.LogError("DissonanceManager is enabled, but USING_DISSONANCE define is not set.  Make sure Dissonance plugin is " +
+                        "installed and the define is set, otherwise Dissonance will not work.", this);
+                }
+
 #else
                 if (this.dissonanceCommsPrefab == null)
                 {

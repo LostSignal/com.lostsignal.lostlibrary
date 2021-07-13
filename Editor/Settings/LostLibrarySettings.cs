@@ -340,12 +340,23 @@ namespace Lost
         {
             if (this.sourceControlType == SourceControlType.Plastic)
             {
-                string plasticDirectory = ".";          // Look for ".plastic" folder
-                string unityDirectory = string.Empty;   // This is the untiy directory relative to plastic directory
+                var currentUnityDirectoryInfo = new DirectoryInfo(".");
+                var currentUnityDirectoryPath = currentUnityDirectoryInfo.FullName.Replace("\\", "/");
+                var plasticDirectoryPath = FindPlasticRootDirectoryPath(currentUnityDirectoryInfo);
+
+                if (string.IsNullOrEmpty(plasticDirectoryPath))
+                {
+                    Debug.LogError("Unable to find the root of the Plastic repository.  File was not created.");
+                    return;
+                }
+
+                string relativeUnityDirectory = currentUnityDirectoryPath != plasticDirectoryPath ?
+                    "/" + currentUnityDirectoryPath.Substring(plasticDirectoryPath.Length + 1).Replace("\\", "/") :
+                    string.Empty;
 
                 File.WriteAllText(
-                    Path.Combine(plasticDirectory, "ignore.conf"),
-                    this.ignoreTemplatePlastic.text.Replace("{UNITY_PROJECT_DIRECTORY}", unityDirectory));
+                    Path.Combine(plasticDirectoryPath, "ignore.conf"),
+                    this.ignoreTemplatePlastic.text.Replace("{UNITY_PROJECT_DIRECTORY}", relativeUnityDirectory));
             }
             else if (this.sourceControlType == SourceControlType.Perforce)
             {
@@ -358,6 +369,24 @@ namespace Lost
             else if (this.sourceControlType == SourceControlType.Collab)
             {
                 File.WriteAllText(".collabignore", this.ignoreTemplateCollab.text);
+            }
+        }
+
+        private string FindPlasticRootDirectoryPath(DirectoryInfo directory)
+        {
+            string directoryPath = directory.FullName.Replace("\\", "/");
+
+            if (Directory.Exists(Path.Combine(directoryPath, ".plastic")))
+            {
+                return directoryPath;
+            }
+            else if (string.IsNullOrEmpty(directory.Parent?.FullName) == false)
+            {
+                return FindPlasticRootDirectoryPath(directory.Parent);
+            }
+            else
+            {
+                return null;
             }
         }
 

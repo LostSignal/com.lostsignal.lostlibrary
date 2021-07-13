@@ -48,7 +48,12 @@ namespace Lost
         public override void Initialize()
         {
 #if !USING_UNITY_XR
-            Debug.LogError("Tring to use XRManager without USING_UNITY_XR define.");
+
+            if (this.enabled)
+            {
+                Debug.LogError("Tring to use XRManager without USING_UNITY_XR define.");
+            }
+            
             this.SetInstance(this);
 #else
             this.StartCoroutine(Coroutine());

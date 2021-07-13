@@ -8,7 +8,9 @@
 
 namespace Lost
 {
+    using System;
     using System.Collections;
+    using System.Collections.Generic;
     using UnityEngine;
 
     // https://stackoverflow.com/questions/53046670/how-to-get-values-from-methods-written-in-ios-plugin-in-unity
@@ -24,6 +26,9 @@ namespace Lost
         //// [Header("Force User To Use GPS")]
         //// [SerializeField] private bool appMustUseGps = false;
         //// [SerializeField] private string mustTurnOnGpsMessage = string.Empty; // TODO [bgish]: Make localized string
+
+        [Header("Debug")]
+        [SerializeField] private List<DebugStartLocation> debugStartLocations;
 #pragma warning restore 0649
 
         private GPSServiceState serviceState;
@@ -192,6 +197,19 @@ namespace Lost
             // TODO [bgish]: Set "Location Usage Description" if null or empty
             // UnityEditor.PlayerSettings.iOS.locationUsageDescription = "Details to use location";
 #endif
+        }
+
+        [Serializable]
+        public class DebugStartLocation
+        {
+            #pragma warning disable 0649
+            [SerializeField] private string name;
+            [SerializeField] private GPSLatLong latLong;
+            #pragma warning restore 0649
+            
+            public string Name => this.name;
+
+            public GPSLatLong LatLong => this.latLong;
         }
     }
 }

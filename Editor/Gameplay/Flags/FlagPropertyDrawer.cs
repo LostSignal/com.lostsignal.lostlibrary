@@ -27,10 +27,19 @@ namespace Lost
             var nameRect = new Rect(position.x + 45, position.y, position.width - 65, position.height - 2);
             var enabledRect = new Rect(position.x + position.width - 15, position.y, 15, position.height - 2);
 
+            // Find Properties
+            var idProp = property.FindPropertyRelative("id");
+            var nameProp = property.FindPropertyRelative("name");
+            var enabledProp = property.FindPropertyRelative("enabled");
+
             // Draw fields - passs GUIContent.none to each so they are drawn without labels
-            EditorGUI.PropertyField(idRect, property.FindPropertyRelative("id"), GUIContent.none);
-            EditorGUI.PropertyField(nameRect, property.FindPropertyRelative("name"), GUIContent.none);
-            EditorGUI.PropertyField(enabledRect, property.FindPropertyRelative("enabled"), GUIContent.none);
+            using (new EditorGUI.DisabledScope(enabledProp.boolValue == false))
+            {
+                EditorGUI.PropertyField(idRect, idProp, GUIContent.none);
+                EditorGUI.PropertyField(nameRect, nameProp, GUIContent.none);
+            }
+
+            EditorGUI.PropertyField(enabledRect, enabledProp, GUIContent.none);
 
             // Set indent back to what it was
             EditorGUI.indentLevel = indent;

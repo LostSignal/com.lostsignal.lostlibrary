@@ -8,7 +8,7 @@
 
 namespace Lost
 {
-    public struct GPSInfo
+    public struct GPSLatLong
     {
         public double Latitude;
         public double Longitude;
@@ -58,11 +58,11 @@ namespace Lost
 #endif
         }
 
-        public static GPSInfo GetGPSInfo()
+        public static GPSLatLong GetGPSLatLong()
         {
 #if UNITY_IOS && !UNITY_EDITOR
 
-            return new GPSInfo
+            return new GPSLatLong
             {
                 Latitude = _GetLatitude(),
                 Longitude = _GetLongitude(),
@@ -70,7 +70,7 @@ namespace Lost
 
 #elif UNITY_ANDROID && !UNITY_EDITOR
 
-            return new GPSInfo
+            return new GPSLatLong
             {
                 Latitude = UnityEngine.Input.location.lastData.latitude,
                 Longitude = UnityEngine.Input.location.lastData.longitude,
@@ -78,7 +78,7 @@ namespace Lost
 
 #elif UNITY_EDITOR
 
-            return new GPSInfo
+            return new GPSLatLong
             {
                 Latitude = fakeEditorLatitude,
                 Longitude = fakeEditorLongitude,
