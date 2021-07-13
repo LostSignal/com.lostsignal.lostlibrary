@@ -20,7 +20,7 @@ namespace Lost.LBE
     public class PlayablesManager : MonoBehaviour
     {
         #pragma warning disable 0649
-        [SerializeField] private string apiKey = "AIzaSyDUbEzrhTwC25JoGzTE8rP9dQMX-bHxSDY";
+        [SerializeField] private string apiKey;
         #pragma warning restore 0649
 
         private void Start()

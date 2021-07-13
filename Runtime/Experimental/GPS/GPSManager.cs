@@ -194,6 +194,11 @@ namespace Lost
         #if UNITY_EDITOR
         private void Update()
         {
+            if (this.allowWasdInEditor == false)
+            {
+                return;
+            }
+
             Vector3 movement = new Vector3();
 
             #if USING_UNITY_INPUT_SYSTEM
