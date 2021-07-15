@@ -11,31 +11,17 @@ namespace Lost
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Runtime.CompilerServices;
     using UnityEngine;
 
-    // https://stackoverflow.com/questions/53046670/how-to-get-values-from-methods-written-in-ios-plugin-in-unity
-    // https://medium.com/@nosuchstudio/how-to-access-gps-location-in-unity-521f1371a7e3
+    ////
+    //// TODO [bgish]: Maybe don't just send the current Lat/Long but take a rolling average to smooth out the data?
+    ////
+    //// https://stackoverflow.com/questions/53046670/how-to-get-values-from-methods-written-in-ios-plugin-in-unity
+    //// https://medium.com/@nosuchstudio/how-to-access-gps-location-in-unity-521f1371a7e3
+    ////
     public sealed class GPSManager : Manager<GPSManager>
     {
-#pragma warning disable 0649
-        [SerializeField] private GPSAccuracy accuracy;
-        [SerializeField] private bool waitForUnityRemote;
-        [SerializeField] private bool disableGpsWhenLostFocus;
-        [SerializeField] private float updateFrequencyInSeconds = 1.0f;
-
-        //// [Header("Force User To Use GPS")]
-        //// [SerializeField] private bool appMustUseGps = false;
-        //// [SerializeField] private string mustTurnOnGpsMessage = string.Empty; // TODO [bgish]: Make localized string
-
-        [Header("Debug")]
-        [SerializeField] private bool allowWasdInEditor = true;
-        [SerializeField] private float latLongSpeed = 0.001f;
-        [SerializeField] private List<DebugStartLocation> debugStartLocations;
-#pragma warning restore 0649
-
-        private GPSServiceState serviceState;
-        private Coroutine serviceCoroutine;
-
         public enum GPSServiceState
         {
             Stopped,
@@ -49,21 +35,59 @@ namespace Lost
             Coarse,
         }
 
+#pragma warning disable 0649
+        [SerializeField] private GPSAccuracy accuracy;
+        [SerializeField] private bool waitForUnityRemote;
+        [SerializeField] private bool startGpsServiceOnBoot = true;
+        [SerializeField] private bool disableGpsWhenLostFocus = true;
+        [SerializeField] private float updateFrequencyInSeconds = 1.0f;
+        [SerializeField] private bool appMustUseGps = false;
+
+        [Header("Debug")]
+        [SerializeField] private bool printDebugOutput;
+        [SerializeField] private bool allowWasdInEditor = true;
+        [SerializeField] private bool smoothMovementInEdtior = true;
+        [SerializeField] private float latLongSpeed = 0.001f;
+        [SerializeField] private List<DebugStartLocation> debugStartLocations;
+#pragma warning restore 0649
+        
+        private GPSLatLong currentLatLong;
+
+        private GPSServiceState serviceState;
+        private Coroutine serviceCoroutine;
+
+        private bool hasEditorLatLongBeenSet;
+        private GPSLatLong editorLatLong;
+
+        public Action<GPSLatLong> OnGPSReceived;
+
         public bool IsRunning => this.serviceState == GPSServiceState.Running;
 
         public bool IsStartingUp => this.serviceState == GPSServiceState.StartingUp;
 
         public bool IsStopped => this.serviceState == GPSServiceState.Stopped;
 
-        public GPSLatLong LatLong => GPSUtil.GetGPSLatLong();
-
-        public bool IsPlatformSupported
+        public GPSLatLong CurrentLatLong
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                return Application.platform == RuntimePlatform.Android ||
-                    Application.platform == RuntimePlatform.IPhonePlayer ||
-                    Application.isEditor;
+                return this.currentLatLong;
+            }
+
+            private set
+            {
+                this.currentLatLong = value;
+
+                try
+                {
+                    this.OnGPSReceived?.Invoke(this.currentLatLong);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError("GPSManager caught exception when invoking OnGPSReceived.");
+                    Debug.LogException(ex);
+                }
             }
         }
 
@@ -71,112 +95,191 @@ namespace Lost
         {
             this.EnsurePlayerSettingsAreCorrect();
             this.SetInstance(this);
+
+            if (this.startGpsServiceOnBoot)
+            {
+                this.StartGpsService();
+            }
         }
 
         public void StartGpsService()
         {
             this.StopGpsService();
-            this.serviceCoroutine = CoroutineRunner.Instance.StartCoroutine(this.StartGpsServiceCoroutine());
+
+            if (Application.isEditor && this.waitForUnityRemote == false)
+            {
+                this.serviceCoroutine = this.StartCoroutine(StartGpsServiceEditorCoroutine());
+            }
+            else if (Application.isEditor || Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+            {
+                this.serviceCoroutine = this.StartCoroutine(StartGpsServiceCoroutine());
+            }
+            else
+            {
+                Debug.LogError($"GPSManager Encountered Unknown Platform {Application.platform}");
+            }
+
+            IEnumerator StartGpsServiceEditorCoroutine()
+            {
+                if (this.printDebugOutput)
+                {
+                    Debug.Log("GPSManager.StartGpsServiceEditorCoroutine");
+                }
+
+                this.serviceState = GPSServiceState.StartingUp;
+
+                if (this.hasEditorLatLongBeenSet == false)
+                {
+                    var debugStartLocationsCount = this.debugStartLocations?.Count;
+
+                    if (debugStartLocationsCount == null || debugStartLocationsCount == 0)
+                    {
+                        Debug.LogError("GPSManager has no debug start locations to work with.");
+                        yield break;
+                    }
+
+                    GPSLatLong latLong = this.debugStartLocations[0].LatLong;
+
+                    if (debugStartLocationsCount > 1)
+                    {
+                        // TODO [bgish]: Let user pick a location
+                    }
+
+                    this.editorLatLong = new GPSLatLong
+                    {
+                        Latitude = latLong.Latitude,
+                        Longitude = latLong.Longitude,
+                    };
+
+                    this.hasEditorLatLongBeenSet = true;
+                }
+
+                this.serviceState = GPSServiceState.Running;
+
+                while (true)
+                {
+                    this.CurrentLatLong = this.editorLatLong;
+                    yield return WaitForUtil.Seconds(this.smoothMovementInEdtior ? 0.02f : this.updateFrequencyInSeconds);
+                }
+            }
+
+            IEnumerator StartGpsServiceCoroutine()
+            {
+                this.serviceState = GPSServiceState.StartingUp;
+
+                if (Application.isEditor && this.waitForUnityRemote)
+                {
+                    #if UNITY_EDITOR
+                    while (UnityEditor.EditorApplication.isRemoteConnected == false)
+                    {
+                        yield return null;
+                    }
+                    #endif
+
+                    yield return WaitForUtil.Seconds(5.0f);
+                }
+
+                // TODO [bgish]: Need to not do this look if we're just running in editor and this.waitForUnityRemote == false
+                while (true)
+                {
+                    GPSUtil.AskForPermissionToUseGPS();
+
+                    if (GPSUtil.IsGpsEnabledByUser())
+                    {
+                        // GPS is enabled, so we're good to go
+                        break;
+                    }
+
+                    if (appMustUseGps == false)
+                    {
+                        Debug.LogError("Unable to start GPS Manage.  The user doesn't have permissions.");
+                        this.StopGpsService();
+                        break;
+                    }
+                    else
+                    {
+                        var gpsRequired = LostMessages.GpsIsRequiredRetryOrQuitApp();
+
+                        yield return gpsRequired;
+
+                        if (gpsRequired.Value == YesNoResult.No)
+                        {
+                            Platform.QuitApplication();
+                        }
+                    }
+                }
+
+                // Start service before querying location
+                UnityEngine.Input.location.Start(10.0f, 10.0f);
+
+                // Wait until service initializes
+                int maxWait = 15;
+                while (UnityEngine.Input.location.status == LocationServiceStatus.Initializing && maxWait > 0)
+                {
+                    yield return new WaitForSecondsRealtime(1);
+                    maxWait--;
+                }
+
+                // Editor has a bug which doesn't set the service status to Initializing. So extra wait in Editor.
+                if (Application.isEditor)
+                {
+                    int editorMaxWait = 15;
+                    while (UnityEngine.Input.location.status == LocationServiceStatus.Stopped && editorMaxWait > 0)
+                    {
+                        yield return new WaitForSecondsRealtime(1);
+                        editorMaxWait--;
+                    }
+                }
+
+                // Service didn't initialize in 15 seconds
+                if (maxWait < 1)
+                {
+                    // TODO Failure
+                    Debug.LogFormat("Timed out");
+                    this.StopGpsService();
+                    yield break;
+                }
+
+                // Connection has failed
+                if (UnityEngine.Input.location.status != LocationServiceStatus.Running)
+                {
+                    // TODO Failure
+                    Debug.LogFormat("Unable to determine device location. Failed with status {0}", UnityEngine.Input.location.status);
+                    this.StopGpsService();
+                    yield break;
+                }
+                else
+                {
+                    this.serviceState = GPSServiceState.Running;
+
+                    while (true)
+                    {
+                        this.CurrentLatLong = GPSUtil.GetGPSLatLong();
+                        yield return WaitForUtil.Seconds(this.updateFrequencyInSeconds);
+                    }
+                }
+            }
         }
 
         public void StopGpsService()
         {
             if (this.serviceCoroutine != null)
             {
-                CoroutineRunner.Instance.StopCoroutine(this.serviceCoroutine);
+                this.StopCoroutine(this.serviceCoroutine);
                 this.serviceCoroutine = null;
             }
 
-            UnityEngine.Input.location.Stop();
+            if (!Application.isEditor || this.waitForUnityRemote)
+            {
+                UnityEngine.Input.location.Stop();
+            }
+            
             this.serviceState = GPSServiceState.Stopped;
-        }
-
-        private IEnumerator StartGpsServiceCoroutine()
-        {
-            this.serviceState = GPSServiceState.StartingUp;
-
-            if (Application.isEditor && this.waitForUnityRemote)
-            {
-#if UNITY_EDITOR
-                while (UnityEditor.EditorApplication.isRemoteConnected == false)
-                {
-                    yield return null;
-                }
-#endif
-
-                yield return WaitForUtil.Seconds(5.0f);
-            }
-
-            GPSUtil.AskForPermissionToUseGPS();
-
-            if (GPSUtil.IsGpsEnabledByUser() == false)
-            {
-                Debug.LogError("Unable to start GPS Manage.  The user doesn't have permissions.");
-
-                this.StopGpsService();
-                yield break;
-            }
-
-            // Start service before querying location
-            UnityEngine.Input.location.Start(10.0f, 10.0f);
-
-            // Wait until service initializes
-            int maxWait = 15;
-            while (UnityEngine.Input.location.status == LocationServiceStatus.Initializing && maxWait > 0)
-            {
-                yield return new WaitForSecondsRealtime(1);
-                maxWait--;
-            }
-
-            // Editor has a bug which doesn't set the service status to Initializing. So extra wait in Editor.
-            if (Application.isEditor)
-            {
-                int editorMaxWait = 15;
-                while (UnityEngine.Input.location.status == LocationServiceStatus.Stopped && editorMaxWait > 0)
-                {
-                    yield return new WaitForSecondsRealtime(1);
-                    editorMaxWait--;
-                }
-            }
-
-            // Service didn't initialize in 15 seconds
-            if (maxWait < 1)
-            {
-                // TODO Failure
-                Debug.LogFormat("Timed out");
-                this.StopGpsService();
-                yield break;
-            }
-
-            // Connection has failed
-            if (UnityEngine.Input.location.status != LocationServiceStatus.Running)
-            {
-                // TODO Failure
-                Debug.LogFormat("Unable to determine device location. Failed with status {0}", UnityEngine.Input.location.status);
-                this.StopGpsService();
-                yield break;
-            }
-            else
-            {
-                this.serviceState = GPSServiceState.Running;
-
-                while (true)
-                {
-                    Debug.LogFormat("Location: "
-                        + UnityEngine.Input.location.lastData.latitude + " "
-                        + UnityEngine.Input.location.lastData.longitude + " "
-                        + UnityEngine.Input.location.lastData.altitude + " "
-                        + UnityEngine.Input.location.lastData.horizontalAccuracy + " "
-                        + UnityEngine.Input.location.lastData.timestamp);
-
-                    yield return WaitForUtil.Seconds(this.updateFrequencyInSeconds);
-                }
-            }
         }
 
         private void OnApplicationFocus(bool focus)
         {
-            if (this.disableGpsWhenLostFocus == false)
+            if (Application.isEditor || this.disableGpsWhenLostFocus == false)
             {
                 return;
             }
@@ -194,7 +297,7 @@ namespace Lost
         #if UNITY_EDITOR
         private void Update()
         {
-            if (this.allowWasdInEditor == false)
+            if (this.allowWasdInEditor == false || this.waitForUnityRemote)
             {
                 return;
             }
@@ -203,46 +306,46 @@ namespace Lost
 
             #if USING_UNITY_INPUT_SYSTEM
 
-            if (UnityEngine.InputSystem.Keyboard.current.wKey.wasPressedThisFrame)
+            if (UnityEngine.InputSystem.Keyboard.current.wKey.isPressed)
             {
-                movement += new Vector3(0.0f, 1.0f, 0.0f);
+                movement += new Vector3(1.0f, 0.0f, 0.0f);
             }
 
-            if (UnityEngine.InputSystem.Keyboard.current.sKey.wasPressedThisFrame)
-            {
-                movement += new Vector3(0.0f, -1.0f, 0.0f);
-            }
-
-            if (UnityEngine.InputSystem.Keyboard.current.aKey.wasPressedThisFrame)
+            if (UnityEngine.InputSystem.Keyboard.current.sKey.isPressed)
             {
                 movement += new Vector3(-1.0f, 0.0f, 0.0f);
             }
-            
-            if (UnityEngine.InputSystem.Keyboard.current.dKey.wasPressedThisFrame)
+
+            if (UnityEngine.InputSystem.Keyboard.current.aKey.isPressed)
             {
-                movement += new Vector3(1.0f, 0.0f, 0.0f);
+                movement += new Vector3(0.0f, -1.0f, 0.0f);
+            }
+            
+            if (UnityEngine.InputSystem.Keyboard.current.dKey.isPressed)
+            {
+                movement += new Vector3(0.0f, 1.0f, 0.0f);
             }
 
             #else
 
             if (UnityEngine.Input.GetKeyDown(KeyCode.W))
             {
-                movement += new Vector3(0.0f, 1.0f, 0.0f);
+                movement += new Vector3(1.0f, 0.0f, 0.0f);
             }
 
             if (UnityEngine.Input.GetKeyDown(KeyCode.S))
             {
-                movement += new Vector3(0.0f, -1.0f, 0.0f);
+                movement += new Vector3(-1.0f, 0.0f, 0.0f);
             }
 
             if (UnityEngine.Input.GetKeyDown(KeyCode.A))
             {
-                movement += new Vector3(-1.0f, 0.0f, 0.0f);
+                movement += new Vector3(0.0f, -1.0f, 0.0f);
             }
             
             if (UnityEngine.Input.GetKeyDown(KeyCode.D))
             {
-                movement += new Vector3(1.0f, 0.0f, 0.0f);
+                movement += new Vector3(0.0f, 1.0f, 0.0f);
             }
 
             #endif
@@ -251,8 +354,8 @@ namespace Lost
             {
                 movement *= (this.latLongSpeed * Time.deltaTime);
 
-                var currentLatLong = GPSUtil.GetGPSLatLong();
-                GPSUtil.SetEditorLatLon(currentLatLong.Latitude + movement.x, currentLatLong.Longitude + movement.y);
+                this.editorLatLong.Latitude += movement.x;
+                this.editorLatLong.Longitude += movement.y;
             }
         }
         #endif

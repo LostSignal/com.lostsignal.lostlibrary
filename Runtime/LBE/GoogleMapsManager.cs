@@ -10,19 +10,16 @@ namespace Lost.LBE
 { 
     using Google.Maps;
     using Google.Maps.Coord;
+    using Google.Maps.Event;
     using Google.Maps.Feature.Style.Settings;
     using UnityEngine;
-
-    //// Use this video for GPS info - https://www.youtube.com/watch?v=MMrZfjlOcTU (2ish min in)
-    ////   Check out BaseMapLoader.cs for how to load maps.
-    ////   DynamicMapsUpdater handles the map updating as you move.
-    ////   MapsService.Coords.FromVector3ToLatLong
-    ////   MapsService.Coords.FromLatLongToVector3
-
+    
     [RequireComponent(typeof(MapsService))]
-    public class GoogleMapsManager : MonoBehaviour 
+    public class GoogleMapsManager : Manager<GoogleMapsManager> 
     {
         #pragma warning disable 0649
+        [SerializeField] private GPSManager gpsManager;
+
         [Header("Stylings")]
         [SerializeField] private RegionStyleSettings regionStyleSettings;
         [SerializeField] private SegmentStyleSettings roadStyleSettings;
@@ -31,31 +28,233 @@ namespace Lost.LBE
         [SerializeField] private ModeledStructureStyleSettings modeledStructureStyleSettings;
 
         [Header("Loading")]
-        [SerializeField] private float loadRange = 2000;
+        [SerializeField] private float loadRadiusInMeters = 300.0f;
+        [SerializeField] private float reloadDistanceInMeters = 100.0f;
+        
+        [Header("Movement")]
+        [SerializeField] private double lerpSpeed = 0.00001;
 
-        [Header("Debug Initial Starting Location")]
-        [SerializeField] private LatLng latLong = new LatLng(40.6892199, -74.044601);
+        [Header("Debug")]
+        [SerializeField] private bool printDebugOutput;
 
         [HideInInspector]
         [SerializeField] private MapsService mapsService;
         #pragma warning restore 0649
+
+        private GameObjectOptions gameObjectOptions;
+        private bool isMapServiceLoaded;
+        private bool isInitialized;
+        
+        // Used for smoothing
+        private GPSLatLong currentLatLng;
+        private GPSLatLong desiredLatLng;
+        private GPSLatLong lastLoadLatLng;
+
+        public bool IsMapLoaded => this.isMapServiceLoaded;
+
+        public override void Initialize()
+        {
+            this.SetInstance(this);
+        }
+
+        public void UnloadMap()
+        {
+            if (Platform.IsApplicationQuitting)
+            {
+                return;
+            }
+
+            if (this.mapsService.GameObjectManager != null)
+            {
+                this.mapsService.GameObjectManager.DestroyAll();
+            }
+
+            foreach (Transform child in this.mapsService.transform)
+            {
+                GameObject.Destroy(child.gameObject);
+            }
+
+            this.isMapServiceLoaded = false;
+        }
+
+        public void ReloadMap()
+        {
+            if (this.isInitialized == false)
+            {
+                Debug.LogError($"{nameof(GoogleMapsManager)} failed to ReloapMap, google maps must be initialized before you can reload it.");
+                return;
+            }
+
+            this.UnloadMap();
+            this.LoadMap();
+        }
+
+        public Vector3 GetPosition(GPSLatLong latLong)
+        {
+            return this.mapsService.Projection.FromLatLngToVector3(new LatLng(latLong.Latitude, latLong.Longitude));
+        }
 
         private void OnValidate()
         {
             this.AssertGetComponent(ref this.mapsService);
         }
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             this.OnValidate();
         }
 
         private void Start()
         {
-            // Set real-world location to load
-            this.mapsService.InitFloatingOrigin(this.latLong);
+            // NOTE [bgish]: This must happen in Start, can't use MapService in Awake or it won't be initialized yet
+            this.gpsManager.OnGPSReceived += this.OnGPSReceived;
+        }
 
+        private void OnGPSReceived(GPSLatLong latLong)
+        {
+            if (this.isInitialized == false)
+            {
+                this.isInitialized = true;
+                this.InitializeMap(latLong);
+            }
+
+            this.desiredLatLng = latLong;
+        }
+
+        private void InitializeMap(GPSLatLong latLong)
+        {
+            if (this.printDebugOutput)
+            {
+                Debug.Log($"GoogleMapsManager Initializing Map To ({latLong})");
+            }
+
+            this.currentLatLng = latLong;
+            this.desiredLatLng = latLong;
+
+            // Registering for error handling (Taken from BaseMapLoader.cs)
+            this.mapsService.Events.MapEvents.LoadError.AddListener(args =>
+            {
+                switch (args.DetailedErrorCode)
+                {
+                    case MapLoadErrorArgs.DetailedErrorEnum.NetworkError:
+                        {
+                            // Handle errors caused by a lack of internet connectivity (or other network problems).
+                            if (Application.internetReachability == NetworkReachability.NotReachable)
+                            {
+                                Debug.LogError("The Maps SDK for Unity must have internet access in order to run.");
+                            }
+                            else
+                            {
+                                Debug.LogErrorFormat(
+                                    "The Maps SDK for Unity was not able to get a HTTP response after " +
+                                    "{0} attempts.\nThis suggests an issue with the network, or with the " +
+                                    "online Semantic Tile API, or that the request exceeded its deadline  " +
+                                    "(consider using MapLoadErrorArgs.TimeoutSeconds).\n{1}",
+                                    args.Attempts,
+                                    string.IsNullOrEmpty(args.Message)
+                                        ? string.Concat("Specific error message received: ", args.Message)
+                                        : "No error message received.");
+                            }
+
+                            return;
+                        }
+
+                    case MapLoadErrorArgs.DetailedErrorEnum.UnsupportedClientVersion:
+                        {
+                            Debug.LogError(
+                                "The specific version of the Maps SDK for Unity being used is no longer " +
+                                "supported (possibly in combination with the specific API key used).");
+
+                            return;
+                        }
+                }
+
+                // For all other types of errors, just show the given error message, as this should describe
+                // the specific nature of the problem.
+                Debug.LogError(args.Message);
+
+                // Note that the Maps SDK for Unity will automatically retry failed attempts, unless
+                // args.Retry is specifically set to false during this callback.
+            });
+
+            // Set real-world location to load
+            this.mapsService.InitFloatingOrigin(new LatLng(latLong.Latitude, latLong.Longitude));
+            
             // Configure Map Styling
+            this.gameObjectOptions = this.GetMapStyle();
+
+            this.LoadMap();
+        }
+
+        private void Update()
+        {
+            if (this.isMapServiceLoaded == false)
+            {
+                return;
+            }
+
+            // Calculate our new lat long
+            this.currentLatLng = GPSUtil.MoveTowards(this.currentLatLng, this.desiredLatLng, this.lerpSpeed, Time.deltaTime);
+
+            // Tell the map service of our new location
+            this.mapsService.MoveFloatingOrigin(new LatLng(this.currentLatLng.Latitude, this.currentLatLng.Longitude));
+
+            // Checking out if we need to reload maps content
+            var lastLoadDistance = GPSUtil.DistanceInMeters(this.lastLoadLatLng, this.currentLatLng);
+
+            if (lastLoadDistance > this.reloadDistanceInMeters)
+            {
+                if (this.printDebugOutput)
+                {
+                    Debug.Log("GoogleMapsManager Reloading Map");
+                }
+
+                this.LoadMap();
+            }
+        }
+
+        private void LoadMap()
+        {
+            this.lastLoadLatLng = this.currentLatLng;
+
+            // Load map with default options
+            this.mapsService
+                .MakeMapLoadRegion()
+                .AddCircle(Vector3.zero, this.loadRadiusInMeters)
+                .Load(this.gameObjectOptions);
+
+            // Adding flags so we know when the map is loading, and has finished being loaded
+            this.mapsService.Events.MapEvents.Loaded.AddListener(this.MapLoadFinished);
+
+            // If the serverice is already loaded, then probably have things to unload
+            if (this.isMapServiceLoaded)
+            {
+                this.ExecuteDelayed(1.0f, this.UnloadOutside);
+            }
+        }
+
+        private void MapLoadFinished(MapLoadedArgs args)
+        {
+            if (this.printDebugOutput)
+            {
+                Debug.Log($"GoogleMapsManager MapLoaded Complete");
+            }
+
+            this.isMapServiceLoaded = true;
+            this.mapsService.Events.MapEvents.Loaded.RemoveListener(this.MapLoadFinished);
+        }
+
+        private void UnloadOutside()
+        {
+            this.mapsService
+                .MakeMapLoadRegion()
+                .AddCircle(Vector3.zero, this.loadRadiusInMeters)
+                .UnloadOutside();
+        }
+
+        private GameObjectOptions GetMapStyle()
+        {
             var options = new GameObjectOptions();
             options.RegionStyle = this.regionStyleSettings.Apply(options.RegionStyle);
             options.SegmentStyle = this.roadStyleSettings.Apply(options.SegmentStyle);
@@ -63,9 +262,7 @@ namespace Lost.LBE
             options.ExtrudedStructureStyle = this.extrudedStructureStyleSettings.Apply(options.ExtrudedStructureStyle);
             options.ModeledStructureStyle = this.modeledStructureStyleSettings.Apply(options.ModeledStructureStyle);
 
-            // Load map with default options
-            Bounds bounds = new Bounds(Vector3.zero, Vector3.one * this.loadRange);
-            this.mapsService.LoadMap(bounds, options);
+            return options;
         }
     }
 }

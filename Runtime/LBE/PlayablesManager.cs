@@ -11,17 +11,22 @@ namespace Lost.LBE
     using Google.Common.Geometry;
     using UnityEngine;
 
-    public struct LatLong
-    {
-        public double Latitude;
-        public double Longitude;
-    }
-
-    public class PlayablesManager : MonoBehaviour
+    ////
+    //// To Do:
+    ////  * Actually call out to the playable service and get some results
+    ////  * Spawn prefabs based on locations returned from playables service
+    ////  * Update this class to do some caching and pagination?
+    ////
+    public class PlayablesManager : Manager<PlayablesManager>
     {
         #pragma warning disable 0649
         [SerializeField] private string apiKey;
         #pragma warning restore 0649
+
+        public override void Initialize()
+        {
+            this.SetInstance(this);
+        }
 
         private void Start()
         {
@@ -38,8 +43,8 @@ namespace Lost.LBE
             rc.MaxCells = S2RegionCoverer.DefaultMaxCells;
             rc.MinLevel = rc.MaxLevel = 14;
         
-            LatLong southwestLat = new LatLong { Latitude = 47.013859, Longitude = -122.920682 };
-            LatLong northeast = new LatLong { Latitude = 47.033532, Longitude = -122.894687 };
+            var southwestLat = new GPSLatLong { Latitude = 47.013859, Longitude = -122.920682 };
+            var northeast = new GPSLatLong { Latitude = 47.033532, Longitude = -122.894687 };
 
             S2LatLng low = S2LatLng.FromDegrees(southwestLat.Latitude, southwestLat.Longitude);
             S2LatLng high = S2LatLng.FromDegrees(northeast.Latitude, northeast.Longitude);

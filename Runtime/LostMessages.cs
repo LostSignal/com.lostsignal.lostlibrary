@@ -34,6 +34,15 @@ namespace Lost
         {
             Bootloader.UpdateLoadingText("Initializing Purchasing...");
         }
+
+        public static UnityTask<YesNoResult> GpsIsRequiredRetryOrQuitApp()
+        {
+            return MessageBox.Instance.ShowYesNo(
+                "GPS Required",
+                "GPS is required to run this app, would you like to retry granting \n"
+                + "permissions? If not we'll need to shut down the app.");
+        }
+
     }
 }
 
