@@ -76,6 +76,20 @@ namespace Lost
                 this.isBodyVisible = GoogleMapsManager.Instance.IsMapLoaded;
                 this.avatarBody.SetActive(this.isBodyVisible);
             }
+            
+            float clampedZoom = Mathf.Clamp01(this.zoom);
+            this.avatarCamera.SetWeight(0, 1.0f - clampedZoom);
+            this.avatarCamera.SetWeight(1, clampedZoom);
+            
+            this.zoomedInOrbitalTransposer.m_XAxis.Value = this.rotation;
+            this.zoomedOutOrbitalTransposer.m_XAxis.Value = this.rotation;
+
+            float scale = this.zoomToScaleCurve.Evaluate(this.zoom);
+            this.avatarBody.transform.localScale = new Vector3(scale, scale, scale);
+
+            Quaternion currentRotation = this.avatarBody.transform.rotation;
+            Quaternion desiredRoation = Quaternion.LookRotation(GPSManager.Instance.CurrentDirection, Vector3.up);
+            this.avatarBody.transform.rotation = Quaternion.Slerp(currentRotation, desiredRoation, this.avatarRoationSpeed * Time.deltaTime);
 
             // TODO [bgish]: Eventually listen for GPS data to figure out which way to point the avatar (if phone has magnatrometer, then use that instead)
         }
