@@ -47,11 +47,13 @@ namespace Lost
         [SerializeField] private bool printDebugOutput;
         [SerializeField] private bool allowWasdInEditor = true;
         [SerializeField] private bool smoothMovementInEdtior = true;
-        [SerializeField] private float latLongSpeed = 0.001f;
+        [SerializeField] private double latLongSpeed = 0.001f;
         [SerializeField] private List<DebugStartLocation> debugStartLocations;
 #pragma warning restore 0649
         
         private GPSLatLong currentLatLong;
+        private GPSLatLong previousLatLong;
+        private Vector3 direction;
 
         private GPSServiceState serviceState;
         private Coroutine serviceCoroutine;
@@ -67,6 +69,11 @@ namespace Lost
 
         public bool IsStopped => this.serviceState == GPSServiceState.Stopped;
 
+        public Vector3 CurrentDirection
+        {
+            get => this.direction;
+        }
+
         public GPSLatLong CurrentLatLong
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -77,7 +84,18 @@ namespace Lost
 
             private set
             {
+                this.previousLatLong = this.currentLatLong;
                 this.currentLatLong = value;
+
+                // Calculate Direction
+                double latDir = (this.currentLatLong.Latitude - this.previousLatLong.Latitude) * 1000.0;
+                double longDir = (this.currentLatLong.Longitude - this.previousLatLong.Longitude) * 1000.0;
+                Vector2d latLongDirection = new Vector2d(latDir, longDir).normalized;
+
+                if (latLongDirection.x != 0.0 || latLongDirection.y != 0.0)
+                {
+                    this.direction = new Vector3((float)latLongDirection.y, 0.0f, (float)latLongDirection.x);
+                }
 
                 try
                 {
@@ -302,64 +320,70 @@ namespace Lost
                 return;
             }
 
-            Vector3 movement = new Vector3();
+            Vector2d movement = new Vector2d();
 
             #if USING_UNITY_INPUT_SYSTEM
 
             if (UnityEngine.InputSystem.Keyboard.current.wKey.isPressed)
             {
-                movement += new Vector3(1.0f, 0.0f, 0.0f);
+                movement += new Vector2d(1.0, 0.0);
             }
 
             if (UnityEngine.InputSystem.Keyboard.current.sKey.isPressed)
             {
-                movement += new Vector3(-1.0f, 0.0f, 0.0f);
+                movement += new Vector2d(-1.0, 0.0);
             }
 
             if (UnityEngine.InputSystem.Keyboard.current.aKey.isPressed)
             {
-                movement += new Vector3(0.0f, -1.0f, 0.0f);
+                movement += new Vector2d(0.0, -1.0);
             }
             
             if (UnityEngine.InputSystem.Keyboard.current.dKey.isPressed)
             {
-                movement += new Vector3(0.0f, 1.0f, 0.0f);
+                movement += new Vector2d(0.0, 1.0);
             }
 
             #else
 
             if (UnityEngine.Input.GetKeyDown(KeyCode.W))
             {
-                movement += new Vector3(1.0f, 0.0f, 0.0f);
+                movement += new Vector2d(1.0, 0.0);
             }
 
             if (UnityEngine.Input.GetKeyDown(KeyCode.S))
             {
-                movement += new Vector3(-1.0f, 0.0f, 0.0f);
+                movement += new Vector2d(-1.0, 0.0);
             }
 
             if (UnityEngine.Input.GetKeyDown(KeyCode.A))
             {
-                movement += new Vector3(0.0f, -1.0f, 0.0f);
+                movement += new Vector2d(0.0, -1.0);
             }
             
             if (UnityEngine.Input.GetKeyDown(KeyCode.D))
             {
-                movement += new Vector3(0.0f, 1.0f, 0.0f);
+                movement += new Vector2d(0.0, 1.0);
             }
 
             #endif
 
-            if (movement != Vector3.zero)
+            if (movement != Vector2d.zero)
             {
+                var from = Vector3.forward;
+                var to = Camera.main.transform.forward.SetY(0);
+                var cameraAngle = Vector3.Angle(from, to);
+                var sign = Vector3.Dot(Vector3.Cross(to, from), Vector3.up) > 0 ? -1 : 1;
+                
                 movement *= (this.latLongSpeed * Time.deltaTime);
+                movement = movement.Rotate(cameraAngle * sign);
 
                 this.editorLatLong.Latitude += movement.x;
                 this.editorLatLong.Longitude += movement.y;
             }
         }
         #endif
-
+        
         private void EnsurePlayerSettingsAreCorrect()
         {
 #if UNITY_EDITOR && UNITY_ANDROID

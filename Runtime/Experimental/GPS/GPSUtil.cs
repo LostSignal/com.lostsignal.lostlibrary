@@ -9,12 +9,23 @@
 namespace Lost
 {
     using System;
+    using UnityEngine;
 
     [Serializable]
     public struct GPSLatLong
     {
         public double Latitude;
         public double Longitude;
+
+        public Vector2d ToVector2d()
+        {
+            return new Vector2d(this.Latitude, this.Longitude);
+        }
+
+        public static GPSLatLong FromVector2d(Vector2d vector)
+        {
+            return new GPSLatLong { Latitude = vector.x, Longitude = vector.y };
+        }
 
         public override string ToString() => $"{this.Latitude}, {this.Longitude}";
     }
@@ -24,76 +35,53 @@ namespace Lost
     ////
     public static class GPSUtil
     {
+        public enum Unit
+        {
+            Meters,
+            Kilometers,
+            NauticalMiles,
+            Miles,
+        }
+
         public static double DistanceInMeters(GPSLatLong latLong1, GPSLatLong latLong2)
         {
-            return DistanceTo(latLong1.Latitude, latLong1.Longitude, latLong2.Latitude, latLong2.Longitude) * 1000.0;
+            return DistanceTo(latLong1.Latitude, latLong1.Longitude, latLong2.Latitude, latLong2.Longitude);
 
             // https://stackoverflow.com/questions/6366408/calculating-distance-between-two-latitude-and-longitude-geocoordinates
-            double DistanceTo(double lat1, double lon1, double lat2, double lon2, char unit = 'K')
+            double DistanceTo(double lat1, double lon1, double lat2, double lon2, Unit unit = Unit.Meters)
             {
-                double rlat1 = Math.PI * lat1 / 180;
-                double rlat2 = Math.PI * lat2 / 180;
+                double rlat1 = Math.PI * lat1 / 180.0;
+                double rlat2 = Math.PI * lat2 / 180.0;
                 double theta = lon1 - lon2;
-                double rtheta = Math.PI*theta/180;
+                double rtheta = Math.PI * theta / 180.0;
 
                 double dist = Math.Sin(rlat1) * Math.Sin(rlat2) + Math.Cos(rlat1) *
                               Math.Cos(rlat2) * Math.Cos(rtheta);
 
                 dist = Math.Acos(dist);
-                dist = dist * 180 / Math.PI;
-                dist = dist * 60 * 1.1515;
+                dist = dist * 180.0 / Math.PI;
+                dist = dist * 60.0 * 1.1515;
 
                 switch (unit)
                 {
-                    case 'K': //Kilometers -> default
-                        return dist*1.609344;
-                    case 'N': //Nautical Miles 
-                        return dist*0.8684;
-                    case 'M': //Miles
-                        return dist;
+                    case Unit.Meters:        return dist * 1609.344;
+                    case Unit.Kilometers:    return dist * 1.609344;
+                    case Unit.NauticalMiles: return dist * 0.8684;
+                    case Unit.Miles:         return dist;
+                    default:                 return dist;
                 }
-
-                return dist;
             }
         }
 
-        public static GPSLatLong MoveTowards(GPSLatLong currentLatLong, GPSLatLong desiredLatLong, double speed, double deltaTime)
+        public static GPSLatLong MoveTowards(GPSLatLong fromLatLong, GPSLatLong toLatLong, double speed, double deltaTime)
         {
-            // Creating a direction vector for where we want to lerp towards
-            var directionLatLong = new GPSLatLong
+            var newPosition = Vector2d.MoveTowards(fromLatLong.ToVector2d(), toLatLong.ToVector2d(), speed * deltaTime);
+
+            return new GPSLatLong
             {
-                Latitude = desiredLatLong.Latitude - currentLatLong.Latitude,
-                Longitude = desiredLatLong.Longitude - currentLatLong.Longitude,
+                Latitude = newPosition.x,
+                Longitude = newPosition.y,
             };
-
-            // Getting the squared length of this directional vector
-            var directionSquareDistance = (directionLatLong.Latitude * directionLatLong.Latitude) + (directionLatLong.Longitude * directionLatLong.Longitude);
-
-            if (directionSquareDistance == 0.0f)
-            {
-                return currentLatLong;
-            }
-
-            // Calculating the Distance we wish to travel this tick
-            double distance = speed * deltaTime;
-            double squareDistance = distance * distance;
-
-            if (directionSquareDistance < squareDistance)
-            {
-                // Our desired distance is further than our actual, so just set the distance to the actual
-                return desiredLatLong;
-            }
-            else
-            {
-                // We're not at the end yet, so lets lerp towards our desired
-                var directionDistance = System.Math.Sqrt(directionSquareDistance);
-
-                return new GPSLatLong
-                {
-                    Latitude = currentLatLong.Latitude + ((directionLatLong.Latitude / directionDistance) * distance),
-                    Longitude = currentLatLong.Longitude + ((directionLatLong.Longitude / directionDistance) * distance),
-                };
-            }
         }
 
         public static bool IsGpsEnabledByUser()

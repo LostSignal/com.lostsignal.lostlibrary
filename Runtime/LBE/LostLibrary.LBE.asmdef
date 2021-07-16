@@ -2,7 +2,8 @@
     "name": "LostLibrary.LBE",
     "rootNamespace": "",
     "references": [
-        "GUID:db13a9bcb59aac84e894a0084f1124e1"
+        "GUID:db13a9bcb59aac84e894a0084f1124e1",
+        "GUID:4307f53044263cf4b835bd812fc161a4"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -16,6 +17,11 @@
             "name": "com.google.mapssdk",
             "expression": "0.0.0",
             "define": "USING_GOOGLE_MAPS_SDK"
+        },
+        {
+            "name": "com.unity.cinemachine",
+            "expression": "0.0.0",
+            "define": "USING_CINEMACHINE"
         }
     ],
     "noEngineReferences": false
