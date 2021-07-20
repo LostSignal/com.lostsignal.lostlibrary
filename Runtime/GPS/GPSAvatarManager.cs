@@ -40,6 +40,7 @@ namespace Lost
 
         [Header("Rotation / Zoom Sensitivity")]
         [SerializeField] private float rotationSensitivity = 100.0f;
+        [SerializeField] private float zoomInputScale = 0.3f;
         #pragma warning restore 0649
 
         private CinemachineOrbitalTransposer zoomedInOrbitalTransposer;
@@ -124,9 +125,29 @@ namespace Lost
 
         void InputHandler.HandleInputs(List<Input> touches, Input mouse, Input pen)
         {
-            if (Application.isEditor && mouse.InputState == InputState.Moved)
+            if (Application.isEditor)
             {
-                this.ProcessRotate(mouse);
+                if (mouse.InputState == InputState.Moved)
+                {
+                    #if USING_UNITY_INPUT_SYSTEM
+                    bool isLeftCtrlDown = UnityEngine.InputSystem.Keyboard.current.leftCtrlKey.isPressed;
+                    #else
+                    bool isLeftCtrlDown = UnityEngine.Input.GetKeyDown(KeyCode.LeftControl);
+                    #endif
+
+                    if (isLeftCtrlDown == false)
+                    {
+                        this.ProcessRotate(mouse);
+                    }
+                    else
+                    {
+                        // Creating a fake input in the center of the screen
+                        Input fakeInput = new Input();
+                        fakeInput.Reset(0, 0, InputType.Mouse, InputButton.Left, new Vector2(Screen.width / 2.0f, Screen.height / 2.0f));
+
+                        this.ProcessZoom(mouse, fakeInput);
+                    }
+                }
             }
             else if (touches.Count == 1)
             {
@@ -148,7 +169,8 @@ namespace Lost
 
         private void ProcessZoom(Input input1, Input input2)
         {
-            // TODO [bgish]: Implement
+            float zoomFactor = Input.CalculatePinchZoomFactor(input1, input2, out _);
+            this.zoom = Mathf.Clamp01(this.zoom - (zoomFactor * this.zoomInputScale));
         }
     }
 }
