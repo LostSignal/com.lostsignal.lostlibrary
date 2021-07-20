@@ -18,8 +18,6 @@ namespace Lost.LBE
     public class GoogleMapsManager : Manager<GoogleMapsManager> 
     {
         #pragma warning disable 0649
-        [SerializeField] private GPSManager gpsManager;
-
         [Header("Stylings")]
         [SerializeField] private RegionStyleSettings regionStyleSettings;
         [SerializeField] private SegmentStyleSettings roadStyleSettings;
@@ -31,9 +29,6 @@ namespace Lost.LBE
         [SerializeField] private float loadRadiusInMeters = 300.0f;
         [SerializeField] private float reloadDistanceInMeters = 100.0f;
         
-        [Header("Movement")]
-        [SerializeField] private double lerpSpeed = 0.00001;
-
         [Header("Debug")]
         [SerializeField] private bool printDebugOutput;
 
@@ -45,9 +40,8 @@ namespace Lost.LBE
         private bool isMapServiceLoaded;
         private bool isInitialized;
         
-        // Used for smoothing
-        private GPSLatLong currentLatLng;
-        private GPSLatLong desiredLatLng;
+        // Used for loading
+        private GPSLatLong currentLatLong;
         private GPSLatLong lastLoadLatLng;
 
         public bool IsMapLoaded => this.isMapServiceLoaded;
@@ -107,8 +101,11 @@ namespace Lost.LBE
 
         private void Start()
         {
-            // NOTE [bgish]: This must happen in Start, can't use MapService in Awake or it won't be initialized yet
-            this.gpsManager.OnGPSReceived += this.OnGPSReceived;
+            // NOTE [bgish]: This must happen in Start, if we received GPS data in the Awake MapService won't be initialized and will throw errors
+            GPSPositionManager.OnInitialized += () =>
+            {
+                GPSPositionManager.Instance.OnGPSChanged += this.OnGPSReceived;
+            };
         }
 
         private void OnGPSReceived(GPSLatLong latLong)
@@ -117,9 +114,30 @@ namespace Lost.LBE
             {
                 this.isInitialized = true;
                 this.InitializeMap(latLong);
+                return;
             }
 
-            this.desiredLatLng = latLong;
+            // Keeping tracking of the current LatLong
+            this.currentLatLong = latLong;
+
+            // Tell the map service of our new location
+            if (this.isMapServiceLoaded)
+            {
+                this.mapsService.MoveFloatingOrigin(new LatLng(this.currentLatLong.Latitude, this.currentLatLong.Longitude));
+
+                // Checking out if we need to reload maps content
+                var lastLoadDistance = GPSUtil.DistanceInMeters(this.lastLoadLatLng, this.currentLatLong);
+
+                if (lastLoadDistance > this.reloadDistanceInMeters)
+                {
+                    if (this.printDebugOutput)
+                    {
+                        Debug.Log("GoogleMapsManager Reloading Map");
+                    }
+
+                    this.LoadMap();
+                }
+            }
         }
 
         private void InitializeMap(GPSLatLong latLong)
@@ -129,8 +147,7 @@ namespace Lost.LBE
                 Debug.Log($"GoogleMapsManager Initializing Map To ({latLong})");
             }
 
-            this.currentLatLng = latLong;
-            this.desiredLatLng = latLong;
+            this.currentLatLong = latLong;
 
             // Registering for error handling (Taken from BaseMapLoader.cs)
             this.mapsService.Events.MapEvents.LoadError.AddListener(args =>
@@ -187,36 +204,9 @@ namespace Lost.LBE
             this.LoadMap();
         }
 
-        private void Update()
-        {
-            if (this.isMapServiceLoaded == false)
-            {
-                return;
-            }
-
-            // Calculate our new lat long
-            this.currentLatLng = GPSUtil.MoveTowards(this.currentLatLng, this.desiredLatLng, this.lerpSpeed, Time.deltaTime);
-
-            // Tell the map service of our new location
-            this.mapsService.MoveFloatingOrigin(new LatLng(this.currentLatLng.Latitude, this.currentLatLng.Longitude));
-
-            // Checking out if we need to reload maps content
-            var lastLoadDistance = GPSUtil.DistanceInMeters(this.lastLoadLatLng, this.currentLatLng);
-
-            if (lastLoadDistance > this.reloadDistanceInMeters)
-            {
-                if (this.printDebugOutput)
-                {
-                    Debug.Log("GoogleMapsManager Reloading Map");
-                }
-
-                this.LoadMap();
-            }
-        }
-
         private void LoadMap()
         {
-            this.lastLoadLatLng = this.currentLatLng;
+            this.lastLoadLatLng = this.currentLatLong;
 
             // Load map with default options
             this.mapsService

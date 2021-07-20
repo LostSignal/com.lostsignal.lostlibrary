@@ -20,7 +20,8 @@ namespace Lost
     //// https://stackoverflow.com/questions/53046670/how-to-get-values-from-methods-written-in-ios-plugin-in-unity
     //// https://medium.com/@nosuchstudio/how-to-access-gps-location-in-unity-521f1371a7e3
     ////
-    public sealed class GPSManager : Manager<GPSManager>
+    public sealed class GPSManager :
+        Manager<GPSManager>
     {
         public enum GPSServiceState
         {
@@ -50,16 +51,17 @@ namespace Lost
         [SerializeField] private double latLongSpeed = 0.001f;
         [SerializeField] private List<DebugStartLocation> debugStartLocations;
 #pragma warning restore 0649
-        
-        private GPSLatLong currentLatLong;
-        private GPSLatLong previousLatLong;
-        private Vector3 direction;
+
+        private bool hasReceivedGpsData;
+        private GPSLatLong currentRawLatLong;
 
         private GPSServiceState serviceState;
         private Coroutine serviceCoroutine;
 
         private bool hasEditorLatLongBeenSet;
         private GPSLatLong editorLatLong;
+
+        public bool HasReceivedGpsData => this.hasReceivedGpsData;
 
         public Action<GPSLatLong> OnGPSReceived;
 
@@ -69,37 +71,22 @@ namespace Lost
 
         public bool IsStopped => this.serviceState == GPSServiceState.Stopped;
 
-        public Vector3 CurrentDirection
-        {
-            get => this.direction;
-        }
-
-        public GPSLatLong CurrentLatLong
+        public GPSLatLong CurrentRawLatLong
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                return this.currentLatLong;
+                return this.currentRawLatLong;
             }
 
             private set
             {
-                this.previousLatLong = this.currentLatLong;
-                this.currentLatLong = value;
-
-                // Calculate Direction
-                double latDir = (this.currentLatLong.Latitude - this.previousLatLong.Latitude) * 1000.0;
-                double longDir = (this.currentLatLong.Longitude - this.previousLatLong.Longitude) * 1000.0;
-                Vector2d latLongDirection = new Vector2d(latDir, longDir).normalized;
-
-                if (latLongDirection.x != 0.0 || latLongDirection.y != 0.0)
-                {
-                    this.direction = new Vector3((float)latLongDirection.y, 0.0f, (float)latLongDirection.x);
-                }
+                this.currentRawLatLong = value;
+                this.hasReceivedGpsData = true;
 
                 try
                 {
-                    this.OnGPSReceived?.Invoke(this.currentLatLong);
+                    this.OnGPSReceived?.Invoke(this.currentRawLatLong);
                 }
                 catch (Exception ex)
                 {
@@ -176,7 +163,7 @@ namespace Lost
 
                 while (true)
                 {
-                    this.CurrentLatLong = this.editorLatLong;
+                    this.CurrentRawLatLong = this.editorLatLong;
                     yield return WaitForUtil.Seconds(this.smoothMovementInEdtior ? 0.02f : this.updateFrequencyInSeconds);
                 }
             }
@@ -272,7 +259,7 @@ namespace Lost
 
                     while (true)
                     {
-                        this.CurrentLatLong = GPSUtil.GetGPSLatLong();
+                        this.CurrentRawLatLong = GPSUtil.GetGPSLatLong();
                         yield return WaitForUtil.Seconds(this.updateFrequencyInSeconds);
                     }
                 }

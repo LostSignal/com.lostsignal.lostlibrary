@@ -1,16 +1,16 @@
 //-----------------------------------------------------------------------
-// <copyright file="GoogleMapsAvatar.cs" company="Lost Signal LLC">
+// <copyright file="GPSAvatarManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if USING_GOOGLE_MAPS_SDK && USING_CINEMACHINE
+#if USING_CINEMACHINE
 
 namespace Lost
 {
-    using Cinemachine;
-    using Lost.LBE;
+    using System.Collections;
     using System.Collections.Generic;
+    using Cinemachine;
     using UnityEngine;
 
     ////
@@ -19,12 +19,12 @@ namespace Lost
     ////  * Add Rotate (Pan Side to side / Right Mouse side to side)
     ////  * Add Zoom (Pinch / Scroll Wheel)
     ////
-    public class GoogleMapsAvatar : MonoBehaviour, InputHandler
+    public class GPSAvatarManager :
+        Manager<GPSAvatarManager>,
+        InputHandler
     {
         #pragma warning disable 0649
-        [Header("Avatar")]
-        [SerializeField] private GameObject avatarBody;
-        [SerializeField] private float avatarRoationSpeed = 1.0f;
+        [Header("Avatar Scaling")]
         [SerializeField] private AnimationCurve zoomToScaleCurve;
 
         [Header("Camera")]
@@ -32,7 +32,7 @@ namespace Lost
         [SerializeField] private CinemachineVirtualCamera zoomedInCamera;
         [SerializeField] private CinemachineVirtualCamera zoomedOutCamera;
         
-        [Header("Rotation / Zoom")]
+        [Header("Camera Rotation / Zoom")]
         [SerializeField] private float rotation;
 
         [Range(0.0f, 1.0f)]
@@ -44,54 +44,82 @@ namespace Lost
 
         private CinemachineOrbitalTransposer zoomedInOrbitalTransposer;
         private CinemachineOrbitalTransposer zoomedOutOrbitalTransposer;
-        private bool isBodyVisible;
+        private GPSAvatar gpsAvatar;
 
-        private void Awake()
+        public override void Initialize()
         {
-            this.avatarBody.SetActive(false);
-            this.isBodyVisible = false;
+            this.SetInstance(this);
+        }
 
-            this.zoom = 0.5f; // Keep track of the players perferred zoom level and restore it here
+        public void SetAvatar(GPSAvatar avatar)
+        {
+            this.gpsAvatar = avatar;
+        }
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            this.zoom = 0.5f; // TODO [bgish]: Use PlayerData and keep track of the players last zoom level and restore it here
             this.zoomedInOrbitalTransposer = this.zoomedInCamera.GetCinemachineComponent<CinemachineOrbitalTransposer>();
             this.zoomedOutOrbitalTransposer = this.zoomedOutCamera.GetCinemachineComponent<CinemachineOrbitalTransposer>();
 
-            InputManager.OnInitialized += InitializeInputManager;
-
-            void InitializeInputManager()
+            InputManager.OnInitialized += () =>
             {
                 InputManager.Instance.AddHandler(this);
+            };
+        }
+
+        private IEnumerator Start()
+        {
+            // Waiting for all the managers to finsih initializing before updating teh avatar
+            while (GPSManager.IsInitialized == false || GPSDirectionManager.IsInitialized == false || GPSPositionManager.IsInitialized == false || GPSManager.Instance.HasReceivedGpsData == false)
+            {
+                yield return null;
+            }
+
+            while (true)
+            {
+                // Updating camera weights based on zoom level
+                float clampedZoom = Mathf.Clamp01(this.zoom);
+                this.avatarCamera.SetWeight(0, 1.0f - clampedZoom);
+                this.avatarCamera.SetWeight(1, clampedZoom);
+
+                // Updating Camera rotation around the Avatar
+                this.zoomedInOrbitalTransposer.m_XAxis.Value = this.rotation;
+                this.zoomedOutOrbitalTransposer.m_XAxis.Value = this.rotation;
+
+                this.UpdateAvatar();
+
+                yield return null;
             }
         }
 
-        private void Update()
+        private void UpdateAvatar()
         {
-            if (GPSManager.IsInitialized == false || GoogleMapsManager.IsInitialized == false || GoogleMapsManager.Instance.IsMapLoaded == false)
+            if (this.gpsAvatar == null)
             {
                 return;
             }
 
-            if (this.isBodyVisible != GoogleMapsManager.Instance.IsMapLoaded)
-            {
-                this.isBodyVisible = GoogleMapsManager.Instance.IsMapLoaded;
-                this.avatarBody.SetActive(this.isBodyVisible);
-            }
-            
-            float clampedZoom = Mathf.Clamp01(this.zoom);
-            this.avatarCamera.SetWeight(0, 1.0f - clampedZoom);
-            this.avatarCamera.SetWeight(1, clampedZoom);
-            
-            this.zoomedInOrbitalTransposer.m_XAxis.Value = this.rotation;
-            this.zoomedOutOrbitalTransposer.m_XAxis.Value = this.rotation;
-
+            // Updating Avatar Body Scale
             float scale = this.zoomToScaleCurve.Evaluate(this.zoom);
-            this.avatarBody.transform.localScale = new Vector3(scale, scale, scale);
 
-            Quaternion currentRotation = this.avatarBody.transform.rotation;
-            Quaternion desiredRoation = Quaternion.LookRotation(GPSManager.Instance.CurrentDirection, Vector3.up);
-            this.avatarBody.transform.rotation = Quaternion.Slerp(currentRotation, desiredRoation, this.avatarRoationSpeed * Time.deltaTime);
+            if (this.gpsAvatar.Transform.localScale.x != scale)
+            {
+                this.gpsAvatar.Transform.localScale = new Vector3(scale, scale, scale);
+            }
 
-            // TODO [bgish]: Eventually listen for GPS data to figure out which way to point the avatar (if phone has magnatrometer, then use that instead)
+            // Updating Avatar Body Rotation
+            var gpsDirection = GPSDirectionManager.Instance.Direction;
+
+            if (this.gpsAvatar.Transform.localRotation != gpsDirection)
+            {
+                this.gpsAvatar.Transform.localRotation = gpsDirection;
+            }
+
+            // Updating Speed
+            this.gpsAvatar.SetSpeed(GPSPositionManager.Instance.Speed);
         }
 
         void InputHandler.HandleInputs(List<Input> touches, Input mouse, Input pen)
