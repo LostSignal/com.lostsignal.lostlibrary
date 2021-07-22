@@ -216,8 +216,6 @@ namespace Lost.BuildConfig
                 return;
             }
 
-            EditorApplication.playModeStateChanged += PlayModeStateChanged;
-
             // Recording defines before we possibly alter them
             List<string> definesBefore = new List<string>();
             BuildTargetGroupUtil.GetValid().ForEach(x => definesBefore.Add(PlayerSettings.GetScriptingDefineSymbolsForGroup(x)));
@@ -254,7 +252,7 @@ namespace Lost.BuildConfig
         }
 
         [EditorEvents.OnEnterPlayMode]
-        private static void PlayModeStateChanged(PlayModeStateChange state)
+        private static void OnEnterPlayMode()
         {
             if (LostLibrary.BuildConfigs == null)
             {
