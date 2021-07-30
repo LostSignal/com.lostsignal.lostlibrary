@@ -164,15 +164,31 @@ namespace Lost.LBE
             rc.MaxCells = S2RegionCoverer.DefaultMaxCells;
             rc.MinLevel = rc.MaxLevel = 14;
 
-            var southwestLat = new GPSLatLong { Latitude = 47.013859, Longitude = -122.920682 };
-            var northeast = new GPSLatLong { Latitude = 47.033532, Longitude = -122.894687 };
+            // var southwestLat = new GPSLatLong { Latitude = 47.013859, Longitude = -122.920682 };
+            // var northeast = new GPSLatLong { Latitude = 47.033532, Longitude = -122.894687 };
+            // 
+            // S2LatLng low = S2LatLng.FromDegrees(southwestLat.Latitude, southwestLat.Longitude);
+            // S2LatLng high = S2LatLng.FromDegrees(northeast.Latitude, northeast.Longitude);
+            // 
+            // S2LatLngRect latLngRect = new S2LatLngRect(low, high);
+            // return rc.GetCovering(latLngRect);
 
-            S2LatLng low = S2LatLng.FromDegrees(southwestLat.Latitude, southwestLat.Longitude);
-            S2LatLng high = S2LatLng.FromDegrees(northeast.Latitude, northeast.Longitude);
 
-            S2LatLngRect latLngRect = new S2LatLngRect(low, high);
+            //// https://stackoverflow.com/questions/7477003/calculating-new-longitude-latitude-from-old-n-meters
+            //// number of km per degree = ~111km (111.32 in google maps, but range varies
+            //// between 110.567km at the equator and 111.699km at the poles)
+            //// 1km in degree = 1 / 111.32km = 0.0089
+            //// 1m in degree = 0.0089 / 1000 = 0.0000089
+            double meters = this.loadRadiusInMeters;
+            double coef = meters * 0.0000089;
+            double new_lat = /*currentLatLong.Latitude +*/ coef;
+            double new_long = /*currentLatLong.Longitude +*/ coef / Math.Cos(currentLatLong.Latitude * (Math.PI / 180.0));
 
-            return rc.GetCovering(latLngRect);
+            S2LatLng center = S2LatLng.FromDegrees(currentLatLong.Latitude, currentLatLong.Longitude);
+            S2LatLng size = S2LatLng.FromDegrees(new_lat, new_long);
+
+            return rc.GetCovering(S2LatLngRect.FromCenterSize(center, size));
+
         }
 
         private bool IsLocationInLoadRange(LBELocation location, GPSLatLong currentLatLong)

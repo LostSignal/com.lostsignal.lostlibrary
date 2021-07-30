@@ -184,18 +184,18 @@ namespace Lost.LBE
         {
             ""gameObjectType"": 1,
             ""filter"": {
-                ""maxLocationCount"": 4,
+                ""maxLocationCount"": 5,
                 ""spacing"": {
-                    ""minSpacingMeters"": 500
+                    ""minSpacingMeters"": 300
                 }
             }
         },
         {
             ""gameObjectType"": 2,
             ""filter"": {
-                ""maxLocationCount"": 4,
+                ""maxLocationCount"": 20,
                 ""spacing"": {
-                    ""minSpacingMeters"": 400
+                    ""minSpacingMeters"": 150
                 }
             }
         },
@@ -204,7 +204,7 @@ namespace Lost.LBE
             ""filter"": {
                 ""maxLocationCount"": 50,
                 ""spacing"": {
-                    ""minSpacingMeters"": 200
+                    ""minSpacingMeters"": 50
                 }
             }
         }

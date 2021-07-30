@@ -44,16 +44,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameObjectTypes:
-  - gameObjectType: 0
+  - gameObjectType: 1
     prefab: {fileID: 9120580894733138760, guid: aeb3eca385d940741a45423517e70045,
       type: 3}
-  - gameObjectType: 1
+  - gameObjectType: 2
     prefab: {fileID: 6273012043656481748, guid: eedd509e1edfda74da17577c3389f366,
       type: 3}
-  - gameObjectType: 2
+  - gameObjectType: 3
     prefab: {fileID: 5034035025056426773, guid: 274976005e5a4304584fed66e659f83a,
       type: 3}
-  loadRadiusInMeters: 300
+  loadRadiusInMeters: 2000
   reloadDistanceInMeters: 15
   disableCaching: 0
 --- !u!1 &2504754227740598815
