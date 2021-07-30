@@ -13,9 +13,9 @@ namespace Lost
     public class GPSPositionManager
         : Manager<GPSPositionManager>
     {
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [SerializeField] private double lerpSpeed = 0.002;
-        #pragma warning restore 0649
+#pragma warning restore 0649
 
         private bool hasReceivedGpsData;
         private GPSLatLong currentLatLng;
@@ -24,6 +24,10 @@ namespace Lost
         private double speed;
 
         public Action<GPSLatLong> OnGPSChanged;
+
+        public bool HasReceivedGPSData => this.hasReceivedGpsData;
+
+        public GPSLatLong CurrentLatLong => this.currentLatLng;
 
         public float Speed
         {

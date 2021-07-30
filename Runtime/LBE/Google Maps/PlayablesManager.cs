@@ -24,9 +24,9 @@ namespace Lost.LBE
     {
         private const int MaxRetryCount = 3;
 
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [SerializeField] private string apiKey;
-        #pragma warning restore 0649
+#pragma warning restore 0649
 
         private Dictionary<ulong, byte[]> fakeRedisCache = new Dictionary<ulong, byte[]>();
 
@@ -126,6 +126,13 @@ namespace Lost.LBE
             foreach (var gameObjectType in playablesResponse.LocationsPerGameObjectType)
             {
                 var typeId = gameObjectType.Key.ToString();
+
+                var locationCount = gameObjectType.Value?.Locations?.Count;
+
+                if (locationCount == null || locationCount == 0)
+                {
+                    continue;
+                }
 
                 foreach (var location in gameObjectType.Value.Locations)
                 {
@@ -276,7 +283,7 @@ namespace Lost.LBE
         {
             GetS2CellResult result = new GetS2CellResult();
             NetworkReader reader = new NetworkReader(data);
-            
+
             result.ResultCode = (GetS2CellResult.GetS2CellResultCode)reader.ReadPackedUInt32();
             result.S2CellId = reader.ReadUInt64();
             result.ExpirationUtc = DateTime.FromFileTimeUtc(reader.ReadInt64());

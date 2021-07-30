@@ -17,15 +17,17 @@ namespace Lost.LBE
 
     public class LBEManager : Manager<LBEManager>
     {
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [SerializeField] private List<GameObjectTypeMapping> gameObjectTypes;
         [SerializeField] private float loadRadiusInMeters = 300.0f;
         [SerializeField] private float reloadDistanceInMeters = 15.0f;
         [SerializeField] private bool disableCaching;
-        #pragma warning restore 0649
+#pragma warning restore 0649
 
         private Dictionary<ulong, S2Cell> s2CellsCache = new Dictionary<ulong, S2Cell>();
-        private Dictionary<string, GameObject> placedLocations = new Dictionary<string, GameObject>();
+        private Dictionary<string, GameObject> locationIdToGameObject = new Dictionary<string, GameObject>();
+        private Dictionary<string, LBELocation> locationIdToLBELocation = new Dictionary<string, LBELocation>();
+
         private GPSLatLong lastUpdateLatLong;
         private bool isInitialized;
 
@@ -39,9 +41,14 @@ namespace Lost.LBE
                 yield return GPSPositionManager.WaitForInitialization();
                 yield return GoogleMapsManager.WaitForInitialization();
 
-                GPSPositionManager.Instance.OnGPSChanged += this.OnGPSChanged;
-                
                 this.SetInstance(this);
+
+                GPSPositionManager.Instance.OnGPSChanged += this.OnGPSChanged;
+
+                if (GPSPositionManager.Instance.HasReceivedGPSData)
+                {
+                    this.OnGPSChanged(GPSPositionManager.Instance.CurrentLatLong);
+                }
             }
 
             IEnumerator CreatePool()
@@ -65,45 +72,43 @@ namespace Lost.LBE
             this.lastUpdateLatLong = currentLatLong;
             this.PruneExpiredAndOutOfRangeLocations(currentLatLong);
             await this.FindAndAddAllNewLocations(currentLatLong);
+
+            // Since we moved, lets update the locations for all the lbe locations
+            foreach (var location in this.locationIdToGameObject)
+            {
+                var locationId = location.Key;
+                var lbeLocation = this.locationIdToLBELocation[locationId];
+                location.Value.transform.localPosition = GoogleMapsManager.Instance.GetPosition(lbeLocation.LatLong);
+            }
         }
 
         private void PruneExpiredAndOutOfRangeLocations(GPSLatLong currentLatLong)
         {
-            var s2CellsToRemove = new HashSet<ulong>();
+            var cachedS2CellsToRemove = new HashSet<ulong>();
             var utcNow = DateTime.UtcNow;
 
             foreach (var cell in this.s2CellsCache.Values)
             {
-                // Removing S2 Cells that have exipred
-                if (cell.ExpirationUtc > utcNow)
-                {
-                    s2CellsToRemove.Add(cell.S2CellId);
+                bool isEntireCellExpired = cell.ExpirationUtc < utcNow;
 
-                    foreach (var location in cell.Locations)
-                    {
-                        this.RemoveLocationFromMap(location);
-                    }
+                if (isEntireCellExpired)
+                {
+                    cachedS2CellsToRemove.Add(cell.S2CellId);
                 }
 
-                foreach (var s2CellId in s2CellsToRemove)
-                {
-                    this.s2CellsCache.Remove(s2CellId);
-                }
-
-                // If this is true, then we already removed all the locations for this cell, so skip to the next one
-                if (s2CellsToRemove.Contains(cell.S2CellId))
-                {
-                    continue;
-                }
-
-                // Removing Locations that are out of range
+                // Removing Locations 
                 foreach (var location in cell.Locations)
                 {
-                    if (this.IsLocationInLoadRange(location, currentLatLong) == false)
+                    if (isEntireCellExpired || this.IsLocationInLoadRange(location, currentLatLong) == false)
                     {
                         this.RemoveLocationFromMap(location);
                     }
-                } 
+                }
+            }
+
+            foreach (var s2CellId in cachedS2CellsToRemove)
+            {
+                this.s2CellsCache.Remove(s2CellId);
             }
         }
 
@@ -177,23 +182,25 @@ namespace Lost.LBE
 
         private void AddLocationToMap(LBELocation location)
         {
-            if (this.placedLocations.ContainsKey(location.LocationId) == false)
+            if (this.locationIdToGameObject.ContainsKey(location.LocationId) == false)
             {
                 var locationGameObject = this.CreateGameObject(location);
 
                 if (locationGameObject != null)
                 {
-                    this.placedLocations.Add(location.LocationId, locationGameObject);
+                    this.locationIdToGameObject.Add(location.LocationId, locationGameObject);
+                    this.locationIdToLBELocation.Add(location.LocationId, location);
                 }
             }
         }
 
         private void RemoveLocationFromMap(LBELocation location)
         {
-            if (this.placedLocations.TryGetValue(location.LocationId, out GameObject locationGameObject))
+            if (this.locationIdToGameObject.TryGetValue(location.LocationId, out GameObject locationGameObject))
             {
                 this.DestoryGameObject(locationGameObject);
-                this.placedLocations.Remove(location.LocationId);
+                this.locationIdToGameObject.Remove(location.LocationId);
+                this.locationIdToLBELocation.Remove(location.LocationId);
             }
         }
 
@@ -236,10 +243,10 @@ namespace Lost.LBE
         [Serializable]
         private class GameObjectTypeMapping
         {
-            #pragma warning disable 0649
+#pragma warning disable 0649
             [SerializeField] private string gameObjectType;
             [SerializeField] private GameObject prefab;
-            #pragma warning restore 0649
+#pragma warning restore 0649
 
             public string GameObjectType => this.gameObjectType;
 

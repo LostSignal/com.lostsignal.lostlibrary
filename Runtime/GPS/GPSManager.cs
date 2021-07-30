@@ -174,12 +174,12 @@ namespace Lost
 
                 if (Application.isEditor && this.waitForUnityRemote)
                 {
-                    #if UNITY_EDITOR
+#if UNITY_EDITOR
                     while (UnityEditor.EditorApplication.isRemoteConnected == false)
                     {
                         yield return null;
                     }
-                    #endif
+#endif
 
                     yield return WaitForUtil.Seconds(5.0f);
                 }
@@ -278,7 +278,7 @@ namespace Lost
             {
                 UnityEngine.Input.location.Stop();
             }
-            
+
             this.serviceState = GPSServiceState.Stopped;
         }
 
@@ -299,7 +299,7 @@ namespace Lost
             }
         }
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         private void Update()
         {
             if (this.allowWasdInEditor == false || this.waitForUnityRemote)
@@ -309,7 +309,7 @@ namespace Lost
 
             Vector2d movement = new Vector2d();
 
-            #if USING_UNITY_INPUT_SYSTEM
+#if USING_UNITY_INPUT_SYSTEM
 
             if (UnityEngine.InputSystem.Keyboard.current.wKey.isPressed)
             {
@@ -325,13 +325,13 @@ namespace Lost
             {
                 movement += new Vector2d(0.0, -1.0);
             }
-            
+
             if (UnityEngine.InputSystem.Keyboard.current.dKey.isPressed)
             {
                 movement += new Vector2d(0.0, 1.0);
             }
 
-            #else
+#else
 
             if (UnityEngine.Input.GetKeyDown(KeyCode.W))
             {
@@ -353,7 +353,7 @@ namespace Lost
                 movement += new Vector2d(0.0, 1.0);
             }
 
-            #endif
+#endif
 
             if (movement != Vector2d.zero)
             {
@@ -361,7 +361,7 @@ namespace Lost
                 var to = Camera.main.transform.forward.SetY(0);
                 var cameraAngle = Vector3.Angle(from, to);
                 var sign = Vector3.Dot(Vector3.Cross(to, from), Vector3.up) > 0 ? -1 : 1;
-                
+
                 movement *= (this.latLongSpeed * Time.deltaTime);
                 movement = movement.Rotate(cameraAngle * sign);
 
@@ -369,8 +369,8 @@ namespace Lost
                 this.editorLatLong.Longitude += movement.y;
             }
         }
-        #endif
-        
+#endif
+
         private void EnsurePlayerSettingsAreCorrect()
         {
 #if UNITY_EDITOR && UNITY_ANDROID
@@ -386,11 +386,11 @@ namespace Lost
         [Serializable]
         public class DebugStartLocation
         {
-            #pragma warning disable 0649
+#pragma warning disable 0649
             [SerializeField] private string name;
             [SerializeField] private GPSLatLong latLong;
-            #pragma warning restore 0649
-            
+#pragma warning restore 0649
+
             public string Name => this.name;
 
             public GPSLatLong LatLong => this.latLong;

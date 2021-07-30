@@ -34,7 +34,7 @@ namespace Lost.LBE
 
         public void CalculateSecondsToLive()
         {
-            this.SecondsToLive = DateTime.UtcNow.Subtract(this.ExpirationUtc).TotalSeconds;
+            this.SecondsToLive = this.ExpirationUtc.Subtract(DateTime.UtcNow).TotalSeconds;
         }
     }
 }
