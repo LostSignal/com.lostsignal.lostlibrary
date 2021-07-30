@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     //// ### Remote Inspector Tool
@@ -36,3 +38,5 @@ namespace Lost
         }
     }
 }
+
+#endif

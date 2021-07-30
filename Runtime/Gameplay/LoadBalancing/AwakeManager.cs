@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     public interface IAwakable
@@ -27,3 +29,5 @@ namespace Lost
         }
     }
 }
+
+#endif

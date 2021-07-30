@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using System;
@@ -21,13 +23,13 @@ namespace Lost
             GameData,
         }
 
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [SerializeField] private Location location;
         [SerializeField] private List<Flag> flags;
 
         [HideInInspector]
         [SerializeField] private BitArray flagBits;
-        #pragma warning restore 0649
+#pragma warning restore 0649
 
         private string dataStoreKeyName;
         private bool isInitialized;
@@ -162,11 +164,11 @@ namespace Lost
         [Serializable]
         public class Flag
         {
-            #pragma warning disable 0649
+#pragma warning disable 0649
             [SerializeField] private string name;
             [SerializeField] private int id;
             [SerializeField] private bool enabled = true;
-            #pragma warning restore 0649
+#pragma warning restore 0649
 
             public int Id => this.id;
 
@@ -176,3 +178,5 @@ namespace Lost
         }
     }
 }
+
+#endif

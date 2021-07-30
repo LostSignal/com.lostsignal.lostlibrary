@@ -1,8 +1,10 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="DestoryGameObjectOnBuild.cs" company="Lost Signal">
 //     Copyright (c) Lost Signal. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
+#if UNITY
 
 namespace Lost
 {
@@ -10,10 +12,10 @@ namespace Lost
 
     public class DestoryGameObjectOnBuild : MonoBehaviour
     {
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [EnumFlag]
         [SerializeField] private DevicePlatform platformsToKeep;
-        #pragma warning restore 0649
+#pragma warning restore 0649
 
 #if UNITY_EDITOR
         [EditorEvents.OnProcessScene]
@@ -46,3 +48,5 @@ namespace Lost
 #endif
     }
 }
+
+#endif

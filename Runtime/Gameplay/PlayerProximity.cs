@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using UnityEngine;
@@ -34,12 +36,12 @@ namespace Lost
             High = 2,
         }
 
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [SerializeField] private Frequency defaultFrequency;
         [SerializeField] private Bounds bounds;
         [SerializeField] private UnityEvent onEnterProximity;
         [SerializeField] private UnityEvent onExitProximity;
-        #pragma warning restore 0649
+#pragma warning restore 0649
         
         private string currentUpdateChannelName;
         private bool hasPlayerEntered;
@@ -98,3 +100,5 @@ namespace Lost
         }
     }
 }
+
+#endif

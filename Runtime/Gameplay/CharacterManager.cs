@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using System.Runtime.CompilerServices;
@@ -82,3 +84,5 @@ namespace Lost
         }
     }
 }
+
+#endif

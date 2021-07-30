@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using System.Collections.Generic;
@@ -11,9 +13,9 @@ namespace Lost
 
     public class FlagManager : Manager<FlagManager>
     {
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [SerializeField] private bool printDebugOutput;
-        #pragma warning restore 0649
+#pragma warning restore 0649
 
         private List<FlagCollection> activeFlagCollections = new List<FlagCollection>();
 
@@ -35,3 +37,5 @@ namespace Lost
         }
     }
 }
+
+#endif

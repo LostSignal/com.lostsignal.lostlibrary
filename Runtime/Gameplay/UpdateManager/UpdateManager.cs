@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 //// 
 //// 
 //// 
@@ -53,9 +55,9 @@ namespace Lost
 
         private static List<FunctionCall> functions = new List<FunctionCall>();
 
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [SerializeField] private List<UpdateChannel> channels = new List<UpdateChannel>();
-        #pragma warning restore 0649
+#pragma warning restore 0649
 
         private Dictionary<string, UpdateChannel> channelMap = new Dictionary<string, UpdateChannel>();
         
@@ -69,9 +71,9 @@ namespace Lost
             {
                 this.channels[i].Initialize();
 
-                #if ENABLE_PROFILING
+#if ENABLE_PROFILING
                 this.channels[i].InitializeSampler();
-                #endif
+#endif
 
                 this.channelMap.Add(this.channels[i].Name, this.channels[i]);
 
@@ -178,16 +180,18 @@ namespace Lost
         {
             for (int i = 0; i < channels.Count; i++)
             {
-                #if ENABLE_PROFILING
+#if ENABLE_PROFILING
                 channels[i].CustomSampler.Begin();
-                #endif
+#endif
 
                 channels[i].Run(deltaTime);
 
-                #if ENABLE_PROFILING
+#if ENABLE_PROFILING
                 channels[i].CustomSampler.End();
-                #endif
+#endif
             }
         }
     }
 }
+
+#endif

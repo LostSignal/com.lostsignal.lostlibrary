@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using System.Runtime.CompilerServices;
@@ -29,7 +31,7 @@ namespace Lost
             }
         }
 
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [SerializeField] private Bounds onEnterBounds;
         [SerializeField] private bool playerMustBeFacing;
 
@@ -40,7 +42,7 @@ namespace Lost
         [Header("Events")]
         [SerializeField] private UnityEvent onPlayerEnter;
         [SerializeField] private UnityEvent onPlayerExit;
-        #pragma warning restore 0649
+#pragma warning restore 0649
     
         private UpdateChannelReceipt receipt;
         private bool isPlayerInside;
@@ -152,3 +154,5 @@ namespace Lost
         }
     }
 }
+
+#endif

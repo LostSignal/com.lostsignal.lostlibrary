@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     public interface IStartable
@@ -36,3 +38,5 @@ namespace Lost
         }
     }
 }
+
+#endif

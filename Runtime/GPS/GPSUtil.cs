@@ -4,8 +4,6 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if UNITY
-
 namespace Lost
 {
     using System;
@@ -29,7 +27,9 @@ namespace Lost
 
         public override string ToString() => $"{this.Latitude}, {this.Longitude}";
     }
-    
+
+#if UNITY
+
     ////
     //// This class is a major work in progress.  It is not the best thing to use just yet.
     ////
@@ -86,11 +86,11 @@ namespace Lost
 
         public static bool IsGpsEnabledByUser()
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             return true;
-            #else
+#else
             return UnityEngine.Input.location.isEnabledByUser;
-            #endif
+#endif
         }
 
         public static void AskForPermissionToUseGPS()
@@ -157,6 +157,6 @@ namespace Lost
         private static extern double _GetLongitude();
 #endif
     }
-}
-
 #endif
+
+}

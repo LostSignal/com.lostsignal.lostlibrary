@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using Unity.Profiling;
@@ -137,3 +139,5 @@ namespace Lost
 
     #endif
 }
+
+#endif

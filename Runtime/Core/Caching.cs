@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using Lost.Networking;
@@ -22,3 +24,5 @@ namespace Lost
         public static readonly ContactPoint[] ContactPointsCache = new ContactPoint[50];
     }
 }
+
+#endif

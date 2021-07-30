@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if USING_CINEMACHINE
+
 namespace Lost
 {
     using UnityEngine;
@@ -11,14 +13,14 @@ namespace Lost
     [RequireComponent(typeof(Animator))]
     public class GPSAvatar : MonoBehaviour
     {
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [Header("Speed")]
         [SerializeField] private bool setSpeedParameter;
         [SerializeField] private string speedFloatParemeterName = "Speed";
 
         [HideInInspector] [SerializeField] private Transform myTransform;
         [HideInInspector] [SerializeField] private Animator myAnimator;
-        #pragma warning restore 0649
+#pragma warning restore 0649
 
         private bool speedParameterHashCalculated;
         private int speedParameterHash;
@@ -66,3 +68,5 @@ namespace Lost
         }
     }
 }
+
+#endif

@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     //// * All level loads should not activate, and LevelManager should activate them manually and report stats for how long that takes.
@@ -87,3 +89,5 @@ namespace Lost
         }
     }
 }
+
+#endif

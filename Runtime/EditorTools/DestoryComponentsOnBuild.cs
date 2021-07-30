@@ -1,8 +1,10 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="DestoryComponentsOnBuild.cs" company="Lost Signal">
 //     Copyright (c) Lost Signal. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
+#if UNITY
 
 namespace Lost
 {
@@ -11,11 +13,11 @@ namespace Lost
 
     public class DestoryComponentsOnBuild : MonoBehaviour
     {
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [EnumFlag]
         [SerializeField] private DevicePlatform platformsToKeep;
         [SerializeField] private List<Component> componentsToDestory;
-        #pragma warning restore 0649
+#pragma warning restore 0649
 
 #if UNITY_EDITOR
 
@@ -61,3 +63,5 @@ namespace Lost
 #endif
     }
 }
+
+#endif

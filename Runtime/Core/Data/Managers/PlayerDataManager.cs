@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     public sealed class PlayerDataManager : DataManager<PlayerDataManager>
@@ -17,3 +19,5 @@ namespace Lost
         }
     }
 }
+
+#endif

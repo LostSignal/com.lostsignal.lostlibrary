@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using System.Collections.Generic;
@@ -31,10 +33,10 @@ namespace Lost
             get => charactersReadOnly;
         }
 
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [SerializeField] private bool isMainCharacter;
         [SerializeField] private int teamId;
-        #pragma warning restore 0649
+#pragma warning restore 0649
 
         public Transform Transform
         {
@@ -70,3 +72,5 @@ namespace Lost
         }
     }
 }
+
+#endif

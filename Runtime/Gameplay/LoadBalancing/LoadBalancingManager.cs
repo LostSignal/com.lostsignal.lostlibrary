@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     using System;
@@ -28,11 +30,11 @@ namespace Lost
             public string Description;
         }
 
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [SerializeField] private int initialCapacity = 250;
         [SerializeField] private double maxMilliseconds = 0.1f;
         //[SerializeField] private bool printDebugOutput = false;
-        #pragma warning restore 0649
+#pragma warning restore 0649
         
         private Queue<Callback> callbackQueue;
         private UpdateChannelReceipt updateReceipt;
@@ -42,9 +44,9 @@ namespace Lost
         private float maxQueuedTime = float.MinValue;
         private float totalQueuedTime = 0.0f;
         private int totalCallbacksProcessed = 0;
-        #pragma warning disable IDE0052  // Suppressing the warning, because eventurally we'll send this info via log and/or analytic
+#pragma warning disable IDE0052  // Suppressing the warning, because eventurally we'll send this info via log and/or analytic
         private float averageQueuedTime = 0.0f;
-        #pragma warning restore IDE0052
+#pragma warning restore IDE0052
         
         public bool IsProcessing
         {
@@ -148,3 +150,5 @@ namespace Lost
         }
     }
 }
+
+#endif

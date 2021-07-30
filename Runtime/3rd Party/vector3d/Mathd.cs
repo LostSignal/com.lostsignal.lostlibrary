@@ -254,6 +254,8 @@ namespace UnityEngine {
             return Mathd.Abs(b - a) < Mathd.Max(1E-06d * Mathd.Max(Mathd.Abs(a), Mathd.Abs(b)), 1.121039E-44d);
         }
 
+        #if UNITY
+
         public static double SmoothDamp(double current, double target, ref double currentVelocity, double smoothTime, double maxSpeed) {
             double deltaTime = (double)Time.deltaTime;
             return Mathd.SmoothDamp(current, target, ref currentVelocity, smoothTime, maxSpeed, deltaTime);
@@ -264,6 +266,8 @@ namespace UnityEngine {
             double maxSpeed = double.PositiveInfinity;
             return Mathd.SmoothDamp(current, target, ref currentVelocity, smoothTime, maxSpeed, deltaTime);
         }
+
+        #endif
 
         public static double SmoothDamp(double current, double target, ref double currentVelocity, double smoothTime, double maxSpeed, double deltaTime) {
             smoothTime = Mathd.Max(0.0001d, smoothTime);
@@ -285,6 +289,8 @@ namespace UnityEngine {
             return num8;
         }
 
+        #if UNITY
+
         public static double SmoothDampAngle(double current, double target, ref double currentVelocity, double smoothTime, double maxSpeed) {
             double deltaTime = (double)Time.deltaTime;
             return Mathd.SmoothDampAngle(current, target, ref currentVelocity, smoothTime, maxSpeed, deltaTime);
@@ -295,6 +301,8 @@ namespace UnityEngine {
             double maxSpeed = double.PositiveInfinity;
             return Mathd.SmoothDampAngle(current, target, ref currentVelocity, smoothTime, maxSpeed, deltaTime);
         }
+
+        #endif
 
         public static double SmoothDampAngle(double current, double target, ref double currentVelocity, double smoothTime, double maxSpeed, double deltaTime) {
             target = current + Mathd.DeltaAngle(current, target);

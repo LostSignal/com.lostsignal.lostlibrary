@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if UNITY
+
 namespace Lost
 {
     public sealed class DeviceDataManager : DataManager<DeviceDataManager>
@@ -17,3 +19,5 @@ namespace Lost
         }
     }
 }
+
+#endif
