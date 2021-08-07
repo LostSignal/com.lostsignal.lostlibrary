@@ -20,26 +20,35 @@ namespace Lost
 
     public delegate void BootloaderProgressTextUpdatedDelegate(string text);
 
+    public enum BootloaderLocation
+    {
+        ResourcesPath,
+        SceneName,
+    }
+
+    public enum ManagersLocation
+    {
+        ResourcesPath,
+        SceneName,
+        //// AddressablesPrefab,
+        //// AddressablesScene,
+    }
+
     public class Bootloader : MonoBehaviour
     {
         // RuntimeConfig Settings Keys
-        public const string BootloaderResourcePathSetting = "Bootloader.ResourcePath";
-        public const string BootloaderRebootSceneName = "Bootloader.RebootSceneName";
+        public const string BootloaderLocation = "Bootloader.Location";
+        public const string BootloaderPath = "Bootloader.Path";
+
         public const string BootloaderManagersLocation = "Bootloader.ManagersLocation";
         public const string BootloaderManagersPath = "Bootloader.ManagersPath";
+
+        public const string BootloaderRebootSceneName = "Bootloader.RebootSceneName";
 
         // Default Values
         public const string LostBootloaderResourcePath = "Lost/Bootloader";
         public const string LostManagersResourcePath = "Lost/Managers";
         public const string DefaultRebootSceneName = "Main";
-
-        public enum ManagersLocation
-        {
-            ResourcesPath,
-            SceneName,
-            //// AddressablesPrefab,
-            //// AddressablesScene,
-        }
 
         private static event BootloaderDelegate onManagersReady;
         private static bool areManagersInitialized;
@@ -107,10 +116,13 @@ namespace Lost
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void BootBootloader()
         {
-            string bootloaderResourcePath = RuntimeBuildConfig.Instance.GetString(BootloaderResourcePathSetting);
+            // TODO [bgish]: Make sure to read in bootloader path and handle the case for a scene location.
+
+            string bootloaderResourcePath = RuntimeBuildConfig.Instance.GetString(BootloaderPath);
+
             string managersLocation = RuntimeBuildConfig.Instance.GetString(BootloaderManagersLocation);
             string managersPath = RuntimeBuildConfig.Instance.GetString(BootloaderManagersPath);
-            string rebootSceneName = RuntimeBuildConfig.Instance.GetString(Bootloader.BootloaderRebootSceneName);
+            string rebootSceneName = RuntimeBuildConfig.Instance.GetString(BootloaderRebootSceneName);
 
             if (string.IsNullOrWhiteSpace(bootloaderResourcePath) ||
                 string.IsNullOrWhiteSpace(managersLocation) ||

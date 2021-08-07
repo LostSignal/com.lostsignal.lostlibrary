@@ -14,6 +14,7 @@ namespace Lost
     using System.Linq;
     using Lost.Haven;
     using UnityEngine;
+    using UnityEngine.InputSystem.UI;
 
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
     using UnityEngine.InputSystem.UI;
@@ -29,11 +30,9 @@ namespace Lost
         [SerializeField] private bool setTargetFramerateOnMobileAR = true;
         [SerializeField] private int mobileArTargetFramerate = 30;
 
-#if USING_UNITY_XR_INTERACTION_TOOLKIT
         [Header("Event Systems")]
         [SerializeField] private InputSystemUIInputModule pancakeInputSystem;
         [SerializeField] private HavenXRUIInputModule xrInputSystem;
-#endif
 
         [Header("Debug")]
         [SerializeField] private bool printDebugInfo;
@@ -53,8 +52,10 @@ namespace Lost
             {
                 Debug.LogError("Tring to use XRManager without USING_UNITY_XR define.");
             }
-            
+
+            this.UpdateInputSystem(true);
             this.SetInstance(this);
+
 #else
             this.StartCoroutine(Coroutine());
 
@@ -129,18 +130,7 @@ namespace Lost
                 Application.targetFrameRate = this.mobileArTargetFramerate;
             }
 
-#if USING_UNITY_XR_INTERACTION_TOOLKIT
-            if (this.IsPancakeMode)
-            {
-                this.pancakeInputSystem.enabled = true;
-                this.xrInputSystem.enabled = false;
-            }
-            else
-            {
-                this.pancakeInputSystem.enabled = false;
-                this.xrInputSystem.enabled = true;
-            }
-#endif
+            this.UpdateInputSystem(this.IsPancakeMode);
 
             if (this.printDebugInfo)
             {
@@ -155,6 +145,12 @@ namespace Lost
 
             this.SetInstance(this);
             this.ListenForXRKeyboard();
+        }
+
+        private void UpdateInputSystem(bool isPancakeMode)
+        {
+            this.pancakeInputSystem.enabled = isPancakeMode;
+            this.xrInputSystem.enabled = !isPancakeMode;
         }
 
         private void StartUnityXR(XRLoader xrLoader)

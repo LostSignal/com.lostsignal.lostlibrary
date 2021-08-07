@@ -15,10 +15,16 @@ namespace Lost
     public class BootloaderSettings : BuildConfigSettings
     {
 #pragma warning disable 0649
-        [SerializeField] private string bootloaderResourcePath = Bootloader.LostBootloaderResourcePath;
-        [SerializeField] private string rebootSceneName = Bootloader.DefaultRebootSceneName;
-        [SerializeField] private Bootloader.ManagersLocation managersLocation;
+        [Header("Bootloader")]
+        [SerializeField] private BootloaderLocation bootloaderLocation;
+        [SerializeField] private string bootloaderPath = Bootloader.LostBootloaderResourcePath;
+
+        [Header("Managers")]
+        [SerializeField] private ManagersLocation managersLocation;
         [SerializeField] private string managersPath = Bootloader.LostManagersResourcePath;
+
+        [Header("Reboot")]
+        [SerializeField] private string rebootSceneName = Bootloader.DefaultRebootSceneName;
 #pragma warning restore 0649
 
         public override string DisplayName => "Bootloader Settings";
@@ -33,10 +39,16 @@ namespace Lost
             {
                 return;
             }
-            
-            runtimeConfigSettings.Add(Bootloader.BootloaderResourcePathSetting, settings.bootloaderResourcePath);
+
+            // Bootloader
+            runtimeConfigSettings.Add(Bootloader.BootloaderLocation, ((int)settings.bootloaderLocation).ToString());
+            runtimeConfigSettings.Add(Bootloader.BootloaderPath, settings.bootloaderPath);
+
+            // Managers
             runtimeConfigSettings.Add(Bootloader.BootloaderManagersLocation, ((int)settings.managersLocation).ToString());
             runtimeConfigSettings.Add(Bootloader.BootloaderManagersPath, settings.managersPath);
+
+            // Reboot
             runtimeConfigSettings.Add(Bootloader.BootloaderRebootSceneName, settings.rebootSceneName);
         }
 

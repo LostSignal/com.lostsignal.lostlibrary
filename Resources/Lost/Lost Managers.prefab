@@ -193,7 +193,7 @@ GameObject:
   - component: {fileID: 5126069171558145924}
   - component: {fileID: 8573300698129097300}
   m_Layer: 0
-  m_Name: Managers
+  m_Name: Lost Managers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
