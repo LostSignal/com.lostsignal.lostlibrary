@@ -13,6 +13,7 @@ namespace Lost
     using System.Collections.Generic;
     using System.Runtime.CompilerServices;
     using UnityEngine;
+    using UnityEngine.InputSystem;
 
     ////
     //// TODO [bgish]: Maybe don't just send the current Lat/Long but take a rolling average to smooth out the data?
@@ -51,6 +52,27 @@ namespace Lost
         [SerializeField] private double latLongSpeed = 0.001f;
         [SerializeField] private List<DebugStartLocation> debugStartLocations;
 #pragma warning restore 0649
+
+        [EditorEvents.OnPostGenerateGradleAndroidProject]
+        public static void OnPostGenerateGradleAndroidProject(string dir)
+        {
+            var manifestPath = System.IO.Path.Combine(dir, "src/main/AndroidManifest.xml").Replace(@"\", "/");
+            var manifestXml = System.IO.File.ReadAllText(manifestPath);
+            manifestXml = InsertPermission(manifestXml, "ACCESS_COARSE_LOCATION");
+            manifestXml = InsertPermission(manifestXml, "ACCESS_FINE_LOCATION");
+            System.IO.File.WriteAllText(manifestPath, manifestXml);
+        
+            string InsertPermission(string xml, string permission)
+            {
+                if (xml.Contains(permission) == false)
+                {
+                    int index = xml.IndexOf("</manifest>");
+                    return xml.Insert(index, $"  <uses-permission android:name=\"android.permission.{permission}\" />{Environment.NewLine}");
+                }
+        
+                return xml;
+            }
+        }
 
         private bool hasReceivedGpsData;
         private GPSLatLong currentRawLatLong;
@@ -187,15 +209,20 @@ namespace Lost
                 // TODO [bgish]: Need to not do this look if we're just running in editor and this.waitForUnityRemote == false
                 while (true)
                 {
-                    GPSUtil.AskForPermissionToUseGPS();
+                    bool isGpsEnabled = GPSUtil.IsGpsEnabledByUser();
 
-                    if (GPSUtil.IsGpsEnabledByUser())
+                    if (isGpsEnabled == false)
                     {
-                        // GPS is enabled, so we're good to go
-                        break;
+                        GPSUtil.AskForPermissionToUseGPS();
+                        yield return WaitForUtil.Seconds(1.0f);
+                        isGpsEnabled = GPSUtil.IsGpsEnabledByUser();
                     }
 
-                    if (appMustUseGps == false)
+                    if (isGpsEnabled)
+                    {
+                        break;
+                    }
+                    else if (appMustUseGps == false)
                     {
                         Debug.LogError("Unable to start GPS Manage.  The user doesn't have permissions.");
                         this.StopGpsService();

@@ -57,6 +57,7 @@ namespace Lost
 
 #pragma warning disable 0649
         [Header("Loading UI")]
+        [SerializeField] private Dialog bootloaderDialog;
         [SerializeField] private bool dontShowLoadingInEditor = true;
         [SerializeField] private float minimumLoadingDialogTime;
         [SerializeField] private Camera loadingCamera;
@@ -270,12 +271,14 @@ namespace Lost
                 yield return null;
             }
 
-            Dialog bootloaderDialog = null;
-
             if (this.ShowLoadingInEditor)
             {
-                bootloaderDialog = DialogManager.GetDialog<BootloaderDialog>().Dialog;
-                bootloaderDialog.Show();
+                while (DialogManager.IsInitialized == false || CoroutineRunner.IsInitialized == false)
+                {
+                    yield return null;
+                }
+
+                this.bootloaderDialog.Show();
             }
 
             while (ReleasesManager.IsInitialized == false || XRManager.IsInitialized == false)

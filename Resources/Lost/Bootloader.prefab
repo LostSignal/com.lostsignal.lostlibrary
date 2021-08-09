@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 5126069171558145920}
   - component: {fileID: 6446726116001312687}
   - component: {fileID: 7931849987431136696}
+  - component: {fileID: 2305756432591070977}
   m_Layer: 0
   m_Name: Bootloader
   m_TagString: Untagged
@@ -140,6 +141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f266c2695be39543aecb2b69afe2177, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bootloaderDialog: {fileID: 8147128973682494453}
   dontShowLoadingInEditor: 1
   minimumLoadingDialogTime: 0
   loadingCamera: {fileID: 5126069173154035165}
@@ -218,6 +220,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9556d5cda9b58684bb67cf328938b329, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2305756432591070977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5126069171558145975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9462c1d59345ff84f9a9b94acc656373, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &5126069172564786880
