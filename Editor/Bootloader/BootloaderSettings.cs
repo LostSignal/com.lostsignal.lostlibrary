@@ -25,6 +25,10 @@ namespace Lost
 
         [Header("Reboot")]
         [SerializeField] private string rebootSceneName = Bootloader.DefaultRebootSceneName;
+
+        [Header("Scenes To Ignore")]
+        [Tooltip("A ';' delimited list of scene names that should not startup the bootloader process.")]
+        [SerializeField] private string scenesToIgnore;
 #pragma warning restore 0649
 
         public override string DisplayName => "Bootloader Settings";
@@ -50,6 +54,9 @@ namespace Lost
 
             // Reboot
             runtimeConfigSettings.Add(Bootloader.BootloaderRebootSceneName, settings.rebootSceneName);
+
+            // Ignoring
+            runtimeConfigSettings.Add(Bootloader.BootloaderIgnoreSceneNames, settings.scenesToIgnore);
         }
 
         public override void DrawSettings(BuildConfigSettings settings, SerializedProperty settingsSerializedProperty, float width)

@@ -11,6 +11,7 @@ namespace Lost
     using Lost.BuildConfig;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Runtime.CompilerServices;
     using UnityEngine;
     using UnityEngine.SceneManagement;
 
@@ -39,11 +40,10 @@ namespace Lost
         // RuntimeConfig Settings Keys
         public const string BootloaderLocation = "Bootloader.Location";
         public const string BootloaderPath = "Bootloader.Path";
-
         public const string BootloaderManagersLocation = "Bootloader.ManagersLocation";
         public const string BootloaderManagersPath = "Bootloader.ManagersPath";
-
         public const string BootloaderRebootSceneName = "Bootloader.RebootSceneName";
+        public const string BootloaderIgnoreSceneNames = "Bootloader.IgnoreSceneNames";
 
         // Default Values
         public const string LostBootloaderResourcePath = "Lost/Bootloader";
@@ -60,11 +60,6 @@ namespace Lost
         [SerializeField] private bool dontShowLoadingInEditor = true;
         [SerializeField] private float minimumLoadingDialogTime;
         [SerializeField] private Camera loadingCamera;
-
-        #if UNITY_EDITOR
-        [Header("Editor Ignore Scenes")]
-        [SerializeField] private List<UnityEditor.SceneAsset> scenesToIgnore;
-        #endif
 #pragma warning restore 0649
 
         public static event BootloaderDelegate OnReset;
@@ -91,6 +86,12 @@ namespace Lost
 
         public static event BootloaderProgressTextUpdatedDelegate ProgressTextUpdate;
 
+        public static bool AreManagersReady
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => areManagersInitialized;
+        }
+
         public static void UpdateLoadingText(string newText)
         {
             ProgressTextUpdate?.Invoke(newText);
@@ -107,24 +108,19 @@ namespace Lost
             BootBootloader();
         }
 
-        public static bool AreManagersReady
-        {
-            [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-            get => areManagersInitialized;
-        }
-
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void BootBootloader()
         {
-            // TODO [bgish]: Make sure to read in bootloader path and handle the case for a scene location.
-
-            string bootloaderResourcePath = RuntimeBuildConfig.Instance.GetString(BootloaderPath);
+            string bootloaderLocation = RuntimeBuildConfig.Instance.GetString(BootloaderLocation);
+            string bootloaderPath = RuntimeBuildConfig.Instance.GetString(BootloaderPath);
 
             string managersLocation = RuntimeBuildConfig.Instance.GetString(BootloaderManagersLocation);
             string managersPath = RuntimeBuildConfig.Instance.GetString(BootloaderManagersPath);
+
             string rebootSceneName = RuntimeBuildConfig.Instance.GetString(BootloaderRebootSceneName);
 
-            if (string.IsNullOrWhiteSpace(bootloaderResourcePath) ||
+            if (string.IsNullOrWhiteSpace(bootloaderLocation) ||
+                string.IsNullOrWhiteSpace(bootloaderPath) ||
                 string.IsNullOrWhiteSpace(managersLocation) ||
                 string.IsNullOrWhiteSpace(managersPath) ||
                 string.IsNullOrWhiteSpace(rebootSceneName))
@@ -133,34 +129,64 @@ namespace Lost
                 return;
             }
 
-            var bootloaderPrefab = Resources.Load<Bootloader>(bootloaderResourcePath);
-
-            if (bootloaderPrefab == null)
+            if (ShouldRunBootloader() == false)
             {
-                Debug.LogError($"Failed To Boot - Unable to load Bootloader Prefab \"{bootloaderResourcePath}\".");
                 return;
             }
 
-            if (ShouldInstantiateBootloader(bootloaderPrefab))
+            // Parsing the bootloader location
+            if (int.TryParse(bootloaderLocation, out int bootloaderLocationIntValue) == false)
             {
-                bootloaderInstance = GameObject.Instantiate(bootloaderPrefab);
-                bootloaderInstance.name = bootloaderInstance.name.Replace("(Clone)", string.Empty);
-                GameObject.DontDestroyOnLoad(bootloaderInstance);
+                Debug.LogError($"Unable to startup Bootloader.  BootloaderLocation was not a valid int \"{bootloaderLocation}\"");
+                return;
             }
 
-            bool ShouldInstantiateBootloader(Bootloader bootloaderPrefab)
+            switch ((BootloaderLocation)bootloaderLocationIntValue)
             {
-                #if UNITY_EDITOR
+                case Lost.BootloaderLocation.ResourcesPath:
+                    {
+                        var bootloaderInstance = InstantiateResource(bootloaderPath);
+
+                        if (bootloaderInstance == null)
+                        {
+                            Debug.LogError($"Failed To Boot - Unable to load Bootloader Prefab \"{bootloaderPath}\".");
+                            return;
+                        }
+
+                        break;
+                    }
+
+                case Lost.BootloaderLocation.SceneName:
+                    {
+                        if (IsSceneLoaded(bootloaderPath) == false)
+                        {
+                            SceneManager.LoadScene(bootloaderPath, LoadSceneMode.Additive);
+                        }
+
+                        break;
+                    }
+
+                default:
+                    { 
+                        Debug.LogError($"Unknown BootloaderLocation type found {(BootloaderLocation)bootloaderLocationIntValue}!");
+                        return;
+                    }
+            }
+
+            bool ShouldRunBootloader()
+            {
+                var ignoreSceneNamesString = RuntimeBuildConfig.Instance.GetString(BootloaderIgnoreSceneNames);
+                var ignoreScenes = string.IsNullOrWhiteSpace(ignoreSceneNamesString) ? new string[0] : ignoreSceneNamesString.Split(';');
                 var activeSceneName = SceneManager.GetActiveScene().name;
-                foreach (var sceneToIgnore in bootloaderPrefab.scenesToIgnore)
+
+                foreach (var sceneToIgnore in ignoreScenes)
                 {
-                    if (activeSceneName == sceneToIgnore.name)
+                    if (activeSceneName == sceneToIgnore)
                     {
                         return false;
                     }
                 }
-                #endif
-
+                
                 return true;
             }
         }
@@ -198,6 +224,27 @@ namespace Lost
             managersInstance = null;
 
             OnReset?.Invoke();
+        }
+
+        private static GameObject InstantiateResource(string path)
+        {
+            var instance = GameObject.Instantiate(Resources.Load<GameObject>(path));
+            instance.name = instance.name.Replace("(Clone)", string.Empty);
+            DontDestroyOnLoad(instance);
+
+            return instance;
+        }
+
+        private static bool IsSceneLoaded(string sceneName)
+        {
+            bool sceneAlreadyLoaded = false;
+
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                sceneAlreadyLoaded |= SceneManager.GetSceneAt(i).name == sceneName;
+            }
+
+            return sceneAlreadyLoaded;
         }
 
         //// ----------------------------------------------------------------------------------------------------------------
@@ -308,26 +355,17 @@ namespace Lost
             {
                 case ManagersLocation.ResourcesPath:
                     {
-                        managersInstance = GameObject.Instantiate(Resources.Load<GameObject>(managersPath));
-                        managersInstance.name = managersInstance.name.Replace("(Clone)", string.Empty);
-                        DontDestroyOnLoad(managersInstance);
+                        managersInstance = InstantiateResource(managersPath);
                         break;
                     }
 
                 case ManagersLocation.SceneName:
                     {
-                        bool sceneAlreadyLoaded = false;
-
-                        for (int i = 0; i < SceneManager.sceneCount; i++)
-                        {
-                            sceneAlreadyLoaded |= SceneManager.GetSceneAt(i).name == managersPath;
-                        }
-
-                        if (sceneAlreadyLoaded == false)
+                        if (IsSceneLoaded(managersPath) == false)
                         {
                             yield return SceneManager.LoadSceneAsync(managersPath, LoadSceneMode.Additive);
                         }
-                        
+
                         break;
                     }
 
