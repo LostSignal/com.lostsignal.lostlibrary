@@ -46,10 +46,9 @@ namespace Lost
 
         public override void Initialize()
         {
-            // InputManager won't work correctly if simulateMouseWithTouches is on!
-            UnityEngine.Input.simulateMouseWithTouches = false;
+            UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Enable();
 
-            // populating the input cache
+            // Populating the input cache
             for (int i = 0; i < InputCacheSize; i++)
             {
                 this.inputCache.Add(new Input());
@@ -66,7 +65,7 @@ namespace Lost
             this.SetInstance(this);
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
             if (this.useTouchInput)
             {
@@ -83,7 +82,7 @@ namespace Lost
                 this.UpdatePenInput();
             }
 
-            // sending inputs to all registered handlers
+            // Sending inputs to all registered handlers
             for (int i = 0; i < this.handlers.Count; i++)
             {
                 this.handlers[i].HandleInputs(this.fingerInputs, this.mouseInput, this.penInput);
@@ -94,7 +93,7 @@ namespace Lost
         {
             Debug.Assert(this.fingerInputs.Count == this.fingerIdToInputMap.Count, "Finger Inputs list and map don't match!");
 
-            // remove all inputs that have been marked as released
+            // Remove all inputs that have been marked as released
             for (int i = this.fingerInputs.Count - 1; i >= 0; i--)
             {
                 if (this.fingerInputs[i].InputState == InputState.Released)
@@ -108,26 +107,28 @@ namespace Lost
 
             this.activeFingerIdsCache.Clear();
 
-            // going through all the unity touch inputs and either creating/updating Lost.Inputs
-            for (int i = 0; i < UnityEngine.Input.touchCount; i++)
+            // Going through all the unity touch inputs and either creating/updating Lost.Inputs
+            for (int i = 0; i < UnityEngine.InputSystem.EnhancedTouch.Touch.activeFingers.Count; i++)
             {
-                Touch touch = UnityEngine.Input.GetTouch(i);
-                this.activeFingerIdsCache.Add(touch.fingerId);
+                var finger = UnityEngine.InputSystem.EnhancedTouch.Touch.activeFingers[i];
+                var fingerId = finger.currentTouch.touchId;
+                var position = finger.screenPosition;
 
-                Input input;
-                if (this.fingerIdToInputMap.TryGetValue(touch.fingerId, out input))
+                this.activeFingerIdsCache.Add(fingerId);
+
+                if (this.fingerIdToInputMap.TryGetValue(fingerId, out Input input))
                 {
-                    input.Update(touch.position);
+                    input.Update(position);
                 }
                 else
                 {
-                    Input newInput = this.GetNewInput(touch.fingerId, InputType.Touch, InputButton.Left, touch.position);
+                    Input newInput = this.GetNewInput(fingerId, InputType.Touch, InputButton.Left, position);
                     this.fingerInputs.Add(newInput);
                     this.fingerIdToInputMap.Add(newInput.UnityFingerId, newInput);
                 }
             }
 
-            // testing if any of the Lost.Inputs no longer have their unity counterparts and calling Done() on them if that's the case
+            // Testing if any of the Lost.Inputs no longer have their unity counterparts and calling Done() on them if that's the case
             for (int i = 0; i < this.fingerInputs.Count; i++)
             {
                 Input input = this.fingerInputs[i];
@@ -155,7 +156,7 @@ namespace Lost
             bool isMiddleButtonDown = UnityEngine.Input.GetMouseButton(2);
 #endif
 
-            // defaulting the mouse input to be in the hover state
+            // Defaulting the mouse input to be in the hover state
             if (this.mouseInput == null || this.mouseInput.InputState == InputState.Released)
             {
                 this.RecycleInput(this.mouseInput);
