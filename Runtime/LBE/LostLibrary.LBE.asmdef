@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "GUID:db13a9bcb59aac84e894a0084f1124e1",
-        "GUID:4307f53044263cf4b835bd812fc161a4"
+        "GUID:4307f53044263cf4b835bd812fc161a4",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -13,6 +14,11 @@
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [
+        {
+            "name": "Unity",
+            "expression": "2021.1.0",
+            "define": "UNITY"
+        },
         {
             "name": "com.google.mapssdk",
             "expression": "0.0.0",
