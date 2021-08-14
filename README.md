@@ -1,16 +1,33 @@
 
+* Dependency Graph (Everything but Core will eventually have defines to disable them, and eventually I'll make "Manager" prefabs for each of these categories)
+  * Core
+    * Audio     
+    * Networking
+      * Gameplay
+        * Haven 
+    * PlayFab
+      * LBE       
+    * Misc      
+    * Experimental
+	
+* PlayFab
+  * This category has a lot of dependencies
+    * PlayFab Accout
+	* Azure PubSub Account
+	* Azure Functions Account
+	* Cosmos DB Account
+	
+* LBE (Requires a Google Maps SDK Account)
 
-
-* Create Ably Account?
-* Create PlayFab Account?
-* Add 
-
-* ------------------------
-
-* Where to input PlayFab Title Id?
-
-* -------------------------
-
+* To Do
+  * I have a lot of stub Build Configs that should be moved to Experimental
+	
+	
+	
+* -------------------------------------	
+	
+	
+	
 * Add Lost Library and all dependencies (editing manifest.json)
 * Create Addressables
 * Create App Configs

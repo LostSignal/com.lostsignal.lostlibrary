@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7328699029257601935}
   - component: {fileID: 7328699029257601932}
   m_Layer: 0
-  m_Name: GPS Avatar
+  m_Name: LBE Avatar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
