@@ -1,14 +1,14 @@
 
 * Dependency Graph (Everything but Core will eventually have defines to disable them, and eventually I'll make "Manager" prefabs for each of these categories)
   * Core
-    * Audio     
-    * Networking
-      * Gameplay
-        * Haven 
-    * PlayFab
-      * LBE       
-    * Misc      
-    * Experimental
+    * Audio        - Simple Scriptable Object based Audio system
+    * Networking   - 
+      * Gameplay   - 
+        * Haven    - An XR interaction framework built on top of Unity's XR Interaction Toolkit
+    * PlayFab      - A PlayFab Wrapper with caching and dialogs for Login, Updating DisplayName, Etc
+      * LBE        - A set of managers needed to make a LBE Game
+    * Misc         - Random Code: Unity's Guid Based References, Lost Signals Interactive Plants and a English Word Dictionary
+    * Experimental - Almost everything in here is trash and should be removed
 	
 * PlayFab
   * This category has a lot of dependencies
