@@ -12,49 +12,81 @@ namespace Lost.Haven
     using Lost;
     using Lost.DissonanceIntegration;
     using Lost.Networking;
-    using TMPro;
     using UnityEngine;
 
+    public enum HavenAvatarVisualsType
+    {
+        HeadOnly,
+        HeadHands,
+        FullBodyIK,
+    }
+
     [RequireComponent(typeof(NetworkIdentity))]
-    public class HavenAvatar : MonoBehaviour
+    public class HavenAvatar : NetworkBehaviour
     {
         public static ObjectTracker<HavenAvatar> Avatars = new ObjectTracker<HavenAvatar>(20);
 
 #pragma warning disable 0649
-        [SerializeField] private NetworkIdentity networkIdentity;
         [SerializeField] private DissonancePlayerTracker dissonancePlayerTracker;
 
-        [SerializeField] private Transform headTransform;
-        [SerializeField] private Transform leftController;
-        [SerializeField] private Transform rightController;
+        [Header("Visuals")]
+        [SerializeField] private HavenAvatarVisuals avatarVisualsHeadOnly;
+        [SerializeField] private HavenAvatarVisuals avatarVisualsHeadHands;
 
-        [Header("Canvas")]
-        [SerializeField] private Canvas avatarCanvas;
-        [SerializeField] private TMP_Text displayName;
-        [SerializeField] private Vector3 canvasGlobalOffset;
-
-        [Header("Rendering")]
-        [SerializeField] private Renderer[] allRenderers;
-        [SerializeField] private Renderer[] tintedMeshRenderers;
+        [HideInInspector]
+        [SerializeField] private Transform avatarTransform;
 #pragma warning restore 0649
 
+        private HavenAvatarVisuals currentAvatarVisuals;
         private HavenRig havenRig;
-        private Color avatarColor;
-        private bool isPancake;
-        private bool isOwner;
 
-        public long OwnerId => this.networkIdentity.OwnerId;
-
-        private void OnValidate()
+        public override void Serialize(NetworkWriter writer)
         {
-            this.AssertGetComponent(ref this.networkIdentity);
+            writer.Write(this.havenRig.RigScale);
+            writer.Write(this.havenRig.transform.position);
+            writer.Write(this.havenRig.transform.rotation);
+
+            bool hasVisuals = this.currentAvatarVisuals != null;
+            writer.Write(hasVisuals);
+
+            if (hasVisuals)
+            {
+                this.currentAvatarVisuals.Serialize(writer);
+            }
+        }
+
+        public override void Deserialize(NetworkReader reader)
+        {
+            float rigScale = reader.ReadSingle();
+            Vector3 rigPosition = reader.ReadVector3();
+            Quaternion rigRotation = reader.ReadQuaternion();
+
+            // Setting the avatar PRT
+            this.avatarTransform.localScale = new Vector3(rigScale, rigScale, rigScale);
+            this.avatarTransform.position = rigPosition;
+            this.avatarTransform.rotation = rigRotation;
+
+            // Deserializing Visualization State (if it exists)
+            bool hasVisuals = reader.ReadBoolean();
+            if (hasVisuals && this.currentAvatarVisuals != null)
+            {
+                this.currentAvatarVisuals.Deserialize(reader);
+            }
+        }
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            this.AssertGetComponent(ref this.avatarTransform);
             this.AssertGetComponentInChildren(ref this.dissonancePlayerTracker);
         }
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             this.OnValidate();
-            this.ShowAvatar(false);
         }
 
         private void OnEnable()
@@ -67,53 +99,19 @@ namespace Lost.Haven
             Avatars.Remove(this);
         }
 
-        private void Start()
+        private IEnumerator Start()
         {
-            this.isOwner = this.networkIdentity.IsOwner;
-
-            if (this.isOwner == false)
+            // If we're the owner, then get a reference to the Rig
+            while (this.IsOwner && this.havenRig == null)
             {
-                this.StartCoroutine(this.ShowAvatarCoroutine());
+                this.havenRig = HavenRig.GetRig();
+                yield return null;
             }
+
+            yield return this.InitializeAvatarCoroutine();
         }
 
-        private void Update()
-        {
-            if (this.isOwner)
-            {
-                if (this.havenRig == null && HavenRig.GetRig())
-                {
-                    this.havenRig = HavenRig.GetRig();
-                }
-
-                if (this.havenRig != null)
-                {
-                    var rigScale = new Vector3(this.havenRig.RigScale, this.havenRig.RigScale, this.havenRig.RigScale);
-
-                    this.headTransform.position = this.havenRig.RigCamera.transform.position;
-                    this.headTransform.rotation = this.havenRig.RigCamera.transform.rotation;
-                    this.headTransform.localScale = rigScale;
-
-                    if (this.isPancake == false)
-                    {
-                        this.leftController.position = this.havenRig.LeftController.position;
-                        this.leftController.rotation = this.havenRig.LeftController.rotation;
-                        this.leftController.localScale = rigScale;
-
-                        this.rightController.position = this.havenRig.RightController.position;
-                        this.rightController.rotation = this.havenRig.RightController.rotation;
-                        this.rightController.localScale = rigScale;
-                    }
-                }
-            }
-            else
-            {
-                // BUG [bgish]: Does not account for rig scale
-                this.avatarCanvas.transform.position = this.headTransform.position + this.canvasGlobalOffset;
-            }
-        }
-
-        private IEnumerator ShowAvatarCoroutine()
+        private IEnumerator InitializeAvatarCoroutine()
         {
             UserInfo userInfo;
 
@@ -121,19 +119,28 @@ namespace Lost.Haven
             {
                 if (NetworkingManager.IsInitialized && NetworkingManager.Instance.HasJoinedServer)
                 {
-                    userInfo = NetworkingManager.Instance.GetUserInfo(this.networkIdentity.OwnerId);
+                    userInfo = NetworkingManager.Instance.GetUserInfo(this.Identity.OwnerId);
 
                     if (userInfo != null &&
                         userInfo.CustomData.ContainsKey("Color") &&
                         userInfo.CustomData.ContainsKey("Platform"))
                     {
-                        this.avatarColor = ColorUtil.ParseColorHexString(userInfo.CustomData["Color"]);
-                        this.isPancake = userInfo.CustomData["Platform"] == "Pancake";
+                        var avatarColor = ColorUtil.ParseColorHexString(userInfo.CustomData["Color"]);
+                        var isPancake = userInfo.CustomData["Platform"] == "Pancake";
 
-                        this.UpdateControllers(this.isPancake);
-                        this.SetAvatarColor(this.avatarColor);
-                        this.SetAvatarName(userInfo);
-                        this.ShowAvatar(true);
+                        // TODO [bgish]: Need better way of selecting what visuals the user is using
+                        if (isPancake)
+                        {
+                            this.currentAvatarVisuals = this.avatarVisualsHeadOnly;
+                        }
+                        else
+                        {
+                            this.currentAvatarVisuals = this.avatarVisualsHeadHands;
+                        }
+
+                        this.currentAvatarVisuals.SetAvatarName(userInfo);
+                        this.currentAvatarVisuals.SetAvatarColor(avatarColor);
+                        this.currentAvatarVisuals.gameObject.SetActive(true);
 
                         //// TODO [bgish]: Start coroutine for updating Audio
 
@@ -145,52 +152,14 @@ namespace Lost.Haven
             }
         }
 
-        private void SetAvatarColor(Color avatarColor)
+        protected override SendConfig GetInitialSendConfig()
         {
-            if (this.tintedMeshRenderers != null)
+            return new SendConfig
             {
-                foreach (var meshRenderer in this.tintedMeshRenderers)
-                {
-                    meshRenderer.material.color = avatarColor;
-                }
-            }
-        }
-
-        private void SetAvatarName(UserInfo userInfo)
-        {
-            string displayName = userInfo.GetDisplayName();
-
-            if (string.IsNullOrWhiteSpace(displayName))
-            {
-                displayName = $"Player{userInfo.GetPlayFabId().Substring(0, 4)}";
-            }
-
-            if (this.displayName)
-            {
-                this.displayName.text = displayName;
-            }
-        }
-
-        private void ShowAvatar(bool show)
-        {
-            if (this.allRenderers != null)
-            {
-                for (int i = 0; i < this.allRenderers.Length; i++)
-                {
-                    this.allRenderers[i].enabled = show;
-                }
-            }
-
-            if (this.avatarCanvas)
-            {
-                this.avatarCanvas.gameObject.SetActive(show);
-            }
-        }
-
-        private void UpdateControllers(bool isPancake)
-        {
-            this.leftController.gameObject.SetActive(isPancake == false);
-            this.rightController.gameObject.SetActive(isPancake == false);
+                NetworkUpdateType = NetworkUpdateType.Tick,
+                SendReliable = false,
+                UpdateFrequency = 0.1f,
+            };
         }
     }
 }

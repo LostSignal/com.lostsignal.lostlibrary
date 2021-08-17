@@ -14,7 +14,6 @@ namespace Lost
     using System.Linq;
     using Lost.Haven;
     using UnityEngine;
-    using UnityEngine.InputSystem.UI;
 
 #if USING_UNITY_XR_INTERACTION_TOOLKIT
     using UnityEngine.InputSystem.UI;
