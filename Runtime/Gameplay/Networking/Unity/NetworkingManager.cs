@@ -35,9 +35,6 @@ namespace Lost.Networking
         private static readonly string ValidMatchNameCharacters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 #pragma warning disable 0649
-        [Header("Dependencies")]
-        [SerializeField] private PlayFabManager playfabManager;
-
         [Header("Mode")]
         [SerializeField] private NetworkingMode networkingMode;
         [SerializeField] private NetworkingMode editorNetworkingMode;
@@ -56,6 +53,7 @@ namespace Lost.Networking
 
         private bool originalRunInBackground;
         private bool isConnected;
+        private long playerId;
 
         private IGameServerFactory gameServerFactory;
         private IGameClientFactory gameClientFactory;
@@ -118,7 +116,9 @@ namespace Lost.Networking
 
             IEnumerator Coroutine()
             {
-                yield return this.WaitForDependencies(this.playfabManager);
+                // TODO [bgish]: Wrap this code in if USING_PLAYFAB and generate a random id if not using PlayFab
+                yield return PlayFabManager.WaitForInitialization();
+                this.playerId = PlayFab.PlayFabManager.Instance.User.PlayFabNumericId;
 
                 this.SetInstance(this);
             }
@@ -147,7 +147,7 @@ namespace Lost.Networking
         public NetworkIdentity InstantiateNetworkIdentity(string resourceName, Vector3 position, Quaternion rotation)
         {
             var subsystem = this.gameClient.GetSubsystem<UnityGameClientSubsystem>();
-            return subsystem.CreateDynamicNetworkIdentity(resourceName, NetworkIdentity.NewId(), PlayFab.PlayFabManager.Instance.User.PlayFabNumericId, position, rotation);
+            return subsystem.CreateDynamicNetworkIdentity(resourceName, NetworkIdentity.NewId(), this.playerId, position, rotation);
         }
 
         public UserInfo GetUserInfo(long playerId)

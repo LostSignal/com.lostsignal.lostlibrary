@@ -76,7 +76,7 @@ namespace Lost
                     var newDialog = GameObject.Instantiate(prefab);
                     newDialog.gameObject.name = newDialog.gameObject.name.Substring(0, newDialog.gameObject.name.Length - "(Clone)".Length);
                     DialogManager.Instance.instantiatedDialogs.Add(newDialog);
-                    SceneManager.MoveGameObjectToScene(newDialog.gameObject, DialogManager.Instance.gameObject.scene);
+                    GameObject.DontDestroyOnLoad(newDialog.gameObject);
                     return newDialog.GetComponent<T>();
                 }
             }

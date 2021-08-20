@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6171084065571904157
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6171084065571904156}
+  - component: {fileID: 8459564295990321592}
+  - component: {fileID: 696681455555970861}
+  - component: {fileID: 7240969118053476222}
+  m_Layer: 0
+  m_Name: Gameplay Managers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6171084065571904156
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6171084065571904157}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8459564295990321592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6171084065571904157}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa380e20ecb5d0a4eb264657124dd1a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialCapacity: 250
+  maxMilliseconds: 0.10000000149011612
+--- !u!114 &696681455555970861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6171084065571904157}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8a1cfb5b31e462479b8fce680c434de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialCapacity: 250
+  maxMilliseconds: 0.10000000149011612
+--- !u!114 &7240969118053476222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6171084065571904157}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5a303fc09f032d4cb8e90060703a696, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playfabManager: {fileID: 0}
+  networkingMode: 2
+  editorNetworkingMode: 2
+  editorServerIp: 127.0.0.1
+  editorServerPort: 9999
+  lanServerIp: 127.0.0.1
+  lanServerPort: 7777
+  printDebugOutput: 0
