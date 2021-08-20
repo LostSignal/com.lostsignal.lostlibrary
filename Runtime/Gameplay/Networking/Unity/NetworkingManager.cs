@@ -120,6 +120,9 @@ namespace Lost.Networking
                 yield return PlayFabManager.WaitForInitialization();
                 this.playerId = PlayFab.PlayFabManager.Instance.User.PlayFabNumericId;
 
+                // TODO [bgish]: Use this if not using playfab
+                // this.playerId = ((long)UnityEngine.Random.Range(int.MinValue, int.MaxValue) << 32) & ((long)UnityEngine.Random.Range(int.MinValue, int.MaxValue));
+
                 this.SetInstance(this);
             }
         }
