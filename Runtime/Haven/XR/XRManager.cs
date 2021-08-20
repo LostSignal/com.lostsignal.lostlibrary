@@ -104,6 +104,7 @@ namespace Lost
                     this.FinishInitialization();
                 }
             }
+
 #endif
         }
 
@@ -203,6 +204,7 @@ namespace Lost
                     Debug.LogError($"Unable to find XR Loader in the XR Settings {loaderName}");
                 }
             }
+
 #endif
         }
 

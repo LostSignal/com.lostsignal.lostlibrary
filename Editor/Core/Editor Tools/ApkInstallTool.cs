@@ -76,7 +76,7 @@ namespace Lost
         private string[] GetCurrentDevices()
         {
             var result = new List<string>();
-            
+
             var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
                 FileName = this.GetAdbPath(),

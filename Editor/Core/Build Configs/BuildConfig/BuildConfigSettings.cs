@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
-// <copyright file="BuildConfigSettings.cs" company="DefaultCompany">
-//     Copyright (c) DefaultCompany. All rights reserved.
+// <copyright file="BuildConfigSettings.cs" company="Lost Signal LLC">
+//     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 

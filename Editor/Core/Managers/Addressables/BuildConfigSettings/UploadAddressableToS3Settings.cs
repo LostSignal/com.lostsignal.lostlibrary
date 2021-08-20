@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
-// <copyright file="UploadAddressableToS3Settings.cs" company="DefaultCompany">
-//     Copyright (c) DefaultCompany. All rights reserved.
+// <copyright file="UploadAddressableToS3Settings.cs" company="Lost Signal LLC">
+//     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 

@@ -32,12 +32,12 @@ namespace Lost
         public void MaxBitTest()
         {
             int max = 1000;
-            
+
             BitArray bitArray1 = new BitArray(0);
             bitArray1.SetCapacity(max);
 
             BitArray bitArray2 = new BitArray(0);
-            
+
             LogAssert.Expect(LogType.Error, BitArray.GrowError);
             bitArray2.SetBit(max);
             LogAssert.NoUnexpectedReceived();
@@ -49,14 +49,14 @@ namespace Lost
         public void MaxBitExceededTest()
         {
             int max = 1001;
-            
+
             LogAssert.Expect(LogType.Error, "BitArray.SetCapacity Failed, maxBitIndex 1001 exceeds MaxBitIndex 1000!");
             BitArray bitArray1 = new BitArray(0);
             bitArray1.SetCapacity(max);
             LogAssert.NoUnexpectedReceived();
 
             BitArray bitArray2 = new BitArray(0);
-            
+
             LogAssert.Expect(LogType.Error, "BitArray.SetBit Failed, bitIndex 1001 exceeds MaxBitIndex 1000!");
             bitArray2.SetBit(max);
             LogAssert.NoUnexpectedReceived();
@@ -103,12 +103,12 @@ namespace Lost
 
             bitArray.SetBit(7);
             Assert.True(bitArray.ToString() == "11111111");
-            
+
             LogAssert.Expect(LogType.Error, BitArray.GrowError);
             bitArray.SetBit(8);
             Assert.True(bitArray.ToString() == "11111111 10000000");
             LogAssert.NoUnexpectedReceived();
-            
+
             Assert.True(bitArray.IsBitSet(0));
             Assert.True(bitArray.IsBitSet(1));
             Assert.True(bitArray.IsBitSet(2));

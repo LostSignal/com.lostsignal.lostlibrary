@@ -24,7 +24,7 @@ namespace Lost
 #pragma warning disable 0649
         [SerializeField] private int initialCapacity = 50;
 #pragma warning restore 0649
-        
+
         private UpdateChannelReceipt updateReceipt;
         private DelayedAction[] delayedActions;
         private int count;
@@ -32,7 +32,7 @@ namespace Lost
         public override void Initialize()
         {
             Bootloader.OnManagersReady += SetupUpdateChannel;
-            
+
             this.delayedActions = new DelayedAction[this.initialCapacity];
             this.count = 0;
 

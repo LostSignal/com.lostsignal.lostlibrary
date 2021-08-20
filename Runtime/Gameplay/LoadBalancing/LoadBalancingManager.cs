@@ -14,9 +14,9 @@ namespace Lost
 
     ////
     //// TODO [bgish]: Update QueueWork to also take in a IEnumerator and have it run Coroutines as well,
-    ////               making our own Coroutine system is not trivial though, so not sure if that is the 
+    ////               making our own Coroutine system is not trivial though, so not sure if that is the
     ////               best solution.
-    //// 
+    ////
     public abstract class LoadBalancingManager<T, I> : Manager<T>, IUpdatable
         where T : MonoBehaviour
     {
@@ -35,7 +35,7 @@ namespace Lost
         [SerializeField] private double maxMilliseconds = 0.1f;
         //[SerializeField] private bool printDebugOutput = false;
 #pragma warning restore 0649
-        
+
         private Queue<Callback> callbackQueue;
         private UpdateChannelReceipt updateReceipt;
         private UpdateChannel updateChannel;
@@ -47,7 +47,7 @@ namespace Lost
 #pragma warning disable IDE0052  // Suppressing the warning, because eventurally we'll send this info via log and/or analytic
         private float averageQueuedTime = 0.0f;
 #pragma warning restore IDE0052
-        
+
         public bool IsProcessing
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

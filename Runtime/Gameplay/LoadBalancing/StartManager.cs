@@ -16,7 +16,7 @@ namespace Lost
     public sealed class StartManager : LoadBalancingManager<StartManager, IStartable>
     {
         public override string Name => nameof(StartManager);
-        
+
         public override void Initialize()
         {
             base.Initialize();

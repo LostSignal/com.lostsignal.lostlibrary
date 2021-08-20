@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
-// <copyright file="DestoryGameObjectOnBuild.cs" company="Lost Signal">
-//     Copyright (c) Lost Signal. All rights reserved.
+// <copyright file="DestoryGameObjectOnBuild.cs" company="Lost Signal LLC">
+//     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -32,12 +32,12 @@ namespace Lost
                 }
             }
         }
-        
+
         private void Awake()
         {
             if (this.ShouldDestroyObject())
             {
-                GameObject.Destroy(this.gameObject);      
+                GameObject.Destroy(this.gameObject);
             }
         }
 
@@ -45,6 +45,7 @@ namespace Lost
         {
             return (Platform.CurrentDevicePlatform & this.platformsToKeep) == 0;
         }
+
 #endif
     }
 }

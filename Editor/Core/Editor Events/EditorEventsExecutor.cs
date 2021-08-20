@@ -31,10 +31,10 @@ namespace Lost
         int IOrderedCallback.callbackOrder => 10;
 
         static EditorEventsExecutor()
-	    {
-		    EditorApplication.delayCall += () => ExecuteAttribute<EditorEvents.OnDomainReloadAttribute>();
+        {
+            EditorApplication.delayCall += () => ExecuteAttribute<EditorEvents.OnDomainReloadAttribute>();
             EditorApplication.playModeStateChanged += PlayModeStateChanged;
-	    }
+        }
 
         public static void ExecuteAttribute<T>(params object[] parameters) where T : System.Attribute
         {
@@ -72,7 +72,7 @@ namespace Lost
                         {
                             Debug.LogError($"Exception Executing Edtior Event {typeof(T).Name}");
                             Debug.LogException(ex);
-                        }                            
+                        }
                     }
                 }
             }
@@ -85,14 +85,14 @@ namespace Lost
                 if (typeof(T) == typeof(EditorEvents.OnPostGenerateGradleAndroidProjectAttribute) &&
                     methodParameters?.Length == 1 &&
                     methodParameters[0].ParameterType == typeof(string))
-                {   
+                {
                     method.Invoke(null, parameters);
                     return;
                 }
 
                 // Special Case for Pre/Post Process Build
                 if ((typeof(T) == typeof(EditorEvents.OnPreprocessBuildAttribute) ||
-                    typeof(T) == typeof(EditorEvents.OnPostprocessBuildAttribute)) &&
+                     typeof(T) == typeof(EditorEvents.OnPostprocessBuildAttribute)) &&
                     methodParameters?.Length == 1 &&
                     methodParameters[0].ParameterType == typeof(BuildReport))
                 {
@@ -102,7 +102,7 @@ namespace Lost
 
                 // Special Case for Process Scene
                 if (typeof(T) == typeof(EditorEvents.OnProcessSceneAttribute))
-                {                    
+                {
                     var scene = parameters[0];
                     var buildReport = parameters[1];
 
@@ -156,25 +156,26 @@ namespace Lost
         {
             ExecuteAttribute<EditorEvents.OnProcessSceneAttribute>(scene, report);
         }
-        
+
 #if UNITY_ANDROID
         void IPostGenerateGradleAndroidProject.OnPostGenerateGradleAndroidProject(string gradlePath)
         {
             ExecuteAttribute<EditorEvents.OnPostGenerateGradleAndroidProjectAttribute>(gradlePath);
         }
+
  #endif
 
         private static void PlayModeStateChanged(PlayModeStateChange state)
         {
-	        if (EditorApplication.isPlaying == false && EditorApplication.isPlayingOrWillChangePlaymode)
-	        {
+            if (EditorApplication.isPlaying == false && EditorApplication.isPlayingOrWillChangePlaymode)
+            {
                 ExecuteAttribute<EditorEvents.OnEnterPlayModeAttribute>();
-	        }
-	        else if (state == PlayModeStateChange.ExitingPlayMode)
-	        {
+            }
+            else if (state == PlayModeStateChange.ExitingPlayMode)
+            {
                 ExecuteAttribute<EditorEvents.OnExitingPlayModeAttribute>();
                 EditorApplication.delayCall += WaitForPlayModeExit;
-	        }
+            }
         }
 
         private static void WaitForPlayModeExit()

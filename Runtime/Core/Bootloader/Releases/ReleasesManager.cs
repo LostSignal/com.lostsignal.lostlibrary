@@ -49,7 +49,7 @@ namespace Lost
                 {
                     throw new Exception($"Unknown StorageLocation {this.storageLocation} Found!");
                 }
-                
+
                 this.SetInstance(this);
 
                 yield break;

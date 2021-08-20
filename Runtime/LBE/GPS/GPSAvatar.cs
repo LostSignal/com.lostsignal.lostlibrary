@@ -18,8 +18,8 @@ namespace Lost
         [SerializeField] private bool setSpeedParameter;
         [SerializeField] private string speedFloatParemeterName = "Speed";
 
-        [HideInInspector] [SerializeField] private Transform myTransform;
-        [HideInInspector] [SerializeField] private Animator myAnimator;
+        [HideInInspector][SerializeField] private Transform myTransform;
+        [HideInInspector][SerializeField] private Animator myAnimator;
 #pragma warning restore 0649
 
         private bool speedParameterHashCalculated;

@@ -47,7 +47,7 @@ namespace Lost
         [SerializeField] private UpdateType updateType;
         [SerializeField] private int startingCapacity = 10;
         #pragma warning restore 0649
-        
+
         #if ENABLE_PROFILING
         private CustomSampler customSampler;
         #endif
@@ -86,13 +86,14 @@ namespace Lost
         {
             this.customSampler = CustomSampler.Create(this.name);
         }
+
         #endif
 
         private float runAllEveryXSeconds;
         private int nextIndexToRun;
         private int currentRunCount;
         private float currentDeltaTime = float.MaxValue;
-    
+
         public void Run(float deltaTime)
         {
             if (this.count == 0)
@@ -102,7 +103,7 @@ namespace Lost
             else if (currentDeltaTime > runAllEveryXSeconds)
             {
                 int runsRemaining = this.nextIndexToRun + 1;
-            
+
                 if (runsRemaining != 0)
                 {
                     this.Run(runsRemaining);
@@ -114,27 +115,27 @@ namespace Lost
                     this.Reset();
                 }
             }
-      
+
             currentDeltaTime += deltaTime;
-      
+
             // NOTE [bgish]: May need to make sure currentDeltaTime / runAllEveryXSeconds is never more than 1
             int desiredRunCount = Mathf.CeilToInt(currentDeltaTime / runAllEveryXSeconds) * this.count;
             int runCount = desiredRunCount - currentRunCount;
-      
+
             if (runCount == 0) return;
-      
+
             this.Run(runCount);
 
             //// Go backwards through the list starting form where we last left off and call the Actions
         }
-    
+
         private void Reset()
         {
-             nextIndexToRun = this.count - 1; 
-             currentRunCount = 0;
-             currentDeltaTime = 0.0f;
+            nextIndexToRun = this.count - 1;
+            currentRunCount = 0;
+            currentDeltaTime = 0.0f;
         }
-    
+
         private void Run(int runCount)
         {
             while (runCount > 0 && nextIndexToRun >= 0)
@@ -157,7 +158,7 @@ namespace Lost
                 runCount--;
             }
         }
-    
+
         public UpdateChannelReceipt RegisterCallback(IUpdatable updatable, UnityEngine.Object context)
         {
             int callbackIndex = this.count++;
@@ -169,7 +170,7 @@ namespace Lost
             }
 
             int callbackId = ++this.currentId;
-        
+
             this.callbacks[callbackIndex] = new Callback
             {
                 Id = callbackId,
@@ -177,19 +178,19 @@ namespace Lost
                 Context = context,
                 LastCalledTime = Time.realtimeSinceStartup,
             };
-      
+
             idToIndexMap.Add(callbackId, callbackIndex);
 
             return UpdateChannelReceipt.New(callbackId, this.RemoveCallback);
         }
-    
+
         private void RemoveCallback(int id)
         {
             if (idToIndexMap.TryGetValue(id, out int index))
             {
                 var lastCallbackIndex = this.count - 1;
                 var callbackToRemove = this.callbacks[index];
-          
+
                 if (index != lastCallbackIndex)
                 {
                     var lastCallback = this.callbacks[lastCallbackIndex];
@@ -197,7 +198,7 @@ namespace Lost
                     this.callbacks[index] = lastCallback;
                     this.idToIndexMap[lastCallback.Id] = index;
                 }
-          
+
                 this.idToIndexMap.Remove(callbackToRemove.Id);
                 this.callbacks[lastCallbackIndex] = DefaultCallback;
                 this.count--;

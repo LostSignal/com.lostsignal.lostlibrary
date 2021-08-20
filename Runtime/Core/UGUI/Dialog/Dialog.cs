@@ -375,7 +375,7 @@ namespace Lost
                 }
             }
 
-            Debug.AssertFormat(foundShowParameter, this, "Dialog {0}'s Animator doesn't have a \"Show\" Bool parameter.", this.gameObject.name);            
+            Debug.AssertFormat(foundShowParameter, this, "Dialog {0}'s Animator doesn't have a \"Show\" Bool parameter.", this.gameObject.name);
 
             // making sure the content is setup correctly
             Debug.AssertFormat(this.contentRectTransform != null, this, "Dialog {0} dosen't contain a Content object with a RectTransform.", this.gameObject.name);

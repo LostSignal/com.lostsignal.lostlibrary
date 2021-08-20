@@ -96,7 +96,7 @@ namespace Lost.LBE
                     cachedS2CellsToRemove.Add(cell.S2CellId);
                 }
 
-                // Removing Locations 
+                // Removing Locations
                 foreach (var location in cell.Locations)
                 {
                     if (isEntireCellExpired || this.IsLocationInLoadRange(location, currentLatLong) == false)
@@ -166,10 +166,10 @@ namespace Lost.LBE
 
             // var southwestLat = new GPSLatLong { Latitude = 47.013859, Longitude = -122.920682 };
             // var northeast = new GPSLatLong { Latitude = 47.033532, Longitude = -122.894687 };
-            // 
+            //
             // S2LatLng low = S2LatLng.FromDegrees(southwestLat.Latitude, southwestLat.Longitude);
             // S2LatLng high = S2LatLng.FromDegrees(northeast.Latitude, northeast.Longitude);
-            // 
+            //
             // S2LatLngRect latLngRect = new S2LatLngRect(low, high);
             // return rc.GetCovering(latLngRect);
 
@@ -188,7 +188,6 @@ namespace Lost.LBE
             S2LatLng size = S2LatLng.FromDegrees(new_lat, new_long);
 
             return rc.GetCovering(S2LatLngRect.FromCenterSize(center, size));
-
         }
 
         private bool IsLocationInLoadRange(LBELocation location, GPSLatLong currentLatLong)

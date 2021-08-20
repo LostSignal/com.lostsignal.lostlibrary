@@ -27,7 +27,7 @@ namespace Lost
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get;
-            
+
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private set;
         }
@@ -36,11 +36,11 @@ namespace Lost
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get;
-            
+
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private set;
         }
-        
+
         public override void Initialize()
         {
             // Wait for UpdateManager
@@ -67,7 +67,7 @@ namespace Lost
                         Position = character.Transform.position,
                         Rotation = character.Transform.rotation,
                         Forward = character.Transform.forward,
-                        TeamId = character.TeamId,                        
+                        TeamId = character.TeamId,
                     };
                 }
 

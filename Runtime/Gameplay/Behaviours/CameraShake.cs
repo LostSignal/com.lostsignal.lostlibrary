@@ -22,7 +22,7 @@ namespace Lost
         [SerializeField] private float shakeTime = 0.25f;
         [SerializeField] private float shakeAmount = 0.2f;
 
-        [HideInInspector] 
+        [HideInInspector]
         [SerializeField] private Transform myTransform;
 #pragma warning restore 0649
 

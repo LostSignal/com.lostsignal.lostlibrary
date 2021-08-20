@@ -253,7 +253,7 @@ namespace Lost
         //// {
         ////     var bootloader = GameObject.Instantiate(AssetDatabase.LoadAssetAtPath<Bootloader>(AssetDatabase.GUIDToAssetPath("e64035672fd9d3848956e0518ca53808")));
         ////     CreateAsset(bootloader, $"Assets/Resources/Bootloader.prefab");
-        //// 
+        ////
         ////     var managers = GameObject.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath("ebe6a31cc5c4ac74ab8dae1375be0b50")));
         ////     CreateAsset(managers, $"Assets/Resources/Managers.prefab");
         //// }

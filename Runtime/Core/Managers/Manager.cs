@@ -21,7 +21,7 @@ namespace Lost
         private static bool isInitialized;
 
         private bool hasInitializationRun;
-        
+
         public static bool IsInitialized
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

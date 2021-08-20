@@ -145,33 +145,33 @@ namespace Lost
             switch ((BootloaderLocation)bootloaderLocationIntValue)
             {
                 case Lost.BootloaderLocation.ResourcesPath:
+                {
+                    var bootloaderInstance = InstantiateResource(bootloaderPath);
+
+                    if (bootloaderInstance == null)
                     {
-                        var bootloaderInstance = InstantiateResource(bootloaderPath);
-
-                        if (bootloaderInstance == null)
-                        {
-                            Debug.LogError($"Failed To Boot - Unable to load Bootloader Prefab \"{bootloaderPath}\".");
-                            return;
-                        }
-
-                        break;
-                    }
-
-                case Lost.BootloaderLocation.SceneName:
-                    {
-                        if (IsSceneLoaded(bootloaderPath) == false)
-                        {
-                            SceneManager.LoadScene(bootloaderPath, LoadSceneMode.Additive);
-                        }
-
-                        break;
-                    }
-
-                default:
-                    { 
-                        Debug.LogError($"Unknown BootloaderLocation type found {(BootloaderLocation)bootloaderLocationIntValue}!");
+                        Debug.LogError($"Failed To Boot - Unable to load Bootloader Prefab \"{bootloaderPath}\".");
                         return;
                     }
+
+                    break;
+                }
+
+                case Lost.BootloaderLocation.SceneName:
+                {
+                    if (IsSceneLoaded(bootloaderPath) == false)
+                    {
+                        SceneManager.LoadScene(bootloaderPath, LoadSceneMode.Additive);
+                    }
+
+                    break;
+                }
+
+                default:
+                {
+                    Debug.LogError($"Unknown BootloaderLocation type found {(BootloaderLocation)bootloaderLocationIntValue}!");
+                    return;
+                }
             }
 
             bool ShouldRunBootloader()
@@ -187,7 +187,7 @@ namespace Lost
                         return false;
                     }
                 }
-                
+
                 return true;
             }
         }
@@ -357,20 +357,20 @@ namespace Lost
             switch (managersLocation)
             {
                 case ManagersLocation.ResourcesPath:
-                    {
-                        managersInstance = InstantiateResource(managersPath);
-                        break;
-                    }
+                {
+                    managersInstance = InstantiateResource(managersPath);
+                    break;
+                }
 
                 case ManagersLocation.SceneName:
+                {
+                    if (IsSceneLoaded(managersPath) == false)
                     {
-                        if (IsSceneLoaded(managersPath) == false)
-                        {
-                            yield return SceneManager.LoadSceneAsync(managersPath, LoadSceneMode.Additive);
-                        }
-
-                        break;
+                        yield return SceneManager.LoadSceneAsync(managersPath, LoadSceneMode.Additive);
                     }
+
+                    break;
+                }
 
                 default:
                     Debug.LogError($"Unknown ManagerLocation {managersLocation} Found!");

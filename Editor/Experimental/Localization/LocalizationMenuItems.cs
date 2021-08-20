@@ -42,31 +42,54 @@ namespace Lost.Localization
 
         // Language MenuItems
         [MenuItem(English, false)] public static void SetEnglish() => SetLanguage(English);
+
         [MenuItem(French, false)] public static void SetFrench() => SetLanguage(French);
+
         [MenuItem(Italian, false)] public static void SetItalian() => SetLanguage(Italian);
+
         [MenuItem(German, false)] public static void SetGerman() => SetLanguage(German);
+
         [MenuItem(Spanish, false)] public static void SetSpanish() => SetLanguage(Spanish);
+
         [MenuItem(ChineseSimplifed, false)] public static void SetChineseSimplifed() => SetLanguage(ChineseSimplifed);
+
         [MenuItem(ChineseTraditional, false)] public static void SetChineseTraditional() => SetLanguage(ChineseTraditional);
+
         [MenuItem(Japanese, false)] public static void SetJapanese() => SetLanguage(Japanese);
+
         [MenuItem(Korean, false)] public static void SetKorean() => SetLanguage(Korean);
+
         [MenuItem(Russian, false)] public static void SetRussian() => SetLanguage(Russian);
+
         [MenuItem(Vietnamese, false)] public static void SetVietnamese() => SetLanguage(Vietnamese);
+
         [MenuItem(Portuguese, false)] public static void SetPortuguese() => SetLanguage(Portuguese);
 
         // Language MenuItem Validators
         [MenuItem(English, true)] public static bool ValidateEnglish() => ValidateLanguage(English);
+
         [MenuItem(French, true)] public static bool ValidateFrench() => ValidateLanguage(French);
+
         [MenuItem(Italian, true)] public static bool ValidateItalian() => ValidateLanguage(Italian);
+
         [MenuItem(German, true)] public static bool ValidateGerman() => ValidateLanguage(German);
+
         [MenuItem(Spanish, true)] public static bool ValidateSpanish() => ValidateLanguage(Spanish);
+
         [MenuItem(ChineseSimplifed, true)] public static bool ValidateChineseSimplifed() => ValidateLanguage(ChineseSimplifed);
+
         [MenuItem(ChineseTraditional, true)] public static bool ValidateChineseTraditional() => ValidateLanguage(ChineseTraditional);
+
         [MenuItem(Japanese, true)] public static bool ValidateJapanese() => ValidateLanguage(Japanese);
+
         [MenuItem(Korean, true)] public static bool ValidateKorean() => ValidateLanguage(Korean);
+
         [MenuItem(Russian, true)] public static bool ValidateRussian() => ValidateLanguage(Russian);
+
         [MenuItem(Vietnamese, true)] public static bool ValidateVietnamese() => ValidateLanguage(Vietnamese);
+
         [MenuItem(Portuguese, true)] public static bool ValidatePortuguese() => ValidateLanguage(Portuguese);
+
 
         private static bool ValidateLanguage(string menuItem)
         {

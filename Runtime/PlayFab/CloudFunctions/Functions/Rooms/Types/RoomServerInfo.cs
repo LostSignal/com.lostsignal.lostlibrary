@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
-// <copyright file="RoomServerInfo.cs" company="Giant Cranium">
-//     Copyright (c) Giant Cranium. All rights reserved.
+// <copyright file="RoomServerInfo.cs" company="Lost Signal LLC">
+//     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 

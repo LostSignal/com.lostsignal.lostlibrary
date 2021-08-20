@@ -18,7 +18,7 @@ namespace Lost
 
         #pragma warning disable 0649
         [SerializeField] private bool isLooping;
-        [SerializeField] [HideInInspector] private List<SplinePoint> children;
+        [SerializeField][HideInInspector] private List<SplinePoint> children;
         #pragma warning restore 0649
 
         // Used to calculate the length of the spline

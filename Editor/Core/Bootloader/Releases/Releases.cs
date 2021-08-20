@@ -10,7 +10,7 @@ namespace Lost
     using System.IO;
     using System.Linq;
     using UnityEngine;
-    
+
     ////
     //// var url = RuntimeAppConfig.Instance.GetString(ReleasesUrlKey).AppendIfDoesntExist("/");
     //// var machineName = RuntimeAppConfig.Instance.GetString(ReleasesMachineNameKey);
@@ -33,7 +33,7 @@ namespace Lost
 #pragma warning restore 0649
 
         public Release CurrentRelease => this.releases.LastOrDefault();
-        
+
         public List<Release> AllReleases => this.releases;
 
         [EditorEvents.OnEnterPlayMode]

@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
-// <copyright file="SpriteAtlasLoadingManagerEditor.cs" company="Big Blind Interactive">
-//     Copyright (c) Big Blind Interactive. All rights reserved.
+// <copyright file="SpriteAtlasLoadingManagerEditor.cs" company="Lost Signal LLC">
+//     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 

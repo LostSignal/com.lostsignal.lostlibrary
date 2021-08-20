@@ -42,12 +42,12 @@ namespace Lost
         [SerializeField] private UnityEvent onEnterProximity;
         [SerializeField] private UnityEvent onExitProximity;
 #pragma warning restore 0649
-        
+
         private string currentUpdateChannelName;
         private bool hasPlayerEntered;
 
         public override string Name => nameof(PlayerProximity);
-        
+
         public override bool RunAwake => true;
 
         public override bool RunStart => false;
@@ -60,7 +60,7 @@ namespace Lost
         public override void DoUpdate(float deltaTime)
         {
             bool isPlayerInside = this.IsInProximity();
-            
+
             // Determining Whether to fire events
             if (this.hasPlayerEntered == false && isPlayerInside)
             {

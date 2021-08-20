@@ -13,7 +13,7 @@ namespace Lost
     using UnityEngine;
 
     public abstract class DataManager<T> : Manager<T>, IDataManager
-         where T : MonoBehaviour
+        where T : MonoBehaviour
     {
         private DataStore dataStore;
 

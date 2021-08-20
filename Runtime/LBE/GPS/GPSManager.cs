@@ -61,7 +61,7 @@ namespace Lost
             manifestXml = InsertPermission(manifestXml, "ACCESS_COARSE_LOCATION");
             manifestXml = InsertPermission(manifestXml, "ACCESS_FINE_LOCATION");
             System.IO.File.WriteAllText(manifestPath, manifestXml);
-        
+
             string InsertPermission(string xml, string permission)
             {
                 if (xml.Contains(permission) == false)
@@ -69,7 +69,7 @@ namespace Lost
                     int index = xml.IndexOf("</manifest>");
                     return xml.Insert(index, $"  <uses-permission android:name=\"android.permission.{permission}\" />{Environment.NewLine}");
                 }
-        
+
                 return xml;
             }
         }
@@ -374,7 +374,7 @@ namespace Lost
             {
                 movement += new Vector2d(0.0, -1.0);
             }
-            
+
             if (UnityEngine.Input.GetKeyDown(KeyCode.D))
             {
                 movement += new Vector2d(0.0, 1.0);
@@ -396,6 +396,7 @@ namespace Lost
                 this.editorLatLong.Longitude += movement.y;
             }
         }
+
 #endif
 
         private void EnsurePlayerSettingsAreCorrect()

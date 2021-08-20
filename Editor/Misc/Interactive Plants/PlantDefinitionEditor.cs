@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="PlantGeneratorEditor.cs" company="Lost Signal LLC">
+// <copyright file="PlantDefinitionEditor.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------

@@ -18,8 +18,8 @@ namespace Lost
         [SerializeField] private Vector3 inHandle = new Vector3(0, 0, -0.25f);
         [SerializeField] private Vector3 outHandle = new Vector3(0, 0, 0.25f);
 
-        [SerializeField] [HideInInspector] private Transform myTransform;
-        [SerializeField] [HideInInspector] private Spline parent;
+        [SerializeField][HideInInspector] private Transform myTransform;
+        [SerializeField][HideInInspector] private Spline parent;
         #pragma warning restore 0649
 
         private bool isIntialized;
@@ -31,7 +31,7 @@ namespace Lost
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => this.autoOrient;
         }
-        
+
         public Vector3 Position
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

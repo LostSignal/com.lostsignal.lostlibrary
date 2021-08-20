@@ -56,7 +56,7 @@ namespace Lost
                 double rtheta = Math.PI * theta / 180.0;
 
                 double dist = Math.Sin(rlat1) * Math.Sin(rlat2) + Math.Cos(rlat1) *
-                              Math.Cos(rlat2) * Math.Cos(rtheta);
+                    Math.Cos(rlat2) * Math.Cos(rtheta);
 
                 dist = Math.Acos(dist);
                 dist = dist * 180.0 / Math.PI;
@@ -158,5 +158,4 @@ namespace Lost
 #endif
     }
 #endif
-
 }

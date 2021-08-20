@@ -17,16 +17,16 @@ namespace Lost
         private int capacity;
         private int startIndex;
         private int count;
-        
+
         public Action OnGrow;
 
-        public int Count 
-        {   
+        public int Count
+        {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => this.count;
         }
 
-        public bool IsEmpty 
+        public bool IsEmpty
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => this.count == 0;
@@ -43,7 +43,7 @@ namespace Lost
         public int Enqueue(T element)
         {
             if (this.Count == this.capacity)
-            {               
+            {
                 this.Grow();
                 this.OnGrow?.Invoke();
             }
@@ -90,7 +90,7 @@ namespace Lost
             {
                 newQueue.Enqueue(this.Dequeue());
             }
-            
+
             this.capacity = newQueue.capacity;
             this.elements = newQueue.elements;
             this.startIndex = newQueue.startIndex;

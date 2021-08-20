@@ -7,15 +7,15 @@
 #if USING_GOOGLE_MAPS_SDK
 
 namespace Lost.LBE
-{ 
+{
     using Google.Maps;
     using Google.Maps.Coord;
     using Google.Maps.Event;
     using Google.Maps.Feature.Style.Settings;
     using UnityEngine;
-    
+
     [RequireComponent(typeof(MapsService))]
-    public class GoogleMapsManager : Manager<GoogleMapsManager> 
+    public class GoogleMapsManager : Manager<GoogleMapsManager>
     {
         #pragma warning disable 0649
         [Header("Stylings")]
@@ -28,7 +28,7 @@ namespace Lost.LBE
         [Header("Loading")]
         [SerializeField] private float loadRadiusInMeters = 300.0f;
         [SerializeField] private float reloadDistanceInMeters = 100.0f;
-        
+
         [Header("Debug")]
         [SerializeField] private bool printDebugOutput;
 
@@ -39,7 +39,7 @@ namespace Lost.LBE
         private GameObjectOptions gameObjectOptions;
         private bool isMapServiceLoaded;
         private bool isInitialized;
-        
+
         // Used for loading
         private GPSLatLong currentLatLong;
         private GPSLatLong lastLoadLatLng;
@@ -170,8 +170,8 @@ namespace Lost.LBE
                                     "(consider using MapLoadErrorArgs.TimeoutSeconds).\n{1}",
                                     args.Attempts,
                                     string.IsNullOrEmpty(args.Message)
-                                        ? string.Concat("Specific error message received: ", args.Message)
-                                        : "No error message received.");
+                                    ? string.Concat("Specific error message received: ", args.Message)
+                                    : "No error message received.");
                             }
 
                             return;
@@ -197,7 +197,7 @@ namespace Lost.LBE
 
             // Set real-world location to load
             this.mapsService.InitFloatingOrigin(new LatLng(latLong.Latitude, latLong.Longitude));
-            
+
             // Configure Map Styling
             this.gameObjectOptions = this.GetMapStyle();
 

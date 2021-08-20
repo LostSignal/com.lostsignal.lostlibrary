@@ -20,9 +20,9 @@ namespace Lost
         [SerializeField] private AudioSource audioSourcePrefab;
         [SerializeField] private List<AudioChannel> audioChannels;
 #pragma warning restore 0649
-        
+
         private HashSet<int> audioChannelsIntanceIds = new HashSet<int>();
-        
+
         public override void Initialize()
         {
             // Making sure our pool of audio sources is disabled at startup

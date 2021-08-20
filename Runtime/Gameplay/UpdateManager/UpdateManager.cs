@@ -6,17 +6,17 @@
 
 #if UNITY
 
-//// 
-//// 
-//// 
+////
+////
+////
 //// Should Loadbalances themselves register with the update manager
 //// If that's the case, most classes just have loadbanalancer and don't care about the update manager
 ////    They register them, then the update manager can call things like stop LBs (durring load times)
-//// 
+////
 //// Right now LBs assume that you Invoke and remove, this doesn't make sense for long running things
-//// 
+////
 //// Can I use the trick of Replacing the last item with the currently deleted one?
-//// 
+////
 ////
 //// Need a Delay Execute function as well
 ////
@@ -27,12 +27,12 @@
 ////   * Need load balancer that must go through all items?
 ////
 //// Manager Queue up Callbacks then pass them to LoadBalancerManager when ready?
-//// 
+////
 //// * Can I make a whole new "Update Manager" window in Unity's profiler that lets me see all my channels and how much time they're taking?
-//// 
-//// 
-//// 
-//// 
+////
+////
+////
+////
 
 
 #define ENABLE_PROFILING
@@ -42,7 +42,7 @@ namespace Lost
     using System;
     using System.Collections.Generic;
     using UnityEngine;
-    
+
     [DefaultExecutionOrder(-1000)]
     public sealed class UpdateManager : Manager<UpdateManager>
     {
@@ -60,7 +60,7 @@ namespace Lost
 #pragma warning restore 0649
 
         private Dictionary<string, UpdateChannel> channelMap = new Dictionary<string, UpdateChannel>();
-        
+
         private List<UpdateChannel> updateChannels = new List<UpdateChannel>(50);
         private List<UpdateChannel> fixedUpdateChannels = new List<UpdateChannel>(50);
         private List<UpdateChannel> lateUpdateChannels = new List<UpdateChannel>(50);
@@ -80,28 +80,28 @@ namespace Lost
                 switch (this.channels[i].Type)
                 {
                     case UpdateChannel.UpdateType.Update:
-                        {
-                            this.updateChannels.Add(this.channels[i]);
-                            break;
-                        }
-                        
+                    {
+                        this.updateChannels.Add(this.channels[i]);
+                        break;
+                    }
+
                     case UpdateChannel.UpdateType.FixedUpdate:
-                        {
-                            this.fixedUpdateChannels.Add(this.channels[i]);
-                            break;
-                        }
+                    {
+                        this.fixedUpdateChannels.Add(this.channels[i]);
+                        break;
+                    }
 
                     case UpdateChannel.UpdateType.LateUpdate:
-                        {
-                            this.lateUpdateChannels.Add(this.channels[i]);
-                            break;
-                        }
+                    {
+                        this.lateUpdateChannels.Add(this.channels[i]);
+                        break;
+                    }
 
                     default:
-                        {
-                            Debug.LogError($"{nameof(UpdateManager)} Found Unknown {nameof(UpdateChannel.UpdateType)} {this.channels[i].Type}.  This channel will be ignored.");
-                            break;
-                        }
+                    {
+                        Debug.LogError($"{nameof(UpdateManager)} Found Unknown {nameof(UpdateChannel.UpdateType)} {this.channels[i].Type}.  This channel will be ignored.");
+                        break;
+                    }
                 }
             }
 
@@ -114,7 +114,7 @@ namespace Lost
             {
                 return channel;
             }
-            
+
             Debug.LogError($"Unknown Channel {channelName} Requested!  Channels can not be created at runtime, you must add them to the UpdateManager ahead of time.");
             return null;
         }
@@ -131,7 +131,7 @@ namespace Lost
                 CallFrequency = callFrequency,
             });
         }
-        
+
         //// TODO [bgish]: Only PeriodicUpdate Bolt Node uses this, update it to use Channel system
         public void UnregisterFunction(Action<float> function)
         {
@@ -151,12 +151,12 @@ namespace Lost
 
             //// // NOTE [bgish]: The below code is old and should migrate to channel code once we move Bolt Periodic Update node to channels
             //// var realtimeSinceStartup = Time.realtimeSinceStartup;
-            //// 
+            ////
             //// for (int i = 0; i < functions.Count; i++)
             //// {
             ////     var functionCall = functions[i];
             ////     var deltaTime = realtimeSinceStartup - functionCall.LastCallTime;
-            //// 
+            ////
             ////     if (deltaTime > (1.0f / functionCall.CallFrequency))
             ////     {
             ////         functionCall.LastCallTime = realtimeSinceStartup;

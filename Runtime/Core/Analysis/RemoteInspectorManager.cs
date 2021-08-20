@@ -18,17 +18,17 @@ namespace Lost
     ////   * Change Physics Time Step
     ////   * Turn occlusion culling on/off
     ////   * Enable/Disable logging (Debug.unityLogger.logEnabled)
-    //// 
-    //// 
-    //// 
-    //// 
-    //// 
-    //// 
-    //// 
-    //// 
-    //// 
-    //// 
-    //// 
+    ////
+    ////
+    ////
+    ////
+    ////
+    ////
+    ////
+    ////
+    ////
+    ////
+    ////
 
     public class RemoteInspectorManager : Manager<RemoteInspectorManager>
     {

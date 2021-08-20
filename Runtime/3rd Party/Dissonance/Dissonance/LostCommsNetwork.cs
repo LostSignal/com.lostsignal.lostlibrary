@@ -8,10 +8,10 @@
 
 namespace Lost.DissonanceIntegration
 {
+    using System;
     using Dissonance;
     using Dissonance.Networking;
     using Lost.Networking;
-    using System;
 
     public class LostCommsNetwork
         : BaseCommsNetwork<

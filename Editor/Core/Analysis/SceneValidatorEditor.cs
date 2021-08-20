@@ -60,7 +60,7 @@ namespace Lost
                         using (new IndentLevelScope(2))
                         {
                             var objectsToIgnore = this.serializedObject.FindProperty($"validators.Array.data[{i}].objectsToIgnore");
-                            
+
                             GUILayout.Space(5);
                             EditorGUILayout.PropertyField(objectsToIgnore);
                             GUILayout.Space(5);
@@ -70,7 +70,7 @@ namespace Lost
 
                 GUILayout.Space(5);
             }
-            
+
             GUILayout.Space(5);
 
             if (GUILayout.Button("Run All"))

@@ -95,7 +95,7 @@ namespace Lost
         //        CPU Time
         //        GPU Time
         //        AwakeManager.Count, StartManager.Count
-        //      
+        //
         //        UpdateManager (Mircroseconds)
         //           Every UpdateChannel (Microseconds)
         //    Unity Stats
@@ -106,15 +106,15 @@ namespace Lost
         //        GC.Alloc
         //        GC.Collect
         //        Gfx.PresentFrame - WaitForTargetFPS
-        // 
+        //
 
         public static readonly ProfilerCategoryType MyProfilerCategory = ProfilerCategoryType.Scripts;
-        // 
+        //
         // public static readonly ProfilerCounter<int> EnemyCount = new ProfilerCounter<int>(
         //     MyProfilerCategory,
         //     "Enemy Count",
         //     ProfilerMarkerDataUnit.Count);
-        // 
+        //
         // public static ProfilerCounterValue<int> BulletCount = new ProfilerCounterValue<int>(
         //     MyProfilerCategory,
         //     "Bullet Count",
@@ -129,7 +129,7 @@ namespace Lost
         //    * Based on Unity's new way of gathering performance stats
         //    * Also sends stats like level activation times
 
-        // Listen to Debug.Log and 
+        // Listen to Debug.Log and
 
         public override void Initialize()
         {

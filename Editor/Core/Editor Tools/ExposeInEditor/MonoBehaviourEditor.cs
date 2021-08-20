@@ -26,22 +26,22 @@ namespace Lost
             var bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
             foreach (var method in obj.GetType().GetMethods(bindingFlags))
-            {                                
+            {
                 foreach (var attribute in method.GetCustomAttributes(true).OfType<ShowEditorInfoAttribute>())
                 {
                     ShowHelpBox(attribute.Text, method, MessageType.Info);
                 }
-                                
+
                 foreach (var attribute in method.GetCustomAttributes(true).OfType<ShowEditorWarningAttribute>())
                 {
                     ShowHelpBox(attribute.Text, method, MessageType.Warning);
                 }
-                                
+
                 foreach (var attribute in method.GetCustomAttributes(true).OfType<ShowEditorErrorAttribute>())
                 {
                     ShowHelpBox(attribute.Text, method, MessageType.Error);
                 }
-                
+
                 foreach (var attribute in method.GetCustomAttributes(true).OfType<ExposeInEditorAttribute>())
                 {
                     if (GUILayout.Button(attribute.Name))

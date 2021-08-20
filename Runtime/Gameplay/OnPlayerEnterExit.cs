@@ -43,16 +43,16 @@ namespace Lost
         [SerializeField] private UnityEvent onPlayerEnter;
         [SerializeField] private UnityEvent onPlayerExit;
 #pragma warning restore 0649
-    
+
         private UpdateChannelReceipt receipt;
         private bool isPlayerInside;
- 
+
         private UpdateChannel CurrentChannel
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => this.isPlayerInside ? HighPriorityChannel : LowPriorityChannel;
         }
-    
+
         private void Awake()
         {
             Debug.Log("OnPlayerEnterExit: OnPlayerEnterExit.Awake");
@@ -61,7 +61,7 @@ namespace Lost
             void Initialize()
             {
                 Debug.Log("OnPlayerEnterExit: OnPlayerEnterExit.Initialize");
-                UpdateRegistationWithUpdateManager();            
+                UpdateRegistationWithUpdateManager();
                 this.isPlayerInside = this.GetIsPlayerInside();
                 this.InvokeEvent(this.isPlayerInside);
             }
@@ -85,8 +85,8 @@ namespace Lost
             //     AreStaticsInitialized = true;
             //     HighPriorityChannel = UpdateManager.Instance.GetOrCreateChannel("OnPlayerEnterExit_High", Priority.High);
             //     LowPriorityChannel = UpdateManager.Instance.GetOrCreateChannel("OnPlayerEnterExit_Low", Priority.Low);
-            // }     
-            // 
+            // }
+            //
             // if (AreStaticsInitialized == false)
             // {
             //     return;
@@ -103,20 +103,20 @@ namespace Lost
 
         private void OnDrawGizmo()
         {
-           // Draw both bounds with different colors
+            // Draw both bounds with different colors
         }
 
         // [ForceInline]
         private bool GetIsPlayerInside()
         {
             // bool isInside = this.onPlayerEnterBounds.Contains(PlayerManager.Instance.PlayePosition);
-            // 
+            //
             // if (isInside && this.playerMustBeFacing)
             // {
             //     Vector3 thisObjectsForward = this.transform.position - CharacterManager.Instance.MainPlayer.Position);
             //     return Vector3.Dot(CharacterManager.Instance.MainPlayer.Forward, thisObjectsForward) > CosUtil.Cos45;
             // }
-            // 
+            //
             // return isInside;
 
             return false;
@@ -125,22 +125,22 @@ namespace Lost
         private void DoWork()
         {
             // bool currentIsPlayerInside = this.GetIsPlayerInside();
-            // 
+            //
             // if (this.isPlayerInside != currentIsPlayerInside)
             // {
             //     this.isPlayerInside = currentIsPlayerInside;
             //     this.InvokeEvent(this.isPlayerInside);
             // }
-            // 
+            //
             // // Detecting if we need to change our channel
             // var currentChannel = this.CurrentChannel;
-            // 
+            //
             // if (receipt.Channel != currentChannel)
             // {
             //     currentChannel.SwitchToThisChannel(ref this.receipt);
             // }
         }
-    
+
         private void InvokeEvent(bool isPlayerInside)
         {
             // if (isPlayerInside)

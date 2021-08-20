@@ -24,7 +24,7 @@ namespace Lost
     //// * Bad Scale Error
     //// * FPS Below 60 Error
     //// * General LogError/Exception/Warning Error (if not one of the above)
-    //// 
+    ////
     //// ### Build Validation
     //// * If build spits out any Debug.LogError like this, then it needs to be reported
     ////   * Failed to create Physics Mesh from source mesh "Roof_LOD0". One of the triangles is too large. It's recommended to tesselate the large triangles.
@@ -36,12 +36,12 @@ namespace Lost
     ////   * Can I use Preprocess Build and PostProcess build to catch these?
     ////   * Is the float PreProcessBuild -> Process Scene(s) -> PostProcessBuild????
     ////   * What about scene that live in addressables... Is Process Scene called on them too?
-    //// 
+    ////
     //// * Can I make a Scene Validator that finds all UnityEvents in a scene and makes sure if they
     ////   reference a GameObjectState object that the StateName parameter is valid?
-    //// 
-    //// 
-    //// 
+    ////
+    ////
+    ////
 
     public class SceneValidator : MonoBehaviour
     {
@@ -80,7 +80,7 @@ namespace Lost
 
                 validator.Run(errors);
             }
-            
+
             this.PrintErrors(errors);
         }
 
@@ -127,7 +127,7 @@ namespace Lost
                 UnityEditor.EditorUtility.SetDirty(this);
             }
         }
-        
+
         private void PrintErrors(List<Error> errors)
         {
             foreach (var error in errors)
@@ -154,7 +154,7 @@ namespace Lost
             }
 
             public abstract string DisplayName { get; }
-                        
+
             public bool IsActive
             {
                 get => this.isActive;
@@ -189,7 +189,7 @@ namespace Lost
         }
 
         #endif
-    }   
+    }
 }
 
 #endif

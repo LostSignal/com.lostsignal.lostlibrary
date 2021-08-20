@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
-// <copyright file="LostCommsNetworkEditor.cs" company="Giant Cranium">
-//     Copyright (c) Giant Cranium. All rights reserved.
+// <copyright file="LostCommsNetworkEditor.cs" company="Lost Signal LLC">
+//     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 

@@ -22,7 +22,7 @@ namespace Lost
         private Dictionary<string, string> stringData;
         private Dictionary<string, byte[]> byteArrayData;
         private Dictionary<string, DateTime> dateTimeData;
-        
+
         public bool IsDirty { get; private set; }
 
         public int Serialize(byte[] saveDataBuffer)
@@ -47,7 +47,7 @@ namespace Lost
                     writer.Write(keyValuePair.Value);
                 }
             }
-            
+
             if (this.enumData?.Count > 0)
             {
                 foreach (var keyValuePair in this.enumData)
@@ -65,7 +65,7 @@ namespace Lost
                     writer.Write(keyValuePair.Value);
                 }
             }
-            
+
             if (this.longData?.Count > 0)
             {
                 foreach (var keyValuePair in this.longData)
@@ -92,7 +92,7 @@ namespace Lost
                     writer.WriteBytesFull(keyValuePair.Value);
                 }
             }
-            
+
             if (this.dateTimeData?.Count > 0)
             {
                 foreach (var keyValuePair in this.dateTimeData)
@@ -165,7 +165,7 @@ namespace Lost
             {
                 this.enumData.Add(reader.ReadString(), reader.ReadInt32());
             }
-            
+
             for (int i = 0; i < boolCount; i++)
             {
                 this.boolData.Add(reader.ReadString(), reader.ReadBoolean());
@@ -175,12 +175,12 @@ namespace Lost
             {
                 this.longData.Add(reader.ReadString(), reader.ReadInt64());
             }
-            
+
             for (int i = 0; i < stringCount; i++)
             {
                 this.stringData.Add(reader.ReadString(), reader.ReadString());
             }
-            
+
             for (int i = 0; i < byteArrayCount; i++)
             {
                 this.byteArrayData.Add(reader.ReadString(), reader.ReadBytesAndSize());

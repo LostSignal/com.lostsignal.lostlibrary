@@ -47,7 +47,7 @@ namespace Lost
             {
                 EditorSettings.lineEndingsForNewScripts = Convert(settings.projectLineEndings);
             }
-            
+
             // Make sure Serialization Type is set
             if (settings.forceSerializationMode && EditorSettings.serializationMode != settings.serializationMode)
             {
@@ -104,7 +104,7 @@ namespace Lost
         [SerializeField] private LineEndings projectLineEndings;
         [SerializeField] private bool forceSerializationMode;
         [SerializeField] private SerializationMode serializationMode;
-        
+
         // Source Control Ignore File
         [SerializeField] private SourceControlType sourceControlType;
         [SerializeField] private TextAsset ignoreTemplateGit;
@@ -113,7 +113,7 @@ namespace Lost
         [SerializeField] private TextAsset ignoreTemplateP4;
         [SerializeField] private string p4IgnoreFileName;
         [SerializeField] private bool autosetP4IgnoreEnvironmentVariable;
-        
+
         // Editorconfig
         [SerializeField] private bool useEditorConfig;
         [SerializeField] private string editorConfigFileName;
@@ -203,7 +203,7 @@ namespace Lost
             this.templateStateMachineBehaviour = EditorUtil.GetAssetByGuid<TextAsset>("fed9948eb87d1be48ae323bd48cf729f");
             this.templateSubStateMachineBehaviour = EditorUtil.GetAssetByGuid<TextAsset>("09afd0c31b0565e4a8a74ecb68ceef24");
             this.templateEditorTestScript = EditorUtil.GetAssetByGuid<TextAsset>("c31e8a34fb6708144809d22dffdc73f6");
-            
+
             // Editorconfig
             this.useEditorConfig = true;
             this.editorConfigFileName = ".editorconfig";
@@ -292,7 +292,7 @@ namespace Lost
             {
                 SetP4IgnoreVariableForWindows(this.p4IgnoreFileName);
             }
-            
+
             string GetCurrentP4IgnoreVariableWindows()
             {
                 try

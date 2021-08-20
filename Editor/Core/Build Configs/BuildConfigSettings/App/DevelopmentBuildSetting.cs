@@ -32,7 +32,7 @@ namespace Lost
         private static void OnDomainReload()
         {
             //// var settings = EditorAppConfig.GetActiveSettings<DevelopmentBuildSetting>();
-            //// 
+            ////
             //// if (settings != null)
             //// {
             ////     EditorUserBuildSettings.development = settings.isDevelopmentBuild;

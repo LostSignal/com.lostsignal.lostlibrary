@@ -58,6 +58,7 @@ namespace Lost
             base.OnValidate();
             this.FindComponents();
         }
+
 #endif
 
         protected override void Awake()

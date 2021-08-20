@@ -90,7 +90,7 @@ namespace Lost.PlayFab
 
             global::PlayFab.PlayFabSettings.staticSettings.TitleId = playfabSettings.titleId;
             global::PlayFab.PlayFabSettings.staticSettings.DeveloperSecretKey = playfabSettings.secretKey;
-            
+
             if (LostLibrary.AzureFunctionsProjectGenerator != null)
             {
                 GenerateLaunchSettingsForAzureFunctionsProject(playfabSettings);

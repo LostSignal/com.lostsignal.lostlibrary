@@ -20,7 +20,7 @@ namespace Lost
         {
             this.items = new List<T>();
         }
-        
+
         public ConcurrentList(int capacity)
         {
             this.items = new List<T>(capacity);

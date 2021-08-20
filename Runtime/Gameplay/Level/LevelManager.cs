@@ -29,7 +29,7 @@ namespace Lost
     //// * LevelManager can manipulate the LoadBalancer?
     ////   * MaxMillsecondsPerFrame (in milliseconds)
     ////     * When doing a level load, it's higher than doing a hard load
-    //// 
+    ////
     //// * Level Manager won't load levels/chunks untill Awake/Start Managers have completed?
     ////   * Load Level -> Wait for all managers to finish ->
     ////
@@ -45,16 +45,16 @@ namespace Lost
     ////     * Wait for Managers
     ////     * Run Level Load Requested with currently active scene as the arguments
     ////       * It won't actually load it since it's already loaded
-    //// 
+    ////
     //// ---
-    //// 
+    ////
     //// Level Load Requested
     ////   Full Fade Down
     ////   Turn on Loading Area
     ////   Teleport to Loading Area
     ////   Fade Up
     ////   On Complete => Level Transition Begin
-    ////   
+    ////
     //// Level Load Begin
     ////   Download
     ////   Load Level
@@ -66,19 +66,9 @@ namespace Lost
     ////   Teleport to starting posotion
     ////   Fade Up
     ////   On Complete => Level Transition Finish
-    ////     
+    ////
     //// Level Load Finish
     ////   ??? (AI Start?)
-  
-
-
-
-
-
-
-
-
-
 
 
     public class LevelManager : Manager<LevelManager>

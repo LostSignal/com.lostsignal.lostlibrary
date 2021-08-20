@@ -31,7 +31,7 @@ namespace Lost
         [SerializeField] private CinemachineMixingCamera avatarCamera;
         [SerializeField] private CinemachineVirtualCamera zoomedInCamera;
         [SerializeField] private CinemachineVirtualCamera zoomedOutCamera;
-        
+
         [Header("Camera Rotation / Zoom")]
         [SerializeField] private float rotation;
 
@@ -160,7 +160,7 @@ namespace Lost
         }
 
         private void ProcessRotate(Input input)
-        {   
+        {
             float xDelta = input.CurrentPosition.x - input.PreviousPosition.x;
             float xDeltaPercentOfScreen = xDelta / Screen.width;
 

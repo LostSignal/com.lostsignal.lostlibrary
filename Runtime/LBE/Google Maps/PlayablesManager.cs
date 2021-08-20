@@ -59,7 +59,7 @@ namespace Lost.LBE
                     }
                     else
                     {
-                        // There was an etag mismatch because someone beat us to the punch, so lets get 
+                        // There was an etag mismatch because someone beat us to the punch, so lets get
                         databaseResult = this.GetFromDatabase(request.S2CellId);
                     }
                 }
@@ -89,7 +89,6 @@ namespace Lost.LBE
 
         public Task<VisitLocationResult> VisitLocation(VisitLocationRequest request)
         {
-
             //// * Need a Visit Api? (Pokestops)
             //// * Player Data stores a Dictionary of LBEID to DateTime
             ////   * VisitRequest LBEID

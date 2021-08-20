@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
-// <copyright file="UploadAddressableToAzureSettings.cs" company="DefaultCompany">
-//     Copyright (c) DefaultCompany. All rights reserved.
+// <copyright file="UploadAddressableToAzureSettings.cs" company="Lost Signal LLC">
+//     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 

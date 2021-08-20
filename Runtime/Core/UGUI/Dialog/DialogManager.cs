@@ -145,6 +145,7 @@ namespace Lost
 
             this.instantiatedDialogs.Clear();
         }
+
 #endif
     }
 }

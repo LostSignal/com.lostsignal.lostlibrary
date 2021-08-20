@@ -136,7 +136,7 @@ namespace Lost
             this.projectLineEndings = this.lostLibrarySerializedObject.FindProperty("projectLineEndings");
             this.forceSerializationMode = this.lostLibrarySerializedObject.FindProperty("forceSerializationMode");
             this.serializationMode = this.lostLibrarySerializedObject.FindProperty("serializationMode");
-            
+
             // Editorconfig
             this.useEditorConfig = this.lostLibrarySerializedObject.FindProperty("useEditorConfig");
             this.editorConfigTemplate = this.lostLibrarySerializedObject.FindProperty("editorConfigTemplate");
@@ -153,7 +153,7 @@ namespace Lost
             // PlasticSCM Settings
             this.plasticAutoSetFileCasingError = this.lostLibrarySerializedObject.FindProperty("plasticAutoSetFileCasingError");
             this.plasticAutoSetYamlMergeToolPath = this.lostLibrarySerializedObject.FindProperty("plasticAutoSetYamlMergeToolPath");
-            
+
             // Source Control Ignore File
             this.sourceControlType = this.lostLibrarySerializedObject.FindProperty("sourceControlType");
             this.ignoreTemplateGit = this.lostLibrarySerializedObject.FindProperty("ignoreTemplateGit");
@@ -175,7 +175,7 @@ namespace Lost
 
                 using (new IndentLevelScope(1))
                 {
-                    // Product Name                    
+                    // Product Name
                     using (new EditorGUILayout.HorizontalScope())
                     {
                         EditorGUILayout.LabelField("Product Name", GUILayout.Width(labelWidth));
@@ -212,7 +212,7 @@ namespace Lost
                         {
                             EditorSettings.projectGenerationRootNamespace = rootNamespace;
                         }
-                    }             
+                    }
                 }
             }
         }
@@ -270,7 +270,7 @@ namespace Lost
                     EditorGUILayout.PropertyField(this.templateSubStateMachineBehaviour);
                     EditorGUILayout.PropertyField(this.templateEditorTestScript);
                 }
-            }         
+            }
         }
 
         private void DrawAnalyzers(int foldoutId)
@@ -281,7 +281,7 @@ namespace Lost
                 {
                     return;
                 }
-                
+
                 using (new IndentLevelScope(2))
                 {
                     EditorGUILayout.PropertyField(this.analyzers);
@@ -302,8 +302,8 @@ namespace Lost
                 {
                     EditorGUILayout.PropertyField(this.sourceControlType);
                     EditorGUILayout.Space(5);
-                        
-                    var sourceControl = (LostLibrarySettings.SourceControlType)this.sourceControlType.intValue;
+
+                    var sourceControl = (LostLibrarySettings.SourceControlType) this.sourceControlType.intValue;
 
                     if (sourceControl == LostLibrarySettings.SourceControlType.Git)
                     {

@@ -32,7 +32,7 @@ namespace Lost
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => this.count;
         }
-        
+
         public T this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -74,7 +74,7 @@ namespace Lost
                 Debug.LogWarning($"ComponentTracker<{typeof(T).Name}>'s array grew in size!  Consider increasing it's initial capacity to not do this at runtime.");
                 Array.Resize(ref this.objs, this.objs.Length * 2);
             }
-                        
+
             this.objs[this.count] = instance;
             this.count++;
         }

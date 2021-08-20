@@ -27,9 +27,9 @@ namespace Lost
         [SerializeField] private string appleAppStoreId = null;
         [SerializeField] private string googlePlayAppStoreId = null;
 #pragma warning restore 0649, 0414
-        
+
 #if UNITY_EDITOR && !USING_UNITY_ADS
-        
+
         [ShowEditorError("This provider will not work unless you the Unity Ads package added through the Package Manager.")]
         [ExposeInEditor("Add Unity Ads Package")]
         private void AddUsingUsingUnityAdsDefine()

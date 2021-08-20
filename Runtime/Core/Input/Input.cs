@@ -57,28 +57,28 @@ namespace Lost
         }
 
         public InputState InputState
-        { 
+        {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get;
-            
+
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private set;
         }
 
         public InputType InputType
-        { 
+        {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get;
-            
+
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private set;
         }
 
         public InputButton InputButton
-        { 
+        {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get;
-            
+
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private set;
         }
@@ -93,19 +93,19 @@ namespace Lost
         }
 
         public Vector2 PreviousPosition
-        {    
+        {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get;
-            
+
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private set;
         }
 
         public Vector2 CurrentPosition
-        { 
+        {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get;
-            
+
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private set;
         }
