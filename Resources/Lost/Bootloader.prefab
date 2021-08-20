@@ -142,7 +142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bootloaderDialog: {fileID: 8147128973682494453}
-  dontShowLoadingInEditor: 1
+  dontShowLoadingInEditor: 0
   minimumLoadingDialogTime: 0
   loadingCamera: {fileID: 5126069173154035165}
 --- !u!114 &2305756432591070977
@@ -170,7 +170,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   onDemandDialogs:
-  - {fileID: 1809737419908686982, guid: 27c83b40195ab4a4c8f51454a44ab66c, type: 3}
   - {fileID: 114004064847306734, guid: 8ded58df4e4c9b4458f968235e5ebda2, type: 3}
   - {fileID: 114400270698598858, guid: 500aa12305d961641a4f21d449363af2, type: 3}
   - {fileID: 114479255553896148, guid: b51b2d47405f707439456115f8724249, type: 3}
