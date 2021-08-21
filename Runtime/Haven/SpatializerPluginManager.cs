@@ -1,3 +1,5 @@
+﻿#pragma warning disable
+
 #if UNITY_EDITOR
 
 namespace HavenXR

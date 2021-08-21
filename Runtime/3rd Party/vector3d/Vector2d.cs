@@ -1,3 +1,5 @@
+﻿#pragma warning disable
+
 #pragma warning disable
 
 // Type: UnityEngine.Vector2

@@ -1,3 +1,5 @@
+﻿#pragma warning disable
+
 using System.Linq;
 using UnityEditor.Experimental;
 

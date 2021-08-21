@@ -1,3 +1,5 @@
+﻿#pragma warning disable
+
 //-----------------------------------------------------------------------
 // <copyright file="AnimatorHelper.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.

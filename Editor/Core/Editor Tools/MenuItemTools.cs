@@ -1,4 +1,7 @@
-//-----------------------------------------------------------------------
+﻿#pragma warning disable
+
+#pragma warning disable
+#pragma warning disable//-----------------------------------------------------------------------
 // <copyright file="NewBehaviourScript.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -14,8 +17,20 @@ namespace Lost
 
     public static class MenuItemTools
     {
-        [MenuItem("Tools/Lost/Actions/Convert All C# Files to utf-8, lf, trim_trailing_whitespace, insert_final_newline")]
+        [MenuItem("Tools/Lost/Actions/Disable Warnings")]
+        public static void DisableWarnings()
+        {
+            ConvertAllCSharpFiles(true);
+            ConvertAllCSharpFiles(false);
+        }
+
+        [MenuItem("Tools/Lost/Actions/Convert All C# Files to utf-8-bom, lf, trim_trailing_whitespace, insert_final_newline")]
         public static void ConvertAllCSharpFiles()
+        {
+            ConvertAllCSharpFiles(false);
+        }
+
+        public static void ConvertAllCSharpFiles(bool disableWarnings)
         {
             string path = ".";
 
@@ -37,13 +52,18 @@ namespace Lost
                 string[] lines = File.ReadAllLines(file);
                 int lastLineIndex = lines.Length - 1;
 
-                // calculating the line of the file that actually has content
+                // Calculating the line of the file that actually has content
                 while (lastLineIndex > 0 && string.IsNullOrEmpty(lines[lastLineIndex].Trim()))
                 {
                     lastLineIndex--;
                 }
 
-                // converting each line to our project standards
+                if (disableWarnings)
+                {
+                    fileBuilder.Append("#pragma warning disable\n\n");
+                }
+
+                // Converting each line to our project standards
                 for (int i = 0; i <= lastLineIndex; i++)
                 {
                     string convertedLine = lines[i];
@@ -57,7 +77,13 @@ namespace Lost
 
                 // Generating the final file bytes
                 MemoryStream finalFileContents = new MemoryStream();
-                var utf8Encoder = new UTF8Encoding();
+                var utf8Encoder = new UTF8Encoding(true);
+                var preamble = utf8Encoder.GetPreamble();
+
+                if (preamble != null && preamble.Length > 0)
+                {
+                    finalFileContents.Write(preamble, 0, preamble.Length);
+                }
 
                 byte[] contents = utf8Encoder.GetBytes(fileBuilder.ToString());
                 finalFileContents.Write(contents, 0, contents.Length);

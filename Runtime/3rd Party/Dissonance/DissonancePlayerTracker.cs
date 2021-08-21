@@ -1,3 +1,5 @@
+﻿#pragma warning disable
+
 //-----------------------------------------------------------------------
 // <copyright file="DissonancePlayerTracker.cs" company="Giant Cranium">
 //     Copyright (c) Giant Cranium. All rights reserved.

@@ -1,3 +1,5 @@
+﻿#pragma warning disable
+
 //-----------------------------------------------------------------------
 // <copyright file="LostLibrarySettingsEditor.cs" company="Lost Signal">
 //     Copyright (c) Lost Signal. All rights reserved.
