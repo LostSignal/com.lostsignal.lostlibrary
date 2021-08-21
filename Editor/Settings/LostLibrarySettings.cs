@@ -535,7 +535,7 @@ namespace Lost
                 {
                     Directory.CreateDirectory(dllDirectory);
                 }
-                
+
                 string dllName = Path.GetFileNameWithoutExtension(sourceFilePath);
                 string fullDllPath = Path.GetFullPath(Path.Combine(dllDirectory, dllName));
 
@@ -574,6 +574,7 @@ namespace Lost
                     int rulesetIndex = GetLineIndex("<CodeAnalysisRuleSet>", lines);
                     int firstItemGroupIndex = GetLineIndex("<ItemGroup>", lines);
                     var newLines = new List<string>();
+                    var newLinesAdded = false;
 
                     if (rulesetIndex == -1)
                     {
@@ -582,7 +583,13 @@ namespace Lost
 
                     foreach (var file in files)
                     {
-                        newLines.Add($"   <CodeAnalysisRuleSet>{file}</CodeAnalysisRuleSet>");
+                        string newLine = $"   <CodeAnalysisRuleSet>{file}</CodeAnalysisRuleSet>";
+
+                        if (lines.Contains(newLine) == false)
+                        {
+                            newLinesAdded = true;
+                            newLines.Add(newLine);
+                        }
                     }
 
                     if (rulesetIndex == -1)
@@ -590,7 +597,10 @@ namespace Lost
                         newLines.Add("  </PropertyGroup>");
                     }
 
-                    lines.InsertRange(rulesetIndex != -1 ? rulesetIndex + 1 : firstItemGroupIndex, newLines);
+                    if (newLinesAdded)
+                    {
+                        lines.InsertRange(rulesetIndex != -1 ? rulesetIndex + 1 : firstItemGroupIndex, newLines);
+                    }
                 }
 
                 void AddAdditionalFiles(List<string> files, List<string> lines)
@@ -603,6 +613,7 @@ namespace Lost
                     int additionalFilesIndex = GetLineIndex("<AdditionalFiles ", lines);
                     int firstItemGroupIndex = GetLineIndex("<ItemGroup>", lines);
                     var newLines = new List<string>();
+                    var newLinesAdded = false;
 
                     if (additionalFilesIndex == -1)
                     {
@@ -611,7 +622,13 @@ namespace Lost
 
                     foreach (var file in files)
                     {
-                        newLines.Add($"    <AdditionalFiles Include=\"{file}\" />");
+                        string newLine = $"    <AdditionalFiles Include=\"{file}\" />";
+
+                        if (lines.Contains(newLine) == false)
+                        {
+                            newLinesAdded = true;
+                            newLines.Add(newLine);
+                        }
                     }
 
                     if (additionalFilesIndex == -1)
@@ -619,7 +636,10 @@ namespace Lost
                         newLines.Add("  </ItemGroup>");
                     }
 
-                    lines.InsertRange(additionalFilesIndex != -1 ? additionalFilesIndex + 1 : firstItemGroupIndex, newLines);
+                    if (newLinesAdded)
+                    {
+                        lines.InsertRange(additionalFilesIndex != -1 ? additionalFilesIndex + 1 : firstItemGroupIndex, newLines);
+                    }
                 }
 
                 void AddAnalyzerDLLs(List<string> files, List<string> lines)
@@ -632,6 +652,7 @@ namespace Lost
                     int analyzerFilesIndex = GetLineIndex("<Analyzer ", lines);
                     int firstItemGroupIndex = GetLineIndex("<ItemGroup>", lines);
                     var newLines = new List<string>();
+                    var newLinesAdded = false;
 
                     if (analyzerFilesIndex == -1)
                     {
@@ -640,7 +661,13 @@ namespace Lost
 
                     foreach (var file in files)
                     {
-                        newLines.Add($"    <Analyzer Include=\"{file}\" />");
+                        string newLine = $"    <Analyzer Include=\"{file}\" />";
+
+                        if (lines.Contains(newLine) == false)
+                        {
+                            newLinesAdded = true;
+                            newLines.Add(newLine);
+                        }
                     }
 
                     if (analyzerFilesIndex == -1)
@@ -648,7 +675,10 @@ namespace Lost
                         newLines.Add("  </ItemGroup>");
                     }
 
-                    lines.InsertRange(analyzerFilesIndex != -1 ? analyzerFilesIndex + 1 : firstItemGroupIndex, newLines);
+                    if (newLinesAdded)
+                    {
+                        lines.InsertRange(analyzerFilesIndex != -1 ? analyzerFilesIndex + 1 : firstItemGroupIndex, newLines);
+                    }
                 }
 
                 int GetLineIndex(string startsWith, List<string> lines)

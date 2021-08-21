@@ -8,7 +8,11 @@
   "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
   "settings": {
     "documentationRules": {
-      "companyName": "Lost Signal LLC"
-    }
+      "companyName": "Lost Signal LLC",
+	  "copyrightText": "Copyright (c) {companyName}. All rights reserved."
+    },
+    "namingRules": {
+      "allowedHungarianPrefixes": [ "ui", "hd", "ok", "x", "y", "my", "id", "up", "vr", "pc", "xr", "ar", "cs", "ad" ]
+    },
   }
 }

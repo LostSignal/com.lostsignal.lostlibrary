@@ -83,7 +83,7 @@ namespace Lost.PlayFab
             this.VirtualCurrencyChanged?.Invoke();
         }
 
-        public void InternalSetVirtualCurrencyToInventory(string virtualCurrencyId, int neValue)
+        public void InternalSetVirtualCurrencyToInventory(string virtualCurrencyId, int newValue)
         {
             if (virtualCurrencyId == "RM" || virtualCurrencyId == "AD")
             {
@@ -96,7 +96,7 @@ namespace Lost.PlayFab
                 return;
             }
 
-            this.virtualCurrencies[virtualCurrencyId] = neValue;
+            this.virtualCurrencies[virtualCurrencyId] = newValue;
 
             this.VirtualCurrencyChanged?.Invoke();
         }

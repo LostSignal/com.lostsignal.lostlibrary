@@ -15,11 +15,11 @@ namespace Lost
 
     public sealed class LoggingManager : Manager<LoggingManager>
     {
-        private const string logEventName = "log_event";
-        private const string logTypeName = "log_type";
-        private const string conditionName = "condition";
-        private const string hashCodeName = "hash_code";
-        private const string callstackName = "callstack";
+        private const string LogEventName = "log_event";
+        private const string LogTypeName = "log_type";
+        private const string ConditionName = "condition";
+        private const string HashCodeName = "hash_code";
+        private const string CallstackName = "callstack";
 
         private List<ILoggingProvider> loggingProviders = new List<ILoggingProvider>();
         private HashSet<int> sentLogs = new HashSet<int>();
@@ -27,9 +27,9 @@ namespace Lost
 
         private Dictionary<string, object> eventArgsCache = new Dictionary<string, object>()
         {
-            { logTypeName, string.Empty },
-            { conditionName, string.Empty },
-            { hashCodeName, 0 },
+            { LogTypeName, string.Empty },
+            { ConditionName, string.Empty },
+            { HashCodeName, 0 },
         };
 
         private Dictionary<LogType, string> logTypeCache = new Dictionary<LogType, string>
@@ -81,14 +81,14 @@ namespace Lost
 
                         if (this.IsForwardingException(condition) == false)
                         {
-                            this.eventArgsCache[logTypeName] = this.logTypeCache[type];
-                            this.eventArgsCache[conditionName] = condition;
-                            this.eventArgsCache[hashCodeName] = stackTraceHashCode;
+                            this.eventArgsCache[LogTypeName] = this.logTypeCache[type];
+                            this.eventArgsCache[ConditionName] = condition;
+                            this.eventArgsCache[HashCodeName] = stackTraceHashCode;
 
                             // NOTE [bgish]: Currently can't do this, because it puts us over event size limits
-                            this.eventArgsCache[callstackName] = string.Empty; // stackTrace
+                            this.eventArgsCache[CallstackName] = string.Empty; // stackTrace
 
-                            Lost.Analytics.AnalyticsEvent.Custom(logEventName, this.eventArgsCache);
+                            Lost.Analytics.AnalyticsEvent.Custom(LogEventName, this.eventArgsCache);
                         }
                     }
                 }

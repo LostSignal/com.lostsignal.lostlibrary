@@ -6,6 +6,7 @@
     <Rule Id="SA1412" Action="Warning" />  <!-- The encoding of the file is not UTF-8 with byte order mark. -->
     <Rule Id="SA1600" Action="None" />     <!-- A C# code element is missing a documentation header. -->
     <Rule Id="SA1601" Action="None" />     <!-- A C# partial element is missing a documentation header. -->
+    <Rule Id="SA1602" Action="None" />     <!-- Enumeration items should be documented. -->
     <Rule Id="SA1609" Action="Warning" />  <!-- The Xml header documentation for a C# property does not contain a <value> tag. -->
   </Rules>
 </RuleSet>
