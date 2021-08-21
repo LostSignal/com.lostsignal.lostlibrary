@@ -222,11 +222,11 @@ namespace Lost
                     Name = "StyleCop",
                     Ruleset = EditorUtil.GetAssetByGuid<TextAsset>("6d22bf8a5b4217246a8bd27939b3a093"),
                     Config = EditorUtil.GetAssetByGuid<TextAsset>("447a0d2defa062a4cb1ab9f0a161d7f7"),
-                    DLLs = new List<DefaultAsset>
+                    DLLs = new List<TextAsset>
                     {
-                        EditorUtil.GetAssetByGuid<DefaultAsset>("34b2bcdbab6772c43803d97146553550"),
-                        EditorUtil.GetAssetByGuid<DefaultAsset>("fdf22cdd44a87ed4f9ae0c0d6e685ae6"),
-                        EditorUtil.GetAssetByGuid<DefaultAsset>("d86a7268d4b5874478f3bf9019de4dd3"),
+                        EditorUtil.GetAssetByGuid<TextAsset>("34b2bcdbab6772c43803d97146553550"),
+                        EditorUtil.GetAssetByGuid<TextAsset>("fdf22cdd44a87ed4f9ae0c0d6e685ae6"),
+                        EditorUtil.GetAssetByGuid<TextAsset>("d86a7268d4b5874478f3bf9019de4dd3"),
                     },
                     CSProjects = new List<string>
                     {
@@ -434,19 +434,24 @@ namespace Lost
         {
             foreach (var csProjFile in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.csproj"))
             {
-                foreach (var analyzer in this.analyzers)
+                if (this.analyzers == null || this.analyzers.Count == 0)
                 {
+                    continue;
+                }
+
+                for (int i = 0; i < this.analyzers.Count; i++)
+                {
+                    var analyzer = this.analyzers[i];
                     var fileName = Path.GetFileNameWithoutExtension(csProjFile);
 
                     if (analyzer.CSProjects.Contains(fileName))
                     {
-                        this.AddAnalyzerToCSProj(analyzer, csProjFile);
+                        this.AddAnalyzerToCSProj(analyzer, csProjFile, i);
                     }
                 }
             }
         }
 
-        
         [MenuItem("Tools/AddAnalyzersToCSProjects")]
         public static void RunAnalyzerCode()
         {
@@ -493,145 +498,183 @@ namespace Lost
             return null;
         }
 
-        private void AddAnalyzerToCSProj(Analyzer analyzer, string csharpFilePath)
+        private void AddAnalyzerToCSProj(Analyzer analyzer, string csprojFilePath, int analyzerIndex)
         {
-            ////  <PropertyGroup>
-            ////    <CodeAnalysisRuleSet>D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop.ruleset</CodeAnalysisRuleSet>
-            ////  </PropertyGroup>
-            ////  <ItemGroup>
-            ////    <AdditionalFiles Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\stylecop.json" />
-            ////  </ItemGroup>
-            ////  <ItemGroup>
-            ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\StyleCop.Analyzers.dll" />
-            ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\StyleCop.Analyzers.CodeFixes.dll" />
-            ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\en-GB\StyleCop.Analyzers.resources.dll" />
-            ////    <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
-            ////  </ItemGroup>
+            var additionalFiles = new List<string>();
+            var ruleSets = new List<string>();
+            var analyzers = new List<string>();
 
-            //// Debug.Log($"Add {analyzer.Name} to {csharpFilePath}");
-            //// 
-            //// var configPath =
-            //// Debug.Log( + " = " + );
-            //// 
-            //// Debug.Log(analyzer.Ruleset.name + " = " + Path.GetFullPath(AssetDatabase.GetAssetPath(analyzer.Ruleset)));
-            //// 
-            //// foreach (var dll in analyzer.DLLs)
-            //// {
-            ////     Debug.Log(dll.name + " = " + Path.GetFullPath(AssetDatabase.GetAssetPath(dll)));
-            //// }
-            //// 
-            //// string FullPath(UnityEngine.Object obj)
-            //// {
-            ////     return Path.GetFullPath(AssetDatabase.GetAssetPath(obj));
-            //// }
-
-            var lines = File.ReadAllLines(csharpFilePath).ToList();
-
-            AddRuleset(analyzer, lines);
-            AddConfig(analyzer, lines);
-            AddDLLs(analyzer, lines);
-
-            // TODO [bgish]: Write lines back out to disk
-
-            void AddRuleset(Analyzer analyzer, List<string> lines)
+            if (analyzer.Config != null)
             {
-                if (analyzer.Ruleset == null)
+                additionalFiles.Add(FullPath(analyzer.Config));
+            }
+
+            if (analyzer.Ruleset != null)
+            {
+                ruleSets.Add(FullPath(analyzer.Ruleset));
+            }
+
+            if (analyzer.DLLs != null)
+            {
+                for (int i = 0; i < analyzer.DLLs.Count; i++)
                 {
-                    return;
+                    analyzers.Add(CreateDLL(analyzer.DLLs[i]));
+                }
+            }
+
+            CSProjHelper.UpdateCSProjFile(csprojFilePath, additionalFiles, ruleSets, analyzers);
+
+            string CreateDLL(TextAsset dllAsset)
+            {
+                var sourceFilePath = FullPath(dllAsset);
+                var sourceFileBytes = File.ReadAllBytes(sourceFilePath);
+
+                string dllDirectory = $"./Library/Analyzers/{analyzerIndex}_{analyzer.Name}";
+
+                if (Directory.Exists(dllDirectory) == false)
+                {
+                    Directory.CreateDirectory(dllDirectory);
+                }
+                
+                string dllName = Path.GetFileNameWithoutExtension(sourceFilePath);
+                string fullDllPath = Path.GetFullPath(Path.Combine(dllDirectory, dllName));
+
+                if (File.Exists(fullDllPath))
+                {
+                    File.Delete(fullDllPath);
                 }
 
-                // ---- Adding Ruleset ----
-                int codeAnalysisRuleSetIndex = GetLineIndex("<CodeAnalysisRuleSet>", lines);
-                if (codeAnalysisRuleSetIndex != -1)
+                File.WriteAllBytes(fullDllPath, sourceFileBytes);
+
+                return fullDllPath;
+            }
+
+            string FullPath(UnityEngine.Object obj) => Path.GetFullPath(AssetDatabase.GetAssetPath(obj));
+        }
+
+        public static class CSProjHelper
+        {
+            public static void UpdateCSProjFile(string csprojFilePath, List<string> additionalFiles, List<string> rulesetFiles, List<string> analyzerDlls)
+            {
+                var lines = File.ReadAllLines(csprojFilePath).ToList();
+
+                AddRulesets(rulesetFiles, lines);
+                AddAnalyzerDLLs(analyzerDlls, lines);
+                AddAdditionalFiles(additionalFiles, lines);
+
+                File.WriteAllText(csprojFilePath, GetFileContents(lines));
+
+                void AddRulesets(List<string> files, List<string> lines)
                 {
-                    // Add one line just after this index
-                    //    <CodeAnalysisRuleSet>D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop.ruleset</CodeAnalysisRuleSet>
-                }
-                else
-                {
+                    if (files == null || files.Count == 0)
+                    {
+                        return;
+                    }
+
+                    int rulesetIndex = GetLineIndex("<CodeAnalysisRuleSet>", lines);
                     int firstItemGroupIndex = GetLineIndex("<ItemGroup>", lines);
+                    var newLines = new List<string>();
 
-                    //// Insert the following just before this index
-                    ////  <PropertyGroup>
-                    ////    <CodeAnalysisRuleSet>D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop.ruleset</CodeAnalysisRuleSet>
-                    ////  </PropertyGroup>
-                }
-            }
+                    if (rulesetIndex == -1)
+                    {
+                        newLines.Add("  <PropertyGroup>");
+                    }
 
-            void AddConfig(Analyzer analyzer, List<string> lines)
-            {
-                if (analyzer.Config == null)
-                {
-                    return;
+                    foreach (var file in files)
+                    {
+                        newLines.Add($"   <CodeAnalysisRuleSet>{file}</CodeAnalysisRuleSet>");
+                    }
+
+                    if (rulesetIndex == -1)
+                    {
+                        newLines.Add("  </PropertyGroup>");
+                    }
+
+                    lines.InsertRange(rulesetIndex != -1 ? rulesetIndex + 1 : firstItemGroupIndex, newLines);
                 }
 
-                // ---- Adding Additional Files ----
-                int additionalFilesIndex = GetLineIndex("<AdditionalFiles>", lines);
-                if (additionalFilesIndex != -1)
+                void AddAdditionalFiles(List<string> files, List<string> lines)
                 {
-                    //// Add one line just after this index
-                    ////    <AdditionalFiles Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\stylecop.json" />
-                }
-                else
-                {
+                    if (files == null || files.Count == 0)
+                    {
+                        return;
+                    }
+
+                    int additionalFilesIndex = GetLineIndex("<AdditionalFiles ", lines);
                     int firstItemGroupIndex = GetLineIndex("<ItemGroup>", lines);
+                    var newLines = new List<string>();
 
-                    //// Insert the following just before this index
-                    ////  <ItemGroup>
-                    ////    <AdditionalFiles Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\stylecop.json" />
-                    ////  </ItemGroup>
-                }
-            }
-
-            void AddDLLs(Analyzer analyzer, List<string> lines)
-            {
-                if (analyzer.DLLs == null || analyzer.DLLs.Count == 0)
-                {
-                    return;
-                }
-
-                // TODO [bgish]: Assume dlls are text files that need to be writting to the Library folder, and then reference that path instead
-                //               Having these DLL inside the unity project is really messing up the console.
-
-                int analyzersIndex = GetLineIndex("<Analyzer ", lines);
-
-                foreach (var dll in analyzer.DLLs)
-                {
-                    // ---- Adding Analyzers ----
-                    if (analyzersIndex != -1)
+                    if (additionalFilesIndex == -1)
                     {
-                        //// Add following lines just after this index
-                        ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\StyleCop.Analyzers.dll" />
-                        ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\StyleCop.Analyzers.CodeFixes.dll" />
-                        ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\en-GB\StyleCop.Analyzers.resources.dll" />
-                        ////    <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
+                        newLines.Add("  <ItemGroup>");
                     }
-                    else
+
+                    foreach (var file in files)
                     {
-                        int firstItemGroupIndex = GetLineIndex("<ItemGroup>", lines);
-
-                        //// Insert the following just before this index
-                        ////  <ItemGroup>
-                        ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\StyleCop.Analyzers.dll" />
-                        ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\StyleCop.Analyzers.CodeFixes.dll" />
-                        ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\en-GB\StyleCop.Analyzers.resources.dll" />
-                        ////    <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
-                        ////  </ItemGroup>            }
+                        newLines.Add($"    <AdditionalFiles Include=\"{file}\" />");
                     }
-                }
-            }
 
-            int GetLineIndex(string startsWith, List<string> lines)
-            {
-                for (int i = 0; i < lines.Count; i++)
+                    if (additionalFilesIndex == -1)
+                    {
+                        newLines.Add("  </ItemGroup>");
+                    }
+
+                    lines.InsertRange(additionalFilesIndex != -1 ? additionalFilesIndex + 1 : firstItemGroupIndex, newLines);
+                }
+
+                void AddAnalyzerDLLs(List<string> files, List<string> lines)
                 {
-                    if (lines[i] != null && lines[i].Trim().StartsWith(startsWith))
+                    if (files == null || files.Count == 0)
                     {
-                        return i;
+                        return;
                     }
+
+                    int analyzerFilesIndex = GetLineIndex("<Analyzer ", lines);
+                    int firstItemGroupIndex = GetLineIndex("<ItemGroup>", lines);
+                    var newLines = new List<string>();
+
+                    if (analyzerFilesIndex == -1)
+                    {
+                        newLines.Add("  <ItemGroup>");
+                    }
+
+                    foreach (var file in files)
+                    {
+                        newLines.Add($"    <Analyzer Include=\"{file}\" />");
+                    }
+
+                    if (analyzerFilesIndex == -1)
+                    {
+                        newLines.Add("  </ItemGroup>");
+                    }
+
+                    lines.InsertRange(analyzerFilesIndex != -1 ? analyzerFilesIndex + 1 : firstItemGroupIndex, newLines);
                 }
 
-                return -1;
+                int GetLineIndex(string startsWith, List<string> lines)
+                {
+                    for (int i = 0; i < lines.Count; i++)
+                    {
+                        if (lines[i] != null && lines[i].Trim().StartsWith(startsWith))
+                        {
+                            return i;
+                        }
+                    }
+
+                    return -1;
+                }
+
+                string GetFileContents(List<string> lines)
+                {
+                    StringBuilder result = new StringBuilder();
+
+                    foreach (var line in lines)
+                    {
+                        result.AppendLine(line);
+                    }
+
+                    return result.ToString();
+                }
             }
         }
 
@@ -641,7 +684,7 @@ namespace Lost
             [SerializeField] private string name;
             [SerializeField] private TextAsset ruleset;
             [SerializeField] private TextAsset config;
-            [SerializeField] private List<DefaultAsset> dlls;
+            [SerializeField] private List<TextAsset> dlls;
             [SerializeField] private List<string> csProjects;
 
             public string Name
@@ -650,7 +693,7 @@ namespace Lost
                 set => this.name = value;
             }
 
-            public List<DefaultAsset> DLLs
+            public List<TextAsset> DLLs
             {
                 get => this.dlls;
                 set => this.dlls = value;
