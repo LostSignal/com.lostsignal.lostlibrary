@@ -9,6 +9,7 @@ namespace Lost
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using UnityEditor;
     using UnityEngine;
@@ -220,6 +221,7 @@ namespace Lost
                 {
                     Name = "StyleCop",
                     Ruleset = EditorUtil.GetAssetByGuid<TextAsset>("6d22bf8a5b4217246a8bd27939b3a093"),
+                    Config = EditorUtil.GetAssetByGuid<TextAsset>("447a0d2defa062a4cb1ab9f0a161d7f7"),
                     DLLs = new List<DefaultAsset>
                     {
                         EditorUtil.GetAssetByGuid<DefaultAsset>("34b2bcdbab6772c43803d97146553550"),
@@ -228,12 +230,15 @@ namespace Lost
                     },
                     CSProjects = new List<string>
                     {
-                        "Assembly-CSharp",
-                        "Assembly-CSharp.Player",
-                        "Assembly-CSharp-Editor",
+                        // "Assembly-CSharp",
+                        // "Assembly-CSharp.Player",
+                        // "Assembly-CSharp-Editor",
                         "LostLibrary",
                         "LostLibrary.Editor",
+                        "LostLibrary.LBE",
+                        "LostLibrary.LBE.Player",
                         "LostLibrary.Player",
+                        "LostLibrary.Test",
                     },
                 }
             };
@@ -435,10 +440,17 @@ namespace Lost
 
                     if (analyzer.CSProjects.Contains(fileName))
                     {
-                        // Debug.Log($"Add {analyzer.Name} to {fileName}");
+                        this.AddAnalyzerToCSProj(analyzer, csProjFile);
                     }
                 }
             }
+        }
+
+        
+        [MenuItem("Tools/AddAnalyzersToCSProjects")]
+        public static void RunAnalyzerCode()
+        {
+            LostLibrarySettings.instance.AddAnalyzersToCSProjects();
         }
 
         private TextAsset GetTemplateTextAsset(string assetPath)
@@ -481,11 +493,154 @@ namespace Lost
             return null;
         }
 
+        private void AddAnalyzerToCSProj(Analyzer analyzer, string csharpFilePath)
+        {
+            ////  <PropertyGroup>
+            ////    <CodeAnalysisRuleSet>D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop.ruleset</CodeAnalysisRuleSet>
+            ////  </PropertyGroup>
+            ////  <ItemGroup>
+            ////    <AdditionalFiles Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\stylecop.json" />
+            ////  </ItemGroup>
+            ////  <ItemGroup>
+            ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\StyleCop.Analyzers.dll" />
+            ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\StyleCop.Analyzers.CodeFixes.dll" />
+            ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\en-GB\StyleCop.Analyzers.resources.dll" />
+            ////    <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
+            ////  </ItemGroup>
+
+            //// Debug.Log($"Add {analyzer.Name} to {csharpFilePath}");
+            //// 
+            //// var configPath =
+            //// Debug.Log( + " = " + );
+            //// 
+            //// Debug.Log(analyzer.Ruleset.name + " = " + Path.GetFullPath(AssetDatabase.GetAssetPath(analyzer.Ruleset)));
+            //// 
+            //// foreach (var dll in analyzer.DLLs)
+            //// {
+            ////     Debug.Log(dll.name + " = " + Path.GetFullPath(AssetDatabase.GetAssetPath(dll)));
+            //// }
+            //// 
+            //// string FullPath(UnityEngine.Object obj)
+            //// {
+            ////     return Path.GetFullPath(AssetDatabase.GetAssetPath(obj));
+            //// }
+
+            var lines = File.ReadAllLines(csharpFilePath).ToList();
+
+            AddRuleset(analyzer, lines);
+            AddConfig(analyzer, lines);
+            AddDLLs(analyzer, lines);
+
+            // TODO [bgish]: Write lines back out to disk
+
+            void AddRuleset(Analyzer analyzer, List<string> lines)
+            {
+                if (analyzer.Ruleset == null)
+                {
+                    return;
+                }
+
+                // ---- Adding Ruleset ----
+                int codeAnalysisRuleSetIndex = GetLineIndex("<CodeAnalysisRuleSet>", lines);
+                if (codeAnalysisRuleSetIndex != -1)
+                {
+                    // Add one line just after this index
+                    //    <CodeAnalysisRuleSet>D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop.ruleset</CodeAnalysisRuleSet>
+                }
+                else
+                {
+                    int firstItemGroupIndex = GetLineIndex("<ItemGroup>", lines);
+
+                    //// Insert the following just before this index
+                    ////  <PropertyGroup>
+                    ////    <CodeAnalysisRuleSet>D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop.ruleset</CodeAnalysisRuleSet>
+                    ////  </PropertyGroup>
+                }
+            }
+
+            void AddConfig(Analyzer analyzer, List<string> lines)
+            {
+                if (analyzer.Config == null)
+                {
+                    return;
+                }
+
+                // ---- Adding Additional Files ----
+                int additionalFilesIndex = GetLineIndex("<AdditionalFiles>", lines);
+                if (additionalFilesIndex != -1)
+                {
+                    //// Add one line just after this index
+                    ////    <AdditionalFiles Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\stylecop.json" />
+                }
+                else
+                {
+                    int firstItemGroupIndex = GetLineIndex("<ItemGroup>", lines);
+
+                    //// Insert the following just before this index
+                    ////  <ItemGroup>
+                    ////    <AdditionalFiles Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\stylecop.json" />
+                    ////  </ItemGroup>
+                }
+            }
+
+            void AddDLLs(Analyzer analyzer, List<string> lines)
+            {
+                if (analyzer.DLLs == null || analyzer.DLLs.Count == 0)
+                {
+                    return;
+                }
+
+                // TODO [bgish]: Assume dlls are text files that need to be writting to the Library folder, and then reference that path instead
+                //               Having these DLL inside the unity project is really messing up the console.
+
+                int analyzersIndex = GetLineIndex("<Analyzer ", lines);
+
+                foreach (var dll in analyzer.DLLs)
+                {
+                    // ---- Adding Analyzers ----
+                    if (analyzersIndex != -1)
+                    {
+                        //// Add following lines just after this index
+                        ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\StyleCop.Analyzers.dll" />
+                        ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\StyleCop.Analyzers.CodeFixes.dll" />
+                        ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\en-GB\StyleCop.Analyzers.resources.dll" />
+                        ////    <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
+                    }
+                    else
+                    {
+                        int firstItemGroupIndex = GetLineIndex("<ItemGroup>", lines);
+
+                        //// Insert the following just before this index
+                        ////  <ItemGroup>
+                        ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\StyleCop.Analyzers.dll" />
+                        ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\StyleCop.Analyzers.CodeFixes.dll" />
+                        ////    <Analyzer Include="D:\GitHub\com.lostsignal.lostlibrary\Content\Analyzers\StyleCop\StyleCop 1.1.118\en-GB\StyleCop.Analyzers.resources.dll" />
+                        ////    <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
+                        ////  </ItemGroup>            }
+                    }
+                }
+            }
+
+            int GetLineIndex(string startsWith, List<string> lines)
+            {
+                for (int i = 0; i < lines.Count; i++)
+                {
+                    if (lines[i] != null && lines[i].Trim().StartsWith(startsWith))
+                    {
+                        return i;
+                    }
+                }
+
+                return -1;
+            }
+        }
+
         [Serializable]
         public class Analyzer
         {
             [SerializeField] private string name;
             [SerializeField] private TextAsset ruleset;
+            [SerializeField] private TextAsset config;
             [SerializeField] private List<DefaultAsset> dlls;
             [SerializeField] private List<string> csProjects;
 
@@ -505,6 +660,12 @@ namespace Lost
             {
                 get => this.ruleset;
                 set => this.ruleset = value;
+            }
+
+            public TextAsset Config
+            {
+                get => this.config;
+                set => this.config = value;
             }
 
             public List<string> CSProjects
