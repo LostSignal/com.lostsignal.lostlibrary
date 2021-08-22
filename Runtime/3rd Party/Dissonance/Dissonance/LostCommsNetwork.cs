@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="LostCommsNetwork.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -20,8 +18,8 @@ namespace Lost.DissonanceIntegration
             LostServer, // A class which implements BaseServer
             LostClient, // A class which implements BaseClient
             LostConn,   // A struct which contains a HLAPI NetworkConnection
-            Unit,       // Nothing
-            Unit>       // Nothing
+            Unit,
+            Unit>
     {
         private bool hasClientStarted;
 

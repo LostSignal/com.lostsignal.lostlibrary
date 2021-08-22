@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="GPSManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -224,7 +222,7 @@ namespace Lost
                     {
                         break;
                     }
-                    else if (appMustUseGps == false)
+                    else if (this.appMustUseGps == false)
                     {
                         Debug.LogError("Unable to start GPS Manage.  The user doesn't have permissions.");
                         this.StopGpsService();

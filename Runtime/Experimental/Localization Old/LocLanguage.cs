@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="LocLanguage.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -67,7 +65,7 @@ namespace Lost
             {
                 Id = id,
                 Name = name,
-                ShortName = shortName
+                ShortName = shortName,
             };
 
             AllLanguages.Add(newLan);

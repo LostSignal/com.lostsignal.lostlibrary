@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="GuidReference.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -10,8 +8,8 @@
 
 namespace Lost
 {
-    using UnityEngine;
     using System;
+    using UnityEngine;
 
 #if UNITY_EDITOR
     using UnityEditor;
@@ -44,34 +42,10 @@ namespace Lost
         private SceneAsset cachedScene;
 #endif
 
-        // Set up events to let users register to cleanup their own cached references on destroy or to cache off values
-        public event Action<GameObject> OnGuidAdded = delegate(GameObject go) {};
-        public event Action OnGuidRemoved = delegate() {};
-
         // create concrete delegates to avoid boxing.
         // When called 10,000 times, boxing would allocate ~1MB of GC Memory
         private Action<GameObject> addDelegate;
         private Action removeDelegate;
-
-        // optimized accessor, and ideally the only code you ever call on this class
-        public GameObject gameObject
-        {
-            get
-            {
-                if (isCacheSet)
-                {
-                    return cachedReference;
-                }
-
-                cachedReference = GuidManager.ResolveGuid(guid, addDelegate, removeDelegate);
-                isCacheSet = true;
-                return cachedReference;
-            }
-
-            private set
-            {
-            }
-        }
 
         public GuidReference()
         {
@@ -79,40 +53,67 @@ namespace Lost
 
         public GuidReference(GuidComponent target)
         {
-            guid = target.GetGuid();
+            this.guid = target.GetGuid();
+        }
+
+        // Set up events to let users register to cleanup their own cached references on destroy or to cache off values
+        public event Action<GameObject> OnGuidAdded = (GameObject go) => { };
+
+        public event Action OnGuidRemoved = () => { };
+
+        // optimized accessor, and ideally the only code you ever call on this class
+        public GameObject GameObject
+        {
+            get
+            {
+                if (this.isCacheSet)
+                {
+                    return this.cachedReference;
+                }
+
+                this.cachedReference = GuidManager.ResolveGuid(this.guid, this.addDelegate, this.removeDelegate);
+                this.isCacheSet = true;
+                return this.cachedReference;
+            }
+
+            private set
+            {
+            }
         }
 
         // Convert system guid to a format unity likes to work with
         public void OnBeforeSerialize()
         {
-            serializedGuid = guid.ToByteArray();
+            this.serializedGuid = this.guid.ToByteArray();
         }
 
         // Convert from byte array to system guid and reset state
         public void OnAfterDeserialize()
         {
-            cachedReference = null;
-            isCacheSet = false;
-            if (serializedGuid == null || serializedGuid.Length != 16)
+            this.cachedReference = null;
+            this.isCacheSet = false;
+
+            if (this.serializedGuid == null || this.serializedGuid.Length != 16)
             {
-                serializedGuid = new byte[16];
+                this.serializedGuid = new byte[16];
             }
-            guid = new System.Guid(serializedGuid);
-            addDelegate = GuidAdded;
-            removeDelegate = GuidRemoved;
+
+            this.guid = new System.Guid(this.serializedGuid);
+            this.addDelegate = this.GuidAdded;
+            this.removeDelegate = this.GuidRemoved;
         }
 
         private void GuidAdded(GameObject go)
         {
-            cachedReference = go;
-            OnGuidAdded(go);
+            this.cachedReference = go;
+            this.OnGuidAdded(go);
         }
 
         private void GuidRemoved()
         {
-            cachedReference = null;
-            isCacheSet = false;
-            OnGuidRemoved();
+            this.cachedReference = null;
+            this.isCacheSet = false;
+            this.OnGuidRemoved();
         }
     }
 }

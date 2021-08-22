@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="GPSDirectionManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -54,7 +52,7 @@ namespace Lost
                 this.previousLatLong = gps;
                 this.currentLatLong = gps;
             }
-            else if (currentLatLong.Latitude != gps.Latitude || currentLatLong.Longitude != gps.Longitude)
+            else if (this.currentLatLong.Latitude != gps.Latitude || this.currentLatLong.Longitude != gps.Longitude)
             {
                 this.previousLatLong = this.currentLatLong;
                 this.currentLatLong = gps;

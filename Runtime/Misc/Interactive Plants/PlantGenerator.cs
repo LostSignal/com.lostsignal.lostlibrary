@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="PlantGenerator.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -52,7 +50,7 @@ namespace Lost.PlantGenerator
         private bool destroyChildren = false;
 
         /// <summary>
-        /// The plant definition for how it should be generated.
+        /// Gets the plant definition for how it should be generated.
         /// </summary>
         public PlantDefinition Definition
         {
@@ -201,7 +199,7 @@ namespace Lost.PlantGenerator
                     float height = RandomUtil.FloatRangeExclusive(rand, -groupParameters.VerticalOffset, groupParameters.VerticalOffset);
 
                     // setting the new plants transform values
-                    newBranch.transform.parent = transform;
+                    newBranch.transform.parent = this.transform;
                     newBranch.transform.localPosition = new Vector3(0, height, 0);
                     newBranch.transform.localEulerAngles = new Vector3(0, baseRotation, 0);
                     newBranch.transform.localScale = Vector3.one;

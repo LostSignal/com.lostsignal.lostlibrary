@@ -1,4 +1,8 @@
-﻿#pragma warning disable
+﻿//-----------------------------------------------------------------------
+// <copyright file="Vector2d.cs" company="Lost Signal LLC">
+//     Copyright (c) Lost Signal LLC. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 #pragma warning disable
 

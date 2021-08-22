@@ -1,8 +1,6 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
-// <copyright file="DissonancePlayerTracker.cs" company="Giant Cranium">
-//     Copyright (c) Giant Cranium. All rights reserved.
+﻿//-----------------------------------------------------------------------
+// <copyright file="DissonancePlayerTracker.cs" company="Lost Signal LLC">
+//     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -13,9 +11,10 @@ namespace Lost.DissonanceIntegration
     using Lost.Networking;
     using UnityEngine;
 
-    public class DissonancePlayerTracker : MonoBehaviour
 #if USING_DISSONANCE
-        , Dissonance.IDissonancePlayer
+    public class DissonancePlayerTracker : MonoBehaviour, Dissonance.IDissonancePlayer
+#else
+    public class DissonancePlayerTracker : MonoBehaviour
 #endif
     {
 #pragma warning disable 0649

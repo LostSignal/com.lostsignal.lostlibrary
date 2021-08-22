@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="DissonanceServerSubsystem.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -54,17 +52,17 @@ namespace Lost.DissonanceIntegration
             return Task.Delay(0);
         }
 
-        private void ServerUpdated()
-        {
-            this.dissonanceServer.Update();
-        }
-
         public void ServerReceivedMessage(UserInfo userInfo, Message message, bool reliable)
         {
             if (message.GetId() == DissonanceMessage.MessageId)
             {
                 this.dissonanceServer.AddMessage((DissonanceMessage)message);
             }
+        }
+
+        private void ServerUpdated()
+        {
+            this.dissonanceServer.Update();
         }
     }
 }

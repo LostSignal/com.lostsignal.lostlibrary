@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="AudioManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -115,7 +113,7 @@ namespace Lost
             {
                 var poolItem = GameObject.Instantiate(this.audioSourcePrefab, this.audioPool.transform);
                 poolItem.enabled = false;
-                poolItem.name = new BetterStringBuilder().Append("Audio Source ").Append(this.audioSourcePoolItems.Count).ToString();
+                poolItem.name = BetterStringBuilder.New().Append("Audio Source (").Append(this.audioSourcePoolItems.Count).Append(")").ToString();
                 this.audioSourcePoolItems.Add(poolItem);
             }
 

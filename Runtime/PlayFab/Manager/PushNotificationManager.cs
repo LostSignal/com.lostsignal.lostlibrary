@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="PushNotificationManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -19,11 +17,21 @@ namespace Lost.PlayFab
     [Serializable]
     public class PushNotificationManager
     {
-        // TODO [bgish]: Have an option to register at startup, or from a call
-        //               that way we can prompt the user "We'd like to send you
-        //               xyz, is that cool? If yes, then register (for iOS).
-        //               If it's android just register, maybe have options for
-        //               iOS and android
+        //// TODO [bgish]: Have an option to register at startup, or from a call
+        ////               that way we can prompt the user "We'd like to send you
+        ////               xyz, is that cool? If yes, then register (for iOS).
+        ////               If it's android just register, maybe have options for
+        ////               iOS and android
+
+        private const string HasRegisteredUserForPushNotificationsKey = "HasRegisteredUserForPushNotifications";
+        private const float RetryWaitTime = 1.0f;
+        private const int RetryCountMax = 10;
+
+        private Queue<PushNotification> pushNotifications = new Queue<PushNotification>();
+
+#if (UNITY_ANDROID && USING_ANDROID_FIREBASE_MESSAGING) || UNITY_IOS
+        private string deviceToken = null;
+#endif
 
         private PlayFabManager playfabManager;
 
@@ -37,19 +45,9 @@ namespace Lost.PlayFab
             // TODO [bgish]: Implement
         }
 
-        private const string HasRegisteredUserForPushNotificationsKey = "HasRegisteredUserForPushNotifications";
-        private const float RetryWaitTime = 1.0f;
-        private const int RetryCountMax = 10;
-
 #pragma warning disable
         public event OnReceivePushNotificationDelegate OnReceivePushNotification;
 #pragma warning restore
-
-        private Queue<PushNotification> pushNotifications = new Queue<PushNotification>();
-
-#if (UNITY_ANDROID && USING_ANDROID_FIREBASE_MESSAGING) || UNITY_IOS
-        private string deviceToken = null;
-#endif
 
         public bool HasPushNotifications
         {

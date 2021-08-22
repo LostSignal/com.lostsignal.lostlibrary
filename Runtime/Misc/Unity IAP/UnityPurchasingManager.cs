@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="UnityPurchasingManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -22,12 +20,25 @@ namespace Lost.IAP
     using UnityEngine.Purchasing;
 #endif
 
-    public sealed class UnityPurchasingManager : Manager<UnityPurchasingManager>
 #if PURCHASING_ENABLED
-        , IStoreListener
+    public sealed class UnityPurchasingManager : Manager<UnityPurchasingManager>, IStoreListener
+#else
+    public sealed class UnityPurchasingManager : Manager<UnityPurchasingManager>
 #endif
     {
 #if PURCHASING_ENABLED
+
+        // initialization
+        private IStoreController controller;
+        private ConfigurationBuilder builder;
+        private InitializationState initializationState;
+        private InitializationFailureReason initializationFailureReason;
+
+        // purchasing
+        private PurchasingState purchasingState;
+        private PurchaseFailureReason purchaseFailureReason;
+        private PurchaseEventArgs purchaseEventArgs;
+
         private enum InitializationState
         {
             Initializing,
@@ -43,20 +54,9 @@ namespace Lost.IAP
             PurchasingSucceeded,
         }
 
-        // initialization
-        private IStoreController controller;
-        private ConfigurationBuilder builder;
-        private InitializationState initializationState;
-        private InitializationFailureReason initializationFailureReason;
-
-        // purchasing
-        private PurchasingState purchasingState;
-        private PurchaseFailureReason purchaseFailureReason;
-        private PurchaseEventArgs purchaseEventArgs;
-
         public bool IsIAPInitialized
         {
-            get { return initializationState == InitializationState.InitializedSucceeded; }
+            get { return this.initializationState == InitializationState.InitializedSucceeded; }
         }
 #endif
 
@@ -134,7 +134,7 @@ namespace Lost.IAP
                 }
                 else
                 {
-                    throw new PurchasingInitializationException(initializationFailureReason);
+                    throw new PurchasingInitializationException(this.initializationFailureReason);
                 }
             }
         }
@@ -142,6 +142,32 @@ namespace Lost.IAP
         public UnityTask<PurchaseEventArgs> PurchaseProduct(string itemId)
         {
             return UnityTask<PurchaseEventArgs>.Run(this.PurchaseProductCoroutine(itemId));
+        }
+
+        void IStoreListener.OnInitialized(IStoreController controller, IExtensionProvider extensions)
+        {
+            this.initializationState = InitializationState.InitializedSucceeded;
+            this.controller = controller;
+        }
+
+        void IStoreListener.OnInitializeFailed(InitializationFailureReason error)
+        {
+            this.initializationState = InitializationState.InitializeFailed;
+            this.initializationFailureReason = error;
+        }
+
+        PurchaseProcessingResult IStoreListener.ProcessPurchase(PurchaseEventArgs e)
+        {
+            this.purchasingState = PurchasingState.PurchasingSucceeded;
+            this.purchaseEventArgs = e;
+
+            return PurchaseProcessingResult.Complete;
+        }
+
+        void IStoreListener.OnPurchaseFailed(Product i, PurchaseFailureReason p)
+        {
+            this.purchasingState = PurchasingState.PurchasingFailed;
+            this.purchaseFailureReason = p;
         }
 
         private ConfigurationBuilder GetConfigurationBuilder(System.Action<AppStore, ConfigurationBuilder> configurationBuilder)
@@ -161,18 +187,6 @@ namespace Lost.IAP
             }
 
             return this.builder;
-        }
-
-        void IStoreListener.OnInitialized(IStoreController controller, IExtensionProvider extensions)
-        {
-            this.initializationState = InitializationState.InitializedSucceeded;
-            this.controller = controller;
-        }
-
-        void IStoreListener.OnInitializeFailed(InitializationFailureReason error)
-        {
-            this.initializationState = InitializationState.InitializeFailed;
-            this.initializationFailureReason = error;
         }
 
         private IEnumerator<PurchaseEventArgs> PurchaseProductCoroutine(string itemId)
@@ -205,20 +219,6 @@ namespace Lost.IAP
             {
                 throw new PurchasingException(this.purchaseFailureReason);
             }
-        }
-
-        PurchaseProcessingResult IStoreListener.ProcessPurchase(PurchaseEventArgs e)
-        {
-            this.purchasingState = PurchasingState.PurchasingSucceeded;
-            this.purchaseEventArgs = e;
-
-            return PurchaseProcessingResult.Complete;
-        }
-
-        void IStoreListener.OnPurchaseFailed(Product i, PurchaseFailureReason p)
-        {
-            this.purchasingState = PurchasingState.PurchasingFailed;
-            this.purchaseFailureReason = p;
         }
 
 #endif

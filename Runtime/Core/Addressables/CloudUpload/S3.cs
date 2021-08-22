@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="S3.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -26,7 +24,7 @@ namespace Lost.Addressables
 
         public static void UploadFile(Config config, string key, byte[] data, bool useUnityWebRequest)
         {
-            string today = String.Format("{0:ddd,' 'dd' 'MMM' 'yyyy' 'HH':'mm':'ss' 'zz00}", DateTime.Now);
+            string today = string.Format("{0:ddd,' 'dd' 'MMM' 'yyyy' 'HH':'mm':'ss' 'zz00}", DateTime.Now);
 
             StringBuilder stringToSignBuilder = new StringBuilder();
             stringToSignBuilder.Append("PUT");
@@ -104,7 +102,7 @@ namespace Lost.Addressables
                 long startTick = DateTime.UtcNow.Ticks;
                 while (!s.isDone)
                 {
-                    if (DateTime.UtcNow.Ticks > startTick + 10L * 10000000L)
+                    if (DateTime.UtcNow.Ticks > startTick + (10L * 10000000L))
                     {
                         UnityEngine.Debug.LogWarning("Timeout");
                         break;
@@ -127,7 +125,9 @@ namespace Lost.Addressables
         public class Config
         {
             public string BucketName { get; set; }
+
             public string AccessKeyId { get; set; }
+
             public string SecretKeyId { get; set; }
         }
     }

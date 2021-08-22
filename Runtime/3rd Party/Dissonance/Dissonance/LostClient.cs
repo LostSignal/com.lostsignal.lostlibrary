@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="LostClient.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -18,8 +16,6 @@ namespace Lost.DissonanceIntegration
 
     public class LostClient : BaseClient<LostServer, LostClient, LostConn>
     {
-        public static LostClient Current { get; private set; }
-
         private ConcurrentList<DissonanceMessage> messages = new ConcurrentList<DissonanceMessage>(50);
 
         // Temp Data
@@ -31,6 +27,8 @@ namespace Lost.DissonanceIntegration
         {
         }
 
+        public static LostClient Current { get; private set; }
+
         public void AddMessage(DissonanceMessage message)
         {
             this.messages.Add(message.Copy());
@@ -40,7 +38,7 @@ namespace Lost.DissonanceIntegration
         {
             Current = this;
 
-            base.Connected();
+            this.Connected();
         }
 
         public override void Disconnect()

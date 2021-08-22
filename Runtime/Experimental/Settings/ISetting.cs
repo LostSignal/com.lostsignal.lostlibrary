@@ -1,7 +1,5 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
-// <copyright file="Setting.cs" company="Lost Signal LLC">
+﻿//-----------------------------------------------------------------------
+// <copyright file="ISetting.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -13,8 +11,9 @@ namespace Lost
     public interface ISetting<T>
     {
         T Value { get; set; }
-        //TODO later add OnChanged event (whenever the value changes)
-        //TODO later add OnUpdated event (whenever a new value is committed/saved)
+
+        //// TODO [bgish]: Later add OnChanged event (whenever the value changes)
+        //// TODO [bgish]: Later add OnUpdated event (whenever a new value is committed/saved)
     }
 
     public interface IFloatSetting : ISetting<float>

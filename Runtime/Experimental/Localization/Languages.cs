@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="Languages.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -16,11 +14,11 @@ namespace Lost.Localization
 
     public class Languages
     {
-        private static ReadOnlyCollection<Language> languages;
-        private static ReadOnlyCollection<string> languageNames;
-
         public static readonly Language English = new Language("English", "English", "en", SystemLanguage.English, ",", ".", "Yes", "No");
         public static readonly Language Vietnamese = new Language("Vietnamese", "Tiếng Việt", "vi", SystemLanguage.Vietnamese, ".", ",", "Có", "Không");
+
+        private static ReadOnlyCollection<Language> languages;
+        private static ReadOnlyCollection<string> languageNames;
 
         public static ReadOnlyCollection<Language> AllLanguages
         {

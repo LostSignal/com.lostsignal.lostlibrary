@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="PlayAudioBlockOnButtonClick.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -13,7 +11,7 @@ namespace Lost
     using UnityEngine;
     using UnityEngine.UI;
 
-    [RequireComponent(typeof(UnityEngine.UI.Button))]
+    [RequireComponent(typeof(Button))]
     public class PlayAudioBlockOnButtonClick : MonoBehaviour
     {
 #pragma warning disable 0649
@@ -26,7 +24,7 @@ namespace Lost
 
         private void OnValidate()
         {
-            this.AssertGetComponent<Button>(ref this.button);
+            this.AssertGetComponent(ref this.button);
         }
 
         private void Awake()

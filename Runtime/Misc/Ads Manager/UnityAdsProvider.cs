@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="UnityAdsProvider.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -121,17 +119,10 @@ namespace Lost
                                 break;
                         }
                     }
-                })
+                }),
             };
 
             UnityEngine.Advertisements.Advertisement.Show(placementId, options);
-        }
-
-        private bool IsPlacementIdAdReady(string placementId)
-        {
-            return UnityEngine.Advertisements.Advertisement.isSupported &&
-                UnityEngine.Advertisements.Advertisement.isInitialized &&
-                UnityEngine.Advertisements.Advertisement.IsReady(placementId);
         }
 
         public void OnUnityAdsReady(string placementId)
@@ -152,6 +143,13 @@ namespace Lost
         public void OnUnityAdsDidFinish(string placementId, ShowResult showResult)
         {
             throw new System.NotImplementedException();
+        }
+
+        private bool IsPlacementIdAdReady(string placementId)
+        {
+            return UnityEngine.Advertisements.Advertisement.isSupported &&
+                UnityEngine.Advertisements.Advertisement.isInitialized &&
+                UnityEngine.Advertisements.Advertisement.IsReady(placementId);
         }
 
 #else

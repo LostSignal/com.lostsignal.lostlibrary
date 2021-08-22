@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="LostMessages.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -39,10 +37,11 @@ namespace Lost
 
         public static UnityTask<YesNoResult> GpsIsRequiredRetryOrQuitApp()
         {
-            return MessageBox.Instance.ShowYesNo(
-                "GPS Required",
-                "GPS is required to run this app, would you like to retry granting \n"
-                + "permissions? If not we'll need to shut down the app.");
+            string title = "GPS Required";
+            string body = "GPS is required to run this app, would you like to retry granting \n" +
+                          "permissions? If not we'll need to shut down the app.";
+
+            return MessageBox.Instance.ShowYesNo(title, body);
         }
     }
 }

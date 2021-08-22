@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="SuitableRotationSystem.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -10,7 +8,6 @@
 
 namespace Lost.PlantGenerator
 {
-    using System;
     using UnityEngine;
 
     /// <summary>
@@ -29,7 +26,7 @@ namespace Lost.PlantGenerator
         private System.Random random;
 
         /// <summary>
-        /// Creates a new SuitableRotationSystem object using the given random object.
+        /// Initializes a new instance of the <see cref="SuitableRotationSystem"/> class.
         /// </summary>
         /// <param name="random">The random object to use when generating random values.</param>
         public SuitableRotationSystem(System.Random random)
@@ -53,7 +50,7 @@ namespace Lost.PlantGenerator
             int rotationIndex = Mathf.RoundToInt(rotation);
 
             // seeing if the given rotation is suitable
-            if (suitableRotation[rotationIndex])
+            if (this.suitableRotation[rotationIndex])
             {
                 return rotation;
             }
@@ -65,18 +62,18 @@ namespace Lost.PlantGenerator
                     int newRotationIndexUp = (rotationIndex + i) % 360;
                     int newRotationIndexDown = (rotationIndex + 360 - i) % 360;
 
-                    if (suitableRotation[newRotationIndexUp])
+                    if (this.suitableRotation[newRotationIndexUp])
                     {
                         return (float)newRotationIndexUp;
                     }
-                    else if (suitableRotation[newRotationIndexDown])
+                    else if (this.suitableRotation[newRotationIndexDown])
                     {
                         return (float)newRotationIndexDown;
                     }
                 }
 
                 // no suitable angle found, so returning a random one
-                return (rotation + RandomUtil.IntRangeInclusive(random, -30, 30) + 360) % 360;
+                return (rotation + RandomUtil.IntRangeInclusive(this.random, -30, 30) + 360) % 360;
             }
         }
 
@@ -89,14 +86,14 @@ namespace Lost.PlantGenerator
         public void AddDeadSpot(float centerAngle, int extentsAngle)
         {
             int rotationIndex = Mathf.RoundToInt(centerAngle) % 360;
-            suitableRotation[rotationIndex] = false;
+            this.suitableRotation[rotationIndex] = false;
 
             for (int i = 0; i < extentsAngle; i++)
             {
                 int newRotationIndexUp = (rotationIndex + i) % 360;
                 int newRotationIndexDown = (rotationIndex + 360 - i) % 360;
-                suitableRotation[newRotationIndexUp] = false;
-                suitableRotation[newRotationIndexDown] = false;
+                this.suitableRotation[newRotationIndexUp] = false;
+                this.suitableRotation[newRotationIndexDown] = false;
             }
         }
     }
