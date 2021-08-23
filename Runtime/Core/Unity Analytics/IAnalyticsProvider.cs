@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="IAnalyticsHandler.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -8,7 +6,6 @@
 
 namespace Lost
 {
-    using System;
     using System.Collections.Generic;
 
     public interface IAnalyticsProvider
@@ -17,6 +14,6 @@ namespace Lost
 
         void CustomEvent(long sessionId, string eventName, IDictionary<string, object> eventData);
 
-        void Transaction(long sessionId, string productId, Decimal amount, string currency, string receiptPurchaseData, string signature);
+        void Transaction(long sessionId, string productId, decimal amount, string currency, string receiptPurchaseData, string signature);
     }
 }

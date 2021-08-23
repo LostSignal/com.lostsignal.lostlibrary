@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="DataManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -46,7 +44,7 @@ namespace Lost
 
         public void Save()
         {
-            SaveToPlayerPrefs();
+            this.SaveToPlayerPrefs();
         }
 
         protected void SaveToPlayerPrefs()

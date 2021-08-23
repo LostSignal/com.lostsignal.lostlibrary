@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="LostPlayerPrefs.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -41,7 +39,8 @@ namespace Lost
             return PlayerPrefs.GetString(key, defaultValue);
         }
 
-        public static T GetEnum<T>(string key, T defaultValue) where T : System.Enum
+        public static T GetEnum<T>(string key, T defaultValue)
+            where T : System.Enum
         {
             int defaultInt = Convert.ToInt32(defaultValue);
             int enumInt = PlayerPrefs.GetInt(key, defaultInt);
@@ -87,7 +86,8 @@ namespace Lost
             }
         }
 
-        public static void SetEnum<T>(string key, T value, bool save = false) where T : Enum
+        public static void SetEnum<T>(string key, T value, bool save = false)
+            where T : Enum
         {
             SetInt(key, Convert.ToInt32(value));
 

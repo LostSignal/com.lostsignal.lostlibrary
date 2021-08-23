@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="Manager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -24,6 +22,26 @@ namespace Lost
 
         private bool hasInitializationRun;
 
+        public static event OnManagerInitializedDelegate OnInitialized
+        {
+            add
+            {
+                if (Instance != null)
+                {
+                    value?.Invoke();
+                }
+
+                Initialized += value;
+            }
+
+            remove
+            {
+                Initialized -= value;
+            }
+        }
+
+        private static event OnManagerInitializedDelegate Initialized;
+
         public static bool IsInitialized
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -35,26 +53,6 @@ namespace Lost
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => instance;
         }
-
-        public static event OnManagerInitializedDelegate OnInitialized
-        {
-            add
-            {
-                if (Instance != null)
-                {
-                    value?.Invoke();
-                }
-
-                onInitialized += value;
-            }
-
-            remove
-            {
-                onInitialized -= value;
-            }
-        }
-
-        private static event OnManagerInitializedDelegate onInitialized;
 
         public static IEnumerator WaitForInitialization()
         {
@@ -87,7 +85,7 @@ namespace Lost
 
             instance = null;
             isInitialized = false;
-            onInitialized = null;
+            Initialized = null;
         }
 
         protected void SetInstance(T newInstance)
@@ -95,7 +93,7 @@ namespace Lost
             Debug.AssertFormat(Instance == null, "Manager {0}'s Instance is not null!", typeof(T).Name);
             instance = newInstance;
             isInitialized = true;
-            onInitialized?.Invoke();
+            Initialized?.Invoke();
         }
 
         protected Coroutine WaitForDependencies(params IManager[] managers)

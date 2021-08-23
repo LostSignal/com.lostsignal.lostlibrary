@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="JsonUtil.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -12,18 +10,18 @@ namespace Lost
 
     public static class JsonUtil
     {
+        static JsonUtil()
+        {
+            JsonSerializerSettings.Converters.Add(new ColorConverter());
+            JsonSerializerSettings.Converters.Add(new VectorConverter());
+        }
+
         public static JsonSerializerSettings JsonSerializerSettings { get; private set; } = new JsonSerializerSettings
         {
             Formatting = Formatting.Indented,
             DateFormatString = "yyyy-MM-ddTHH:mm:ssZ",
             NullValueHandling = NullValueHandling.Ignore,
         };
-
-        static JsonUtil()
-        {
-            JsonSerializerSettings.Converters.Add(new ColorConverter());
-            JsonSerializerSettings.Converters.Add(new VectorConverter());
-        }
 
         public static string Serialize(object obj)
         {

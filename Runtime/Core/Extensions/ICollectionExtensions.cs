@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="ICollectionExtensions.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -12,7 +10,8 @@ namespace Lost
 
     public static class ICollectionExtensions
     {
-        public static void AddIfNotNull<T>(this ICollection<T> collection, T value) where T : class
+        public static void AddIfNotNull<T>(this ICollection<T> collection, T value)
+            where T : class
         {
             if (value != null)
             {
@@ -20,7 +19,8 @@ namespace Lost
             }
         }
 
-        public static void AddIfNotNullAndUnique<T>(this ICollection<T> collection, T value) where T : class
+        public static void AddIfNotNullAndUnique<T>(this ICollection<T> collection, T value)
+            where T : class
         {
             if (value != null && collection.Contains(value) == false)
             {

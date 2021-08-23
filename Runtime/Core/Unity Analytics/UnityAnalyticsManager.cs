@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="UnityAnalyticsManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -21,8 +19,7 @@ namespace Lost
         private static readonly string AnonymousIdKey = "AnnonymousId";
         private static readonly float NewSessionWaitTimeInSeconds = 30.0f;
 
-        List<IAnalyticsProvider> analyticsProviders = new List<IAnalyticsProvider>();
-
+        private List<IAnalyticsProvider> analyticsProviders = new List<IAnalyticsProvider>();
         private float lostFocusTime = -1.0f;
         private bool pauseFlushing;
         private string anonymousId;
@@ -67,33 +64,6 @@ namespace Lost
             }
         }
 
-        public override void Initialize()
-        {
-#if !UNITY_XBOXONE
-            UnityEngine.Analytics.Analytics.initializeOnStartup = true;
-            UnityEngine.Analytics.Analytics.enabled = true;
-
-            // Toggle this on if you wish to see debug logs for every analytic event
-#if USING_UNITY_ANALYTICS
-            UnityEngine.Analytics.AnalyticsEvent.debugMode = false;
-#endif
-
-            if (UnityEngine.Analytics.AnalyticsSessionInfo.userId != AnonymousId)
-            {
-                UnityEngine.Analytics.Analytics.SetUserId(AnonymousId);
-            }
-#endif
-
-            Analytics.AnalyticsEvent.CustomEventFired += this.EventFired;
-
-            this.SetInstance(this);
-        }
-
-        public void RegisterAnalyticsProvider(IAnalyticsProvider provider)
-        {
-            this.analyticsProviders.AddIfNotNullAndUnique(provider);
-        }
-
         public bool PauseFlushing
         {
             get
@@ -113,6 +83,33 @@ namespace Lost
                     }
                 }
             }
+        }
+
+        public override void Initialize()
+        {
+#if !UNITY_XBOXONE
+            UnityEngine.Analytics.Analytics.initializeOnStartup = true;
+            UnityEngine.Analytics.Analytics.enabled = true;
+
+            // Toggle this on if you wish to see debug logs for every analytic event
+#if USING_UNITY_ANALYTICS
+            UnityEngine.Analytics.AnalyticsEvent.debugMode = false;
+#endif
+
+            if (UnityEngine.Analytics.AnalyticsSessionInfo.userId != this.AnonymousId)
+            {
+                UnityEngine.Analytics.Analytics.SetUserId(this.AnonymousId);
+            }
+#endif
+
+            Analytics.AnalyticsEvent.CustomEventFired += this.EventFired;
+
+            this.SetInstance(this);
+        }
+
+        public void RegisterAnalyticsProvider(IAnalyticsProvider provider)
+        {
+            this.analyticsProviders.AddIfNotNullAndUnique(provider);
         }
 
         public void Flush()

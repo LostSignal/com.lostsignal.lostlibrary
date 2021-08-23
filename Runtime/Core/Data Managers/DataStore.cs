@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="Data.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -13,8 +11,8 @@ namespace Lost
 
     public class DataStore
     {
-        private static readonly Networking.NetworkWriter writer = new Networking.NetworkWriter((byte[])null);
-        private static readonly Networking.NetworkReader reader = new Networking.NetworkReader((byte[])null);
+        private static readonly Networking.NetworkWriter Writer = new Networking.NetworkWriter((byte[])null);
+        private static readonly Networking.NetworkReader Reader = new Networking.NetworkReader((byte[])null);
         private static readonly uint CurrentVersion = 1;
 
         private Dictionary<string, int> intData;
@@ -31,22 +29,22 @@ namespace Lost
         {
             this.IsDirty = false;
 
-            writer.ResetBuffer(saveDataBuffer);
-            writer.WritePackedUInt32(CurrentVersion);
-            writer.WritePackedUInt32(this.intData == null       ? 0 : (uint)this.intData.Count);
-            writer.WritePackedUInt32(this.enumData == null      ? 0 : (uint)this.enumData.Count);
-            writer.WritePackedUInt32(this.boolData == null      ? 0 : (uint)this.boolData.Count);
-            writer.WritePackedUInt32(this.longData == null      ? 0 : (uint)this.longData.Count);
-            writer.WritePackedUInt32(this.stringData == null    ? 0 : (uint)this.stringData.Count);
-            writer.WritePackedUInt32(this.byteArrayData == null ? 0 : (uint)this.byteArrayData.Count);
-            writer.WritePackedUInt32(this.dateTimeData == null  ? 0 : (uint)this.dateTimeData.Count);
+            Writer.ResetBuffer(saveDataBuffer);
+            Writer.WritePackedUInt32(CurrentVersion);
+            Writer.WritePackedUInt32(this.intData == null ? 0 : (uint)this.intData.Count);
+            Writer.WritePackedUInt32(this.enumData == null ? 0 : (uint)this.enumData.Count);
+            Writer.WritePackedUInt32(this.boolData == null ? 0 : (uint)this.boolData.Count);
+            Writer.WritePackedUInt32(this.longData == null ? 0 : (uint)this.longData.Count);
+            Writer.WritePackedUInt32(this.stringData == null ? 0 : (uint)this.stringData.Count);
+            Writer.WritePackedUInt32(this.byteArrayData == null ? 0 : (uint)this.byteArrayData.Count);
+            Writer.WritePackedUInt32(this.dateTimeData == null ? 0 : (uint)this.dateTimeData.Count);
 
             if (this.intData?.Count > 0)
             {
                 foreach (var keyValuePair in this.intData)
                 {
-                    writer.Write(keyValuePair.Key);
-                    writer.Write(keyValuePair.Value);
+                    Writer.Write(keyValuePair.Key);
+                    Writer.Write(keyValuePair.Value);
                 }
             }
 
@@ -54,8 +52,8 @@ namespace Lost
             {
                 foreach (var keyValuePair in this.enumData)
                 {
-                    writer.Write(keyValuePair.Key);
-                    writer.Write(keyValuePair.Value);
+                    Writer.Write(keyValuePair.Key);
+                    Writer.Write(keyValuePair.Value);
                 }
             }
 
@@ -63,8 +61,8 @@ namespace Lost
             {
                 foreach (var keyValuePair in this.boolData)
                 {
-                    writer.Write(keyValuePair.Key);
-                    writer.Write(keyValuePair.Value);
+                    Writer.Write(keyValuePair.Key);
+                    Writer.Write(keyValuePair.Value);
                 }
             }
 
@@ -72,8 +70,8 @@ namespace Lost
             {
                 foreach (var keyValuePair in this.longData)
                 {
-                    writer.Write(keyValuePair.Key);
-                    writer.Write(keyValuePair.Value);
+                    Writer.Write(keyValuePair.Key);
+                    Writer.Write(keyValuePair.Value);
                 }
             }
 
@@ -81,8 +79,8 @@ namespace Lost
             {
                 foreach (var keyValuePair in this.stringData)
                 {
-                    writer.Write(keyValuePair.Key);
-                    writer.Write(keyValuePair.Value);
+                    Writer.Write(keyValuePair.Key);
+                    Writer.Write(keyValuePair.Value);
                 }
             }
 
@@ -90,8 +88,8 @@ namespace Lost
             {
                 foreach (var keyValuePair in this.byteArrayData)
                 {
-                    writer.Write(keyValuePair.Key);
-                    writer.WriteBytesFull(keyValuePair.Value);
+                    Writer.Write(keyValuePair.Key);
+                    Writer.WriteBytesFull(keyValuePair.Value);
                 }
             }
 
@@ -99,13 +97,13 @@ namespace Lost
             {
                 foreach (var keyValuePair in this.dateTimeData)
                 {
-                    writer.Write(keyValuePair.Key);
-                    writer.Write(keyValuePair.Value.ToFileTimeUtc());
+                    Writer.Write(keyValuePair.Key);
+                    Writer.Write(keyValuePair.Value.ToFileTimeUtc());
                 }
             }
 
-            int byteCount = writer.Position;
-            writer.ResetBuffer(null);
+            int byteCount = Writer.Position;
+            Writer.ResetBuffer(null);
             return byteCount;
         }
 
@@ -132,9 +130,9 @@ namespace Lost
             this.dateTimeData.Clear();
 
             // Making our network reader point to the given byte data
-            reader.ResetBuffer(serializedData);
+            Reader.ResetBuffer(serializedData);
 
-            uint version = reader.ReadPackedUInt32();
+            uint version = Reader.ReadPackedUInt32();
 
             if (version == 1)
             {
@@ -145,85 +143,66 @@ namespace Lost
                 UnityEngine.Debug.LogError($"Serialization Failed! {nameof(DataStore)} found unknown version number \"{version}\"");
             }
 
-            reader.ResetBuffer(null);
+            Reader.ResetBuffer(null);
         }
 
-        private void DeserializeVersion1()
-        {
-            uint intCount = reader.ReadPackedUInt32();
-            uint enumCount = reader.ReadPackedUInt32();
-            uint boolCount = reader.ReadPackedUInt32();
-            uint longCount = reader.ReadPackedUInt32();
-            uint stringCount = reader.ReadPackedUInt32();
-            uint byteArrayCount = reader.ReadPackedUInt32();
-            uint dateTimeCount = reader.ReadPackedUInt32();
-
-            for (int i = 0; i < intCount; i++)
-            {
-                this.intData.Add(reader.ReadString(), reader.ReadInt32());
-            }
-
-            for (int i = 0; i < enumCount; i++)
-            {
-                this.enumData.Add(reader.ReadString(), reader.ReadInt32());
-            }
-
-            for (int i = 0; i < boolCount; i++)
-            {
-                this.boolData.Add(reader.ReadString(), reader.ReadBoolean());
-            }
-
-            for (int i = 0; i < longCount; i++)
-            {
-                this.longData.Add(reader.ReadString(), reader.ReadInt64());
-            }
-
-            for (int i = 0; i < stringCount; i++)
-            {
-                this.stringData.Add(reader.ReadString(), reader.ReadString());
-            }
-
-            for (int i = 0; i < byteArrayCount; i++)
-            {
-                this.byteArrayData.Add(reader.ReadString(), reader.ReadBytesAndSize());
-            }
-
-            for (int i = 0; i < dateTimeCount; i++)
-            {
-                this.dateTimeData.Add(reader.ReadString(), DateTime.FromFileTimeUtc(reader.ReadInt64()));
-            }
-        }
-
+        // Delete
         public void DeleteInt(string key) => this.DeleteKey(this.intData, key);
+
         public void DeleteEnum(string key) => this.DeleteKey(this.enumData, key);
+
         public void DeleteBool(string key) => this.DeleteKey(this.boolData, key);
+
         public void DeleteLong(string key) => this.DeleteKey(this.longData, key);
+
         public void DeleteString(string key) => this.DeleteKey(this.stringData, key);
+
         public void DeleteByteArray(string key) => this.DeleteKey(this.byteArrayData, key);
+
         public void DeleteDateTime(string key) => this.DeleteKey(this.dateTimeData, key);
 
+        // Gets
         public int GetInt(string key, int defaultValue = 0) => this.GetKey(this.intData, key, defaultValue);
+
         public T GetEnumt<T>(string key, T defaultValue = default(T)) => (T)Enum.ToObject(typeof(T), this.GetKey(this.enumData, key, Convert.ToInt32(defaultValue)));
+
         public bool GetBool(string key, bool defaultValue = false) => this.GetKey(this.boolData, key, defaultValue);
+
         public long GetLong(string key, long defaultValue = 0) => this.GetKey(this.longData, key, defaultValue);
+
         public string GetString(string key, string defaultValue = null) => this.GetKey(this.stringData, key, defaultValue);
+
         public byte[] GetByteArray(string key, byte[] defaultValue = null) => this.GetKey(this.byteArrayData, key, defaultValue);
+
         public DateTime GetDateTime(string key, DateTime defaultValue) => this.GetKey(this.dateTimeData, key, defaultValue);
 
+        // Has
         public bool HasInt(string key) => this.HasKey(this.intData, key);
+
         public bool HasEnum(string key) => this.HasKey(this.enumData, key);
+
         public bool HasBool(string key) => this.HasKey(this.boolData, key);
+
         public bool HasLong(string key) => this.HasKey(this.longData, key);
+
         public bool HasString(string key) => this.HasKey(this.stringData, key);
+
         public bool HasByteArray(string key) => this.HasKey(this.byteArrayData, key);
+
         public bool HasDateTime(string key) => this.HasKey(this.dateTimeData, key);
 
         public void SetInt(string key, int value) => this.SetValueTypeKey(ref this.intData, key, value);
+
         public void SetEnum<T>(string key, T value) => this.SetValueTypeKey(ref this.enumData, key, Convert.ToInt32(value));
+
         public void SetBool(string key, bool value) => this.SetValueTypeKey(ref this.boolData, key, value);
+
         public void SetLong(string key, long value) => this.SetValueTypeKey(ref this.longData, key, value);
+
         public void SetString(string key, string value) => this.SetClassTypeKey(ref this.stringData, key, value);
+
         public void SetByteArray(string key, byte[] value) => this.SetClassTypeKey(ref this.byteArrayData, key, value);
+
         public void SetDateTime(string key, DateTime value) => this.SetValueTypeKey(ref this.dateTimeData, key, value);
 
         private void DeleteKey<T>(Dictionary<string, T> dictionary, string key)
@@ -249,7 +228,8 @@ namespace Lost
             return dictionary?.ContainsKey(key) ?? false;
         }
 
-        private void SetValueTypeKey<T>(ref Dictionary<string, T> dictionary, string key, T value) where T : struct
+        private void SetValueTypeKey<T>(ref Dictionary<string, T> dictionary, string key, T value)
+            where T : struct
         {
             if (dictionary == null)
             {
@@ -276,7 +256,8 @@ namespace Lost
             }
         }
 
-        private void SetClassTypeKey<T>(ref Dictionary<string, T> dictionary, string key, T value) where T : class
+        private void SetClassTypeKey<T>(ref Dictionary<string, T> dictionary, string key, T value)
+            where T : class
         {
             if (dictionary == null)
             {
@@ -304,6 +285,52 @@ namespace Lost
             {
                 dictionary.Add(key, value);
                 this.IsDirty = true;
+            }
+        }
+
+        private void DeserializeVersion1()
+        {
+            uint intCount = Reader.ReadPackedUInt32();
+            uint enumCount = Reader.ReadPackedUInt32();
+            uint boolCount = Reader.ReadPackedUInt32();
+            uint longCount = Reader.ReadPackedUInt32();
+            uint stringCount = Reader.ReadPackedUInt32();
+            uint byteArrayCount = Reader.ReadPackedUInt32();
+            uint dateTimeCount = Reader.ReadPackedUInt32();
+
+            for (int i = 0; i < intCount; i++)
+            {
+                this.intData.Add(Reader.ReadString(), Reader.ReadInt32());
+            }
+
+            for (int i = 0; i < enumCount; i++)
+            {
+                this.enumData.Add(Reader.ReadString(), Reader.ReadInt32());
+            }
+
+            for (int i = 0; i < boolCount; i++)
+            {
+                this.boolData.Add(Reader.ReadString(), Reader.ReadBoolean());
+            }
+
+            for (int i = 0; i < longCount; i++)
+            {
+                this.longData.Add(Reader.ReadString(), Reader.ReadInt64());
+            }
+
+            for (int i = 0; i < stringCount; i++)
+            {
+                this.stringData.Add(Reader.ReadString(), Reader.ReadString());
+            }
+
+            for (int i = 0; i < byteArrayCount; i++)
+            {
+                this.byteArrayData.Add(Reader.ReadString(), Reader.ReadBytesAndSize());
+            }
+
+            for (int i = 0; i < dateTimeCount; i++)
+            {
+                this.dateTimeData.Add(Reader.ReadString(), DateTime.FromFileTimeUtc(Reader.ReadInt64()));
             }
         }
     }

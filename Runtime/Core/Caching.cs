@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="Caching.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -10,8 +8,8 @@
 
 namespace Lost
 {
-    using Lost.Networking;
     using System.Collections.Generic;
+    using Lost.Networking;
     using UnityEngine;
 
     public static class Caching

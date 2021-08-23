@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="AnalyticsEnums.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -209,11 +207,11 @@ namespace Lost.Analytics
 
     public class EnumCase : AnalyticsEventAttribute
     {
-        public Styles Style;
+        private Styles style;
 
         public EnumCase(Styles style)
         {
-            this.Style = style;
+            this.style = style;
         }
 
         public enum Styles
@@ -222,42 +220,35 @@ namespace Lost.Analytics
             Snake = 1,
             Lower = 2,
         }
+
+        public Styles Style => this.style;
     }
 
     public enum AnalyticsResult
     {
-        //
-        // Summary:
-        //     Analytics API result: Success.
+        // Summary: Analytics API result: Success.
         Ok = 0,
-        //
-        // Summary:
-        //     Analytics API result: Analytics not initialized.
+
+        // Summary: Analytics API result: Analytics not initialized.
         NotInitialized = 1,
-        //
-        // Summary:
-        //     Analytics API result: Analytics is disabled.
+
+        // Summary: Analytics API result: Analytics is disabled.
         AnalyticsDisabled = 2,
-        //
-        // Summary:
-        //     Analytics API result: Too many parameters.
+
+        // Summary: Analytics API result: Too many parameters.
         TooManyItems = 3,
-        //
-        // Summary:
-        //     Analytics API result: Argument size limit.
+
+        // Summary: Analytics API result: Argument size limit.
         SizeLimitReached = 4,
-        //
-        // Summary:
-        //     Analytics API result: Too many requests.
+
+        // Summary: Analytics API result: Too many requests.
         TooManyRequests = 5,
-        //
-        // Summary:
-        //     Analytics API result: Invalid argument value.
+
+        // Summary: Analytics API result: Invalid argument value.
         InvalidData = 6,
-        //
-        // Summary:
-        //     Analytics API result: This platform doesn't support Analytics.
-        UnsupportedPlatform = 7
+
+        // Summary: Analytics API result: This platform doesn't support Analytics.
+        UnsupportedPlatform = 7,
     }
 
     [EnumCase(EnumCase.Styles.Snake)]
@@ -366,7 +357,7 @@ namespace Lost.Analytics
         UnityAds = 78,
         Vungle = 79,
         Yeahmobi = 80,
-        YuMe = 81
+        YuMe = 81,
     }
 
     [EnumCase(EnumCase.Styles.Snake)]

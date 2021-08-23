@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="DictionaryExtensions.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -12,7 +10,7 @@ namespace Lost
 
     public static class DictionaryExtensions
     {
-        public static void AddOrOverwrite<K, V>(this Dictionary<K, V> dictionary, K key, V value)
+        public static void AddOrOverwrite<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
             if (dictionary.ContainsKey(key))
             {

@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="GameObjectExtensions.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -23,7 +21,8 @@ namespace Lost
             }
         }
 
-        public static T GetOrAddComponent<T>(this GameObject gameObject) where T : Component
+        public static T GetOrAddComponent<T>(this GameObject gameObject)
+            where T : Component
         {
             T component = gameObject.GetComponent<T>();
 
@@ -47,7 +46,8 @@ namespace Lost
             return component;
         }
 
-        public static List<T> GetOrAddComponents<T>(this GameObject gameObject, int count) where T : Component
+        public static List<T> GetOrAddComponents<T>(this GameObject gameObject, int count)
+            where T : Component
         {
             List<T> results = new List<T>(gameObject.GetComponents<T>());
 

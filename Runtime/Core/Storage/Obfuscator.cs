@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="Obfuscator.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -13,14 +11,15 @@ namespace Lost
 
     public static class Obfuscator
     {
-        private const int byteObfuscatorLength = 4 * 1024; // 4 kilobytes
-        private const int byteSeed = 830378379;
+        private const int ByteObfuscatorLength = 4 * 1024; // 4 kilobytes
+        private const int ByteSeed = 830378379;
+
         private static List<byte> byteObfuscatorList;
 
         static Obfuscator()
         {
-            var random = new System.Random(byteSeed);
-            int byteCount = byteObfuscatorLength;
+            var random = new System.Random(ByteSeed);
+            int byteCount = ByteObfuscatorLength;
             byteObfuscatorList = new List<byte>(byteCount);
 
             for (int i = 0; i < byteCount; i++)
@@ -35,7 +34,7 @@ namespace Lost
 
             for (int i = 0; i < sourceStringBytes.Length; i++)
             {
-                sourceStringBytes[i] ^= byteObfuscatorList[i % byteObfuscatorLength];
+                sourceStringBytes[i] ^= byteObfuscatorList[i % ByteObfuscatorLength];
             }
 
             return Convert.ToBase64String(sourceStringBytes);
@@ -47,7 +46,7 @@ namespace Lost
 
             for (int i = 0; i < obfuscatedStringBytes.Length; i++)
             {
-                obfuscatedStringBytes[i] ^= byteObfuscatorList[i % byteObfuscatorLength];
+                obfuscatedStringBytes[i] ^= byteObfuscatorList[i % ByteObfuscatorLength];
             }
 
             return System.Text.Encoding.UTF8.GetString(obfuscatedStringBytes);

@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="MonoBehaviourExtensions.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -110,7 +108,8 @@ namespace Lost
             }
         }
 
-        public static T GetOrAddComponent<T>(this MonoBehaviour behaviour) where T : Component
+        public static T GetOrAddComponent<T>(this MonoBehaviour behaviour)
+            where T : Component
         {
             var component = behaviour.GetComponent<T>();
 

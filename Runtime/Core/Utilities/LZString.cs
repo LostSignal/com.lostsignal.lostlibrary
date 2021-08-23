@@ -1,15 +1,19 @@
-﻿#pragma warning disable
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+//-----------------------------------------------------------------------
+// <copyright file="LZString.cs" company="Lost Signal LLC">
+//     Copyright (c) Lost Signal LLC. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace Lost
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+
     /// <summary>
     /// Converted from lz-string 1.4.4
-    /// https://github.com/pieroxy/lz-string/blob/c58a22021000ac2d99377cc0bf9ac193a12563c5/libs/lz-string.js
+    /// https://github.com/pieroxy/lz-string/blob/c58a22021000ac2d99377cc0bf9ac193a12563c5/libs/lz-string.js.
     /// </summary>
     public class LZString
     {
@@ -25,12 +29,16 @@ namespace Lost
             {
                 dict[alphabet[i]] = (char)i;
             }
+
             return dict;
         }
 
         public static string CompressToBase64(string input)
         {
-            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (input == null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
 
             var res = Compress(input, 6, code => KeyStrBase64[code]);
             switch (res.Length % 4)
@@ -45,7 +53,10 @@ namespace Lost
 
         public static string DecompressFromBase64(string input)
         {
-            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (input == null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
 
             return Decompress(input.Length, 32, index => KeyStrBase64Dict[input[index]]);
         }
@@ -57,21 +68,30 @@ namespace Lost
 
         public static string DecompressFromUTF16(string input)
         {
-            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (input == null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
 
             return Decompress(input.Length, 16384, index => (char)(input[index] - 32));
         }
 
         public static string CompressToEncodedURIComponent(string input)
         {
-            if (input == null) return "";
+            if (input == null)
+            {
+                return string.Empty;
+            }
 
             return Compress(input, 6, code => KeyStrUriSafe[code]);
         }
 
         public static string DecompressFromEncodedURIComponent(string input)
         {
-            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (input == null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
 
             input = input.Replace(" ", "+");
             return Decompress(input.Length, 32, index => KeyStrUriSafeDict[input[index]]);
@@ -84,13 +104,16 @@ namespace Lost
 
         private static string Compress(string uncompressed, int bitsPerChar, Func<int, char> getCharFromInt)
         {
-            if (uncompressed == null) throw new ArgumentNullException(nameof(uncompressed));
+            if (uncompressed == null)
+            {
+                throw new ArgumentNullException(nameof(uncompressed));
+            }
 
             int i, value;
             var context_dictionary = new Dictionary<string, int>();
             var context_dictionaryToCreate = new Dictionary<string, bool>();
-            var context_wc = "";
-            var context_w = "";
+            var context_wc = string.Empty;
+            var context_w = string.Empty;
             var context_enlargeIn = 2; // Compensate for the first entry which should not count
             var context_dictSize = 3;
             var context_numBits = 2;
@@ -119,7 +142,7 @@ namespace Lost
                         {
                             for (i = 0; i < context_numBits; i++)
                             {
-                                context_data_val = (context_data_val << 1);
+                                context_data_val = context_data_val << 1;
                                 if (context_data_position == bitsPerChar - 1)
                                 {
                                     context_data_position = 0;
@@ -131,6 +154,7 @@ namespace Lost
                                     context_data_position++;
                                 }
                             }
+
                             value = context_w.FirstOrDefault();
                             for (i = 0; i < 8; i++)
                             {
@@ -145,6 +169,7 @@ namespace Lost
                                 {
                                     context_data_position++;
                                 }
+
                                 value = value >> 1;
                             }
                         }
@@ -164,8 +189,10 @@ namespace Lost
                                 {
                                     context_data_position++;
                                 }
+
                                 value = 0;
                             }
+
                             value = context_w.FirstOrDefault();
                             for (i = 0; i < 16; i++)
                             {
@@ -180,15 +207,18 @@ namespace Lost
                                 {
                                     context_data_position++;
                                 }
+
                                 value = value >> 1;
                             }
                         }
+
                         context_enlargeIn--;
                         if (context_enlargeIn == 0)
                         {
                             context_enlargeIn = (int)Math.Pow(2, context_numBits);
                             context_numBits++;
                         }
+
                         context_dictionaryToCreate.Remove(context_w);
                     }
                     else
@@ -207,15 +237,18 @@ namespace Lost
                             {
                                 context_data_position++;
                             }
+
                             value = value >> 1;
                         }
                     }
+
                     context_enlargeIn--;
                     if (context_enlargeIn == 0)
                     {
                         context_enlargeIn = (int)Math.Pow(2, context_numBits);
                         context_numBits++;
                     }
+
                     // Add wc to the dictionary.
                     context_dictionary[context_wc] = context_dictSize++;
                     context_w = context_c.ToString();
@@ -223,7 +256,7 @@ namespace Lost
             }
 
             // Output the code for w.
-            if (context_w != "")
+            if (context_w != string.Empty)
             {
                 if (context_dictionaryToCreate.ContainsKey(context_w))
                 {
@@ -231,7 +264,7 @@ namespace Lost
                     {
                         for (i = 0; i < context_numBits; i++)
                         {
-                            context_data_val = (context_data_val << 1);
+                            context_data_val = context_data_val << 1;
                             if (context_data_position == bitsPerChar - 1)
                             {
                                 context_data_position = 0;
@@ -243,6 +276,7 @@ namespace Lost
                                 context_data_position++;
                             }
                         }
+
                         value = context_w.FirstOrDefault();
                         for (i = 0; i < 8; i++)
                         {
@@ -257,6 +291,7 @@ namespace Lost
                             {
                                 context_data_position++;
                             }
+
                             value = value >> 1;
                         }
                     }
@@ -276,8 +311,10 @@ namespace Lost
                             {
                                 context_data_position++;
                             }
+
                             value = 0;
                         }
+
                         value = context_w.FirstOrDefault();
                         for (i = 0; i < 16; i++)
                         {
@@ -292,15 +329,18 @@ namespace Lost
                             {
                                 context_data_position++;
                             }
+
                             value = value >> 1;
                         }
                     }
+
                     context_enlargeIn--;
                     if (context_enlargeIn == 0)
                     {
                         context_enlargeIn = (int)Math.Pow(2, context_numBits);
                         context_numBits++;
                     }
+
                     context_dictionaryToCreate.Remove(context_w);
                 }
                 else
@@ -319,9 +359,11 @@ namespace Lost
                         {
                             context_data_position++;
                         }
+
                         value = value >> 1;
                     }
                 }
+
                 context_enlargeIn--;
                 if (context_enlargeIn == 0)
                 {
@@ -345,28 +387,36 @@ namespace Lost
                 {
                     context_data_position++;
                 }
+
                 value = value >> 1;
             }
 
             // Flush the last char
             while (true)
             {
-                context_data_val = (context_data_val << 1);
+                context_data_val = context_data_val << 1;
                 if (context_data_position == bitsPerChar - 1)
                 {
                     context_data.Append(getCharFromInt(context_data_val));
                     break;
                 }
-                else context_data_position++;
+                else
+                {
+                    context_data_position++;
+                }
             }
+
             return context_data.ToString();
         }
 
         public static string Decompress(string compressed)
         {
-            if (compressed == null) throw new ArgumentNullException(nameof(compressed));
+            if (compressed == null)
+            {
+                throw new ArgumentNullException(nameof(compressed));
+            }
 
-            //TODO: Use an enumerator
+            // TODO: Use an enumerator
             return Decompress(compressed.Length, 32768, index => compressed[index]);
         }
 
@@ -402,6 +452,7 @@ namespace Lost
                     data_position = resetValue;
                     data_val = getNextValue(data_index++);
                 }
+
                 bits |= (resb > 0 ? 1 : 0) * power;
                 power <<= 1;
             }
@@ -421,9 +472,11 @@ namespace Lost
                             data_position = resetValue;
                             data_val = getNextValue(data_index++);
                         }
+
                         bits |= (resb > 0 ? 1 : 0) * power;
                         power <<= 1;
                     }
+
                     c = (char)bits;
                     break;
                 case 1:
@@ -439,14 +492,17 @@ namespace Lost
                             data_position = resetValue;
                             data_val = getNextValue(data_index++);
                         }
+
                         bits |= (resb > 0 ? 1 : 0) * power;
                         power <<= 1;
                     }
+
                     c = (char)bits;
                     break;
                 case 2:
-                    return "";
+                    return string.Empty;
             }
+
             w = c.ToString();
             dictionary.Add(w);
             result.Append(c);
@@ -454,7 +510,7 @@ namespace Lost
             {
                 if (data_index > length)
                 {
-                    return "";
+                    return string.Empty;
                 }
 
                 bits = 0;
@@ -469,6 +525,7 @@ namespace Lost
                         data_position = resetValue;
                         data_val = getNextValue(data_index++);
                     }
+
                     bits |= (resb > 0 ? 1 : 0) * power;
                     power <<= 1;
                 }
@@ -489,6 +546,7 @@ namespace Lost
                                 data_position = resetValue;
                                 data_val = getNextValue(data_index++);
                             }
+
                             bits |= (resb > 0 ? 1 : 0) * power;
                             power <<= 1;
                         }
@@ -510,9 +568,11 @@ namespace Lost
                                 data_position = resetValue;
                                 data_val = getNextValue(data_index++);
                             }
+
                             bits |= (resb > 0 ? 1 : 0) * power;
                             power <<= 1;
                         }
+
                         c2 = dictionary.Count;
                         dictionary.Add(((char)bits).ToString());
                         enlargeIn--;
@@ -542,6 +602,7 @@ namespace Lost
                         return null;
                     }
                 }
+
                 result.Append(entry);
 
                 // Add w+entry[0] to the dictionary.
