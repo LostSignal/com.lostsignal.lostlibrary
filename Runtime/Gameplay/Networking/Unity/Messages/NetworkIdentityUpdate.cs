@@ -13,11 +13,17 @@ namespace Lost.Networking
         public const short Id = 203;
 
         public long NetworkId { get; set; }
+
         public long OwnerId { get; set; }
+
         public bool IsEnabled { get; set; }
+
         public string ResourceName { get; set; }
+
         public Vector3 Position { get; set; }
+
         public Quaternion Rotation { get; set; }
+
         public bool CanChangeOwner { get; set; }
 
         public override short GetId()

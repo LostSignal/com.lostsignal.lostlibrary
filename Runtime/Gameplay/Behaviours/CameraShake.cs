@@ -30,29 +30,18 @@ namespace Lost
         private Vector3 originalPosition;
         private bool isInitialized;
 
-        public static void Shake()
-        {
-            for (int i = 0; i < Shakers.Count; i++)
-            {
-                Shakers[i].PrivateShake();
-            }
-        }
-
         public override string Name => nameof(CameraShake);
 
         public override bool RunAwake => true;
 
         public override bool RunStart => false;
 
-        private void OnValidate()
+        public static void Shake()
         {
-            this.AssertGetComponent(ref this.myTransform);
-        }
-
-        protected override void LoadBalancedAwake()
-        {
-            this.OnValidate();
-            this.isInitialized = true;
+            for (int i = 0; i < Shakers.Count; i++)
+            {
+                Shakers[i].PrivateShake();
+            }
         }
 
         public override void DoUpdate(float deltaTime)
@@ -67,6 +56,17 @@ namespace Lost
                 this.myTransform.localPosition = this.originalPosition;
                 this.StopUpdating();
             }
+        }
+
+        protected override void LoadBalancedAwake()
+        {
+            this.OnValidate();
+            this.isInitialized = true;
+        }
+
+        private void OnValidate()
+        {
+            this.AssertGetComponent(ref this.myTransform);
         }
 
         private void PrivateShake()

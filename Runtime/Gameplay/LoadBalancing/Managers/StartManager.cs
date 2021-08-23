@@ -8,12 +8,7 @@
 
 namespace Lost
 {
-    public interface IStartable
-    {
-        void DoStart();
-    }
-
-    public sealed class StartManager : LoadBalancingManager<StartManager, IStartable>
+    public sealed class StartManager : LoadBalancingManager<StartManager, IStart>
     {
         public override string Name => nameof(StartManager);
 
@@ -32,9 +27,9 @@ namespace Lost
             }
         }
 
-        protected override void Execute(IStartable action)
+        protected override void Execute(IStart action)
         {
-            action.DoStart();
+            action.OnStart();
         }
     }
 }

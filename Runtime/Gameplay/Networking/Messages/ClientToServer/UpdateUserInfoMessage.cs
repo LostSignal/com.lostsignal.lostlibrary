@@ -10,12 +10,12 @@ namespace Lost.Networking
     {
         public const short Id = 2;
 
-        public UserInfo UserInfo { get; set; }
-
         public UpdateUserInfoMessage()
         {
             this.UserInfo = new UserInfo();
         }
+
+        public UserInfo UserInfo { get; set; }
 
         public override short GetId()
         {

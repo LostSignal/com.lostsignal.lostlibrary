@@ -15,12 +15,6 @@ namespace Lost
     {
         private const string ChannelName = nameof(DelayExecuteManager);
 
-        public struct DelayedAction
-        {
-            public float ExecuteTime;
-            public Action Action;
-        }
-
 #pragma warning disable 0649
         [SerializeField] private int initialCapacity = 50;
 #pragma warning restore 0649
@@ -97,6 +91,12 @@ namespace Lost
         private void OnDestroy()
         {
             this.updateReceipt.Cancel();
+        }
+
+        public struct DelayedAction
+        {
+            public float ExecuteTime;
+            public Action Action;
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Lost.Networking
 
     public class UnityGameClientSubsystem : IGameClientSubsystem
     {
-        private static readonly NetworkReader reader = new NetworkReader(new byte[0]);
+        private static readonly NetworkReader Reader = new NetworkReader(new byte[0]);
 
         // private static readonly NetworkIdentityUpdate updateNetworkIdentityCache = new NetworkIdentityUpdate();
         private static Dictionary<string, NetworkIdentity> resourcePrefabCache = new Dictionary<string, NetworkIdentity>();
@@ -139,8 +139,8 @@ namespace Lost.Networking
 
                     if (identity && identity.IsOwner == false)
                     {
-                        reader.Replace(networkBehaviourMessage.DataBytes);
-                        identity.Behaviours[networkBehaviourMessage.BehaviourIndex].Deserialize(reader);
+                        Reader.Replace(networkBehaviourMessage.DataBytes);
+                        identity.Behaviours[networkBehaviourMessage.BehaviourIndex].Deserialize(Reader);
                     }
 
                     break;
@@ -277,8 +277,8 @@ namespace Lost.Networking
             bool foundDynamicIdentity = this.dynamicNetworkObjectsHash.TryGetValue(networkId, out NetworkIdentity dynamicIdentity);
 
             return foundSceneIdentity ? sceneIdentity :
-                foundDynamicIdentity? dynamicIdentity:
-                null;
+                   foundDynamicIdentity ? dynamicIdentity :
+                   null;
         }
     }
 }

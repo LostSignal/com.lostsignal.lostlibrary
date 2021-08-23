@@ -18,6 +18,11 @@ namespace Lost
         private static readonly List<Character> Characters;
         private static readonly ReadOnlyCollection<Character> CharactersReadOnly;
 
+#pragma warning disable 0649
+        [SerializeField] private bool isMainCharacter;
+        [SerializeField] private int teamId;
+#pragma warning restore 0649
+
         private Transform characterTransform;
 
         static Character()
@@ -32,11 +37,6 @@ namespace Lost
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => CharactersReadOnly;
         }
-
-#pragma warning disable 0649
-        [SerializeField] private bool isMainCharacter;
-        [SerializeField] private int teamId;
-#pragma warning restore 0649
 
         public Transform Transform
         {

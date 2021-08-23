@@ -20,16 +20,6 @@ namespace Lost
     public abstract class LoadBalancingManager<TManager, TInterface> : Manager<TManager>, IUpdatable
         where TManager : MonoBehaviour
     {
-        public abstract string Name { get; }
-
-        private struct Callback
-        {
-            public TInterface Action;
-            public float QueuedTime;
-            public UnityEngine.Object Context;
-            public string Description;
-        }
-
 #pragma warning disable 0649
         [SerializeField] private int initialCapacity = 250;
         [SerializeField] private double maxMilliseconds = 0.1f;
@@ -48,6 +38,8 @@ namespace Lost
 #pragma warning disable IDE0052  // Suppressing the warning, because eventurally we'll send this info via log and/or analytic
         private float averageQueuedTime = 0.0f;
 #pragma warning restore IDE0052
+
+        public abstract string Name { get; }
 
         public bool IsProcessing
         {
@@ -129,6 +121,12 @@ namespace Lost
 
         protected abstract void Execute(TInterface action);
 
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            this.updateReceipt.Cancel();
+        }
+
         private void CancelReceipt(int index, UnityEngine.Object context)
         {
             var callback = this.callbackQueue.GetElementAt(index);
@@ -144,10 +142,12 @@ namespace Lost
             Debug.LogWarning($"{this.Name} Queue had to increase in size!  It's recommended to increase the initial capacity so this doesn't happen at runtime.");
         }
 
-        protected override void OnDisable()
+        private struct Callback
         {
-            base.OnDisable();
-            this.updateReceipt.Cancel();
+            public TInterface Action;
+            public float QueuedTime;
+            public UnityEngine.Object Context;
+            public string Description;
         }
     }
 }

@@ -27,6 +27,15 @@ namespace Lost.Networking
         private HashSet<long> knownUserIds = new HashSet<long>();
         private ReadOnlyCollection<UserInfo> readonlyUsersList;
 
+        // Events
+        private ServerUserConnectedDelegate serverUserConnected;
+        private ServerUserInfoUpdatedDelegate serverUserInfoUpdated;
+        private ServerUserDisconnectedDelegate serverUserDisconnected;
+        private ServerReceivedMessageDelegate serverReceivedMessage;
+        private ServerStartedDelegate serverStarted;
+        private ServerStartedDelegate serverUpdated;
+        private ServerShutdownDelegate serverShutdown;
+
         // Subsystem Tracking
         private List<IGameServerSubsystem> subsystems = new List<IGameServerSubsystem>();
 
@@ -36,8 +45,23 @@ namespace Lost.Networking
         private ConcurrentList<UserInfo> successfulJoinUserInfos = new ConcurrentList<UserInfo>(20);
         private List<UserInfo> successes = new List<UserInfo>();
 
-        // tracking data
+        // Tracking data
         private ServerStats stats = new ServerStats();
+
+        public GameServer(IServerTransportLayer transportLayer)
+        {
+            this.transportLayer = transportLayer;
+            this.messageCollection = new MessageCollection();
+
+            // client to server
+            this.messageCollection.RegisterMessage<JoinServerRequestMessage>();
+            this.messageCollection.RegisterMessage<UpdateUserInfoMessage>();
+
+            // server to client
+            this.messageCollection.RegisterMessage<JoinServerResponseMessage>();
+            this.messageCollection.RegisterMessage<UserDisconnectedMessage>();
+            this.messageCollection.RegisterMessage<UserInfoMessage>();
+        }
 
         public delegate void ServerUserConnectedDelegate(UserInfo userInfo, bool isReconnect);
 
@@ -53,27 +77,46 @@ namespace Lost.Networking
 
         public delegate void ServerShutdownDelegate();
 
-        public ServerUserConnectedDelegate ServerUserConnected;
-        public ServerUserInfoUpdatedDelegate ServerUserInfoUpdated;
-        public ServerUserDisconnectedDelegate ServerUserDisconnected;
-        public ServerReceivedMessageDelegate ServerReceivedMessage;
-        public ServerStartedDelegate ServerStarted;
-        public ServerStartedDelegate ServerUpdated;
-        public ServerShutdownDelegate ServerShutdown;
-
-        public GameServer(IServerTransportLayer transportLayer)
+        public event ServerUserConnectedDelegate ServerUserConnected
         {
-            this.transportLayer = transportLayer;
-            this.messageCollection = new MessageCollection();
+            add => this.serverUserConnected += value;
+            remove => this.serverUserConnected -= value;
+        }
 
-            // client to server
-            this.messageCollection.RegisterMessage<JoinServerRequestMessage>();
-            this.messageCollection.RegisterMessage<UpdateUserInfoMessage>();
+        public event ServerUserInfoUpdatedDelegate ServerUserInfoUpdated
+        {
+            add => this.serverUserInfoUpdated += value;
+            remove => this.serverUserInfoUpdated -= value;
+        }
 
-            // server to client
-            this.messageCollection.RegisterMessage<JoinServerResponseMessage>();
-            this.messageCollection.RegisterMessage<UserDisconnectedMessage>();
-            this.messageCollection.RegisterMessage<UserInfoMessage>();
+        public event ServerUserDisconnectedDelegate ServerUserDisconnected
+        {
+            add => this.serverUserDisconnected += value;
+            remove => this.serverUserDisconnected -= value;
+        }
+
+        public event ServerReceivedMessageDelegate ServerReceivedMessage
+        {
+            add => this.serverReceivedMessage += value;
+            remove => this.serverReceivedMessage -= value;
+        }
+
+        public event ServerStartedDelegate ServerStarted
+        {
+            add => this.serverStarted += value;
+            remove => this.serverStarted -= value;
+        }
+
+        public event ServerStartedDelegate ServerUpdated
+        {
+            add => this.serverUpdated += value;
+            remove => this.serverUpdated -= value;
+        }
+
+        public event ServerShutdownDelegate ServerShutdown
+        {
+            add => this.serverShutdown += value;
+            remove => this.serverShutdown -= value;
         }
 
         public IServerStats Stats
@@ -131,7 +174,7 @@ namespace Lost.Networking
 
                     if (success)
                     {
-                        this.ServerStarted?.Invoke();
+                        this.serverStarted?.Invoke();
                         return true;
                     }
                     else
@@ -154,7 +197,7 @@ namespace Lost.Networking
 
                 this.transportLayer.Shutdown();
 
-                this.ServerShutdown?.Invoke();
+                this.serverShutdown?.Invoke();
             }
         }
 
@@ -270,7 +313,7 @@ namespace Lost.Networking
 
             if (this.failed.Count > 0)
             {
-                foreach (var fail in failed)
+                foreach (var fail in this.failed)
                 {
                     this.SendJoinServerResponse(fail.ConnectionId, fail.UserId, false);
                 }
@@ -296,7 +339,7 @@ namespace Lost.Networking
 
             try
             {
-                this.ServerUpdated?.Invoke();
+                this.serverUpdated?.Invoke();
             }
             catch (Exception ex)
             {
@@ -399,7 +442,7 @@ namespace Lost.Networking
                     }
                     else
                     {
-                        this.ServerReceivedMessage?.Invoke(userInfo, message, reliable);
+                        this.serverReceivedMessage?.Invoke(userInfo, message, reliable);
                     }
 
                     break;
@@ -427,7 +470,7 @@ namespace Lost.Networking
             if (existingUserInfo != null)
             {
                 existingUserInfo.CopyFrom(userInfoUpdate);
-                this.ServerUserInfoUpdated?.Invoke(existingUserInfo);
+                this.serverUserInfoUpdated?.Invoke(existingUserInfo);
             }
             else
             {
@@ -444,7 +487,7 @@ namespace Lost.Networking
                 this.stats.NumberOfReconnects += (uint)(isReconnect ? 1 : 0);
 
                 // Telling base class and event that someone has connected
-                this.ServerUserConnected?.Invoke(newUserInfo, isReconnect);
+                this.serverUserConnected?.Invoke(newUserInfo, isReconnect);
 
                 // Since this user is new, send them all the known user infos to them
                 userInfoMessage = (UserInfoMessage)this.messageCollection.GetMessage(UserInfoMessage.Id);
@@ -525,7 +568,7 @@ namespace Lost.Networking
             this.messageCollection.RecycleMessage(userDisconnected);
 
             // Telling child classes of the disconnect
-            this.ServerUserDisconnected?.Invoke(userInfo, connectionLost);
+            this.serverUserDisconnected?.Invoke(userInfo, connectionLost);
         }
 
         private void SendData(long connectionId, byte[] data, uint length, bool reliable = true)
@@ -543,8 +586,8 @@ namespace Lost.Networking
             this.messageWriter.SeekZero();
             message.Serialize(this.messageWriter);
 
-            data = messageWriter.RawBuffer;
-            length = (uint)messageWriter.Position;
+            data = this.messageWriter.RawBuffer;
+            length = (uint)this.messageWriter.Position;
         }
 
         private async Task<bool> StartSubsystems()

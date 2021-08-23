@@ -14,7 +14,7 @@ namespace Lost
     public class ApplyImpulse : MonoBehaviour
     {
         #pragma warning disable 0649
-        [SerializeField, HideInInspector] private Rigidbody rigidBody;
+        [SerializeField] [HideInInspector] private Rigidbody rigidBody;
         [SerializeField] private float impulseForce = 1.0f;
         #pragma warning restore 0649
 

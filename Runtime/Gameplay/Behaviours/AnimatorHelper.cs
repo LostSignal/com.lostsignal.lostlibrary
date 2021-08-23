@@ -13,7 +13,9 @@ namespace Lost
     [RequireComponent(typeof(Animator))]
     public class AnimatorHelper : MonoBehaviour
     {
-        [SerializeField, HideInInspector] private Animator animator;
+        #pragma warning disable 0649
+        [SerializeField] [HideInInspector] private Animator animator;
+        #pragma warning restore 0649
 
         public void SetBoolTrue(string paramName)
         {

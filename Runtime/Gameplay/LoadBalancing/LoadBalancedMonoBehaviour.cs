@@ -10,7 +10,7 @@ namespace Lost
 {
     using UnityEngine;
 
-    public abstract class LoadBalancedMonoBehaviour : MonoBehaviour, IUpdatable, IAwakable, IStartable
+    public abstract class LoadBalancedMonoBehaviour : MonoBehaviour, IUpdatable, IAwake, IStart
     {
         private LoadBalancerReceipt awakeReceipt;
         private LoadBalancerReceipt startReceipt;
@@ -24,6 +24,18 @@ namespace Lost
         public abstract bool RunStart { get; }
 
         public abstract void DoUpdate(float deltaTime);
+
+        public void OnAwake()
+        {
+            this.LoadBalancedAwake();
+            this.awakeReceipt = default(LoadBalancerReceipt);
+        }
+
+        public void OnStart()
+        {
+            this.LoadBalancedStart();
+            this.startReceipt = default(LoadBalancerReceipt);
+        }
 
         protected virtual void Awake()
         {
@@ -45,12 +57,6 @@ namespace Lost
             }
         }
 
-        public void DoAwake()
-        {
-            this.LoadBalancedAwake();
-            this.awakeReceipt = default(LoadBalancerReceipt);
-        }
-
         protected virtual void Start()
         {
             if (this.RunStart)
@@ -69,12 +75,6 @@ namespace Lost
             {
                 this.startReceipt = StartManager.Instance.QueueWork(this, this.name, this);
             }
-        }
-
-        public void DoStart()
-        {
-            this.LoadBalancedStart();
-            this.startReceipt = default(LoadBalancerReceipt);
         }
 
         protected virtual void OnDestroy()

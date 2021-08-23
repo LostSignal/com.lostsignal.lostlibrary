@@ -17,12 +17,6 @@ namespace Lost
     {
         public static readonly ObjectTracker<FlagCollection> ActiveCollections = new ObjectTracker<FlagCollection>(20);
 
-        public enum Location
-        {
-            PlayerData,
-            GameData,
-        }
-
 #pragma warning disable 0649
         [SerializeField] private Location location;
         [SerializeField] private List<Flag> flags;
@@ -33,8 +27,19 @@ namespace Lost
 
         private string dataStoreKeyName;
         private bool isInitialized;
+        private Action flagsChanged;
 
-        public Action FlagsChanged;
+        public event Action FlagsChanged
+        {
+            add => this.flagsChanged += value;
+            remove => this.flagsChanged -= value;
+        }
+
+        public enum Location
+        {
+            PlayerData,
+            GameData,
+        }
 
         public List<Flag> Flags => this.flags;
 

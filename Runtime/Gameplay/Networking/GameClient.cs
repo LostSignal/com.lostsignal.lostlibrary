@@ -35,7 +35,16 @@ namespace Lost.Networking
         // Subsystem Tracking
         private List<IGameClientSubsystem> subsystems = new List<IGameClientSubsystem>();
 
-        public bool PrintDebugOutput => this.printDebugOutput;
+        // Delegate Events
+        private ClientUserConnectedDelegate clientUserConnected;
+        private ClientUserDisconnectedDelegate clientUserDisconnected;
+        private ClientUserInfoUpdatedDelegate clientUserInfoUpdated;
+        private ClientReceivedMessageDelegate clientReceivedMessage;
+        private ClientConnectedToServerDelegate clientConnectedToServer;
+        private ClientFailedToConnectToServerDelegate clientFailedToConnectToServer;
+        private ClientDisconnectedFromServerDelegate clientDisconnectedFromServer;
+        private ClientLostConnectionToServerDelegate clientLostConnectionToServer;
+        private ClientUpdatedDelegate clientUpdated;
 
         public GameClient(IClientTransportLayer transportLayer, UserInfo userInfo, bool printDebugOutput)
         {
@@ -76,15 +85,61 @@ namespace Lost.Networking
 
         public delegate void ClientUpdatedDelegate();
 
-        public ClientUserConnectedDelegate ClientUserConnected;
-        public ClientUserDisconnectedDelegate ClientUserDisconnected;
-        public ClientUserInfoUpdatedDelegate ClientUserInfoUpdated;
-        public ClientReceivedMessageDelegate ClientReceivedMessage;
-        public ClientConnectedToServerDelegate ClientConnectedToServer;
-        public ClientFailedToConnectToServerDelegate ClientFailedToConnectToServer;
-        public ClientDisconnectedFromServerDelegate ClientDisconnectedFromServer;
-        public ClientLostConnectionToServerDelegate ClientLostConnectionToServer;
-        public ClientUpdatedDelegate ClientUpdated;
+        public event ClientUserConnectedDelegate ClientUserConnected
+        {
+            add => this.clientUserConnected += value;
+            remove => this.clientUserConnected -= value;
+        }
+
+        public event ClientUserDisconnectedDelegate ClientUserDisconnected
+        {
+            add => this.clientUserDisconnected += value;
+            remove => this.clientUserDisconnected -= value;
+        }
+
+        public event ClientUserInfoUpdatedDelegate ClientUserInfoUpdated
+        {
+            add => this.clientUserInfoUpdated += value;
+            remove => this.clientUserInfoUpdated -= value;
+        }
+
+        public event ClientReceivedMessageDelegate ClientReceivedMessage
+        {
+            add => this.clientReceivedMessage += value;
+            remove => this.clientReceivedMessage -= value;
+        }
+
+        public event ClientConnectedToServerDelegate ClientConnectedToServer
+        {
+            add => this.clientConnectedToServer += value;
+            remove => this.clientConnectedToServer -= value;
+        }
+
+        public event ClientFailedToConnectToServerDelegate ClientFailedToConnectToServer
+        {
+            add => this.clientFailedToConnectToServer += value;
+            remove => this.clientFailedToConnectToServer -= value;
+        }
+
+        public event ClientDisconnectedFromServerDelegate ClientDisconnectedFromServer
+        {
+            add => this.clientDisconnectedFromServer += value;
+            remove => this.clientDisconnectedFromServer -= value;
+        }
+
+        public event ClientLostConnectionToServerDelegate ClientLostConnectionToServer
+        {
+            add => this.clientLostConnectionToServer += value;
+            remove => this.clientLostConnectionToServer -= value;
+        }
+
+        public event ClientUpdatedDelegate ClientUpdated
+        {
+            add => this.clientUpdated += value;
+            remove => this.clientUpdated -= value;
+        }
+
+        public bool PrintDebugOutput => this.printDebugOutput;
 
         public ReadOnlyCollection<UserInfo> ConnectedUsers
         {
@@ -231,7 +286,7 @@ namespace Lost.Networking
 
             try
             {
-                this.ClientUpdated?.Invoke();
+                this.clientUpdated?.Invoke();
             }
             catch (Exception ex)
             {
@@ -265,7 +320,7 @@ namespace Lost.Networking
         private void ConnectionClosed()
         {
             this.Reset();
-            this.ClientDisconnectedFromServer?.Invoke();
+            this.clientDisconnectedFromServer?.Invoke();
         }
 
         private void ConnectionLost()
@@ -274,14 +329,14 @@ namespace Lost.Networking
             //               everyone's connection was lost and not reset everything.
             for (int i = 0; i < this.users.Count; i++)
             {
-                this.ClientUserDisconnected?.Invoke(this.users[i], true);
+                this.clientUserDisconnected?.Invoke(this.users[i], true);
             }
 
             this.users.Clear();
             this.userIdToUserInfoMap.Clear();
             this.HasJoinedServer = false;
 
-            this.ClientLostConnectionToServer?.Invoke();
+            this.clientLostConnectionToServer?.Invoke();
         }
 
         private void ReceivedData(byte[] data)
@@ -301,11 +356,11 @@ namespace Lost.Networking
                     if (joinServerResponse.Accepted)
                     {
                         this.HasJoinedServer = true;
-                        this.ClientConnectedToServer?.Invoke();
+                        this.clientConnectedToServer?.Invoke();
                     }
                     else
                     {
-                        this.ClientFailedToConnectToServer?.Invoke();
+                        this.clientFailedToConnectToServer?.Invoke();
                     }
 
                     break;
@@ -327,7 +382,7 @@ namespace Lost.Networking
                         }
 
                         this.myUserInfo.CopyFrom(userInfoMessage.UserInfo);
-                        this.ClientUserInfoUpdated?.Invoke(this.myUserInfo);
+                        this.clientUserInfoUpdated?.Invoke(this.myUserInfo);
                     }
 
                     break;
@@ -344,7 +399,7 @@ namespace Lost.Networking
 
                     if (removedUserInfo != null)
                     {
-                        this.ClientUserDisconnected?.Invoke(removedUserInfo, userDisconnectedMessage.WasConnectionLost);
+                        this.clientUserDisconnected?.Invoke(removedUserInfo, userDisconnectedMessage.WasConnectionLost);
                     }
 
                     break;
@@ -354,7 +409,7 @@ namespace Lost.Networking
                     break;
             }
 
-            this.ClientReceivedMessage?.Invoke(message);
+            this.clientReceivedMessage?.Invoke(message);
 
             this.messageCollection.RecycleMessage(message);
         }
@@ -366,7 +421,7 @@ namespace Lost.Networking
             {
                 userInfo.CopyFrom(messageUserInfo);
 
-                this.ClientUserInfoUpdated?.Invoke(userInfo);
+                this.clientUserInfoUpdated?.Invoke(userInfo);
             }
             else
             {
@@ -379,7 +434,7 @@ namespace Lost.Networking
                 bool wasReconnect = this.knownUserIds.Contains(userInfo.UserId);
                 this.knownUserIds.Add(userInfo.UserId);
 
-                this.ClientUserConnected?.Invoke(userInfo, wasReconnect);
+                this.clientUserConnected?.Invoke(userInfo, wasReconnect);
             }
 
             return userInfo;

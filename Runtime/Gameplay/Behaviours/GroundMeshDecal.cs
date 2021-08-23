@@ -90,12 +90,12 @@ namespace Lost
             // If we got here then we need to recalculate all our meshes verts/tris/uvs/normals
             mesh.Clear();
 
-            // 3 ------- 2
-            //   |   / |
-            //   |  /  |
-            //   | /   |
-            //   |/    |
-            // 0 ------- 1
+            //// 3 ------- 2
+            ////   |   / |
+            ////   |  /  |
+            ////   | /   |
+            ////   |/    |
+            //// 0 ------- 1
 
             Vector3[] vertices = new Vector3[vertCount];
             Vector2[] uvs = new Vector2[vertCount];
@@ -151,7 +151,7 @@ namespace Lost
         private void Update()
         {
             // If it moved then update the verticies
-            if (this.transform.localToWorldMatrix != oldMatrix || this.oldGroundOffset != this.groundOffset)
+            if (this.transform.localToWorldMatrix != this.oldMatrix || this.oldGroundOffset != this.groundOffset)
             {
                 this.UpdateMeshVerticies();
                 this.oldMatrix = this.transform.localToWorldMatrix;
