@@ -6,12 +6,6 @@
 
 namespace Lost.Networking
 {
-    public enum BehaviourDataSendType
-    {
-        All,
-        Others,
-    }
-
     public class NetworkBehaviourDataMessage : Message
     {
         public const short Id = 205;
@@ -20,7 +14,7 @@ namespace Lost.Networking
 
         public int BehaviourIndex { get; set; }
 
-        public BehaviourDataSendType SendType { get; set; }
+        public NetworkBehaviourDataSendType SendType { get; set; }
 
         public string DataKey { get; set; }
 
@@ -37,7 +31,7 @@ namespace Lost.Networking
 
             this.NetworkId = (long)reader.ReadPackedUInt64();
             this.BehaviourIndex = (int)reader.ReadPackedUInt32();
-            this.SendType = (BehaviourDataSendType)reader.ReadPackedUInt32();
+            this.SendType = (NetworkBehaviourDataSendType)reader.ReadPackedUInt32();
             this.DataKey = reader.ReadString();
             this.DataValue = reader.ReadString();
         }

@@ -44,7 +44,7 @@ namespace Lost
             }
         }
 
-        public override void DoUpdate(float deltaTime)
+        public override void OnUpdate(float deltaTime)
         {
             if (this.currentShakeTime > 0.0f)
             {

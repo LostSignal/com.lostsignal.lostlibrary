@@ -10,12 +10,12 @@ namespace Lost.Networking
     {
         public const short Id = 1;
 
-        public UserInfo UserInfo { get; set; }
-
         public JoinServerRequestMessage()
         {
             this.UserInfo = new UserInfo();
         }
+
+        public UserInfo UserInfo { get; set; }
 
         public override short GetId()
         {

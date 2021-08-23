@@ -6,22 +6,6 @@
 
 namespace Lost.Networking
 {
-    public enum ServerEventType
-    {
-        ConnectionOpened,
-        ConnectionClosed,
-        ConnectionLost,
-        ReceivedData,
-    }
-
-    public struct ServerEvent
-    {
-        public ServerEventType EventType;
-        public long ConnectionId;
-        public byte[] Data;
-        public bool Reliable;
-    }
-
     public interface IServerTransportLayer
     {
         bool IsStarting { get; }

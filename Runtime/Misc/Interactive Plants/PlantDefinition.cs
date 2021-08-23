@@ -77,7 +77,7 @@ namespace Lost.PlantGenerator
             [Tooltip("Collection of all the different branch prefabs to spawn from.")]
             [FormerlySerializedAs("Variations")]
             [SerializeField]
-            private GameObject[] variations = new GameObject[0];
+            private GameObject[] variations = Array.Empty<GameObject>();
 
             [Tooltip("The minimum number of branches to spawn in this group.")]
             [FormerlySerializedAs("MinCount")]

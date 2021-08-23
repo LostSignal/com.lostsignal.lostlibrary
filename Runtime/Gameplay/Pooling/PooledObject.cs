@@ -20,12 +20,26 @@ namespace Lost
     public class PooledObject : MonoBehaviour
     {
         private IPoolable[] poolableComponents;
+        private bool isApplicationQuitting = false;
 
         public Pool Pool { get; set; }
 
         public PooledObjectState State { get; set; }
 
-        private bool isApplicationQuitting = false;
+        public void Recycle()
+        {
+            // telling the pool to recycle this object
+            this.Pool.ReturnObjectToPool(this);
+
+            if (this.poolableComponents.IsNullOrEmpty() == false)
+            {
+                // calling recycle on all components that want to know
+                for (int i = 0; i < this.poolableComponents.Length; i++)
+                {
+                    this.poolableComponents[i].Recycle();
+                }
+            }
+        }
 
         private void Awake()
         {
@@ -47,21 +61,6 @@ namespace Lost
         private void OnApplicationQuit()
         {
             this.isApplicationQuitting = true;
-        }
-
-        public void Recycle()
-        {
-            // telling the pool to recycle this object
-            this.Pool.ReturnObjectToPool(this);
-
-            if (this.poolableComponents.IsNullOrEmpty() == false)
-            {
-                // calling recycle on all components that want to know
-                for (int i = 0; i < this.poolableComponents.Length; i++)
-                {
-                    this.poolableComponents[i].Recycle();
-                }
-            }
         }
     }
 }

@@ -34,72 +34,6 @@ namespace Lost.Networking
             this.positionLerpPercentage = lerpPercentage;
         }
 
-        protected override void OnValidate()
-        {
-            base.OnValidate();
-
-            if (this.rigidBody == null)
-            {
-                this.rigidBody = this.GetComponent<Rigidbody>();
-            }
-        }
-
-        protected override void Awake()
-        {
-            base.Awake();
-
-            this.desiredPosition = this.transform.position;
-            this.desiredRotation = this.transform.rotation;
-            this.desiredScale = this.transform.localScale;
-        }
-
-        protected override void NetworkUpdate()
-        {
-            base.NetworkUpdate();
-
-            if (this.IsOwner == false)
-            {
-                // Early out and don't update positions if we're trying to get ownership of this object
-                if (this.Identity.IsRequestingOwnership)
-                {
-                    return;
-                }
-
-                if (this.sendPosition)
-                {
-                    if (this.rigidBody == null && this.estimateVelocity)
-                    {
-                        this.transform.position += this.estimatedVelocity * Time.deltaTime;
-                    }
-
-                    // If the desired position is more than 2 meters away, then do a warp
-                    if ((this.transform.position - this.desiredPosition).sqrMagnitude > 9)
-                    {
-                        this.transform.position = this.desiredPosition;
-                    }
-                    else
-                    {
-                        this.transform.position = Vector3.Lerp(this.transform.position, this.desiredPosition, this.positionLerpPercentage);
-                    }
-                }
-
-                if (this.sendRotation)
-                {
-                    this.transform.rotation = Quaternion.Slerp(this.transform.rotation, this.desiredRotation, 0.1f);
-                }
-
-                if (this.sendScale)
-                {
-                    this.transform.localScale = Vector3.Lerp(this.transform.localScale, this.desiredScale, 0.1f);
-                }
-            }
-            else
-            {
-                // TODO [bgish]: Detect if we're no long moving, Call SendNetworkBehaviourMessage(true), and change the update frequency to be
-                //               several seconds if that's the case.  Make sure to set it back to the original time if we're moving again.
-            }
-        }
-
         public override void Serialize(NetworkWriter writer)
         {
             bool sendPhysics = this.rigidBody != null;
@@ -204,6 +138,72 @@ namespace Lost.Networking
                 this.rigidBody.useGravity = useGravity;
                 this.rigidBody.freezeRotation = freezeRotation;
                 this.rigidBody.isKinematic = isKinematic;
+            }
+        }
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            if (this.rigidBody == null)
+            {
+                this.rigidBody = this.GetComponent<Rigidbody>();
+            }
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            this.desiredPosition = this.transform.position;
+            this.desiredRotation = this.transform.rotation;
+            this.desiredScale = this.transform.localScale;
+        }
+
+        protected override void NetworkUpdate()
+        {
+            base.NetworkUpdate();
+
+            if (this.IsOwner == false)
+            {
+                // Early out and don't update positions if we're trying to get ownership of this object
+                if (this.Identity.IsRequestingOwnership)
+                {
+                    return;
+                }
+
+                if (this.sendPosition)
+                {
+                    if (this.rigidBody == null && this.estimateVelocity)
+                    {
+                        this.transform.position += this.estimatedVelocity * Time.deltaTime;
+                    }
+
+                    // If the desired position is more than 2 meters away, then do a warp
+                    if ((this.transform.position - this.desiredPosition).sqrMagnitude > 9)
+                    {
+                        this.transform.position = this.desiredPosition;
+                    }
+                    else
+                    {
+                        this.transform.position = Vector3.Lerp(this.transform.position, this.desiredPosition, this.positionLerpPercentage);
+                    }
+                }
+
+                if (this.sendRotation)
+                {
+                    this.transform.rotation = Quaternion.Slerp(this.transform.rotation, this.desiredRotation, 0.1f);
+                }
+
+                if (this.sendScale)
+                {
+                    this.transform.localScale = Vector3.Lerp(this.transform.localScale, this.desiredScale, 0.1f);
+                }
+            }
+            else
+            {
+                // TODO [bgish]: Detect if we're no long moving, Call SendNetworkBehaviourMessage(true), and change the update frequency to be
+                //               several seconds if that's the case.  Make sure to set it back to the original time if we're moving again.
             }
         }
 

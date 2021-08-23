@@ -10,7 +10,7 @@ namespace Lost
 {
     using UnityEngine;
 
-    public abstract class LoadBalancedMonoBehaviour : MonoBehaviour, IUpdatable, IAwake, IStart
+    public abstract class LoadBalancedMonoBehaviour : MonoBehaviour, IUpdate, IAwake, IStart
     {
         private LoadBalancerReceipt awakeReceipt;
         private LoadBalancerReceipt startReceipt;
@@ -23,7 +23,7 @@ namespace Lost
 
         public abstract bool RunStart { get; }
 
-        public abstract void DoUpdate(float deltaTime);
+        public abstract void OnUpdate(float deltaTime);
 
         public void OnAwake()
         {

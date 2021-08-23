@@ -44,7 +44,7 @@ namespace Lost.Networking
 
         public abstract void Deserialize(NetworkReader reader);
 
-        public void SendNetworkData(string key, string value, BehaviourDataSendType sendType = BehaviourDataSendType.All)
+        public void SendNetworkData(string key, string value, NetworkBehaviourDataSendType sendType = NetworkBehaviourDataSendType.All)
         {
             behaviourDataMessage.NetworkId = this.NetworkId;
             behaviourDataMessage.BehaviourIndex = this.BehaviourIndex;

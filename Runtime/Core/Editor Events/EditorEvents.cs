@@ -8,43 +8,43 @@ namespace Lost
 {
     public class EditorEvents
     {
-        public class OnDomainReloadAttribute : System.Attribute
+        public sealed class OnDomainReloadAttribute : System.Attribute
         {
         }
 
-        public class OnUserBuildInitiatedAttribute : System.Attribute
+        public sealed class OnUserBuildInitiatedAttribute : System.Attribute
         {
         }
 
-        public class OnCloudBuildInitiatedAttribute : System.Attribute
+        public sealed class OnCloudBuildInitiatedAttribute : System.Attribute
         {
         }
 
-        public class OnPreprocessBuildAttribute : System.Attribute
+        public sealed class OnPreprocessBuildAttribute : System.Attribute
         {
         }
 
-        public class OnPostprocessBuildAttribute : System.Attribute
+        public sealed class OnPostprocessBuildAttribute : System.Attribute
         {
         }
 
-        public class OnPostGenerateGradleAndroidProjectAttribute : System.Attribute
+        public sealed class OnPostGenerateGradleAndroidProjectAttribute : System.Attribute
         {
         }
 
-        public class OnProcessSceneAttribute : System.Attribute
+        public sealed class OnProcessSceneAttribute : System.Attribute
         {
         }
 
-        public class OnExitingPlayModeAttribute : System.Attribute
+        public sealed class OnExitingPlayModeAttribute : System.Attribute
         {
         }
 
-        public class OnExitPlayModeAttribute : System.Attribute
+        public sealed class OnExitPlayModeAttribute : System.Attribute
         {
         }
 
-        public class OnEnterPlayModeAttribute : System.Attribute
+        public sealed class OnEnterPlayModeAttribute : System.Attribute
         {
         }
     }

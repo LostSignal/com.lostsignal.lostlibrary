@@ -242,11 +242,11 @@ namespace Lost.Networking
 
                     if (networkObject != null)
                     {
-                        if (networkBehaviourDataMessage.SendType == BehaviourDataSendType.All)
+                        if (networkBehaviourDataMessage.SendType == NetworkBehaviourDataSendType.All)
                         {
                             this.gameServer.SendMessageToAll(networkBehaviourDataMessage);
                         }
-                        else if (networkBehaviourDataMessage.SendType == BehaviourDataSendType.Others)
+                        else if (networkBehaviourDataMessage.SendType == NetworkBehaviourDataSendType.Others)
                         {
                             this.gameServer.SendMessageToAllExcept(userInfo, networkBehaviourDataMessage);
                         }
@@ -325,6 +325,39 @@ namespace Lost.Networking
             }
         }
 
+        public void ServerUserDisconnected(UserInfo userInfo, bool wasConnectionLost)
+        {
+            Debug.Log("SERVER: User Disconnected - " + userInfo.GetDisplayName() + " - " + userInfo.GetPlayFabId());
+
+            // Making sure to destroy all object this user owns, but DestoryOnDisconnect is true
+            this.networkBehaviourDestoryed.DestroyedNetworkIds.Clear();
+
+            foreach (var dynamic in this.serverState.DynamicUnityGameObjects.Values)
+            {
+                if (dynamic.DestoryOnDisconnect && dynamic.OwnerId == userInfo.UserId)
+                {
+                    this.networkBehaviourDestoryed.DestroyedNetworkIds.Add(dynamic.NetworkId);
+                }
+            }
+
+            if (this.networkBehaviourDestoryed.DestroyedNetworkIds.Count > 0)
+            {
+                this.gameServer.SendMessageToAllExcept(userInfo, this.networkBehaviourDestoryed);
+
+                for (int i = 0; i < this.networkBehaviourDestoryed.DestroyedNetworkIds.Count; i++)
+                {
+                    this.serverState.DynamicUnityGameObjects.Remove(this.networkBehaviourDestoryed.DestroyedNetworkIds[i]);
+                }
+            }
+
+            // Detecting if we need to migrate to a new user
+            if (this.serverId == userInfo.UserId)
+            {
+                Debug.Log("ServerUserDisconnected is Migrating Server...");
+                this.MigrateServerToNewUser(this.GetNextServerUser(), NotifyType.All);
+            }
+        }
+
         //// var users = this.gameServer?.ConnectedUsers;
         //// int userCount = users?.Count ?? 0;
         //// long oldServerId = this.serverId;
@@ -379,39 +412,6 @@ namespace Lost.Networking
                         this.SendIdentityUpdateMessage(unityNetworkObject);
                     }
                 }
-            }
-        }
-
-        public void ServerUserDisconnected(UserInfo userInfo, bool wasConnectionLost)
-        {
-            Debug.Log("SERVER: User Disconnected - " + userInfo.GetDisplayName() + " - " + userInfo.GetPlayFabId());
-
-            // Making sure to destroy all object this user owns, but DestoryOnDisconnect is true
-            this.networkBehaviourDestoryed.DestroyedNetworkIds.Clear();
-
-            foreach (var dynamic in this.serverState.DynamicUnityGameObjects.Values)
-            {
-                if (dynamic.DestoryOnDisconnect && dynamic.OwnerId == userInfo.UserId)
-                {
-                    this.networkBehaviourDestoryed.DestroyedNetworkIds.Add(dynamic.NetworkId);
-                }
-            }
-
-            if (this.networkBehaviourDestoryed.DestroyedNetworkIds.Count > 0)
-            {
-                this.gameServer.SendMessageToAllExcept(userInfo, this.networkBehaviourDestoryed);
-
-                for (int i = 0; i < this.networkBehaviourDestoryed.DestroyedNetworkIds.Count; i++)
-                {
-                    this.serverState.DynamicUnityGameObjects.Remove(this.networkBehaviourDestoryed.DestroyedNetworkIds[i]);
-                }
-            }
-
-            // Detecting if we need to migrate to a new user
-            if (this.serverId == userInfo.UserId)
-            {
-                Debug.Log("ServerUserDisconnected is Migrating Server...");
-                this.MigrateServerToNewUser(this.GetNextServerUser(), NotifyType.All);
             }
         }
 

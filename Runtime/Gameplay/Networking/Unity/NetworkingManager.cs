@@ -28,8 +28,6 @@ namespace Lost.Networking
         GameClient CreateGameClientAndConnect(string ip, int port);
     }
 
-    public delegate void ConnectedUsersUpdatedDelegate();
-
     public sealed class NetworkingManager : Manager<NetworkingManager>
     {
         private const string ValidMatchNameCharacters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -51,6 +49,9 @@ namespace Lost.Networking
         [SerializeField] private bool printDebugOutput;
 #pragma warning restore 0649
 
+        private ReadOnlyCollection<UserInfo> emptyConnectedUsersList = new ReadOnlyCollection<UserInfo>(new List<UserInfo>());
+        private ConnectedUsersUpdatedDelegate onConnectedUsersUpdated;
+
         private bool originalRunInBackground;
         private bool isConnected;
         private long playerId;
@@ -61,12 +62,22 @@ namespace Lost.Networking
         private GameServer gameServer;
         private GameClient gameClient;
 
+        public delegate void ConnectedUsersUpdatedDelegate();
+
+        public event ConnectedUsersUpdatedDelegate OnConnectedUsersUpdated
+        {
+            add => this.OnConnectedUsersUpdated += value;
+            remove => this.OnConnectedUsersUpdated -= value;
+        }
+
         public enum NetworkingMode
         {
             RunClientAndServer,
             RunClientAndLANServer,
             RunClientAndCloudServer,
         }
+
+        public static bool PrintDebugOutput => IsInitialized ? Instance.printDebugOutput : false;
 
         public NetworkingMode Mode
         {
@@ -88,15 +99,9 @@ namespace Lost.Networking
             }
         }
 
-        public event ConnectedUsersUpdatedDelegate OnConnectedUsersUpdated;
-
         public bool HasJoinedServer => this.gameClient?.HasJoinedServer == true;
 
-        private ReadOnlyCollection<UserInfo> emptyConnectedUsersList = new ReadOnlyCollection<UserInfo>(new List<UserInfo>());
-
         public ReadOnlyCollection<UserInfo> ConnectedUsers => this.gameClient?.ConnectedUsers ?? this.emptyConnectedUsersList;
-
-        public static bool PrintDebugOutput => IsInitialized ? Instance.printDebugOutput : false;
 
         public static string GenerateRandomRoomName()
         {
@@ -120,8 +125,8 @@ namespace Lost.Networking
                 yield return PlayFabManager.WaitForInitialization();
                 this.playerId = PlayFab.PlayFabManager.Instance.User.PlayFabNumericId;
 
-                // TODO [bgish]: Use this if not using playfab
-                // this.playerId = ((long)UnityEngine.Random.Range(int.MinValue, int.MaxValue) << 32) & ((long)UnityEngine.Random.Range(int.MinValue, int.MaxValue));
+                //// TODO [bgish]: Use this if not using playfab
+                //// this.playerId = ((long)UnityEngine.Random.Range(int.MinValue, int.MaxValue) << 32) & ((long)UnityEngine.Random.Range(int.MinValue, int.MaxValue));
 
                 this.SetInstance(this);
             }
@@ -406,7 +411,7 @@ namespace Lost.Networking
         private void OnDestroy()
         {
             this.Shutdown();
-            this.OnConnectedUsersUpdated = null;
+            this.onConnectedUsersUpdated = null;
         }
 
         private void ShutdownClientAndServer()
@@ -522,27 +527,27 @@ namespace Lost.Networking
 
         private void OnClientUserConnected(UserInfo userInfo, bool wasReconnect)
         {
-            this.OnConnectedUsersUpdated?.Invoke();
+            this.onConnectedUsersUpdated?.Invoke();
         }
 
         private void OnClientUserInfoUpdated(UserInfo userInfo)
         {
-            this.OnConnectedUsersUpdated?.Invoke();
+            this.onConnectedUsersUpdated?.Invoke();
         }
 
         private void OnClientUserDisconnected(UserInfo userInfo, bool wasConnectionLost)
         {
-            this.OnConnectedUsersUpdated?.Invoke();
+            this.onConnectedUsersUpdated?.Invoke();
         }
 
         private void OnClientConnectedToServer()
         {
-            this.OnConnectedUsersUpdated?.Invoke();
+            this.onConnectedUsersUpdated?.Invoke();
         }
 
         private void OnClientDisconnectedFromServer()
         {
-            this.OnConnectedUsersUpdated?.Invoke();
+            this.onConnectedUsersUpdated?.Invoke();
         }
 
         public class GameServerInfo

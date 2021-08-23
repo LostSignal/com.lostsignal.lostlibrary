@@ -52,7 +52,7 @@ namespace Lost
 
         public override bool RunStart => false;
 
-        public override void DoUpdate(float deltaTime)
+        public override void OnUpdate(float deltaTime)
         {
             bool isPlayerInside = this.IsInProximity();
 
@@ -86,7 +86,7 @@ namespace Lost
 
         protected override void LoadBalancedAwake()
         {
-            this.DoUpdate(0.0f);
+            this.OnUpdate(0.0f);
         }
 
         private bool IsInProximity()

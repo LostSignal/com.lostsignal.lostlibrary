@@ -17,14 +17,6 @@ namespace Lost
         private List<GameObject> inactive = new List<GameObject>();
         private Transform inactivePoolParent;
 
-        public string PrefabName { get; private set; }
-
-        public int InstanceId { get; private set; }
-
-        //// TODO [bgish]: these will need to come in later sometime
-        //// public int InitialSize { get; set; }
-        //// public int MaxSize { get; set; }
-
         public Pool(GameObject prefab, int initialCount = 0)
         {
             this.PrefabName = prefab.name;
@@ -50,6 +42,14 @@ namespace Lost
                 initialPooledObjects[i].Recycle();
             }
         }
+
+        public string PrefabName { get; private set; }
+
+        public int InstanceId { get; private set; }
+
+        //// TODO [bgish]: these will need to come in later sometime
+        //// public int InitialSize { get; set; }
+        //// public int MaxSize { get; set; }
 
         public void PermanentlyRemoveObjectFromPool(PooledObject pooledObject)
         {

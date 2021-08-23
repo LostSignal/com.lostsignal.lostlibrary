@@ -17,7 +17,7 @@ namespace Lost
     ////               making our own Coroutine system is not trivial though, so not sure if that is the
     ////               best solution.
     ////
-    public abstract class LoadBalancingManager<TManager, TInterface> : Manager<TManager>, IUpdatable
+    public abstract class LoadBalancingManager<TManager, TInterface> : Manager<TManager>, IUpdate
         where TManager : MonoBehaviour
     {
 #pragma warning disable 0649
@@ -75,7 +75,7 @@ namespace Lost
             return LoadBalancerReceipt.New(index, context, this.CancelReceipt);
         }
 
-        public virtual void DoUpdate(float deltaTime)
+        public virtual void OnUpdate(float deltaTime)
         {
             if (this.callbackQueue.IsEmpty)
             {

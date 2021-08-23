@@ -16,30 +16,15 @@ namespace Lost
     using UnityEngine;
     using UnityEngine.Profiling;
 
-    public interface IUpdatable
+    public interface IUpdate
     {
-        void DoUpdate(float deltaTime);
+        void OnUpdate(float deltaTime);
     }
 
     [Serializable]
     public class UpdateChannel
     {
-        private struct Callback
-        {
-            public int Id;
-            public IUpdatable Updatable;
-            public float LastCalledTime;
-            public UnityEngine.Object Context;
-        }
-
-        public enum UpdateType
-        {
-            Update,
-            FixedUpdate,
-            LateUpdate,
-        }
-
-        private static readonly Callback DefaultCallback = default(Callback);
+        private static readonly Callback DefaultCallback = default;
 
         #pragma warning disable 0649
         [SerializeField] private string name;
@@ -56,6 +41,18 @@ namespace Lost
         private Callback[] callbacks;
         private int currentId;
         private int count;
+
+        private float runAllEveryXSeconds;
+        private int nextIndexToRun;
+        private int currentRunCount;
+        private float currentDeltaTime = float.MaxValue;
+
+        public enum UpdateType
+        {
+            Update,
+            FixedUpdate,
+            LateUpdate,
+        }
 
         public string Name => this.name;
 
@@ -89,10 +86,6 @@ namespace Lost
 
         #endif
 
-        private float runAllEveryXSeconds;
-        private int nextIndexToRun;
-        private int currentRunCount;
-        private float currentDeltaTime = float.MaxValue;
 
         public void Run(float deltaTime)
         {
@@ -132,37 +125,7 @@ namespace Lost
             //// Go backwards through the list starting form where we last left off and call the Actions
         }
 
-        private void Reset()
-        {
-            this.nextIndexToRun = this.count - 1;
-            this.currentRunCount = 0;
-            this.currentDeltaTime = 0.0f;
-        }
-
-        private void Run(int runCount)
-        {
-            while (runCount > 0 && this.nextIndexToRun >= 0)
-            {
-                try
-                {
-                    float now = Time.realtimeSinceStartup;
-                    float deltaTime = now - this.callbacks[this.nextIndexToRun].LastCalledTime;
-                    this.callbacks[this.nextIndexToRun].LastCalledTime = now;
-                    this.callbacks[this.nextIndexToRun].Updatable?.DoUpdate(deltaTime);
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError($"UpdateManager Channel {this.Name} caught an exception.", this.callbacks[this.nextIndexToRun].Context);
-                    Debug.LogException(ex, this.callbacks[this.nextIndexToRun].Context);
-                }
-
-                this.nextIndexToRun--;
-                this.currentRunCount++;
-                runCount--;
-            }
-        }
-
-        public UpdateChannelReceipt RegisterCallback(IUpdatable updatable, UnityEngine.Object context)
+        public UpdateChannelReceipt RegisterCallback(IUpdate updatable, UnityEngine.Object context)
         {
             int callbackIndex = this.count++;
 
@@ -187,6 +150,36 @@ namespace Lost
             return UpdateChannelReceipt.New(callbackId, this.RemoveCallback);
         }
 
+        private void Reset()
+        {
+            this.nextIndexToRun = this.count - 1;
+            this.currentRunCount = 0;
+            this.currentDeltaTime = 0.0f;
+        }
+
+        private void Run(int runCount)
+        {
+            while (runCount > 0 && this.nextIndexToRun >= 0)
+            {
+                try
+                {
+                    float now = Time.realtimeSinceStartup;
+                    float deltaTime = now - this.callbacks[this.nextIndexToRun].LastCalledTime;
+                    this.callbacks[this.nextIndexToRun].LastCalledTime = now;
+                    this.callbacks[this.nextIndexToRun].Updatable?.OnUpdate(deltaTime);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"UpdateManager Channel {this.Name} caught an exception.", this.callbacks[this.nextIndexToRun].Context);
+                    Debug.LogException(ex, this.callbacks[this.nextIndexToRun].Context);
+                }
+
+                this.nextIndexToRun--;
+                this.currentRunCount++;
+                runCount--;
+            }
+        }
+
         private void RemoveCallback(int id)
         {
             if (this.idToIndexMap.TryGetValue(id, out int index))
@@ -206,6 +199,14 @@ namespace Lost
                 this.callbacks[lastCallbackIndex] = DefaultCallback;
                 this.count--;
             }
+        }
+
+        private struct Callback
+        {
+            public int Id;
+            public IUpdate Updatable;
+            public float LastCalledTime;
+            public UnityEngine.Object Context;
         }
     }
 }

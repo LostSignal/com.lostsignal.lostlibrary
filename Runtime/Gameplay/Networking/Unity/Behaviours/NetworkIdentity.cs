@@ -13,14 +13,6 @@ namespace Lost.Networking
     using UnityEngine;
     using UnityEngine.SceneManagement;
 
-    public delegate void NetworkUpdateDelegate();
-
-    public delegate void NetworkOwnershipRequestedDelegate();
-
-    public delegate void NetworkOwnershipGrantedDelegate();
-
-    public delegate void NetworkOwnershipFailedDelegate();
-
     public class NetworkIdentity : MonoBehaviour
     {
         private static readonly NetworkIdentityRequestUpdate NetworkIdentityRequestUpdateCache = new NetworkIdentityRequestUpdate();
@@ -29,23 +21,16 @@ namespace Lost.Networking
 
         public event NetworkUpdateDelegate NetworkUpdate;
 
-        public static long NewId()
-        {
-            return BitConverter.ToInt64(Guid.NewGuid().ToByteArray(), 0);
-        }
-
         private static readonly NetworkIdentityUpdate UpdateNetworkIdentityMessageCache = new NetworkIdentityUpdate();
 
-        public delegate void NetworkIdentityDestroyedDelegate(long networkId);
-
-        public NetworkIdentityDestroyedDelegate Destroyed;
-        public NetworkOwnershipRequestedDelegate OwnershipRequested;
-        public NetworkOwnershipGrantedDelegate OwnershipRequestGranted;
-        public NetworkOwnershipFailedDelegate OwnershipRequestFailed;
+        private NetworkIdentityDestroyedDelegate destroyed;
+        private NetworkOwnershipRequestedDelegate ownershipRequested;
+        private NetworkOwnershipGrantedDelegate ownershipRequestGranted;
+        private NetworkOwnershipFailedDelegate ownershipRequestFailed;
 
 #pragma warning disable 0649
         [SerializeField] private long networkId = -1L;
-        [SerializeField] private NetworkBehaviour[] behaviours = new NetworkBehaviour[0];
+        [SerializeField] private NetworkBehaviour[] behaviours = Array.Empty<NetworkBehaviour>();
         [SerializeField] private bool destoryOnDisconnect;
         [SerializeField] private bool canChangeOwner;
 #pragma warning restore 0649
@@ -53,6 +38,40 @@ namespace Lost.Networking
         private GameClient gameClient = null;
         private bool isRequestingOwnership;
         private long ownerId;
+
+        public delegate void NetworkIdentityDestroyedDelegate(long networkId);
+
+        public delegate void NetworkUpdateDelegate();
+
+        public delegate void NetworkOwnershipRequestedDelegate();
+
+        public delegate void NetworkOwnershipGrantedDelegate();
+
+        public delegate void NetworkOwnershipFailedDelegate();
+
+        public event NetworkIdentityDestroyedDelegate Destroyed
+        {
+            add => this.destroyed += value;
+            remove => this.destroyed -= value;
+        }
+
+        public event NetworkOwnershipRequestedDelegate OwnershipRequested
+        {
+            add => this.ownershipRequested += value;
+            remove => this.ownershipRequested -= value;
+        }
+
+        public event NetworkOwnershipGrantedDelegate OwnershipRequestGranted
+        {
+            add => this.ownershipRequestGranted += value;
+            remove => this.ownershipRequestGranted -= value;
+        }
+
+        public event NetworkOwnershipFailedDelegate OwnershipRequestFailed
+        {
+            add => this.ownershipRequestFailed += value;
+            remove => this.ownershipRequestFailed -= value;
+        }
 
         public long NetworkId => this.networkId;
 
@@ -69,6 +88,11 @@ namespace Lost.Networking
         public bool CanChangeOwner => this.canChangeOwner;
 
         public NetworkBehaviour[] Behaviours => this.behaviours;
+
+        public static long NewId()
+        {
+            return BitConverter.ToInt64(Guid.NewGuid().ToByteArray(), 0);
+        }
 
         public static void GetAllSceneNetworkIdentities(List<NetworkIdentity> networkIdentities)
         {
@@ -113,7 +137,7 @@ namespace Lost.Networking
             if (this.canChangeOwner)
             {
                 this.isRequestingOwnership = true;
-                this.OwnershipRequested?.Invoke();
+                this.ownershipRequested?.Invoke();
 
                 NetworkIdentityOwnershipRequestCache.NetworkId = this.networkId;
                 this.gameClient?.SendMessage(NetworkIdentityOwnershipRequestCache);
@@ -160,7 +184,7 @@ namespace Lost.Networking
                         Debug.Log($"Ownership Granted for NetworkIdentity {this.networkId}");
                     }
 
-                    this.OwnershipRequestGranted?.Invoke();
+                    this.ownershipRequestGranted?.Invoke();
                 }
                 else
                 {
@@ -169,7 +193,7 @@ namespace Lost.Networking
                         Debug.Log($"Ownership Failed for NetworkIdentity {this.networkId}");
                     }
 
-                    this.OwnershipRequestFailed?.Invoke();
+                    this.ownershipRequestFailed?.Invoke();
                 }
 
                 this.isRequestingOwnership = false;
@@ -272,7 +296,7 @@ namespace Lost.Networking
 
         private void OnDestroy()
         {
-            this.Destroyed?.Invoke(this.networkId);
+            this.destroyed?.Invoke(this.networkId);
         }
 
         private void Update()

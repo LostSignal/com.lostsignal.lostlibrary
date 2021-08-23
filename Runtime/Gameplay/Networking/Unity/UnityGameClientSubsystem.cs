@@ -14,7 +14,7 @@ namespace Lost.Networking
 
     public class UnityGameClientSubsystem : IGameClientSubsystem
     {
-        private static readonly NetworkReader Reader = new NetworkReader(new byte[0]);
+        private static readonly NetworkReader Reader = new NetworkReader(System.Array.Empty<byte>());
 
         // private static readonly NetworkIdentityUpdate updateNetworkIdentityCache = new NetworkIdentityUpdate();
         private static Dictionary<string, NetworkIdentity> resourcePrefabCache = new Dictionary<string, NetworkIdentity>();

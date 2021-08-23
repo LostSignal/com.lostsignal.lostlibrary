@@ -9,15 +9,6 @@
 namespace Lost
 {
     using System.Runtime.CompilerServices;
-    using UnityEngine;
-
-    public struct CharacterInfo
-    {
-        public Vector3 Position;
-        public Vector3 Forward;
-        public Quaternion Rotation;
-        public int TeamId;
-    }
 
     public class CharacterManager : Manager<CharacterManager>
     {

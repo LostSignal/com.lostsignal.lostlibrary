@@ -42,9 +42,8 @@ namespace Lost
                 worldSpaceVert = worldSpaceVert.SetY(this.transform.position.y);
 
                 Ray ray = new Ray(worldSpaceVert, Vector3.down);
-                RaycastHit hit;
 
-                if (Physics.Raycast(ray, out hit, float.MaxValue, 1 << this.layer))
+                if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, 1 << this.layer))
                 {
                     worldSpaceVert = hit.point.AddToY(this.groundOffset);
                 }

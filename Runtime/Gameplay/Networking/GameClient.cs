@@ -256,9 +256,7 @@ namespace Lost.Networking
         {
             this.transportLayer?.Update();
 
-            ClientEvent clientEvent;
-
-            while (this.transportLayer.TryDequeueClientEvent(out clientEvent))
+            while (this.transportLayer.TryDequeueClientEvent(out ClientEvent clientEvent))
             {
                 switch (clientEvent.EventType)
                 {
@@ -416,8 +414,7 @@ namespace Lost.Networking
 
         private UserInfo AddOrUpdateUserInfo(UserInfo messageUserInfo)
         {
-            UserInfo userInfo;
-            if (this.userIdToUserInfoMap.TryGetValue(messageUserInfo.UserId, out userInfo))
+            if (this.userIdToUserInfoMap.TryGetValue(messageUserInfo.UserId, out UserInfo userInfo))
             {
                 userInfo.CopyFrom(messageUserInfo);
 
@@ -442,8 +439,7 @@ namespace Lost.Networking
 
         private UserInfo RemoveUserInfo(long userId)
         {
-            UserInfo userInfo;
-            if (this.userIdToUserInfoMap.TryGetValue(userId, out userInfo))
+            if (this.userIdToUserInfoMap.TryGetValue(userId, out UserInfo userInfo))
             {
                 this.userIdToUserInfoMap.Remove(userId);
                 this.users.Remove(userInfo);

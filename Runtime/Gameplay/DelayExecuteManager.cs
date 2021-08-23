@@ -11,7 +11,7 @@ namespace Lost
     using System;
     using UnityEngine;
 
-    public class DelayExecuteManager : Manager<DelayExecuteManager>, IUpdatable
+    public class DelayExecuteManager : Manager<DelayExecuteManager>, IUpdate
     {
         private const string ChannelName = nameof(DelayExecuteManager);
 
@@ -58,7 +58,7 @@ namespace Lost
             this.delayedActions[this.count++] = new DelayedAction { ExecuteTime = Time.realtimeSinceStartup + seconds, Action = action };
         }
 
-        void IUpdatable.DoUpdate(float deltaTime)
+        void IUpdate.OnUpdate(float deltaTime)
         {
             float currentTime = Time.realtimeSinceStartup;
             int i = 0;
