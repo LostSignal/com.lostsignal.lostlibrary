@@ -21,7 +21,7 @@ namespace Lost
 
     public class CharacterManager : Manager<CharacterManager>
     {
-        public static readonly CharacterInfo Empty = default(CharacterInfo);
+        public static readonly CharacterInfo Empty = default;
 
         public CharacterInfo MainCharacterInfo
         {

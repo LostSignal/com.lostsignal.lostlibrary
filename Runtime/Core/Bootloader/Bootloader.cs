@@ -8,6 +8,7 @@
 
 namespace Lost
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Runtime.CompilerServices;
@@ -180,7 +181,7 @@ namespace Lost
             bool ShouldRunBootloader()
             {
                 var ignoreSceneNamesString = RuntimeBuildConfig.Instance.GetString(BootloaderIgnoreSceneNames);
-                var ignoreScenes = string.IsNullOrWhiteSpace(ignoreSceneNamesString) ? new string[0] : ignoreSceneNamesString.Split(';');
+                var ignoreScenes = string.IsNullOrWhiteSpace(ignoreSceneNamesString) ? Array.Empty<string>() : ignoreSceneNamesString.Split(';');
                 var activeSceneName = SceneManager.GetActiveScene().name;
 
                 foreach (var sceneToIgnore in ignoreScenes)
@@ -256,12 +257,12 @@ namespace Lost
             this.StartCoroutine(this.Bootup());
         }
 
-        private void OnDestroy()
-        {
-            //// Clean up lazy assets only if they were instantiated
-            //// this.managersAddressablesPrefab.Release();
-            //// this.managersAddressablesScene.Release();
-        }
+        //// private void OnDestroy()
+        //// {
+        ////     // Clean up lazy assets only if they were instantiated
+        ////     this.managersAddressablesPrefab.Release();
+        ////     this.managersAddressablesScene.Release();
+        //// }
 
         private IEnumerator Bootup()
         {

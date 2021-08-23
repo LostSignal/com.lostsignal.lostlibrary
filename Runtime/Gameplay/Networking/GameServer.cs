@@ -208,18 +208,13 @@ namespace Lost.Networking
 
         public void SendMessageToConnection(long connectionId, Message message, bool reliable = true)
         {
-            byte[] data;
-            uint length;
-            this.GetDataFromMessage(message, out data, out length);
-
+            this.GetDataFromMessage(message, out byte[] data, out uint length);
             this.SendData(connectionId, data, length, reliable);
         }
 
         public void SendMessageToAll(Message message, bool reliable = true)
         {
-            byte[] data;
-            uint length;
-            this.GetDataFromMessage(message, out data, out length);
+            this.GetDataFromMessage(message, out byte[] data, out uint length);
 
             for (int i = 0; i < this.users.Count; i++)
             {
@@ -229,9 +224,7 @@ namespace Lost.Networking
 
         public void SendMessageToAllExcept(UserInfo userInfo, Message message, bool reliable = true)
         {
-            byte[] data;
-            uint length;
-            this.GetDataFromMessage(message, out data, out length);
+            this.GetDataFromMessage(message, out byte[] data, out uint length);
 
             for (int i = 0; i < this.users.Count; i++)
             {
@@ -280,9 +273,7 @@ namespace Lost.Networking
         {
             this.transportLayer?.Update();
 
-            ServerEvent serverEvent;
-
-            while (this.transportLayer.TryDequeueServerEvent(out serverEvent))
+            while (this.transportLayer.TryDequeueServerEvent(out ServerEvent serverEvent))
             {
                 switch (serverEvent.EventType)
                 {
@@ -533,8 +524,7 @@ namespace Lost.Networking
 
         private void CloseConnection(long connectionId, bool connectionLost)
         {
-            UserInfo userInfo;
-            if (this.connectionIdToUserInfoMap.TryGetValue(connectionId, out userInfo) == false)
+            if (this.connectionIdToUserInfoMap.TryGetValue(connectionId, out UserInfo userInfo) == false)
             {
                 return;
             }

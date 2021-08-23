@@ -211,9 +211,7 @@ namespace Lost.Networking
 
         public NetworkIdentity CreateDynamicNetworkIdentity(string resourceName, long networkId, long ownerId, Vector3 position, Quaternion rotation)
         {
-            NetworkIdentity networkIdentityPrefab;
-
-            if (resourcePrefabCache.TryGetValue(resourceName, out networkIdentityPrefab) == false)
+            if (resourcePrefabCache.TryGetValue(resourceName, out NetworkIdentity networkIdentityPrefab) == false)
             {
                 networkIdentityPrefab = Resources.Load<NetworkIdentity>(resourceName);
                 resourcePrefabCache.Add(resourceName, networkIdentityPrefab);
@@ -224,8 +222,7 @@ namespace Lost.Networking
             newNetworkIdentity.SetNetworkId(networkId);
             newNetworkIdentity.SetOwner(ownerId, newNetworkIdentity.CanChangeOwner);
             newNetworkIdentity.ResourceName = resourceName;
-            newNetworkIdentity.transform.position = position;
-            newNetworkIdentity.transform.rotation = rotation;
+            newNetworkIdentity.transform.SetPositionAndRotation(position, rotation);
 
             if (this.isConnected)
             {

@@ -32,7 +32,7 @@ namespace Lost.Networking
 
     public sealed class NetworkingManager : Manager<NetworkingManager>
     {
-        private static readonly string ValidMatchNameCharacters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        private const string ValidMatchNameCharacters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 #pragma warning disable 0649
         [Header("Mode")]

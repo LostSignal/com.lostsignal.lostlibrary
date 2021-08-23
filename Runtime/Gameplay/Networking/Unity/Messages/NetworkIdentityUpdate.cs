@@ -52,8 +52,9 @@ namespace Lost.Networking
 
             if (updatePositionAndRotation)
             {
-                identity.transform.position = NetworkTransformAnchor.TransformPosition(this.Position);
-                identity.transform.rotation = NetworkTransformAnchor.TransformRotation(this.Rotation);
+                identity.transform.SetPositionAndRotation(
+                    NetworkTransformAnchor.TransformPosition(this.Position),
+                    NetworkTransformAnchor.TransformRotation(this.Rotation));
             }
         }
 

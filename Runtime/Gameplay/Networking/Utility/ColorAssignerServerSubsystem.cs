@@ -11,8 +11,8 @@ namespace Lost.Networking
 
     public class ColorAssignerServerSubsystem : IGameServerSubsystem
     {
-        private static readonly string ColorKey = "Color";
-        private static readonly string InvalidColor = "000000";
+        private const string ColorKey = "Color";
+        private const string InvalidColor = "000000";
 
         private static readonly List<string> AllColors = new List<string>
         {
