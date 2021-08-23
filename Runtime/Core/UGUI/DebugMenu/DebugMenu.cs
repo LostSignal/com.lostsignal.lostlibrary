@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //--------------------------------------------------------------------s---
 // <copyright file="DebugMenu.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -19,11 +17,13 @@ namespace Lost
         UpperLeft,
         UpperRight,
         LowerLeft,
-        LowerRight
+        LowerRight,
     }
 
     public class DebugMenu : DialogLogic
     {
+        private readonly int fpsUpdateTicks = 10;
+
 #pragma warning disable 0649
         [Header("Menu Items")]
         [SerializeField] private GameObject debugMenu;
@@ -37,10 +37,7 @@ namespace Lost
         [SerializeField] private TMP_Text lowerRightText;
 #pragma warning restore 0649
 
-        public DebugMenuSettings Settings { get; private set; } = new DebugMenuSettings();
-
-        // fps related variables
-        private readonly int fpsUpdateTicks = 10;
+        // Fps related variables
         private int fpsCurrentTickCount = 0;
         private float fpsDeltaTime = 0.0f;
         private Corner fpsCorner = Corner.UpperLeft;
@@ -48,7 +45,7 @@ namespace Lost
 
         private Camera cameraCache = null;
 
-        #region Menu Item Related Methods
+        public DebugMenuSettings Settings { get; private set; } = new DebugMenuSettings();
 
         public void ShowMenu()
         {
@@ -79,10 +76,6 @@ namespace Lost
             }
         }
 
-        #endregion
-
-        #region FPS Related Methods
-
         public void ShowFPS()
         {
             this.showFps = true;
@@ -111,10 +104,6 @@ namespace Lost
             this.fpsCorner = fpsCorner;
             this.SetCornerColor(fpsCorner, fpsColor);
         }
-
-        #endregion
-
-        #region Text Overlay Related Methods
 
         public void SetText(Corner corner, string text)
         {
@@ -173,8 +162,6 @@ namespace Lost
                     break;
             }
         }
-
-        #endregion
 
         public void SetSettings(DebugMenuSettings settings)
         {

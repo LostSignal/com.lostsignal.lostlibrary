@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="Dialog.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -23,20 +21,8 @@ namespace Lost
     [RequireComponent(typeof(DialogSetupHelper))]
     public sealed class Dialog : MonoBehaviour
     {
-        public enum ShowType
-        {
-            HideThenShow,
-            ShowImmediate,
-        }
-
-        public enum StoreType
-        {
-            None,
-            Soft,
-            Premium,
-        }
-
         private static readonly int HideHash = Animator.StringToHash("Hide");
+
         private static readonly int ShowHash = Animator.StringToHash("Show");
 
 #pragma warning disable 0649
@@ -71,17 +57,30 @@ namespace Lost
         [SerializeField] private UnityEvent onBackButtonPressed;
 
         // Set By Code
-        [SerializeField, HideInInspector] private DialogStateMachine dialogStateMachine;
-        [SerializeField, HideInInspector] private RectTransform contentRectTransform;
-        [SerializeField, HideInInspector] private GraphicRaycaster graphicRaycaster;
-        [SerializeField, HideInInspector] private InputBlocker blocker;
-        [SerializeField, HideInInspector] private Animator animator;
-        [SerializeField, HideInInspector] private HDCanvas hdCanvas;
-        [SerializeField, HideInInspector] private Canvas canvas;
+        [SerializeField] [HideInInspector] private DialogStateMachine dialogStateMachine;
+        [SerializeField] [HideInInspector] private RectTransform contentRectTransform;
+        [SerializeField] [HideInInspector] private GraphicRaycaster graphicRaycaster;
+        [SerializeField] [HideInInspector] private InputBlocker blocker;
+        [SerializeField] [HideInInspector] private Animator animator;
+        [SerializeField] [HideInInspector] private HDCanvas hdCanvas;
+        [SerializeField] [HideInInspector] private Canvas canvas;
 #pragma warning restore 0649
 
         private bool isHibernateMonitorRunning = false;
         private bool isShowing;
+
+        public enum ShowType
+        {
+            HideThenShow,
+            ShowImmediate,
+        }
+
+        public enum StoreType
+        {
+            None,
+            Soft,
+            Premium,
+        }
 
         public UnityEvent OnShow
         {

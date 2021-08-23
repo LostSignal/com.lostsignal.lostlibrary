@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="InputBlocker.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -21,11 +19,11 @@ namespace Lost
     public class InputBlocker : MonoBehaviour, IPointerClickHandler
     {
         #pragma warning disable 0649
-        [SerializeField, HideInInspector] private GraphicRaycaster graphicRaycaster;
-        [SerializeField, HideInInspector] private CanvasRenderer canvasRenderer;
-        [SerializeField, HideInInspector] private RectTransform rectTransform;
-        [SerializeField, HideInInspector] private UnityEvent onClick;
-        [SerializeField, HideInInspector] private Image image;
+        [SerializeField] [HideInInspector] private GraphicRaycaster graphicRaycaster;
+        [SerializeField] [HideInInspector] private CanvasRenderer canvasRenderer;
+        [SerializeField] [HideInInspector] private RectTransform rectTransform;
+        [SerializeField] [HideInInspector] private UnityEvent onClick;
+        [SerializeField] [HideInInspector] private Image image;
         #pragma warning restore 0649
 
         public UnityEvent OnClick
@@ -37,6 +35,11 @@ namespace Lost
         {
             get { return this.image.color; }
             set { this.image.color = value; }
+        }
+
+        void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
+        {
+            this.onClick.Invoke();
         }
 
         private void Awake()
@@ -93,11 +96,6 @@ namespace Lost
             {
                 this.rectTransform.sizeDelta = Vector2.zero;
             }
-        }
-
-        void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
-        {
-            this.onClick.Invoke();
         }
     }
 }

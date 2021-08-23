@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="BetterStringBuilder.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -26,14 +24,14 @@ namespace Lost
         private const long Million = 1000000;
         private const long Thousand = 1000;
 
-        private static readonly char[] digits = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-        private static readonly char[] charBuffer = new char[512];
+        private static readonly char[] Digits = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+        private static readonly char[] CharBuffer = new char[512];
         private static int currentLength;
 
         public static BetterStringBuilder New()
         {
             currentLength = 0;
-            return new BetterStringBuilder();
+            return default(BetterStringBuilder);
         }
 
         public BetterStringBuilder Append(string value)
@@ -42,7 +40,7 @@ namespace Lost
             {
                 for (int i = 0; i < value.Length; i++)
                 {
-                    charBuffer[currentLength++] = value[i];
+                    CharBuffer[currentLength++] = value[i];
                 }
             }
 
@@ -61,7 +59,7 @@ namespace Lost
 
         public BetterStringBuilder Append(char value)
         {
-            charBuffer[currentLength++] = value;
+            CharBuffer[currentLength++] = value;
             return this;
         }
 
@@ -108,12 +106,12 @@ namespace Lost
 
         public void Set(TMP_Text text)
         {
-            text.SetCharArray(charBuffer, 0, currentLength);
+            text.SetCharArray(CharBuffer, 0, currentLength);
         }
 
         public override string ToString()
         {
-            return new string(charBuffer, 0, currentLength);
+            return new string(CharBuffer, 0, currentLength);
         }
 
         private BetterStringBuilder AppendLong(long value, bool showThousandsSeperator)
@@ -122,7 +120,7 @@ namespace Lost
 
             if (value < 0)
             {
-                charBuffer[currentLength++] = '-';
+                CharBuffer[currentLength++] = '-';
                 value *= -1;
             }
 
@@ -138,7 +136,7 @@ namespace Lost
             for (int i = 0; i < digitCount; i++)
             {
                 divisor /= 10;
-                charBuffer[currentLength++] = digits[(value / divisor) % 10];
+                CharBuffer[currentLength++] = Digits[(value / divisor) % 10];
 
                 if (divisor == 1000 || divisor == 1000000 || divisor == 1000000000)
                 {

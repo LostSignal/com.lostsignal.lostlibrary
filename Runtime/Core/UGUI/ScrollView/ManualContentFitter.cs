@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="VerticalContentFitter.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -16,13 +14,6 @@ namespace Lost
     [RequireComponent(typeof(RectTransform))]
     public class ManualContentFitter : UIBehaviour
     {
-        public enum GrowDirection
-        {
-            Vertical,
-            Horizontal,
-            Both,
-        }
-
         #pragma warning disable 0649
         [SerializeField] private GrowDirection growDirection;
         [SerializeField] private float bottomPadding;
@@ -30,6 +21,13 @@ namespace Lost
         #pragma warning restore 0649
 
         private RectTransform rectTransform;
+
+        public enum GrowDirection
+        {
+            Vertical,
+            Horizontal,
+            Both,
+        }
 
         public void Resize()
         {

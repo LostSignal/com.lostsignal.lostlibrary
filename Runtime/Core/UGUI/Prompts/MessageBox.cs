@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //--------------------------------------------------------------------s---
 // <copyright file="MessageBox.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -99,18 +97,18 @@ namespace Lost
 
         private IEnumerator<OkResult> ShowOkInternal(string title, string body)
         {
-            // TODO [bgish]: If "in use", then wait till it becomes available
+            //// TODO [bgish]: If "in use", then wait till it becomes available
 
             this.SetOkButtonText(title, body);
             this.Dialog.Show();
 
-            // waiting for it to start showing
+            // Waiting for it to start showing
             while (this.Dialog.IsShowing == false)
             {
                 yield return default(OkResult);
             }
 
-            // waiting for it to return to the hidden state
+            // Waiting for it to return to the hidden state
             while (this.Dialog.IsHidden == false)
             {
                 yield return default(OkResult);
@@ -125,13 +123,13 @@ namespace Lost
             this.SetLeftRightText(title, body, language.No, language.Yes);
             this.Dialog.Show();
 
-            // waiting for it to start showing
+            // Waiting for it to start showing
             while (this.Dialog.IsShowing == false)
             {
                 yield return default(YesNoResult);
             }
 
-            // waiting for it to return to the hidden state
+            // Waiting for it to return to the hidden state
             while (this.Dialog.IsHidden == false)
             {
                 yield return default(YesNoResult);
@@ -153,7 +151,7 @@ namespace Lost
 
         private IEnumerator<LeftRightResult> ShowInternal(string title, string body, string leftButtonText, string rightButtonText)
         {
-            // TODO [bgish]: If "in use", then wait till it becomes available
+            //// TODO [bgish]: If "in use", then wait till it becomes available
 
             if (string.IsNullOrEmpty(leftButtonText) == false && this.leftButtonText == null)
             {

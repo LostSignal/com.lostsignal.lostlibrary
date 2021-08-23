@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="ToggleHelper.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -22,7 +20,7 @@ namespace Lost
         [SerializeField] private UnityEvent onToggleOff;
 
         // Hidden Serialized Fields
-        [SerializeField, HideInInspector] private Toggle toggle;
+        [SerializeField] [HideInInspector] private Toggle toggle;
         #pragma warning restore 0649
 
         private void OnValidate()

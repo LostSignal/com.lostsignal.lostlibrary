@@ -22,17 +22,6 @@ namespace Lost
         private static readonly IDictionary<char, char> KeyStrBase64Dict = CreateBaseDict(KeyStrBase64);
         private static readonly IDictionary<char, char> KeyStrUriSafeDict = CreateBaseDict(KeyStrUriSafe);
 
-        private static IDictionary<char, char> CreateBaseDict(string alphabet)
-        {
-            var dict = new Dictionary<char, char>();
-            for (var i = 0; i < alphabet.Length; i++)
-            {
-                dict[alphabet[i]] = (char)i;
-            }
-
-            return dict;
-        }
-
         public static string CompressToBase64(string input)
         {
             if (input == null)
@@ -100,6 +89,28 @@ namespace Lost
         public static string Compress(string uncompressed)
         {
             return Compress(uncompressed, 16, code => (char)code);
+        }
+
+        public static string Decompress(string compressed)
+        {
+            if (compressed == null)
+            {
+                throw new ArgumentNullException(nameof(compressed));
+            }
+
+            // TODO: Use an enumerator
+            return Decompress(compressed.Length, 32768, index => compressed[index]);
+        }
+
+        private static IDictionary<char, char> CreateBaseDict(string alphabet)
+        {
+            var dict = new Dictionary<char, char>();
+            for (var i = 0; i < alphabet.Length; i++)
+            {
+                dict[alphabet[i]] = (char)i;
+            }
+
+            return dict;
         }
 
         private static string Compress(string uncompressed, int bitsPerChar, Func<int, char> getCharFromInt)
@@ -407,17 +418,6 @@ namespace Lost
             }
 
             return context_data.ToString();
-        }
-
-        public static string Decompress(string compressed)
-        {
-            if (compressed == null)
-            {
-                throw new ArgumentNullException(nameof(compressed));
-            }
-
-            // TODO: Use an enumerator
-            return Decompress(compressed.Length, 32768, index => compressed[index]);
         }
 
         private static string Decompress(int length, int resetValue, Func<int, char> getNextValue)

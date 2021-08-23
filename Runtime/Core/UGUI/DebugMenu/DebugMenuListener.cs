@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //--------------------------------------------------------------------s---
 // <copyright file="DebugMenuListener.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -16,7 +14,7 @@ namespace Lost
     public class DebugMenuListener : MonoBehaviour
     {
 #pragma warning disable 0649
-        [SerializeField, HideInInspector] private DebugMenu debugMenu;
+        [SerializeField] [HideInInspector] private DebugMenu debugMenu;
 #pragma warning restore 0649
 
 #if USING_UNITY_INPUT_SYSTEM

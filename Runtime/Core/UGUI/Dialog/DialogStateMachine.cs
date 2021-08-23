@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="DialogStateMachine.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -18,6 +16,13 @@ namespace Lost
         private static readonly int HiddenHash = Animator.StringToHash("Hide");
 
         private State state;
+
+        private enum State
+        {
+            Initialized,
+            Hidden,
+            Shown,
+        }
 
         public bool IsDoneShowing
         {
@@ -46,13 +51,6 @@ namespace Lost
             {
                 this.state = State.Hidden;
             }
-        }
-
-        private enum State
-        {
-            Initialized,
-            Hidden,
-            Shown,
         }
     }
 }

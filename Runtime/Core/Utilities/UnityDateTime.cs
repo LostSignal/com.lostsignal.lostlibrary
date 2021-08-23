@@ -20,7 +20,7 @@ namespace Lost
 
         public static implicit operator UnityDateTime(System.DateTime systemDateTime)
         {
-            var unityDateTime = new UnityDateTime();
+            var unityDateTime = default(UnityDateTime);
             unityDateTime.dateTime = systemDateTime;
             return unityDateTime;
         }

@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="IntText.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -28,15 +26,15 @@ namespace Lost
     {
         #pragma warning disable 0649
         [SerializeField] private string unsetText = "?";
-        [SerializeField] private string prefixValue = "";
-        [SerializeField] private string postfixValue = "";
+        [SerializeField] private string prefixValue = string.Empty;
+        [SerializeField] private string postfixValue = string.Empty;
         [SerializeField] private UnityEvent onStartAnimation;
         [SerializeField] private UnityEvent onEndAnimation;
         [SerializeField] private AnimationCurve animationCurve = new AnimationCurve(new Keyframe { time = 0, value = 0 }, new Keyframe { time = 1, value = 1 });
         [SerializeField] private IntFormat format;
 
         // Hidden Serialized Fields
-        [SerializeField, HideInInspector] private Text text;
+        [SerializeField] [HideInInspector] private Text text;
         #pragma warning restore 0649
 
         private Coroutine animateToGoalCoroutine;

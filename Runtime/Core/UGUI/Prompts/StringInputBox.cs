@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //--------------------------------------------------------------------s---
 // <copyright file="StringInputBox.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -17,19 +15,7 @@ namespace Lost
     using InputField = TMPro.TMP_InputField;
     using Text = TMPro.TextMeshProUGUI;
 
-    public struct StringInputResult
-    {
-        public InputResult Result;
-        public string Text;
-
-        public enum InputResult
-        {
-            Cancel,
-            Ok,
-        }
-    }
-
-    // TODO [bgish]: Make sure to move the Content Object up if TouchScreenKeyboard.visible is true
+    //// TODO [bgish]: Make sure to move the Content Object up if TouchScreenKeyboard.visible is true
 
     public class StringInputBox : DialogLogic
     {
@@ -143,7 +129,7 @@ namespace Lost
 
         private IEnumerator<StringInputResult> ShowInternal(string title, string body, string startingText = null)
         {
-            // TODO [bgish]: If "in use", then wait till it becomes available
+            //// TODO [bgish]: If "in use", then wait till it becomes available
 
             this.startingText = string.IsNullOrWhiteSpace(startingText) ? string.Empty : startingText;
             this.inputField.text = this.startingText;

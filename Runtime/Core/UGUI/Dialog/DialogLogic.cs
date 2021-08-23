@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="DialogLogic.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -24,7 +22,8 @@ namespace Lost
     public abstract class DialogLogic : MonoBehaviour
     {
         #pragma warning disable 0649
-        [SerializeField, HideInInspector]
+        [SerializeField]
+        [HideInInspector]
         private Dialog dialog;
         #pragma warning restore 0649
 

@@ -20,6 +20,13 @@ namespace Lost
 
     public static class Platform
     {
+        // TODO [bgish] - make sure <uses-permission android:name="android.permission.VIBRATE"/> is in the AndroidManifest.xml file
+        #if UNITY_ANDROID && !UNITY_EDITOR
+        private static AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+        private static AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+        private static AndroidJavaObject vibrator = currentActivity.Call<AndroidJavaObject>("getSystemService", "vibrator");
+        #endif
+
         public enum UnityEditorPlatform
         {
             Windows,
@@ -27,13 +34,6 @@ namespace Lost
             Linux,
             Unknown,
         }
-
-        // TODO [bgish] - make sure <uses-permission android:name="android.permission.VIBRATE"/> is in the AndroidManifest.xml file
-        #if UNITY_ANDROID && !UNITY_EDITOR
-        private static AndroidJavaClass UnityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-        private static AndroidJavaObject CurrentActivity = UnityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-        private static AndroidJavaObject Vibrator = CurrentActivity.Call<AndroidJavaObject>("getSystemService", "vibrator");
-        #endif
 
         public static bool IsApplicationQuitting { get; private set; }
 
@@ -202,7 +202,7 @@ namespace Lost
             {
                 case DevicePlatform.Android:
                     #if UNITY_ANDROID && !UNITY_EDITOR
-                    Vibrator.Call("vibrate", milliseconds);
+                    vibrator.Call("vibrate", milliseconds);
                     #endif
                     break;
 

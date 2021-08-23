@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="NoSubmitButton.cs" company="Lost Signal LLC">
+// <copyright file="StringInputResult.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -8,12 +8,15 @@
 
 namespace Lost
 {
-    using UnityEngine.EventSystems;
-
-    public class NoSubmitButton : UnityEngine.UI.Button
+    public struct StringInputResult
     {
-        public override void OnSubmit(BaseEventData eventData)
+        public InputResult Result;
+        public string Text;
+
+        public enum InputResult
         {
+            Cancel,
+            Ok,
         }
     }
 }

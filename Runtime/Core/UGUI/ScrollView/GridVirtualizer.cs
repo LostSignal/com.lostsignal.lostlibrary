@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="GridVirtualizer.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -16,17 +14,9 @@ namespace Lost
     using UnityEngine.UI;
 
     [Serializable]
-    public abstract class GridVirtualizer<T> where T : MonoBehaviour
+    public abstract class GridVirtualizer<T>
+        where T : MonoBehaviour
     {
-        public enum GrowType
-        {
-            Vertically,
-            Horizontally,
-        }
-
-        public delegate void OnShowItemDelegate(T monoBehaviour, int index);
-        public event OnShowItemDelegate OnShowItem;
-
         #pragma warning disable 0649
         [SerializeField] private GrowType growType;
         [SerializeField] private Vector2 cellSize;
@@ -34,6 +24,7 @@ namespace Lost
         [SerializeField] private ScrollRect scrollRect;
         [SerializeField] private RectTransform itemContainer;
         [SerializeField] private T dataPrefab;
+        [SerializeField] private Vector3 contentOffset;
         #pragma warning restore 0649
 
         private ManualContentFitter manualContentFitter;
@@ -44,8 +35,6 @@ namespace Lost
 
         private List<T> inactivePool = new List<T>();
         private List<T> activePool = new List<T>();
-
-        public Vector3 contentOffset;
 
         private int activeTopRow = -1;
         private int activeBottomRow = -1;
@@ -60,11 +49,14 @@ namespace Lost
 
         private bool isInitialized = false;
 
-        private Vector3 GetUpperLeftCornerOfItemContainer()
+        public delegate void OnShowItemDelegate(T monoBehaviour, int index);
+
+        public event OnShowItemDelegate OnShowItem;
+
+        public enum GrowType
         {
-            Vector3[] itemContainerWorldCorners = new Vector3[4];
-            this.itemContainer.GetWorldCorners(itemContainerWorldCorners);
-            return this.scrollRect.viewport.worldToLocalMatrix.MultiplyPoint(itemContainerWorldCorners[1]);
+            Vertically,
+            Horizontally,
         }
 
         public void SetCount(int count)
@@ -92,6 +84,13 @@ namespace Lost
             this.ReplaceAllVisibleTiles();
         }
 
+        private Vector3 GetUpperLeftCornerOfItemContainer()
+        {
+            Vector3[] itemContainerWorldCorners = new Vector3[4];
+            this.itemContainer.GetWorldCorners(itemContainerWorldCorners);
+            return this.scrollRect.viewport.worldToLocalMatrix.MultiplyPoint(itemContainerWorldCorners[1]);
+        }
+
         private void ReplaceAllVisibleTiles()
         {
             this.GetActiveRowsAndColumns(out this.activeTopRow, out this.activeBottomRow, out this.activeLeftColumn, out this.activeRightColumn);
@@ -109,7 +108,7 @@ namespace Lost
 
             for (int i = this.activeTopRow; i <= this.activeBottomRow; i++)
             {
-                for (int j = activeLeftColumn; j <= activeRightColumn; j++)
+                for (int j = this.activeLeftColumn; j <= this.activeRightColumn; j++)
                 {
                     Vector2 position = new Vector2(this.GetColumnX(j), this.GetRowY(i));
                     this.ShowItem(i, j, position);
@@ -133,7 +132,8 @@ namespace Lost
         }
 
         #if UNITY_EDITOR
-        public void OnSceneGUI()
+
+        private void OnSceneGUI()
         {
             if (Application.isPlaying)
             {
@@ -283,7 +283,7 @@ namespace Lost
             }
         }
 
-        public void Update()
+        private void Update()
         {
             if (this.count == 0)
             {
@@ -311,8 +311,8 @@ namespace Lost
 
             bool refreshAll = true;
 
-            // TODO [bgish]: Calculate what rows/columns were hidden/shows and only show those
-            // TODO [bgish]: If the delta between rows > this.rowCount or delta between columns > this.columnCount, then destroy all children and redraw everything
+            //// TODO [bgish]: Calculate what rows/columns were hidden/shows and only show those
+            //// TODO [bgish]: If the delta between rows > this.rowCount or delta between columns > this.columnCount, then destroy all children and redraw everything
 
             if (refreshAll)
             {

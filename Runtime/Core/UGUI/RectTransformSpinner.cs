@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="RectSpinner.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -21,7 +19,7 @@ namespace Lost
         [SerializeField] private float snapDegrees = 45;
 
         // Hidden Serialized Fields
-        [SerializeField, HideInInspector] private RectTransform rectTransform;
+        [SerializeField] [HideInInspector] private RectTransform rectTransform;
         #pragma warning restore 0649
 
         private float currentDegrees;

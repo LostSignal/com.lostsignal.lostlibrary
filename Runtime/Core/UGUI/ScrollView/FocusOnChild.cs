@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="FocusOnChild.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -30,7 +28,7 @@ namespace Lost
         [SerializeField] private float dotScaleSpeed = 3.0f;
 
         // Hidden Serialized Fields
-        [SerializeField, HideInInspector] private ScrollRect scrollRect;
+        [SerializeField] [HideInInspector] private ScrollRect scrollRect;
         #pragma warning restore 0649
 
         private GameObject closestChild;

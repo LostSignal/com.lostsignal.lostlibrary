@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="UIAction.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -19,7 +17,7 @@ namespace Lost
         Highlighted = 1,
         Pressed = 2,
         Selected = 3,
-        Disabled = 4
+        Disabled = 4,
     }
 
     [ExecuteInEditMode]

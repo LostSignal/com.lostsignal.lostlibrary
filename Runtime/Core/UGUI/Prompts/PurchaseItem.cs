@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //--------------------------------------------------------------------s---
 // <copyright file="PurchaseItem.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -18,10 +16,10 @@ namespace Lost
     using System.Collections.Generic;
     using System.Linq;
     using global::PlayFab.ClientModels;
+    using Lost.PlayFab;
     using TMPro;
     using UnityEngine;
     using UnityEngine.UI;
-    using PlayFab;
 
     public enum PurchaseResult
     {

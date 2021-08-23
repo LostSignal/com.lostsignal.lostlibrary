@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="CountDownTimerText.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -21,7 +19,7 @@ namespace Lost
         [SerializeField] private string finishedText;
 
         // Hidden Serialized Fields
-        [SerializeField, HideInInspector] private Text text;
+        [SerializeField] [HideInInspector] private Text text;
         #pragma warning restore 0649
 
         private DateTime target;

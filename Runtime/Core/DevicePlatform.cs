@@ -6,11 +6,16 @@
 
 namespace Lost
 {
+    using System.Diagnostics.CodeAnalysis;
+
     [System.Flags]
     public enum DevicePlatform
     {
         None = 0,
+
+        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter", Justification = "Doesn't make sense for platforms that are suppose to start with lowercase letters.")]
         iOS = 1 << 0,  // UNITY_IOS / UNITY_IPHONE (Depricated)
+
         Android = 1 << 1,  // UNITY_ANDROID
         Windows = 1 << 2,  // UNITY_STANDALONE_WIN
         Mac = 1 << 3,  // UNITY_STANDALONE_OSX

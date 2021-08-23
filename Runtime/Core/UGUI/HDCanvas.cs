@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="HDCanvas.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -18,9 +16,15 @@ namespace Lost
     [RequireComponent(typeof(CanvasScaler))]
     public class HDCanvas : MonoBehaviour
     {
-        [SerializeField, HideInInspector] private CanvasScaler canvasScaler;
-        [SerializeField, HideInInspector] private Canvas canvas;
+        #pragma warning disable 0649
+        [SerializeField] [HideInInspector] private CanvasScaler canvasScaler;
+        [SerializeField] [HideInInspector] private Canvas canvas;
+#pragma warning restore 0649
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "StyleCop.CSharp.NamingRules",
+            "SA1300:Element should begin with upper-case letter",
+            Justification = "We're overriding Unity functionality and this is Unity's naming convention.")]
         public new bool enabled
         {
             get

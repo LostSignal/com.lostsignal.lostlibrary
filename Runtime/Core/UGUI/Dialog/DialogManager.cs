@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="DialogManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -56,7 +54,8 @@ namespace Lost
             }
         }
 
-        public static T GetDialog<T>() where T : DialogLogic
+        public static T GetDialog<T>()
+            where T : DialogLogic
         {
             if (DialogManager.Instance.dialogTypes.TryGetValue(typeof(T), out DialogLogic dialogLogic))
             {
