@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="Spline.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -74,7 +72,7 @@ namespace Lost
             }
 
             // If this desiredLength isn't greater than the last, then start from beginning and don't used cached values
-            if (desiredLength < lastDesiredLength)
+            if (desiredLength < this.lastDesiredLength)
             {
                 this.cachedIndex = 0;
                 this.currentSplineLength = 0.0f;
@@ -83,7 +81,7 @@ namespace Lost
             // Cache the desired length to test against for next time
             this.lastDesiredLength = desiredLength;
 
-            for (int i = cachedIndex; i < this.children.Count; i++)
+            for (int i = this.cachedIndex; i < this.children.Count; i++)
             {
                 float currentLength = desiredLength - this.currentSplineLength;
                 float childLength = this.children[i].Length;
@@ -115,6 +113,15 @@ namespace Lost
             return this.children[index];
         }
 
+        private static float Interpolate(float p0, float p1, float p2, float p3, float t)
+        {
+            // Formula from "Cubic Bézier curves" section on http://en.wikipedia.org/wiki/B%C3%A9zier_curve
+            return ((1.0f - t) * (1.0f - t) * (1.0f - t) * p0) +
+                    (3 * (1.0f - t) * (1.0f - t) * t * p1) +
+                    (3 * (1.0f - t) * t * t * p2) +
+                    (t * t * t * p3);
+        }
+
         private void Awake()
         {
             Debug.Assert(this.children.Count > 1, "Spline doesn't have enough child nodes.  Must have at least 2 spline points.", this);
@@ -125,15 +132,6 @@ namespace Lost
                 this.children[i].Initialize();
                 this.splineLength += this.children[i].Length;
             }
-        }
-
-        private static float Interpolate(float p0, float p1, float p2, float p3, float t)
-        {
-            // Formula from "Cubic Bézier curves" section on http://en.wikipedia.org/wiki/B%C3%A9zier_curve
-            return (1.0f - t) * (1.0f - t) * (1.0f - t) * p0 +
-                3 * (1.0f - t) * (1.0f - t) * t * p1 +
-                3 * (1.0f - t) * t * t * p2 +
-                t * t * t * p3;
         }
 
         #if UNITY_EDITOR

@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="CosUtil.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -25,6 +23,6 @@ namespace Lost
         public static readonly double Cos20 = 0.93969262078591;
         public static readonly double Cos15 = 0.96592582628907;
         public static readonly double Cos10 = 0.98480775301221;
-        public static readonly double Cos5  = 0.99619469809175;
+        public static readonly double Cos5 = 0.99619469809175;
     }
 }

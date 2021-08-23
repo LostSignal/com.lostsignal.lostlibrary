@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="ColorUtil.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -13,7 +11,7 @@ namespace Lost
 
     public static class ColorUtil
     {
-        private static readonly Dictionary<char, int> hexToDecimal = new Dictionary<char, int>()
+        private static readonly Dictionary<char, int> HexToDecimal = new Dictionary<char, int>()
         {
             { '0', 0 }, { '1', 1 }, { '2', 2 }, { '3', 3 }, { '4', 4 },
             { '5', 5 }, { '6', 6 }, { '7', 7 }, { '8', 8 }, { '9', 9 },
@@ -25,7 +23,7 @@ namespace Lost
             { 'f', 15 }, { 'F', 15 },
         };
 
-        private static readonly char[] decimalToHex = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+        private static readonly char[] DecimalToHex = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
         public static UnityEngine.Color ParseColorHexString(string colorHexString)
         {
@@ -36,22 +34,22 @@ namespace Lost
 
             if (colorHexString.Length == 3)
             {
-                r = hexToDecimal[colorHexString[0]] << 4 | hexToDecimal[colorHexString[0]];
-                g = hexToDecimal[colorHexString[1]] << 4 | hexToDecimal[colorHexString[1]];
-                b = hexToDecimal[colorHexString[2]] << 4 | hexToDecimal[colorHexString[2]];
+                r = HexToDecimal[colorHexString[0]] << 4 | HexToDecimal[colorHexString[0]];
+                g = HexToDecimal[colorHexString[1]] << 4 | HexToDecimal[colorHexString[1]];
+                b = HexToDecimal[colorHexString[2]] << 4 | HexToDecimal[colorHexString[2]];
             }
             else if (colorHexString.Length == 6)
             {
-                r = hexToDecimal[colorHexString[0]] << 4 | hexToDecimal[colorHexString[1]];
-                g = hexToDecimal[colorHexString[2]] << 4 | hexToDecimal[colorHexString[3]];
-                b = hexToDecimal[colorHexString[4]] << 4 | hexToDecimal[colorHexString[5]];
+                r = HexToDecimal[colorHexString[0]] << 4 | HexToDecimal[colorHexString[1]];
+                g = HexToDecimal[colorHexString[2]] << 4 | HexToDecimal[colorHexString[3]];
+                b = HexToDecimal[colorHexString[4]] << 4 | HexToDecimal[colorHexString[5]];
             }
             else if (colorHexString.Length == 8)
             {
-                r = hexToDecimal[colorHexString[0]] << 4 | hexToDecimal[colorHexString[1]];
-                g = hexToDecimal[colorHexString[2]] << 4 | hexToDecimal[colorHexString[3]];
-                b = hexToDecimal[colorHexString[4]] << 4 | hexToDecimal[colorHexString[5]];
-                a = hexToDecimal[colorHexString[6]] << 4 | hexToDecimal[colorHexString[7]];
+                r = HexToDecimal[colorHexString[0]] << 4 | HexToDecimal[colorHexString[1]];
+                g = HexToDecimal[colorHexString[2]] << 4 | HexToDecimal[colorHexString[3]];
+                b = HexToDecimal[colorHexString[4]] << 4 | HexToDecimal[colorHexString[5]];
+                a = HexToDecimal[colorHexString[6]] << 4 | HexToDecimal[colorHexString[7]];
             }
 
             return new UnityEngine.Color(r, g, b, a);
@@ -69,12 +67,12 @@ namespace Lost
                 StringBuilder builder = new StringBuilder(7);
 
                 return builder
-                    .Append(decimalToHex[r >> 4])
-                    .Append(decimalToHex[r & 15])
-                    .Append(decimalToHex[g >> 4])
-                    .Append(decimalToHex[g & 15])
-                    .Append(decimalToHex[b >> 4])
-                    .Append(decimalToHex[b & 15])
+                    .Append(DecimalToHex[r >> 4])
+                    .Append(DecimalToHex[r & 15])
+                    .Append(DecimalToHex[g >> 4])
+                    .Append(DecimalToHex[g & 15])
+                    .Append(DecimalToHex[b >> 4])
+                    .Append(DecimalToHex[b & 15])
                     .ToString();
             }
             else
@@ -82,14 +80,14 @@ namespace Lost
                 StringBuilder builder = new StringBuilder(9);
 
                 return builder
-                    .Append(decimalToHex[r >> 4])
-                    .Append(decimalToHex[r & 15])
-                    .Append(decimalToHex[g >> 4])
-                    .Append(decimalToHex[g & 15])
-                    .Append(decimalToHex[b >> 4])
-                    .Append(decimalToHex[b & 15])
-                    .Append(decimalToHex[a >> 4])
-                    .Append(decimalToHex[a & 15])
+                    .Append(DecimalToHex[r >> 4])
+                    .Append(DecimalToHex[r & 15])
+                    .Append(DecimalToHex[g >> 4])
+                    .Append(DecimalToHex[g & 15])
+                    .Append(DecimalToHex[b >> 4])
+                    .Append(DecimalToHex[b & 15])
+                    .Append(DecimalToHex[a >> 4])
+                    .Append(DecimalToHex[a & 15])
                     .ToString();
             }
         }

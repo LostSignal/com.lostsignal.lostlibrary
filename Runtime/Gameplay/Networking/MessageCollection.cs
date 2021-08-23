@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="MessageCollection.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -27,7 +25,8 @@ namespace Lost.Networking
             return (short)value;
         }
 
-        public void RegisterMessage<T>() where T : Message, new()
+        public void RegisterMessage<T>()
+            where T : Message, new()
         {
             Message message = new T();
             short messageId = message.GetId();

@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="CharacterManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -45,10 +43,10 @@ namespace Lost
 
         public override void Initialize()
         {
-            // Wait for UpdateManager
+            //// Wait for UpdateManager
 
-            // TODO [bgis]: Need a way to force this to execute before almost anything else
-            // UpdateManger.Instance.RegisterOnUpdate(DoWork);
+            //// TODO [bgish]: Need a way to force this to execute before almost anything else
+            //// UpdateManger.Instance.RegisterOnUpdate(DoWork);
 
             this.SetInstance(this);
         }
@@ -64,7 +62,7 @@ namespace Lost
                 if (character.IsMainCharacter)
                 {
                     foundMainCharacter = true;
-                    MainCharacterInfo = new CharacterInfo
+                    this.MainCharacterInfo = new CharacterInfo
                     {
                         Position = character.Transform.position,
                         Rotation = character.Transform.rotation,
@@ -75,7 +73,7 @@ namespace Lost
 
                 if (foundMainCharacter == false)
                 {
-                    MainCharacterInfo = Empty;
+                    this.MainCharacterInfo = Empty;
                 }
             }
 

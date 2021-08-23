@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="PeriodicUpdateUnit.cs" company="Lost Signal">
 //     Copyright (c) Lost Signal. All rights reserved.
@@ -17,6 +15,7 @@ namespace Lost
     public sealed class PeriodicUpdateUnit : EventUnit<EmptyEventArgs>
     {
         [DoNotSerialize] public ValueInput CallPerSecond { get; private set; }
+
         [DoNotSerialize] public ValueOutput DeltaTime { get; private set; }
 
         protected override bool register => false;
@@ -41,7 +40,7 @@ namespace Lost
         {
             base.Definition();
 
-            this.CallPerSecond = ValueInput<int>("Calls Per Sec");
+            this.CallPerSecond = this.ValueInput<int>("Calls Per Sec");
             this.DeltaTime = this.ValueOutput("Delta Time", this.GetDeltaTime).Predictable();
         }
 

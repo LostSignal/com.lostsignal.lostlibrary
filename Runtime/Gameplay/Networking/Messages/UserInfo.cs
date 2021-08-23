@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="UserInfo.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -12,15 +10,6 @@ namespace Lost.Networking
 
     public class UserInfo
     {
-        /// <summary>
-        /// Only used/set by the server.
-        /// </summary>
-        public long ConnectionId { get; set; }
-
-        public long UserId { get; set; }
-
-        public Dictionary<string, string> CustomData { get; set; }
-
         public UserInfo()
         {
             this.CustomData = new Dictionary<string, string>();
@@ -31,6 +20,16 @@ namespace Lost.Networking
             this.CustomData = new Dictionary<string, string>();
             this.CopyFrom(copy);
         }
+
+        /// <summary>
+        /// Gets or sets the connection id.  This is only used/set by the server.
+        /// </summary>
+        /// <value>The connection id.</value>
+        public long ConnectionId { get; set; }
+
+        public long UserId { get; set; }
+
+        public Dictionary<string, string> CustomData { get; set; }
 
         public void Deserialize(NetworkReader reader)
         {

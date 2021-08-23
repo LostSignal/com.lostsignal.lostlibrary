@@ -16,6 +16,7 @@ namespace Lost
     {
         // General
         public static readonly byte[] ByteBuffer = new byte[1024 * 1024]; // 1 MB
+        public static readonly Vector3[] Vectors = new Vector3[500];
 
         // Netwokring
         public static readonly List<NetworkIdentity> NetworkIdentities = new List<NetworkIdentity>(50);

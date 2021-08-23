@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="UpdateChannel.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -77,9 +75,9 @@ namespace Lost
 
         public void Initialize()
         {
-            if (this.callbacks == null || this.callbacks.Length != startingCapacity)
+            if (this.callbacks == null || this.callbacks.Length != this.startingCapacity)
             {
-                this.callbacks = new Callback[startingCapacity];
+                this.callbacks = new Callback[this.startingCapacity];
             }
         }
 
@@ -102,7 +100,7 @@ namespace Lost
             {
                 return;
             }
-            else if (currentDeltaTime > runAllEveryXSeconds)
+            else if (this.currentDeltaTime > this.runAllEveryXSeconds)
             {
                 int runsRemaining = this.nextIndexToRun + 1;
 
@@ -118,13 +116,16 @@ namespace Lost
                 }
             }
 
-            currentDeltaTime += deltaTime;
+            this.currentDeltaTime += deltaTime;
 
             // NOTE [bgish]: May need to make sure currentDeltaTime / runAllEveryXSeconds is never more than 1
-            int desiredRunCount = Mathf.CeilToInt(currentDeltaTime / runAllEveryXSeconds) * this.count;
-            int runCount = desiredRunCount - currentRunCount;
+            int desiredRunCount = Mathf.CeilToInt(this.currentDeltaTime / this.runAllEveryXSeconds) * this.count;
+            int runCount = desiredRunCount - this.currentRunCount;
 
-            if (runCount == 0) return;
+            if (runCount == 0)
+            {
+                return;
+            }
 
             this.Run(runCount);
 
@@ -133,26 +134,26 @@ namespace Lost
 
         private void Reset()
         {
-            nextIndexToRun = this.count - 1;
-            currentRunCount = 0;
-            currentDeltaTime = 0.0f;
+            this.nextIndexToRun = this.count - 1;
+            this.currentRunCount = 0;
+            this.currentDeltaTime = 0.0f;
         }
 
         private void Run(int runCount)
         {
-            while (runCount > 0 && nextIndexToRun >= 0)
+            while (runCount > 0 && this.nextIndexToRun >= 0)
             {
                 try
                 {
                     float now = Time.realtimeSinceStartup;
-                    float deltaTime = now - this.callbacks[nextIndexToRun].LastCalledTime;
-                    this.callbacks[nextIndexToRun].LastCalledTime = now;
-                    this.callbacks[nextIndexToRun].Updatable?.DoUpdate(deltaTime);
+                    float deltaTime = now - this.callbacks[this.nextIndexToRun].LastCalledTime;
+                    this.callbacks[this.nextIndexToRun].LastCalledTime = now;
+                    this.callbacks[this.nextIndexToRun].Updatable?.DoUpdate(deltaTime);
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError($"UpdateManager Channel {this.Name} caught an exception.", this.callbacks[nextIndexToRun].Context);
-                    Debug.LogException(ex, this.callbacks[nextIndexToRun].Context);
+                    Debug.LogError($"UpdateManager Channel {this.Name} caught an exception.", this.callbacks[this.nextIndexToRun].Context);
+                    Debug.LogException(ex, this.callbacks[this.nextIndexToRun].Context);
                 }
 
                 this.nextIndexToRun--;
@@ -181,14 +182,14 @@ namespace Lost
                 LastCalledTime = Time.realtimeSinceStartup,
             };
 
-            idToIndexMap.Add(callbackId, callbackIndex);
+            this.idToIndexMap.Add(callbackId, callbackIndex);
 
             return UpdateChannelReceipt.New(callbackId, this.RemoveCallback);
         }
 
         private void RemoveCallback(int id)
         {
-            if (idToIndexMap.TryGetValue(id, out int index))
+            if (this.idToIndexMap.TryGetValue(id, out int index))
             {
                 var lastCallbackIndex = this.count - 1;
                 var callbackToRemove = this.callbacks[index];

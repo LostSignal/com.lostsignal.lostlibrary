@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="Pooler.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -18,7 +16,8 @@ namespace Lost
         // TODO [bgish]: need to figure out how to add items to the pool (scriptable object?  components register object?)
         private static Dictionary<int, Pool> pools = new Dictionary<int, Pool>();
 
-        public static void PoolPrefab<T>(T prefab, int initialCount = 0) where T : MonoBehaviour
+        public static void PoolPrefab<T>(T prefab, int initialCount = 0)
+            where T : MonoBehaviour
         {
             PoolPrefab(prefab.gameObject, initialCount);
         }
@@ -75,22 +74,26 @@ namespace Lost
             }
         }
 
-        public static T Instantiate<T>(T prefab) where T : UnityEngine.MonoBehaviour
+        public static T Instantiate<T>(T prefab)
+            where T : UnityEngine.MonoBehaviour
         {
             return Instantiate<T>(prefab, null, false);
         }
 
-        public static T Instantiate<T>(T prefab, bool reset) where T : UnityEngine.MonoBehaviour
+        public static T Instantiate<T>(T prefab, bool reset)
+            where T : UnityEngine.MonoBehaviour
         {
             return Instantiate<T>(prefab, null, reset);
         }
 
-        public static T Instantiate<T>(T prefab, Transform parent) where T : UnityEngine.MonoBehaviour
+        public static T Instantiate<T>(T prefab, Transform parent)
+            where T : UnityEngine.MonoBehaviour
         {
             return Instantiate<T>(prefab, parent, false);
         }
 
-        public static T Instantiate<T>(T prefab, Transform parent, bool reset) where T : UnityEngine.MonoBehaviour
+        public static T Instantiate<T>(T prefab, Transform parent, bool reset)
+            where T : UnityEngine.MonoBehaviour
         {
             int instanceId = prefab.gameObject.GetInstanceID();
             Pool pool = null;

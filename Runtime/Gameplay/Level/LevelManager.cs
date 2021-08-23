@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="LevelManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -71,7 +69,6 @@ namespace Lost
     ////
     //// Level Load Finish
     ////   ??? (AI Start?)
-
 
     public class LevelManager : Manager<LevelManager>
     {

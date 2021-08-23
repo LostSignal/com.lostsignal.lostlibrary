@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="OnPlayerEnterExit.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -16,9 +14,10 @@ namespace Lost
 
     public class OnPlayerEnterExit : MonoBehaviour
     {
-        private static UpdateChannel HighPriorityChannel;
-        private static UpdateChannel LowPriorityChannel;
-        //private static bool AreStaticsInitialized;
+        private static UpdateChannel highPriorityChannel;
+        private static UpdateChannel lowPriorityChannel;
+
+        //// private static bool AreStaticsInitialized;
 
         // Reset is called on reboot and leaving editor mode
         static OnPlayerEnterExit()
@@ -27,9 +26,9 @@ namespace Lost
 
             void Reset()
             {
-                HighPriorityChannel = default(UpdateChannel);
-                LowPriorityChannel = default(UpdateChannel);
-                //AreStaticsInitialized = false;
+                highPriorityChannel = default(UpdateChannel);
+                lowPriorityChannel = default(UpdateChannel);
+                //// AreStaticsInitialized = false;
             }
         }
 
@@ -52,7 +51,7 @@ namespace Lost
         private UpdateChannel CurrentChannel
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => this.isPlayerInside ? HighPriorityChannel : LowPriorityChannel;
+            get => this.isPlayerInside ? highPriorityChannel : lowPriorityChannel;
         }
 
         private void Awake()
@@ -63,7 +62,7 @@ namespace Lost
             void Initialize()
             {
                 Debug.Log("OnPlayerEnterExit: OnPlayerEnterExit.Initialize");
-                UpdateRegistationWithUpdateManager();
+                this.UpdateRegistationWithUpdateManager();
                 this.isPlayerInside = this.GetIsPlayerInside();
                 this.InvokeEvent(this.isPlayerInside);
             }
@@ -71,12 +70,12 @@ namespace Lost
 
         private void OnEnable()
         {
-            UpdateRegistationWithUpdateManager();
+            this.UpdateRegistationWithUpdateManager();
         }
 
         private void OnDisable()
         {
-            UpdateRegistationWithUpdateManager();
+            this.UpdateRegistationWithUpdateManager();
         }
 
         private void UpdateRegistationWithUpdateManager()
@@ -111,15 +110,15 @@ namespace Lost
         // [ForceInline]
         private bool GetIsPlayerInside()
         {
-            // bool isInside = this.onPlayerEnterBounds.Contains(PlayerManager.Instance.PlayePosition);
-            //
-            // if (isInside && this.playerMustBeFacing)
-            // {
-            //     Vector3 thisObjectsForward = this.transform.position - CharacterManager.Instance.MainPlayer.Position);
-            //     return Vector3.Dot(CharacterManager.Instance.MainPlayer.Forward, thisObjectsForward) > CosUtil.Cos45;
-            // }
-            //
-            // return isInside;
+            //// bool isInside = this.onPlayerEnterBounds.Contains(PlayerManager.Instance.PlayePosition);
+            ////
+            //// if (isInside && this.playerMustBeFacing)
+            //// {
+            ////     Vector3 thisObjectsForward = this.transform.position - CharacterManager.Instance.MainPlayer.Position);
+            ////     return Vector3.Dot(CharacterManager.Instance.MainPlayer.Forward, thisObjectsForward) > CosUtil.Cos45;
+            //// }
+            ////
+            //// return isInside;
 
             return false;
         }

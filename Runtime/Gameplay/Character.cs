@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="Character.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -17,22 +15,22 @@ namespace Lost
 
     public class Character : MonoBehaviour
     {
-        private static readonly List<Character> characters;
-        private static readonly ReadOnlyCollection<Character> charactersReadOnly;
+        private static readonly List<Character> Characters;
+        private static readonly ReadOnlyCollection<Character> CharactersReadOnly;
 
         private Transform characterTransform;
 
         static Character()
         {
-            characters = new List<Character>(50);
-            charactersReadOnly = new ReadOnlyCollection<Character>(characters);
-            Bootloader.OnReset += characters.Clear;
+            Characters = new List<Character>(50);
+            CharactersReadOnly = new ReadOnlyCollection<Character>(Characters);
+            Bootloader.OnReset += Characters.Clear;
         }
 
         public static ReadOnlyCollection<Character> AllCharacters
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => charactersReadOnly;
+            get => CharactersReadOnly;
         }
 
 #pragma warning disable 0649
@@ -65,12 +63,12 @@ namespace Lost
 
         private void OnEnable()
         {
-            characters.Add(this);
+            Characters.Add(this);
         }
 
         private void OnDisable()
         {
-            characters.Remove(this);
+            Characters.Remove(this);
         }
     }
 }

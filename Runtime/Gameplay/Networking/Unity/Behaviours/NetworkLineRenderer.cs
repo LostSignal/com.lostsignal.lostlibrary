@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="NetworkLineRenderer.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -15,8 +13,6 @@ namespace Lost.Networking
     [RequireComponent(typeof(LineRenderer))]
     public class NetworkLineRenderer : NetworkBehaviour
     {
-        private static Vector3[] PositionsCache = new Vector3[500];
-
 #pragma warning disable 0649
         [SerializeField] private LineRenderer lineRenderer;
 #pragma warning restore 0649
@@ -31,7 +27,7 @@ namespace Lost.Networking
 
         public override void Serialize(NetworkWriter writer)
         {
-            int positionCount = this.lineRenderer.GetPositions(PositionsCache);
+            int positionCount = this.lineRenderer.GetPositions(Lost.Caching.Vectors);
             bool useWorldSpace = this.lineRenderer.useWorldSpace;
 
             writer.WritePackedUInt32(++this.version);
@@ -42,11 +38,11 @@ namespace Lost.Networking
             {
                 if (useWorldSpace)
                 {
-                    writer.Write(NetworkTransformAnchor.InverseTransformPosition(PositionsCache[i]));
+                    writer.Write(NetworkTransformAnchor.InverseTransformPosition(Lost.Caching.Vectors[i]));
                 }
                 else
                 {
-                    writer.Write(PositionsCache[i]);
+                    writer.Write(Lost.Caching.Vectors[i]);
                 }
             }
 
@@ -73,11 +69,11 @@ namespace Lost.Networking
 
             for (int i = 0; i < positionCount; i++)
             {
-                PositionsCache[i] = useWorldSpace ? NetworkTransformAnchor.TransformPosition(reader.ReadVector3()) : reader.ReadVector3();
+                Lost.Caching.Vectors[i] = useWorldSpace ? NetworkTransformAnchor.TransformPosition(reader.ReadVector3()) : reader.ReadVector3();
             }
 
             this.lineRenderer.positionCount = positionCount;
-            this.lineRenderer.SetPositions(PositionsCache);
+            this.lineRenderer.SetPositions(Lost.Caching.Vectors);
 
             if (NetworkingManager.PrintDebugOutput)
             {

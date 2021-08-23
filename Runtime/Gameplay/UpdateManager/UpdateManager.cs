@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="UpdateManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -35,7 +33,6 @@
 ////
 ////
 ////
-
 
 #define ENABLE_PROFILING
 
@@ -124,7 +121,7 @@ namespace Lost
         //// TODO [bgish]: Only PeriodicUpdate Bolt Node uses this, update it to use Channel system
         public void RegisterFunction(Action<float> function, int callFrequency)
         {
-            UnregisterFunction(function);
+            this.UnregisterFunction(function);
 
             functions.Add(new FunctionCall
             {

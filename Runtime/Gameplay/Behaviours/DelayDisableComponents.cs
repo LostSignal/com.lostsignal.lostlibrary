@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="DelayDisableComponents.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -22,7 +20,7 @@ namespace Lost
 
         private void OnEnable()
         {
-            if (components == null || components.Length == 0)
+            if (this.components == null || this.components.Length == 0)
             {
                 return;
             }

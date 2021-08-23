@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="NetworkBehaviour.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -16,7 +14,7 @@ namespace Lost.Networking
     public enum NetworkUpdateType
     {
         Tick,
-        Manual
+        Manual,
     }
 
     public abstract class NetworkBehaviour : MonoBehaviour

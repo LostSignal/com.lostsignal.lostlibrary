@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="GameClient.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -185,11 +183,11 @@ namespace Lost.Networking
 
             if (reliable)
             {
-                this.transportLayer.SendData(this.messageWriter.RawBuffer, 0, (uint)messageWriter.Position);
+                this.transportLayer.SendData(this.messageWriter.RawBuffer, 0, (uint)this.messageWriter.Position);
             }
             else
             {
-                this.transportLayer.SendDataUnreliable(this.messageWriter.RawBuffer, 0, (uint)messageWriter.Position);
+                this.transportLayer.SendDataUnreliable(this.messageWriter.RawBuffer, 0, (uint)this.messageWriter.Position);
             }
         }
 

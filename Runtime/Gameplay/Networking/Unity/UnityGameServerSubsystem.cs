@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="UnityGameServerSubsystem.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -13,34 +11,34 @@ namespace Lost.Networking
     using System.Threading.Tasks;
     using UnityEngine;
 
-    // All Objects have a NetworkIdentity component(rename to just Identity so I can resuse?)
-    // All Static objects start with OwnerId = -1
-    // At startup Clients ask for state of NetworkIdentity.Id
-    // Server keeps track of every latest NetworkBehaviour message?
+    //// All Objects have a NetworkIdentity component(rename to just Identity so I can resuse?)
+    //// All Static objects start with OwnerId = -1
+    //// At startup Clients ask for state of NetworkIdentity.Id
+    //// Server keeps track of every latest NetworkBehaviour message?
 
-    // NetworkIdetity.RequestUpdate(string resourceName)
-    //   sets the ResourceName and sends the NetworkIdentityRequestUpdate message
+    //// NetworkIdetity.RequestUpdate(string resourceName)
+    ////   sets the ResourceName and sends the NetworkIdentityRequestUpdate message
 
-    // NetworkManager.Startup()
-    //    Grab ALL NetworkIdentities in the scene
-    //    Call networkIdentity.RequestUpdate()
+    //// NetworkManager.Startup()
+    ////    Grab ALL NetworkIdentities in the scene
+    ////    Call networkIdentity.RequestUpdate()
 
-    // NetworkManager.Instantiate(string resourceName)
-    //   Use addressables to create the object
-    //   Give a random NetworkId
-    //   Call networkIdentity.RequestUpdate(resourceName)
+    //// NetworkManager.Instantiate(string resourceName)
+    ////   Use addressables to create the object
+    ////   Give a random NetworkId
+    ////   Call networkIdentity.RequestUpdate(resourceName)
 
-    // Server
+    //// Server
 
-    // NetworkManager.Instantiate
-    //    Creates the prefab and calls UpdateWithServer(resourceName);
+    //// NetworkManager.Instantiate
+    ////    Creates the prefab and calls UpdateWithServer(resourceName);
 
-    // Client
-    //     * On Startup collect all Static NetworkIdentities in the scenes
-    //     * NetworkIdentities sends NetworkIdentityRequestUpdate on first Update tick
-    //     * When receives NetworkIdentityUpdate, it either updates existing on NetworkIdentity or Creates one
-    //     * When receives NetworkBehaviourMessage, forwards it onto the NetworkIdentity (if it exists)
-    //     * When NetworkIdentity destoryed (and you own it), send NetworkIdentitiesDestroyed message
+    //// Client
+    ////     * On Startup collect all Static NetworkIdentities in the scenes
+    ////     * NetworkIdentities sends NetworkIdentityRequestUpdate on first Update tick
+    ////     * When receives NetworkIdentityUpdate, it either updates existing on NetworkIdentity or Creates one
+    ////     * When receives NetworkBehaviourMessage, forwards it onto the NetworkIdentity (if it exists)
+    ////     * When NetworkIdentity destoryed (and you own it), send NetworkIdentitiesDestroyed message
 
     public class UnityGameServerSubsystem : IGameServerSubsystem
     {
@@ -327,26 +325,26 @@ namespace Lost.Networking
             }
         }
 
-        // var users = this.gameServer?.ConnectedUsers;
-        // int userCount = users?.Count ?? 0;
-        // long oldServerId = this.serverId;
-        // long newServerId = userCount > 0 ? users[0].UserId : InvalidId;
-        //         this.serverId = newServerId;
-        //
-        //         Debug.Log($"Host Migration Detected: OldServerId = {oldServerId}, NewServerId = {newServerId}, User Count = {userCount}");
-        //
-        //         this.UpdateOwnerForAllUnityNetworkObjects(oldServerId, newServerId);
-        //
-        //         // Notify all users of the owner id change
-        //         if (userCount > 0)
-        //         {
-        //             Debug.Log($"Notifying All Users of Owner Update...");
-        //
-        //             foreach (var unityNetworkObject in this.serverState.GetAllUnityNetworkObjects())
-        //             {
-        //                 this.SendIdentityUpdateMessage(unityNetworkObject);
-        //            }
-        //        }
+        //// var users = this.gameServer?.ConnectedUsers;
+        //// int userCount = users?.Count ?? 0;
+        //// long oldServerId = this.serverId;
+        //// long newServerId = userCount > 0 ? users[0].UserId : InvalidId;
+        ////         this.serverId = newServerId;
+        ////
+        ////         Debug.Log($"Host Migration Detected: OldServerId = {oldServerId}, NewServerId = {newServerId}, User Count = {userCount}");
+        ////
+        ////         this.UpdateOwnerForAllUnityNetworkObjects(oldServerId, newServerId);
+        ////
+        ////         // Notify all users of the owner id change
+        ////         if (userCount > 0)
+        ////         {
+        ////             Debug.Log($"Notifying All Users of Owner Update...");
+        ////
+        ////             foreach (var unityNetworkObject in this.serverState.GetAllUnityNetworkObjects())
+        ////             {
+        ////                 this.SendIdentityUpdateMessage(unityNetworkObject);
+        ////            }
+        ////        }
 
         private UserInfo GetNextServerUser()
         {
@@ -529,7 +527,9 @@ namespace Lost.Networking
         private class ServerState
         {
             public Dictionary<long, UnityNetworkObject> SceneUnityNetworkObjects { get; } = new Dictionary<long, UnityNetworkObject>();
+
             public HashSet<long> DestroyedSceneUnityNetworkObjects { get; } = new HashSet<long>();
+
             public Dictionary<long, UnityNetworkObject> DynamicUnityGameObjects { get; } = new Dictionary<long, UnityNetworkObject>();
 
             public void Start()

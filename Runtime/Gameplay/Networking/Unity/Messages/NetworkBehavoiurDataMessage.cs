@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="NetworkBehaviourDataMessage.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -19,9 +17,13 @@ namespace Lost.Networking
         public const short Id = 205;
 
         public long NetworkId { get; set; }
+
         public int BehaviourIndex { get; set; }
+
         public BehaviourDataSendType SendType { get; set; }
+
         public string DataKey { get; set; }
+
         public string DataValue { get; set; }
 
         public override short GetId()

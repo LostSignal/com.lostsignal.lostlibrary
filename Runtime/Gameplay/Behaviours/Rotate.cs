@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="Rotate.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -27,7 +25,8 @@ namespace Lost
 
         private void Update()
         {
-            this.eulerRotation = new Vector3(this.eulerRotation.x + (this.rotationSpeed.x * Time.deltaTime),
+            this.eulerRotation = new Vector3(
+                this.eulerRotation.x + (this.rotationSpeed.x * Time.deltaTime),
                 this.eulerRotation.y + (this.rotationSpeed.y * Time.deltaTime),
                 this.eulerRotation.z + (this.rotationSpeed.z * Time.deltaTime));
 

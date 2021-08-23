@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="Pool.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -23,9 +21,9 @@ namespace Lost
 
         public int InstanceId { get; private set; }
 
-        // TODO [bgish]: these will need to come in later sometime
-        // public int InitialSize { get; set; }
-        // public int MaxSize { get; set; }
+        //// TODO [bgish]: these will need to come in later sometime
+        //// public int InitialSize { get; set; }
+        //// public int MaxSize { get; set; }
 
         public Pool(GameObject prefab, int initialCount = 0)
         {

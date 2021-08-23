@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="FlagCollection.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -53,10 +51,31 @@ namespace Lost
             }
         }
 
+        public void SetFlag(int flagId)
+        {
+            this.AssertInitialized(flagId);
+            this.flagBits.SetBit(flagId);
+        }
+
+        public bool IsFlagSet(int flagId)
+        {
+            this.AssertInitialized(flagId);
+            return this.flagBits.IsBitSet(flagId);
+        }
+
+        void ISerializationCallbackReceiver.OnBeforeSerialize()
+        {
+            this.OnValidate();
+        }
+
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
+        {
+        }
+
         private void OnEnable()
         {
             ActiveCollections.Add(this);
-            Initialize();
+            this.Initialize();
         }
 
         private void OnDisable()
@@ -73,11 +92,11 @@ namespace Lost
 
             IDataManager dataManager = null;
 
-            if (location == Location.PlayerData && PlayerDataManager.IsInitialized)
+            if (this.location == Location.PlayerData && PlayerDataManager.IsInitialized)
             {
                 dataManager = PlayerDataManager.Instance;
             }
-            else if (location == Location.GameData && GameDataManager.IsInitialized)
+            else if (this.location == Location.GameData && GameDataManager.IsInitialized)
             {
                 dataManager = GameDataManager.Instance;
             }
@@ -88,18 +107,6 @@ namespace Lost
                 var flagBits = dataManager.DataStore.GetByteArray(this.DataStoreKeyName, null);
                 this.flagBits.SetBits(flagBits);
             }
-        }
-
-        public void SetFlag(int flagId)
-        {
-            this.AssertInitialized(flagId);
-            this.flagBits.SetBit(flagId);
-        }
-
-        public bool IsFlagSet(int flagId)
-        {
-            this.AssertInitialized(flagId);
-            return this.flagBits.IsBitSet(flagId);
         }
 
         private void AssertInitialized(int flagId)
@@ -152,15 +159,6 @@ namespace Lost
                     this.flagBits.Clear();
                 }
             }
-        }
-
-        void ISerializationCallbackReceiver.OnBeforeSerialize()
-        {
-            this.OnValidate();
-        }
-
-        void ISerializationCallbackReceiver.OnAfterDeserialize()
-        {
         }
 
         [Serializable]

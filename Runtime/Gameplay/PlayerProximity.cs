@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="PlayerProximity.cs" company="Lost Signal">
 //     Copyright (c) Lost Signal. All rights reserved.
@@ -18,11 +16,11 @@ namespace Lost
     ////
     public sealed class PlayerProximity : LoadBalancedMonoBehaviour
     {
-        // private bool enterHighPriBasedOnDistance;
-        // private bool radius;
+        //// private bool enterHighPriBasedOnDistance;
+        //// private bool radius;
 
-        // private bool enterHighPriBasedOnView;
-        // private bool viewingAngle;
+        //// private bool enterHighPriBasedOnView;
+        //// private bool viewingAngle;
 
         private static readonly string[] PlayerProximityChannels = new string[]
         {
@@ -30,13 +28,6 @@ namespace Lost
             "PlayerProximity.Medium",
             "PlayerProximity.High",
         };
-
-        public enum Frequency
-        {
-            Low = 0,
-            Medium = 1,
-            High = 2,
-        }
 
 #pragma warning disable 0649
         [SerializeField] private Frequency defaultFrequency;
@@ -48,16 +39,18 @@ namespace Lost
         private string currentUpdateChannelName;
         private bool hasPlayerEntered;
 
+        public enum Frequency
+        {
+            Low = 0,
+            Medium = 1,
+            High = 2,
+        }
+
         public override string Name => nameof(PlayerProximity);
 
         public override bool RunAwake => true;
 
         public override bool RunStart => false;
-
-        protected override void LoadBalancedAwake()
-        {
-            this.DoUpdate(0.0f);
-        }
 
         public override void DoUpdate(float deltaTime)
         {
@@ -89,6 +82,11 @@ namespace Lost
                 this.currentUpdateChannelName = newUpdateChanel;
                 this.StartUpadating(newUpdateChanel);
             }
+        }
+
+        protected override void LoadBalancedAwake()
+        {
+            this.DoUpdate(0.0f);
         }
 
         private bool IsInProximity()

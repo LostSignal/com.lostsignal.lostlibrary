@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="ShutdownGameServerSubsystem.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -64,7 +62,7 @@ namespace Lost.Networking
         {
             this.currentUserCount = this.gameServer.ConnectedUsers.Count;
 
-            if (currentUserCount == 0)
+            if (this.currentUserCount == 0)
             {
                 this.noUsersDateTime = DateTime.UtcNow;
             }

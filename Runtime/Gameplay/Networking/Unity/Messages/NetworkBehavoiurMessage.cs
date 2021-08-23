@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="NetworkBehaviourMessage.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -10,13 +8,16 @@ namespace Lost.Networking
 {
     public class NetworkBehaviourMessage : Message
     {
-        private static readonly NetworkReader reader = new NetworkReader(new byte[0]);
-
         public const short Id = 201;
 
+        private static readonly NetworkReader Reader = new NetworkReader(new byte[0]);
+
         public long NetworkId { get; set; }
+
         public int BehaviourIndex { get; set; }
+
         public int DataLength { get; set; }
+
         public byte[] DataBytes { get; set; } = new byte[1024];
 
         public override short GetId()
@@ -24,15 +25,15 @@ namespace Lost.Networking
             return Id;
         }
 
-        // public void PopulateMessage(NetworkBehaviour behaviour, NetworkWriter writer)
-        // {
-        //     this.NetworkId = behaviour.NetworkId;
-        //     this.BehaviourIndex = behaviour.BehaviourIndex;
-        //     this.DataLength = writer.Position;
-        //
-        //     reader.Replace(writer.RawBuffer);
-        //     reader.ReadBytes(this.Data, this.DataLength);
-        // }
+        //// public void PopulateMessage(NetworkBehaviour behaviour, NetworkWriter writer)
+        //// {
+        ////     this.NetworkId = behaviour.NetworkId;
+        ////     this.BehaviourIndex = behaviour.BehaviourIndex;
+        ////     this.DataLength = writer.Position;
+        ////
+        ////     reader.Replace(writer.RawBuffer);
+        ////     reader.ReadBytes(this.Data, this.DataLength);
+        //// }
 
         public override void Deserialize(NetworkReader reader)
         {

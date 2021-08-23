@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="NetworkIdentity.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -16,8 +14,11 @@ namespace Lost.Networking
     using UnityEngine.SceneManagement;
 
     public delegate void NetworkUpdateDelegate();
+
     public delegate void NetworkOwnershipRequestedDelegate();
+
     public delegate void NetworkOwnershipGrantedDelegate();
+
     public delegate void NetworkOwnershipFailedDelegate();
 
     public class NetworkIdentity : MonoBehaviour
@@ -25,7 +26,6 @@ namespace Lost.Networking
         private static readonly NetworkIdentityRequestUpdate NetworkIdentityRequestUpdateCache = new NetworkIdentityRequestUpdate();
         private static readonly NetworkIdentityOwnershipRequest NetworkIdentityOwnershipRequestCache = new NetworkIdentityOwnershipRequest();
         private static readonly NetworkIdentityReleaseOwnershipRequest NetworkIdentityReleaseOwnershipRequestCache = new NetworkIdentityReleaseOwnershipRequest();
-
 
         public event NetworkUpdateDelegate NetworkUpdate;
 

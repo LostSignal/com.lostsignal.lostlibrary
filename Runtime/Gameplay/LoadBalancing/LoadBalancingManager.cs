@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="LoadBalancingManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -19,14 +17,14 @@ namespace Lost
     ////               making our own Coroutine system is not trivial though, so not sure if that is the
     ////               best solution.
     ////
-    public abstract class LoadBalancingManager<T, I> : Manager<T>, IUpdatable
-        where T : MonoBehaviour
+    public abstract class LoadBalancingManager<TManager, TInterface> : Manager<TManager>, IUpdatable
+        where TManager : MonoBehaviour
     {
         public abstract string Name { get; }
 
         private struct Callback
         {
-            public I Action;
+            public TInterface Action;
             public float QueuedTime;
             public UnityEngine.Object Context;
             public string Description;
@@ -35,7 +33,8 @@ namespace Lost
 #pragma warning disable 0649
         [SerializeField] private int initialCapacity = 250;
         [SerializeField] private double maxMilliseconds = 0.1f;
-        //[SerializeField] private bool printDebugOutput = false;
+
+        //// [SerializeField] private bool printDebugOutput = false;
 #pragma warning restore 0649
 
         private Queue<Callback> callbackQueue;
@@ -71,7 +70,7 @@ namespace Lost
             }
         }
 
-        public LoadBalancerReceipt QueueWork(I action, string description, UnityEngine.Object context)
+        public LoadBalancerReceipt QueueWork(TInterface action, string description, UnityEngine.Object context)
         {
             int index = this.callbackQueue.Enqueue(new Callback
             {
@@ -83,8 +82,6 @@ namespace Lost
 
             return LoadBalancerReceipt.New(index, context, this.CancelReceipt);
         }
-
-        protected abstract void Execute(I action);
 
         public virtual void DoUpdate(float deltaTime)
         {
@@ -107,7 +104,7 @@ namespace Lost
 
                 try
                 {
-                    Execute(callback.Action);
+                    this.Execute(callback.Action);
                 }
                 catch (Exception ex)
                 {
@@ -129,6 +126,8 @@ namespace Lost
                 this.averageQueuedTime = this.totalQueuedTime / this.totalCallbacksProcessed;
             }
         }
+
+        protected abstract void Execute(TInterface action);
 
         private void CancelReceipt(int index, UnityEngine.Object context)
         {
