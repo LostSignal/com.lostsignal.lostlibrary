@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="LazySprite.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -13,7 +11,7 @@ namespace Lost
 
     [Serializable]
     #if UNITY
-    public class LazySprite : LazyAsset<Sprite>
+    public class LazySprite : LazyAssetT<Sprite>
     #else
     public class LazySprite : LazyAsset<object>
     #endif
@@ -24,7 +22,8 @@ namespace Lost
         {
         }
 
-        public LazySprite(string guid) : base(guid)
+        public LazySprite(string guid)
+            : base(guid)
         {
         }
 

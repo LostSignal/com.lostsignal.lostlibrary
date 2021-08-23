@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="LazyGameObject.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -15,7 +13,7 @@ namespace Lost
 
     [Serializable]
     #if UNITY
-    public class LazyAnimationClip : LazyAsset<AnimationClip>
+    public class LazyAnimationClip : LazyAssetT<AnimationClip>
     #else
     public class LazyAnimationClip : LazyAsset<object>
     #endif

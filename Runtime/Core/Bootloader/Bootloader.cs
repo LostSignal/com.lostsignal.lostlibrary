@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="Bootloader.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -10,10 +8,10 @@
 
 namespace Lost
 {
-    using Lost.BuildConfig;
     using System.Collections;
     using System.Collections.Generic;
     using System.Runtime.CompilerServices;
+    using Lost.BuildConfig;
     using UnityEngine;
     using UnityEngine.SceneManagement;
 
@@ -52,7 +50,6 @@ namespace Lost
         public const string LostManagersResourcePath = "Lost/Managers";
         public const string DefaultRebootSceneName = "Main";
 
-        private static event BootloaderDelegate onManagersReady;
         private static bool areManagersInitialized;
         private static Bootloader bootloaderInstance;
         private static GameObject managersInstance;
@@ -76,12 +73,12 @@ namespace Lost
                     value?.Invoke();
                 }
 
-                onManagersReady += value;
+                ManagersReady += value;
             }
 
             remove
             {
-                onManagersReady -= value;
+                ManagersReady -= value;
             }
         }
 
@@ -89,11 +86,15 @@ namespace Lost
 
         public static event BootloaderProgressTextUpdatedDelegate ProgressTextUpdate;
 
+        private static event BootloaderDelegate ManagersReady;
+
         public static bool AreManagersReady
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => areManagersInitialized;
         }
+
+        private bool ShowLoadingInEditor => Application.isEditor == false || this.dontShowLoadingInEditor == false;
 
         public static void UpdateLoadingText(string newText)
         {
@@ -222,7 +223,7 @@ namespace Lost
             }
 
             areManagersInitialized = false;
-            onManagersReady = null;
+            ManagersReady = null;
             bootloaderInstance = null;
             managersInstance = null;
 
@@ -249,10 +250,6 @@ namespace Lost
 
             return sceneAlreadyLoaded;
         }
-
-        //// ----------------------------------------------------------------------------------------------------------------
-
-        private bool ShowLoadingInEditor => Application.isEditor == false || this.dontShowLoadingInEditor == false;
 
         private void Start()
         {
@@ -299,7 +296,7 @@ namespace Lost
 
             float startTime = Time.realtimeSinceStartup;
 
-            yield return WaitForManagersToInitialize();
+            yield return this.WaitForManagersToInitialize();
 
             //// // If the only scene open is the bootloader scene, then lets load the startup scene
             //// if (SceneManager.sceneCount == 1 && this.startupScene != null && this.startupScene.AssetGuid.IsNullOrWhitespace() == false)
@@ -314,7 +311,7 @@ namespace Lost
             DialogManager.UpdateAllDialogCameras();
 
             // Making sure we wait the minimum time
-            if (this.ShowLoadingInEditor && bootloaderDialog)
+            if (this.ShowLoadingInEditor && this.bootloaderDialog)
             {
                 float elapsedTime = Time.realtimeSinceStartup - startTime;
 
@@ -324,7 +321,7 @@ namespace Lost
                 }
 
                 // Making sure we don't say Hide if we're still showing (has a bad pop)
-                while (bootloaderDialog.IsShown == false)
+                while (this.bootloaderDialog.IsShown == false)
                 {
                     yield return null;
                 }
@@ -332,16 +329,16 @@ namespace Lost
 
             // We're done!  Fire the OnBooted event
             areManagersInitialized = true;
-            onManagersReady?.Invoke();
-            onManagersReady = null;
+            ManagersReady?.Invoke();
+            ManagersReady = null;
 
             // Doing a little cleanup before giving user control
             System.GC.Collect();
             yield return null;
 
-            if (this.ShowLoadingInEditor && bootloaderDialog)
+            if (this.ShowLoadingInEditor && this.bootloaderDialog)
             {
-                bootloaderDialog.Hide();
+                this.bootloaderDialog.Hide();
             }
         }
 

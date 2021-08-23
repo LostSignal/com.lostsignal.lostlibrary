@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="ChangeLanguageButton.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -15,7 +15,7 @@ namespace Lost.Localization
     public class ChangeLanguageButton : MonoBehaviour
     {
         #pragma warning disable 0649
-        [HideInInspector, SerializeField] private Button button;
+        [HideInInspector] [SerializeField] private Button button;
         [SerializeField] private string isoLanguageName;
         #pragma warning restore 0649
 

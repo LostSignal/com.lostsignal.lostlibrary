@@ -9,6 +9,7 @@
 namespace Lost.PlantGenerator
 {
     using UnityEngine;
+    using UnityEngine.Serialization;
 
     /// <summary>
     /// A game object that takes a bunch of parameters like materials and branch prefabs and generates
@@ -21,27 +22,26 @@ namespace Lost.PlantGenerator
         /// </summary>
         private static int layerId = -1;
 
-        /// <summary>
-        /// The plant definition for how it should be generated.
-        /// </summary>
-        public PlantDefinition plantDefinition;
+#pragma warning disable 0649
+        [Tooltip("The plant definition for how it should be generated.")]
+        [SerializeField]
+        private PlantDefinition plantDefinition;
 
-        /// <summary>
-        /// Set this if you always want the plant to look different when you run the game.
-        /// </summary>
-        public bool RandomizeOnStart = false;
+        [Tooltip("Set this if you always want the plant to look different when you run the game.")]
+        [FormerlySerializedAs("RandomizeOnStart")]
+        [SerializeField]
+        private bool randomizeOnStart;
 
-        /// <summary>
-        /// The random seed used to generate the looks of this generated plant.
-        /// </summary>
-        [HideInInspector]
-        public int Seed;
+        [Tooltip("The random seed used to generate the looks of this generated plant.")]
+        [FormerlySerializedAs("Seed")]
+        [SerializeField]
+        private int seed;
 
-        /// <summary>
-        /// Flag specifying whether or not the plant has been generated yet.
-        /// </summary>
-        [HideInInspector]
-        public bool IsGenerated = false;
+        [Tooltip("Flag specifying whether or not the plant has been generated yet.")]
+        [FormerlySerializedAs("IsGenerated")]
+        [SerializeField]
+        private bool isGenerated;
+#pragma warning restore 0649
 
         /// <summary>
         /// Used to keep track if this object created it's children itself and thus needs to
@@ -52,24 +52,10 @@ namespace Lost.PlantGenerator
         /// <summary>
         /// Gets the plant definition for how it should be generated.
         /// </summary>
+        /// <value>The Plant Definition.</value>
         public PlantDefinition Definition
         {
             get { return this.plantDefinition; }
-        }
-
-        /// <summary>
-        /// Makes sure the plant is generated when enabled.
-        /// </summary>
-        public void Awake()
-        {
-            if (this.RandomizeOnStart)
-            {
-                this.GenerateNewRandomSeed();
-            }
-            else
-            {
-                this.Generate();
-            }
         }
 
         /// <summary>
@@ -78,7 +64,7 @@ namespace Lost.PlantGenerator
         public void GenerateNewRandomSeed()
         {
             this.ClearChildren();
-            this.Seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+            this.seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
             this.Generate();
         }
 
@@ -97,7 +83,7 @@ namespace Lost.PlantGenerator
                 }
             }
 
-            this.IsGenerated = false;
+            this.isGenerated = false;
         }
 
         /// <summary>
@@ -111,12 +97,39 @@ namespace Lost.PlantGenerator
         }
 
         /// <summary>
+        /// Makes sure the plant is generated when enabled.
+        /// </summary>
+        private void Awake()
+        {
+            if (this.randomizeOnStart)
+            {
+                this.GenerateNewRandomSeed();
+            }
+            else
+            {
+                this.Generate();
+            }
+        }
+
+        /// <summary>
+        /// Called when the engine destroys this object.  Makes sure that all
+        /// children that this object instance are destroyed as well.
+        /// </summary>
+        private void OnDestroy()
+        {
+            if (this.destroyChildren)
+            {
+                this.ClearChildren();
+            }
+        }
+
+        /// <summary>
         /// Uses the the plant parameters to generates a new plant.
         /// </summary>
         private void Generate()
         {
             // making sure it hasn't already been generated
-            if (this.IsGenerated)
+            if (this.isGenerated)
             {
                 return;
             }
@@ -137,7 +150,7 @@ namespace Lost.PlantGenerator
                 }
             }
 
-            System.Random rand = new System.Random(this.Seed);
+            System.Random rand = new System.Random(this.seed);
             SuitableRotationSystem suitableRotationSystem = new SuitableRotationSystem(rand);
 
             if (this.plantDefinition.GroupParameters.Length == 0)
@@ -234,20 +247,8 @@ namespace Lost.PlantGenerator
                 }
 
                 // if we got here then everything generated properly
-                this.IsGenerated = true;
+                this.isGenerated = true;
                 this.destroyChildren = true;
-            }
-        }
-
-        /// <summary>
-        /// Called when the engine destroys this object.  Makes sure that all
-        /// children that this object instance are destroyed as well.
-        /// </summary>
-        private void OnDestroy()
-        {
-            if (this.destroyChildren)
-            {
-                this.ClearChildren();
             }
         }
     }

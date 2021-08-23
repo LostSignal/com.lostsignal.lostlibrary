@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="Localization.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -14,11 +14,16 @@ namespace Lost.Localization
     {
         private const string CurrentLanguageKey = "CurrentLanguage";
 
+        private static LanguageChangedDelegate languagedChanged;
+        private static Language currentLanguage = null;
+
         public delegate void LanguageChangedDelegate();
 
-        public static LanguageChangedDelegate LanguagedChanged;
-
-        private static Language currentLanguage = null;
+        public static event LanguageChangedDelegate OnLanguagedChanged
+        {
+            add => languagedChanged += value;
+            remove => languagedChanged -= value;
+        }
 
         public static Language CurrentLanguage
         {
@@ -35,7 +40,7 @@ namespace Lost.Localization
                     currentLanguage = value;
                     SaveCurrentLangauge();
                     UpdateI2Localization();
-                    LanguagedChanged?.Invoke();
+                    languagedChanged?.Invoke();
                 }
             }
         }

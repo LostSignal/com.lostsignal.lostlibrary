@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="Ftp.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -42,7 +40,7 @@ namespace Lost.Addressables
             }
         }
 
-        private static FtpStatusCode CreateFolderOnFTP(String fullFtpDirectoryPath, String inUsername, String inPassword)
+        private static FtpStatusCode CreateFolderOnFTP(string fullFtpDirectoryPath, string inUsername, string inPassword)
         {
             FtpWebRequest request = (FtpWebRequest)FtpWebRequest.Create(fullFtpDirectoryPath);
             request.Method = WebRequestMethods.Ftp.MakeDirectory;
@@ -72,7 +70,7 @@ namespace Lost.Addressables
             }
         }
 
-        private static void UploadToFTP(String fullFtpFilePath, String fullLocalFilePath, String inUsername, String inPassword)
+        private static void UploadToFTP(string fullFtpFilePath, string fullLocalFilePath, string inUsername, string inPassword)
         {
             FtpWebRequest request = (FtpWebRequest)FtpWebRequest.Create(fullFtpFilePath);
             request.Method = WebRequestMethods.Ftp.UploadFile;

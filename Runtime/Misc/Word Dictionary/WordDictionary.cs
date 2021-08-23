@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="WordDictionary.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -18,7 +18,8 @@ namespace Lost
         private const int LetterCount = 26;
 
 #pragma warning disable 0649
-        [SerializeField, HideInInspector]
+        [HideInInspector]
+        [SerializeField]
         private string[] words;
 #pragma warning restore 0649
 

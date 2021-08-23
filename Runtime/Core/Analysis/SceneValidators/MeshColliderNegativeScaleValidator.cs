@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="MeshColliderNegativeScaleValidator.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -47,7 +45,7 @@ namespace Lost
             }
             else
             {
-                return DoesTransformHaveNegativeScale(transform.parent);
+                return this.DoesTransformHaveNegativeScale(transform.parent);
             }
         }
     }

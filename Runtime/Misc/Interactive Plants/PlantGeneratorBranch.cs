@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="PlantGeneratorBranch.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -9,6 +9,7 @@
 namespace Lost.PlantGenerator
 {
     using UnityEngine;
+    using UnityEngine.Serialization;
 
     /// <summary>
     /// This class represents a branch of the plant generator.  You setup a mesh with an aim target and this
@@ -17,32 +18,25 @@ namespace Lost.PlantGenerator
     /// </summary>
     public class PlantGeneratorBranch : MonoBehaviour
     {
-        /// <summary>
-        /// How fast the MeshRoot should lerp towards the mesh aim target.
-        /// </summary>
-        public float LerpSpeed = 5;
+#pragma warning disable 0649
+        [Tooltip("How fast the MeshRoot should lerp towards the mesh aim target.")]
+        [FormerlySerializedAs("LerpSpeed")]
+        [SerializeField] private float lerpSpeed = 5;
 
-        /// <summary>
-        /// The transform that the MeshRoot should always point at.
-        /// </summary>
-        public Transform AimTarget;
+        [Tooltip("The transform that the MeshRoot should always point at.")]
+        [FormerlySerializedAs("AimTarget")]
+        [SerializeField] private Transform aimTarget;
 
-        /// <summary>
-        /// The Mesh's parent that will be rotated to make sure this mesh always points to the MeshAimTarget.
-        /// </summary>
-        public Transform Mesh;
+        [Tooltip("The Mesh's parent that will be rotated to make sure this mesh always points to the MeshAimTarget.")]
+        [FormerlySerializedAs("Mesh")]
+        [SerializeField] private Transform mesh;
+#pragma warning restore 0649
 
-        /// <summary>
-        ///
-        /// </summary>
         private Rigidbody aimTargetRigidbody;
 
-        /// <summary>
-        ///
-        /// </summary>
-        public void Awake()
+        private void Awake()
         {
-            this.aimTargetRigidbody = this.AimTarget.GetComponent<Rigidbody>();
+            this.aimTargetRigidbody = this.aimTarget.GetComponent<Rigidbody>();
         }
 
         /// <summary>
@@ -52,7 +46,7 @@ namespace Lost.PlantGenerator
         {
             if (this.aimTargetRigidbody.IsSleeping() == false)
             {
-                this.Mesh.rotation = Quaternion.Lerp(this.Mesh.rotation, this.AimTarget.rotation, this.LerpSpeed * Time.deltaTime);
+                this.mesh.rotation = Quaternion.Lerp(this.mesh.rotation, this.aimTarget.rotation, this.lerpSpeed * Time.deltaTime);
             }
         }
     }

@@ -1,5 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="PlantGenerator.cs" company="Lost Signal LLC">
+//-----------------------------------------------------------------------
+// <copyright file="PlantDefinition.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -9,7 +9,9 @@
 namespace Lost.PlantGenerator
 {
     using System;
+    using System.Runtime.CompilerServices;
     using UnityEngine;
+    using UnityEngine.Serialization;
 
     /// <summary>
     /// A game object that takes a bunch of parameters like materials and branch prefabs and generates
@@ -23,10 +25,22 @@ namespace Lost.PlantGenerator
         /// </summary>
         public static readonly string LayerName = "InteractivePlants";
 
+#pragma warning disable 0649
+        [Tooltip("All the branch parameters associated with this plant generator.")]
+        [FormerlySerializedAs("GroupParameters")]
+        [SerializeField]
+        private BranchGroupParameters[] groupParameters = new BranchGroupParameters[1] { new BranchGroupParameters() };
+#pragma warning restore 0649
+
         /// <summary>
-        /// All the branch parameters associated with this plant generator.
+        /// Gets all the branch parameters associated with this plant generator.
         /// </summary>
-        public BranchGroupParameters[] GroupParameters = new BranchGroupParameters[1] { new BranchGroupParameters() };
+        /// <value>The branch group parameters.</value>
+        public BranchGroupParameters[] GroupParameters
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => this.groupParameters;
+        }
 
         /// <summary>
         /// Returns the min and max branch count the generated plant can have.
@@ -54,46 +68,131 @@ namespace Lost.PlantGenerator
         [Serializable]
         public class BranchGroupParameters
         {
-            /// <summary>
-            /// Name of the group.
-            /// </summary>
-            public string Name;
+#pragma warning disable 0649
+            [Tooltip("Name of the group.")]
+            [FormerlySerializedAs("Name")]
+            [SerializeField]
+            private string name;
+
+            [Tooltip("Collection of all the different branch prefabs to spawn from.")]
+            [FormerlySerializedAs("Variations")]
+            [SerializeField]
+            private GameObject[] variations = new GameObject[0];
+
+            [Tooltip("The minimum number of branches to spawn in this group.")]
+            [FormerlySerializedAs("MinCount")]
+            [SerializeField]
+            private int minCount = 1;
+
+            [Tooltip("The maximum number of branches to spawn in this group.")]
+            [FormerlySerializedAs("MaxCount")]
+            [SerializeField]
+            private int maxCount = 5;
+
+            [Tooltip("Branches are evenly rotated, but this adds randomness +/- this value to the rotation.")]
+            [FormerlySerializedAs("RandomRotationOffset")]
+            [SerializeField]
+            private float randomRotationOffset = 10;
+
+            [Tooltip("The desired minimum space between each of the branches in this group.")]
+            [FormerlySerializedAs("RotationalWidth")]
+            [SerializeField]
+            private int rotationalWidth = 10;
+
+            [Tooltip("The materials that a branch can be randomly assigned.  All renderers of the branch prefab will be set to the random material.")]
+            [FormerlySerializedAs("Materials")]
+            [SerializeField]
+            private Material[] materials;
+
+            [Tooltip("Varies the vertical height of the branch by +/- this offset.")]
+            [FormerlySerializedAs("VerticalOffset")]
+            [SerializeField]
+            private float verticalOffset = 0f;
+#pragma warning restore 0649
 
             /// <summary>
-            /// Collection of all the different branch prefabs to spawn from.
+            /// Gets or sets the name of the group.
             /// </summary>
-            public GameObject[] Variations = new GameObject[0];
+            /// <value>The name of the group.</value>
+            public string Name
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => this.name;
+                set => this.name = value;
+            }
 
             /// <summary>
-            /// The minimum number of branches to spawn in this group.
+            /// Gets the collection of all the different branch prefabs to spawn from.
             /// </summary>
-            public int MinCount = 1;
+            /// <value>The branch prefab variations.</value>
+            public GameObject[] Variations
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => this.variations;
+            }
 
             /// <summary>
-            /// The maximum number of branches to spawn in this group.
+            /// Gets or sets the minimum number of branches to spawn in this group.
             /// </summary>
-            public int MaxCount = 5;
+            /// <value>The minimum number of branches to spawn.</value>
+            public int MinCount
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => this.minCount;
+                set => this.minCount = value;
+            }
 
             /// <summary>
-            /// Branches are evenly rotated, but this adds randomness +/- this value to the rotation.
+            /// Gets or sets the maximum number of branches to spawn in this group.
             /// </summary>
-            public float RandomRotationOffset = 10;
+            /// <value>The maximum number of branches to spawn.</value>
+            public int MaxCount
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => this.maxCount;
+                set => this.maxCount = value;
+            }
 
             /// <summary>
-            /// the desired minimum space between each of the branches in this group.
+            /// Gets the random rotation variance to add/subtract to the roation.
             /// </summary>
-            public int RotationalWidth = 10;
+            /// <value>The random rotation variance.</value>
+            public float RandomRotationOffset
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => this.randomRotationOffset;
+            }
 
             /// <summary>
-            /// The materials that a branch can be randomly assigned.  All renderers of the
+            /// Gets the desired minimum space between each of the branches in this group.
+            /// </summary>
+            /// <value>The desired minimum space between branches.</value>
+            public int RotationalWidth
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => this.rotationalWidth;
+            }
+
+            /// <summary>
+            /// Gets the materials that a branch can be randomly assigned.  All renderers of the
             /// branch prefab will be set to the random material.
             /// </summary>
-            public Material[] Materials;
+            /// <value>The materials to assign to branches.</value>
+            public Material[] Materials
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => this.materials;
+            }
 
             /// <summary>
-            /// Varies the vertical height of the branch by +/- this offset.
+            /// Gets the vertical height of the branch by +/- this offset.
             /// </summary>
-            public float VerticalOffset = 0f;
+            /// <value>The vertical height offset.</value>
+            public float VerticalOffset
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => this.verticalOffset;
+            }
         }
     }
 }

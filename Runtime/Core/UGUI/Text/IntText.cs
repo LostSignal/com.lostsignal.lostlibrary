@@ -151,7 +151,7 @@ namespace Lost
         {
             this.OnValidate();
 
-            Localization.Localization.LanguagedChanged += this.UpdateText;
+            Localization.Localization.OnLanguagedChanged += this.UpdateText;
         }
 
         private void OnEnable()
@@ -161,7 +161,7 @@ namespace Lost
 
         private void OnDestroy()
         {
-            Localization.Localization.LanguagedChanged -= this.UpdateText;
+            Localization.Localization.OnLanguagedChanged -= this.UpdateText;
         }
 
         private void UpdateText()

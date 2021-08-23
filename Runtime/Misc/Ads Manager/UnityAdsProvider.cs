@@ -17,61 +17,16 @@ namespace Lost
     //// TODO [bgish]: Possible add warnings/errors if they want to use Unity Ads but don't specify a proper Store Id
     //// TODO [bgish]: Investigate the removal of the USING_UNITY_ADS define
 
-    public class UnityAdsProvider : MonoBehaviour
-        , IAdProvider
 #if USING_UNITY_ADS
-        , IUnityAdsListener
+    public class UnityAdsProvider : MonoBehaviour, IAdProvider, IUnityAdsListener
+#else
+    public class UnityAdsProvider : MonoBehaviour, IAdProvider
 #endif
     {
 #pragma warning disable 0649, 0414
         [SerializeField] private string appleAppStoreId = null;
         [SerializeField] private string googlePlayAppStoreId = null;
 #pragma warning restore 0649, 0414
-
-#if UNITY_EDITOR && !USING_UNITY_ADS
-
-        [ShowEditorError("This provider will not work unless you the Unity Ads package added through the Package Manager.")]
-        [ExposeInEditor("Add Unity Ads Package")]
-        private void AddUsingUsingUnityAdsDefine()
-        {
-            PackageManagerUtil.Add("com.unity.ads");
-        }
-
-#elif UNITY_EDITOR && USING_UNITY_ADS
-
-        [ExposeInEditor("Open Unity Ads Dashboard")]
-        private void OpenUnityAdsDashboard()
-        {
-            string projectId = UnityEditor.CloudProjectSettings.projectId;
-            string organizationId = UnityEditor.CloudProjectSettings.organizationId;
-            string url = $"https://operate.dashboard.unity3d.com/organizations/{organizationId}/projects/{projectId}/operate-settings";
-            Application.OpenURL(url);
-        }
-
-#endif
-
-        private void OnEnable()
-        {
-#if USING_UNITY_ADS
-            AdsManager.OnInitialized += () =>
-            {
-                Advertisement.AddListener(this);
-
-#if UNITY_IOS
-                if (string.IsNullOrWhiteSpace(this.appleAppStoreId) == false && UnityEngine.Advertisements.Advertisement.isInitialized == false)
-                {
-                    UnityEngine.Advertisements.Advertisement.Initialize(this.appleAppStoreId);
-                }
-#elif UNITY_ANDROID
-                if (string.IsNullOrWhiteSpace(this.googlePlayAppStoreId) == false && UnityEngine.Advertisements.Advertisement.isInitialized == false)
-                {
-                    UnityEngine.Advertisements.Advertisement.Initialize(this.googlePlayAppStoreId);
-                }
-#endif
-                AdsManager.Instance.SetAdProvider(this);
-            };
-#endif
-        }
 
         string IAdProvider.ProviderName
         {
@@ -150,6 +105,51 @@ namespace Lost
             return UnityEngine.Advertisements.Advertisement.isSupported &&
                 UnityEngine.Advertisements.Advertisement.isInitialized &&
                 UnityEngine.Advertisements.Advertisement.IsReady(placementId);
+        }
+
+#if UNITY_EDITOR && !USING_UNITY_ADS
+
+        [ShowEditorError("This provider will not work unless you the Unity Ads package added through the Package Manager.")]
+        [ExposeInEditor("Add Unity Ads Package")]
+        private void AddUsingUsingUnityAdsDefine()
+        {
+            PackageManagerUtil.Add("com.unity.ads");
+        }
+
+#elif UNITY_EDITOR && USING_UNITY_ADS
+
+        [ExposeInEditor("Open Unity Ads Dashboard")]
+        private void OpenUnityAdsDashboard()
+        {
+            string projectId = UnityEditor.CloudProjectSettings.projectId;
+            string organizationId = UnityEditor.CloudProjectSettings.organizationId;
+            string url = $"https://operate.dashboard.unity3d.com/organizations/{organizationId}/projects/{projectId}/operate-settings";
+            Application.OpenURL(url);
+        }
+
+#endif
+
+        private void OnEnable()
+        {
+#if USING_UNITY_ADS
+            AdsManager.OnInitialized += () =>
+            {
+                Advertisement.AddListener(this);
+
+#if UNITY_IOS
+                if (string.IsNullOrWhiteSpace(this.appleAppStoreId) == false && UnityEngine.Advertisements.Advertisement.isInitialized == false)
+                {
+                    UnityEngine.Advertisements.Advertisement.Initialize(this.appleAppStoreId);
+                }
+#elif UNITY_ANDROID
+                if (string.IsNullOrWhiteSpace(this.googlePlayAppStoreId) == false && UnityEngine.Advertisements.Advertisement.isInitialized == false)
+                {
+                    UnityEngine.Advertisements.Advertisement.Initialize(this.googlePlayAppStoreId);
+                }
+#endif
+                AdsManager.Instance.SetAdProvider(this);
+            };
+#endif
         }
 
 #else

@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="Loader.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -18,6 +16,7 @@ namespace Lost
         #pragma warning disable 0649
         [SerializeField] private List<Loader> dependencies;
         #pragma warning restore 0649
+
         public List<Loader> Dependencies => this.dependencies;
 
         public abstract bool IsLoaded { get; }

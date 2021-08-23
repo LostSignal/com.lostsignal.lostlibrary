@@ -195,7 +195,7 @@ namespace Lost
                 Debug.LogWarning("VirtualizedScrollRect has not been tested yet for Horizontal GrowType. It will probably not work.", this);
             }
 
-            Lost.Localization.Localization.LanguagedChanged += this.ReplaceAllVisibleTiles;
+            Lost.Localization.Localization.OnLanguagedChanged += this.ReplaceAllVisibleTiles;
         }
 
         protected virtual void Update()
@@ -239,7 +239,7 @@ namespace Lost
 
         private void OnDestroy()
         {
-            Lost.Localization.Localization.LanguagedChanged -= this.ReplaceAllVisibleTiles;
+            Lost.Localization.Localization.OnLanguagedChanged -= this.ReplaceAllVisibleTiles;
         }
 
         private void CalculateTopAndBottomDragDistances()

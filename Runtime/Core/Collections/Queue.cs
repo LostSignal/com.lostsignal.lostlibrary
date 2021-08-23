@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="Queue.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -19,8 +17,21 @@ namespace Lost
         private int capacity;
         private int startIndex;
         private int count;
+        private Action grow;
 
-        public Action OnGrow;
+        public Queue(int initialCapacity)
+        {
+            this.capacity = initialCapacity;
+            this.elements = new T[initialCapacity];
+            this.startIndex = 0;
+            this.count = 0;
+        }
+
+        public event Action OnGrow
+        {
+            add => this.grow += value;
+            remove => this.grow -= value;
+        }
 
         public int Count
         {
@@ -34,23 +45,15 @@ namespace Lost
             get => this.count == 0;
         }
 
-        public Queue(int initialCapacity)
-        {
-            this.capacity = initialCapacity;
-            this.elements = new T[initialCapacity];
-            this.startIndex = 0;
-            this.count = 0;
-        }
-
         public int Enqueue(T element)
         {
             if (this.Count == this.capacity)
             {
                 this.Grow();
-                this.OnGrow?.Invoke();
+                this.grow?.Invoke();
             }
 
-            int index = (this.startIndex + count) % this.capacity;
+            int index = (this.startIndex + this.count) % this.capacity;
             this.elements[index] = element;
             this.count++;
 

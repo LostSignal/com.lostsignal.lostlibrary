@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="PurchasingException.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -16,12 +16,12 @@ namespace Lost
 
     public class PurchasingException : System.Exception
     {
-        public PurchaseFailureReason FailureReason { get; private set; }
-
         public PurchasingException(PurchaseFailureReason failureReason)
         {
             this.FailureReason = failureReason;
         }
+
+        public PurchaseFailureReason FailureReason { get; private set; }
     }
 }
 

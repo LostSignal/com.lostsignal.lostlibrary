@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="LazyAsset.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -17,6 +15,15 @@ namespace Lost
 #pragma warning disable 0649
         [SerializeField] private string assetGuid;
 #pragma warning restore 0649
+
+        public LazyAsset()
+        {
+        }
+
+        public LazyAsset(string guid)
+        {
+            this.assetGuid = guid;
+        }
 
         public object RuntimeKey => this.assetGuid;
 
@@ -43,15 +50,6 @@ namespace Lost
         public virtual System.Type Type
         {
             get { return null; }
-        }
-
-        public LazyAsset()
-        {
-        }
-
-        public LazyAsset(string guid)
-        {
-            this.assetGuid = guid;
         }
     }
 }

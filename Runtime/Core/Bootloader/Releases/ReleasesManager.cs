@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="ReleasesManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -21,15 +19,15 @@ namespace Lost
     ////
     public sealed class ReleasesManager : Manager<ReleasesManager>
     {
+        #pragma warning disable 0649
+        [SerializeField] private StorageLocation storageLocation;
+        #pragma warning restore 0649
+
         public enum StorageLocation
         {
             Resources,
             PlayFab,
         }
-
-        #pragma warning disable 0649
-        [SerializeField] private StorageLocation storageLocation;
-        #pragma warning restore 0649
 
         public Release CurrentRelease { get; private set; }
 

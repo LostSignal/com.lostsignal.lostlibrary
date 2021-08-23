@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="SerializableDictionary.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -14,15 +12,15 @@ namespace Lost
     using UnityEngine;
 
     [System.Serializable]
-    public class SerializableDictionary<T, V> : Dictionary<T, V>, ISerializationCallbackReceiver
+    public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
     {
-        [SerializeField, HideInInspector] private List<T> keys;
-        [SerializeField, HideInInspector] private List<V> values;
+        [SerializeField] [HideInInspector] private List<TKey> keys;
+        [SerializeField] [HideInInspector] private List<TValue> values;
 
         public void OnBeforeSerialize()
         {
-            this.keys = new List<T>(this.Count);
-            this.values = new List<V>(this.Count);
+            this.keys = new List<TKey>(this.Count);
+            this.values = new List<TValue>(this.Count);
 
             foreach (var keyValuePair in this)
             {

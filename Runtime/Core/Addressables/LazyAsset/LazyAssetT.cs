@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="LazyAssetT.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -17,7 +15,8 @@ namespace Lost
     using UnityEngine.ResourceManagement.AsyncOperations;
 
     [Serializable]
-    public class LazyAsset<T> : LazyAsset, ILazyAsset, IValidate where T : UnityEngine.Object
+    public class LazyAssetT<T> : LazyAsset, ILazyAsset, IValidate
+        where T : UnityEngine.Object
     {
         private AsyncOperationHandle operation;
         private UnityTask<T> cachedTask;
@@ -25,6 +24,15 @@ namespace Lost
         #if UNITY_EDITOR
         private T cachedEditorAsset;
         #endif
+
+        public LazyAssetT()
+        {
+        }
+
+        public LazyAssetT(string guid)
+            : base(guid)
+        {
+        }
 
         public override Type Type
         {
@@ -65,14 +73,6 @@ namespace Lost
             }
         }
         #endif
-
-        public LazyAsset()
-        {
-        }
-
-        public LazyAsset(string guid) : base(guid)
-        {
-        }
 
         public UnityTask<T> Load()
         {
@@ -119,7 +119,7 @@ namespace Lost
 
                 if (typeof(T).IsSubclassOf(typeof(Component)))
                 {
-                    var gameObject = operation.Result as GameObject;
+                    var gameObject = this.operation.Result as GameObject;
 
                     if (gameObject == null)
                     {
@@ -137,7 +137,7 @@ namespace Lost
                 }
                 else
                 {
-                    value = operation.Result as T;
+                    value = this.operation.Result as T;
 
                     if (value == null)
                     {

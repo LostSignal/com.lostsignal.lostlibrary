@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="RuntimeBuildConfig.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -23,29 +21,6 @@ namespace Lost.BuildConfig
         public const string ResourcePath = "buildconfig";
 
         private static RuntimeBuildConfig instance;
-
-        public static RuntimeBuildConfig Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    var configJson = Resources.Load<TextAsset>(ResourcePath);
-
-                    if (configJson != null && string.IsNullOrEmpty(configJson.text) == false)
-                    {
-                        instance = JsonUtility.FromJson<RuntimeBuildConfig>(configJson.text);
-                    }
-                }
-
-                return instance;
-            }
-        }
-
-        public static void Reset()
-        {
-            instance = null;
-        }
 
         [FormerlySerializedAs("appConfigGuid")]
         [SerializeField] private string buildConfigGuid;
@@ -79,6 +54,24 @@ namespace Lost.BuildConfig
                 {
                     this.keyValuePairs.Add(new KeyValuePair(keyValuePair.Key, keyValuePair.Value));
                 }
+            }
+        }
+
+        public static RuntimeBuildConfig Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    var configJson = Resources.Load<TextAsset>(ResourcePath);
+
+                    if (configJson != null && string.IsNullOrEmpty(configJson.text) == false)
+                    {
+                        instance = JsonUtility.FromJson<RuntimeBuildConfig>(configJson.text);
+                    }
+                }
+
+                return instance;
             }
         }
 
@@ -139,6 +132,11 @@ namespace Lost.BuildConfig
             }
         }
 
+        public static void Reset()
+        {
+            instance = null;
+        }
+
         public string GetString(string key)
         {
             this.Initialize();
@@ -185,7 +183,8 @@ namespace Lost.BuildConfig
             [SerializeField] private string key;
             [SerializeField] private string value;
 
-            public KeyValuePair() : this(null, null)
+            public KeyValuePair()
+                : this(null, null)
             {
             }
 

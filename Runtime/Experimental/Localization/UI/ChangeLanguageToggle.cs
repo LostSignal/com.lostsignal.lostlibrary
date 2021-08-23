@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="ChangeLanguageToggle.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -15,7 +15,7 @@ namespace Lost.Localization
     public class ChangeLanguageToggle : MonoBehaviour
     {
         #pragma warning disable 0649
-        [HideInInspector, SerializeField] private Toggle toggle;
+        [HideInInspector] [SerializeField] private Toggle toggle;
         [SerializeField] private string isoLanguageName;
         #pragma warning restore 0649
 

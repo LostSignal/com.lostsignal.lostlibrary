@@ -1,4 +1,4 @@
-﻿#pragma warning disable
+#pragma warning disable
 
 //-----------------------------------------------------------------------
 // <copyright file="PlantDefinitionEditor.cs" company="Lost Signal LLC">
@@ -23,10 +23,7 @@ namespace Lost.PlantGenerator
         public override void OnInspectorGUI()
         {
             PlantDefinition plantDefinition = target as PlantDefinition;
-
-            int minBranchCount;
-            int maxBranchCount;
-            plantDefinition.GetMinMaxBranchCount(out minBranchCount, out maxBranchCount);
+            plantDefinition.GetMinMaxBranchCount(out int minBranchCount, out int maxBranchCount);
 
             GUILayout.Label("Total Branches: " + minBranchCount + " - " + maxBranchCount);
             EditorGUILayout.Separator();

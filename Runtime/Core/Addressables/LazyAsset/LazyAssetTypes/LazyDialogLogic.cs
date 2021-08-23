@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="LazyDialog.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -12,7 +10,7 @@ namespace Lost
 
     [Serializable]
 #if UNITY
-    public class LazyDialogLogic : LazyAsset<DialogLogic>
+    public class LazyDialogLogic : LazyAssetT<DialogLogic>
 #else
     public class LazyDialogLogic : LazyAsset<object>
 #endif

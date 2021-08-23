@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="SceneValidator.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -12,8 +10,8 @@ namespace Lost
 {
     using System;
     using System.Collections.Generic;
-    using UnityEngine.SceneManagement;
     using UnityEngine;
+    using UnityEngine.SceneManagement;
 
     //// ### Scene Validator
     ////   * Make custom window that holds all the errors (instead of printing them to the screen)
@@ -49,20 +47,6 @@ namespace Lost
     {
         #if UNITY_EDITOR
 
-        [EditorEvents.OnProcessScene]
-        private static void OnProcessScene(Scene scene)
-        {
-            var sceneValidators = GameObject.FindObjectsOfType<SceneValidator>();
-
-            foreach (var sceneValidator in sceneValidators)
-            {
-                if (sceneValidator.gameObject.scene == scene)
-                {
-                    sceneValidator.ProcessAll();
-                }
-            }
-        }
-
         #pragma warning disable 0649
         [SerializeReference] private List<Validator> validators;
         #pragma warning restore 0649
@@ -91,6 +75,20 @@ namespace Lost
             var errors = new List<Error>();
             this.validators[index].Run(errors);
             this.PrintErrors(errors);
+        }
+
+        [EditorEvents.OnProcessScene]
+        private static void OnProcessScene(Scene scene)
+        {
+            var sceneValidators = GameObject.FindObjectsOfType<SceneValidator>();
+
+            foreach (var sceneValidator in sceneValidators)
+            {
+                if (sceneValidator.gameObject.scene == scene)
+                {
+                    sceneValidator.ProcessAll();
+                }
+            }
         }
 
         private void OnValidate()
@@ -143,17 +141,10 @@ namespace Lost
         {
             #pragma warning disable 0649
             [ReadOnly]
-            [SerializeField] protected SceneValidator parent;
-            [SerializeField] protected bool isActive;
-            [SerializeField] protected List<GameObject> objectsToIgnore;
+            [SerializeField] private SceneValidator parent;
+            [SerializeField] private bool isActive;
+            [SerializeField] private List<GameObject> objectsToIgnore;
             #pragma warning restore 0649
-
-            public void Initialize(SceneValidator parent)
-            {
-                this.parent = parent;
-                this.isActive = true;
-                this.objectsToIgnore = new List<GameObject>();
-            }
 
             public abstract string DisplayName { get; }
 
@@ -163,9 +154,17 @@ namespace Lost
                 set => this.isActive = value;
             }
 
+            public void Initialize(SceneValidator parent)
+            {
+                this.parent = parent;
+                this.isActive = true;
+                this.objectsToIgnore = new List<GameObject>();
+            }
+
             public abstract void Run(List<Error> errorResults);
 
-            protected IEnumerable<T> FindObjectsOfType<T>(bool includeInactive) where T : Component
+            protected IEnumerable<T> FindObjectsOfType<T>(bool includeInactive)
+                where T : Component
             {
                 foreach (var component in GameObject.FindObjectsOfType<T>(includeInactive))
                 {
@@ -186,7 +185,9 @@ namespace Lost
         public class Error
         {
             public UnityEngine.Object AffectedObject { get; set; }
+
             public string Name { get; set; }
+
             public string Description { get; set; }
         }
 

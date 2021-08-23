@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="Release.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -12,8 +10,8 @@ namespace Lost
 {
     using System;
     using Lost.DissonanceIntegration;
-    using Lost.PlayFab;
     using Lost.IAP;
+    using Lost.PlayFab;
     using UnityEngine;
 
     [Serializable]
