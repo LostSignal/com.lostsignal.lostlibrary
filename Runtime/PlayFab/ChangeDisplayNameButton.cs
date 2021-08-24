@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="ChangeDisplayNameButton.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -19,7 +17,7 @@ namespace Lost.PlayFab
     public class ChangeDisplayNameButton : MonoBehaviour
     {
         #pragma warning disable 0649
-        [HideInInspector, SerializeField] private Button button;
+        [HideInInspector] [SerializeField] private Button button;
         [SerializeField] private UnityEvent onNameChangedSuccess;
         [SerializeField] private UnityEvent onNameChangedFailed;
         #pragma warning restore 0649

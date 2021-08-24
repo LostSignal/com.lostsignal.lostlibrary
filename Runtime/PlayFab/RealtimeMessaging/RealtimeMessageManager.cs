@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="RealtimeMessageManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -17,13 +15,13 @@ namespace Lost
     using IO.Ably;
 #endif
 
-    using Lost.BuildConfig;
-    using Newtonsoft.Json.Linq;
+    using System.Collections;
     using global::PlayFab.ClientModels;
     using global::PlayFab.Internal;
-    using UnityEngine;
+    using Lost.BuildConfig;
     using Lost.PlayFab;
-    using System.Collections;
+    using Newtonsoft.Json.Linq;
+    using UnityEngine;
 
     public sealed class RealtimeMessageManager : Manager<RealtimeMessageManager>
     {
@@ -63,7 +61,8 @@ namespace Lost
                     }
                     else
                     {
-                        Debug.LogError("RealtimeMessageManager requires a valid Ably Client Key in the Releases RealtimeMessageManagerSettings. " +
+                        Debug.LogError(
+                            "RealtimeMessageManager requires a valid Ably Client Key in the Releases RealtimeMessageManagerSettings. " +
                             "This manager will not work properly. Go to https://www.ably.io/accounts to get a valid client key.", this);
                     }
 #endif
@@ -73,7 +72,8 @@ namespace Lost
             }
         }
 
-        public void RegisterType<T>() where T : RealtimeMessage, new()
+        public void RegisterType<T>()
+            where T : RealtimeMessage, new()
         {
 #if USING_ABLY
             var instance = Activator.CreateInstance(typeof(T)) as RealtimeMessage;
@@ -107,11 +107,11 @@ namespace Lost
         private void MessageReceived(Message message)
         {
             string json = message.Data as string;
-            JObject jObject = null;
+            JObject javaObject = null;
 
             try
             {
-                jObject = JObject.Parse(json);
+                javaObject = JObject.Parse(json);
             }
             catch
             {
@@ -119,7 +119,7 @@ namespace Lost
                 return;
             }
 
-            string realtimeMessageType = jObject["Type"]?.ToString();
+            string realtimeMessageType = javaObject["Type"]?.ToString();
 
             if (realtimeMessageType == null)
             {
@@ -129,7 +129,7 @@ namespace Lost
             {
                 var realtimeMessage = JsonUtil.Deserialize(json, type);
 
-                // TODO [bgish]: Forward realtimeMessage onto the message subscription system
+                //// TODO [bgish]: Forward realtimeMessage onto the message subscription system
 
                 if (this.printDebugOutput)
                 {

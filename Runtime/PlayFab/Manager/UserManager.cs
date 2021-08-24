@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="UserManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -19,14 +17,6 @@ namespace Lost.PlayFab
         private UserAccountInfo userAccountInfo;
         private PlayFabManager playfabManager;
 
-        public UserTitleInfo TitleInfo { get; private set; }
-        public string PlayFabId { get; private set; }
-        public long PlayFabNumericId { get; private set; }
-        public string DisplayName { get; private set; }
-        public string FacebookId { get; private set; }
-        public string AvatarUrl { get; private set; }
-        public bool IsFacebookLinked => string.IsNullOrEmpty(this.FacebookId) == false;
-
         public UserManager(PlayFabManager playfabManager, LoginResult loginResult)
         {
             this.playfabManager = playfabManager;
@@ -45,6 +35,20 @@ namespace Lost.PlayFab
             //// TODO [bgish]: Fire a DisplayNameChanged event
             //// TODO [bgish]: Fire a FacebookChanged event
         }
+
+        public UserTitleInfo TitleInfo { get; private set; }
+
+        public string PlayFabId { get; private set; }
+
+        public long PlayFabNumericId { get; private set; }
+
+        public string DisplayName { get; private set; }
+
+        public string FacebookId { get; private set; }
+
+        public string AvatarUrl { get; private set; }
+
+        public bool IsFacebookLinked => string.IsNullOrEmpty(this.FacebookId) == false;
 
         public UnityTask<bool> ChangeDisplayName(string newDisplayName)
         {

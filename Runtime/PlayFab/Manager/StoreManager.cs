@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="StoreManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -46,7 +44,7 @@ namespace Lost.PlayFab
             {
                 this.getStoreRequest.StoreId = storeId;
 
-                var getStore = this.playfabManager.Do<GetStoreItemsRequest, GetStoreItemsResult>(getStoreRequest, PlayFabClientAPI.GetStoreItemsAsync);
+                var getStore = this.playfabManager.Do<GetStoreItemsRequest, GetStoreItemsResult>(this.getStoreRequest, PlayFabClientAPI.GetStoreItemsAsync);
 
                 while (getStore.IsDone == false)
                 {

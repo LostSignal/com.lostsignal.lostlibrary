@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="InventoryManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -20,18 +18,19 @@ namespace Lost.PlayFab
         private bool getInventoryCoroutineRunning;
         private PlayFabManager playfabManager;
 
-        public delegate void OnInventoryChangedDelegate();
-        public event OnInventoryChangedDelegate InventoryChanged;
-
         public InventoryManager(PlayFabManager playfabManager, List<ItemInstance> userInventory)
         {
             this.playfabManager = playfabManager;
         }
 
-        // public InventoryHelper()
-        // {
-        //     PF.GlobalPlayFabResultHandler += this.OnGlobalPlayFabResultHandler;
-        // }
+        public delegate void OnInventoryChangedDelegate();
+
+        public event OnInventoryChangedDelegate InventoryChanged;
+
+        //// public InventoryHelper()
+        //// {
+        ////     PF.GlobalPlayFabResultHandler += this.OnGlobalPlayFabResultHandler;
+        //// }
 
         public void InvalidateUserInventory()
         {

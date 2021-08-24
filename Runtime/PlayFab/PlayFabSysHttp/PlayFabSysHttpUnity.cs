@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="PlayFabSysHttpUnity.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -20,9 +18,9 @@ namespace PlayFab.Internal
 
         Task<object> ITransportPlugin.DoPost(string fullPath, object request, Dictionary<string, string> headers)
         {
-            // NOTE [bgish]: Making sure all PlayFab calls happen in a background thread.  This also ensures that
-            //               calling PlayFab functions inside the Unity Editor will work and not freeze Unity.
-            return Task.Run<object>(function: async() =>
+            //// NOTE [bgish]: Making sure all PlayFab calls happen in a background thread.  This also ensures that
+            ////               calling PlayFab functions inside the Unity Editor will work and not freeze Unity.
+            return Task.Run<object>(function: async () =>
             {
                 return await PlayFabSysHttp.DoPost(fullPath, request, headers);
             });

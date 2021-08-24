@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="PlayFabManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -23,8 +21,6 @@ namespace Lost.PlayFab
 
     public sealed class PlayFabManager : Manager<PlayFabManager>
     {
-        public delegate void Action<T1, T2, T3, T4, T5>(T1 arg, T2 arg2, T3 arg3, T4 arg4, T5 arg5);
-
         private static ISerializerPlugin serializerPlugin;
 
 #pragma warning disable 0649
@@ -33,6 +29,28 @@ namespace Lost.PlayFab
 
         private bool regainFocusCoroutineRunning;
         private DateTime lostFocusTime = DateTime.UtcNow;
+
+        public delegate void Action<T1, T2, T3, T4, T5>(T1 arg, T2 arg2, T3 arg3, T4 arg4, T5 arg5);
+
+        public enum TitleDataSerializationMethod
+        {
+            PlayFab,
+            JsonDotNet,
+            Unity,
+        }
+
+        public static ISerializerPlugin SerializerPlugin
+        {
+            get
+            {
+                if (serializerPlugin == null)
+                {
+                    serializerPlugin = global::PlayFab.PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
+                }
+
+                return serializerPlugin;
+            }
+        }
 
         public Action<PlayFabRequestCommon, PlayFabResultCommon> GlobalPlayFabResultHandler { get; set; }
 
@@ -61,19 +79,6 @@ namespace Lost.PlayFab
         public static long ConvertPlayFabIdToLong(string playfabId)
         {
             return System.Convert.ToInt64(playfabId, 16);
-        }
-
-        public static ISerializerPlugin SerializerPlugin
-        {
-            get
-            {
-                if (serializerPlugin == null)
-                {
-                    serializerPlugin = global::PlayFab.PluginManager.GetPlugin<ISerializerPlugin>(PluginContract.PlayFab_Serializer);
-                }
-
-                return serializerPlugin;
-            }
         }
 
         public override void Initialize()
@@ -165,204 +170,188 @@ namespace Lost.PlayFab
 
         public UnityTask<ExecuteCloudScriptResult> Do(ExecuteCloudScriptRequest request)
         {
-            return Do<ExecuteCloudScriptRequest, ExecuteCloudScriptResult>(request, PlayFabClientAPI.ExecuteCloudScriptAsync);
+            return this.Do<ExecuteCloudScriptRequest, ExecuteCloudScriptResult>(request, PlayFabClientAPI.ExecuteCloudScriptAsync);
         }
 
         public UnityTask<EmptyResponse> Do(UpdateAvatarUrlRequest request)
         {
-            return Do<UpdateAvatarUrlRequest, EmptyResponse>(request, PlayFabClientAPI.UpdateAvatarUrlAsync);
+            return this.Do<UpdateAvatarUrlRequest, EmptyResponse>(request, PlayFabClientAPI.UpdateAvatarUrlAsync);
         }
 
         public UnityTask<UpdateUserTitleDisplayNameResult> Do(UpdateUserTitleDisplayNameRequest request)
         {
-            return Do<UpdateUserTitleDisplayNameRequest, UpdateUserTitleDisplayNameResult>(request, PlayFabClientAPI.UpdateUserTitleDisplayNameAsync);
+            return this.Do<UpdateUserTitleDisplayNameRequest, UpdateUserTitleDisplayNameResult>(request, PlayFabClientAPI.UpdateUserTitleDisplayNameAsync);
         }
 
         public UnityTask<GetAccountInfoResult> Do(GetAccountInfoRequest request)
         {
-            return Do<GetAccountInfoRequest, GetAccountInfoResult>(request, PlayFabClientAPI.GetAccountInfoAsync);
+            return this.Do<GetAccountInfoRequest, GetAccountInfoResult>(request, PlayFabClientAPI.GetAccountInfoAsync);
         }
 
         public UnityTask<GetContentDownloadUrlResult> Do(GetContentDownloadUrlRequest request)
         {
-            return Do<GetContentDownloadUrlRequest, GetContentDownloadUrlResult>(request, PlayFabClientAPI.GetContentDownloadUrlAsync);
+            return this.Do<GetContentDownloadUrlRequest, GetContentDownloadUrlResult>(request, PlayFabClientAPI.GetContentDownloadUrlAsync);
         }
 
         public UnityTask<GetUserInventoryResult> Do(GetUserInventoryRequest request)
         {
-            return Do<GetUserInventoryRequest, GetUserInventoryResult>(request, PlayFabClientAPI.GetUserInventoryAsync);
+            return this.Do<GetUserInventoryRequest, GetUserInventoryResult>(request, PlayFabClientAPI.GetUserInventoryAsync);
         }
 
         public UnityTask<GetPlayerCombinedInfoResult> Do(GetPlayerCombinedInfoRequest request)
         {
-            return Do<GetPlayerCombinedInfoRequest, GetPlayerCombinedInfoResult>(request, PlayFabClientAPI.GetPlayerCombinedInfoAsync);
+            return this.Do<GetPlayerCombinedInfoRequest, GetPlayerCombinedInfoResult>(request, PlayFabClientAPI.GetPlayerCombinedInfoAsync);
         }
 
         public UnityTask<GetPlayerSegmentsResult> Do(GetPlayerSegmentsRequest request)
         {
-            return Do<GetPlayerSegmentsRequest, GetPlayerSegmentsResult>(request, PlayFabClientAPI.GetPlayerSegmentsAsync);
+            return this.Do<GetPlayerSegmentsRequest, GetPlayerSegmentsResult>(request, PlayFabClientAPI.GetPlayerSegmentsAsync);
         }
 
         public UnityTask<WriteEventResponse> Do(WriteClientPlayerEventRequest request)
         {
-            return Do<WriteClientPlayerEventRequest, WriteEventResponse>(request, PlayFabClientAPI.WritePlayerEventAsync);
+            return this.Do<WriteClientPlayerEventRequest, WriteEventResponse>(request, PlayFabClientAPI.WritePlayerEventAsync);
         }
 
         public UnityTask<GetTimeResult> RefreshServerTime()
         {
-            return Do<GetTimeRequest, GetTimeResult>(new GetTimeRequest(), PlayFabClientAPI.GetTimeAsync);
+            return this.Do<GetTimeRequest, GetTimeResult>(new GetTimeRequest(), PlayFabClientAPI.GetTimeAsync);
         }
 
-        #region User Data Related Functions
+        //// User Data Related Functions ------------------
 
         public UnityTask<GetUserDataResult> Do(GetUserDataRequest request)
         {
-            return Do<GetUserDataRequest, GetUserDataResult>(request, PlayFabClientAPI.GetUserDataAsync);
+            return this.Do<GetUserDataRequest, GetUserDataResult>(request, PlayFabClientAPI.GetUserDataAsync);
         }
 
         public UnityTask<UpdateUserDataResult> Do(UpdateUserDataRequest request)
         {
-            return Do<UpdateUserDataRequest, UpdateUserDataResult>(request, PlayFabClientAPI.UpdateUserDataAsync);
+            return this.Do<UpdateUserDataRequest, UpdateUserDataResult>(request, PlayFabClientAPI.UpdateUserDataAsync);
         }
 
-        #endregion
-
-        #region Player Statistics Related Functions
+        //// Player Statistics Related Functions ------------------
 
         public UnityTask<GetPlayerStatisticsResult> Do(GetPlayerStatisticsRequest request)
         {
-            return Do<GetPlayerStatisticsRequest, GetPlayerStatisticsResult>(request, PlayFabClientAPI.GetPlayerStatisticsAsync);
+            return this.Do<GetPlayerStatisticsRequest, GetPlayerStatisticsResult>(request, PlayFabClientAPI.GetPlayerStatisticsAsync);
         }
 
-        #endregion
-
-        #region Title Data Related Functions
+        //// Title Data Related Functions ------------------
 
         public UnityTask<GetTitleDataResult> Do(GetTitleDataRequest request)
         {
-            return Do<GetTitleDataRequest, GetTitleDataResult>(request, PlayFabClientAPI.GetTitleDataAsync);
+            return this.Do<GetTitleDataRequest, GetTitleDataResult>(request, PlayFabClientAPI.GetTitleDataAsync);
         }
 
         public UnityTask<GetTitleNewsResult> Do(GetTitleNewsRequest request)
         {
-            return Do<GetTitleNewsRequest, GetTitleNewsResult>(request, PlayFabClientAPI.GetTitleNewsAsync);
+            return this.Do<GetTitleNewsRequest, GetTitleNewsResult>(request, PlayFabClientAPI.GetTitleNewsAsync);
         }
 
-        #endregion
-
-        #region Push Notification Related Functions
+        //// Push Notification Related Functions ------------------
 
         public UnityTask<AndroidDevicePushNotificationRegistrationResult> Do(AndroidDevicePushNotificationRegistrationRequest request)
         {
-            return Do<AndroidDevicePushNotificationRegistrationRequest, AndroidDevicePushNotificationRegistrationResult>(request, PlayFabClientAPI.AndroidDevicePushNotificationRegistrationAsync);
+            return this.Do<AndroidDevicePushNotificationRegistrationRequest, AndroidDevicePushNotificationRegistrationResult>(request, PlayFabClientAPI.AndroidDevicePushNotificationRegistrationAsync);
         }
 
         public UnityTask<RegisterForIOSPushNotificationResult> Do(RegisterForIOSPushNotificationRequest request)
         {
-            return Do<RegisterForIOSPushNotificationRequest, RegisterForIOSPushNotificationResult>(request, PlayFabClientAPI.RegisterForIOSPushNotificationAsync);
+            return this.Do<RegisterForIOSPushNotificationRequest, RegisterForIOSPushNotificationResult>(request, PlayFabClientAPI.RegisterForIOSPushNotificationAsync);
         }
 
-        #endregion
-
-        #region Leaderboard Related Functions
+        //// Leaderboard Related Functions ------------------
 
         public UnityTask<GetLeaderboardResult> Do(GetLeaderboardRequest request)
         {
-            return Do<GetLeaderboardRequest, GetLeaderboardResult>(request, PlayFabClientAPI.GetLeaderboardAsync);
+            return this.Do<GetLeaderboardRequest, GetLeaderboardResult>(request, PlayFabClientAPI.GetLeaderboardAsync);
         }
 
         public UnityTask<GetLeaderboardResult> Do(GetFriendLeaderboardRequest request)
         {
-            return Do<GetFriendLeaderboardRequest, GetLeaderboardResult>(request, PlayFabClientAPI.GetFriendLeaderboardAsync);
+            return this.Do<GetFriendLeaderboardRequest, GetLeaderboardResult>(request, PlayFabClientAPI.GetFriendLeaderboardAsync);
         }
 
         public UnityTask<GetLeaderboardAroundPlayerResult> Do(GetLeaderboardAroundPlayerRequest request)
         {
-            return Do<GetLeaderboardAroundPlayerRequest, GetLeaderboardAroundPlayerResult>(request, PlayFabClientAPI.GetLeaderboardAroundPlayerAsync);
+            return this.Do<GetLeaderboardAroundPlayerRequest, GetLeaderboardAroundPlayerResult>(request, PlayFabClientAPI.GetLeaderboardAroundPlayerAsync);
         }
 
         public UnityTask<GetFriendLeaderboardAroundPlayerResult> Do(GetFriendLeaderboardAroundPlayerRequest request)
         {
-            return Do<GetFriendLeaderboardAroundPlayerRequest, GetFriendLeaderboardAroundPlayerResult>(request, PlayFabClientAPI.GetFriendLeaderboardAroundPlayerAsync);
+            return this.Do<GetFriendLeaderboardAroundPlayerRequest, GetFriendLeaderboardAroundPlayerResult>(request, PlayFabClientAPI.GetFriendLeaderboardAroundPlayerAsync);
         }
 
-        #endregion
-
-        #region Purchasing Related Functions
+        //// Purchasing Related Functions ------------------
 
         public UnityTask<ConfirmPurchaseResult> Do(ConfirmPurchaseRequest request)
         {
-            return Do<ConfirmPurchaseRequest, ConfirmPurchaseResult>(request, PlayFabClientAPI.ConfirmPurchaseAsync);
+            return this.Do<ConfirmPurchaseRequest, ConfirmPurchaseResult>(request, PlayFabClientAPI.ConfirmPurchaseAsync);
         }
 
         public UnityTask<ValidateIOSReceiptResult> Do(ValidateIOSReceiptRequest request)
         {
-            return Do<ValidateIOSReceiptRequest, ValidateIOSReceiptResult>(request, PlayFabClientAPI.ValidateIOSReceiptAsync);
+            return this.Do<ValidateIOSReceiptRequest, ValidateIOSReceiptResult>(request, PlayFabClientAPI.ValidateIOSReceiptAsync);
         }
 
         public UnityTask<ValidateGooglePlayPurchaseResult> Do(ValidateGooglePlayPurchaseRequest request)
         {
-            return Do<ValidateGooglePlayPurchaseRequest, ValidateGooglePlayPurchaseResult>(request, PlayFabClientAPI.ValidateGooglePlayPurchaseAsync);
+            return this.Do<ValidateGooglePlayPurchaseRequest, ValidateGooglePlayPurchaseResult>(request, PlayFabClientAPI.ValidateGooglePlayPurchaseAsync);
         }
 
         public UnityTask<ValidateAmazonReceiptResult> Do(ValidateAmazonReceiptRequest request)
         {
-            return Do<ValidateAmazonReceiptRequest, ValidateAmazonReceiptResult>(request, PlayFabClientAPI.ValidateAmazonIAPReceiptAsync);
+            return this.Do<ValidateAmazonReceiptRequest, ValidateAmazonReceiptResult>(request, PlayFabClientAPI.ValidateAmazonIAPReceiptAsync);
         }
 
-        #endregion
-
-        #region Friends Related Functions
+        //// Friends Related Functions ------------------
 
         public UnityTask<AddFriendResult> Do(AddFriendRequest request)
         {
             // should update the cached list after it's done
-            return Do<AddFriendRequest, AddFriendResult>(request, PlayFabClientAPI.AddFriendAsync);
+            return this.Do<AddFriendRequest, AddFriendResult>(request, PlayFabClientAPI.AddFriendAsync);
         }
 
         public UnityTask<RemoveFriendResult> Do(RemoveFriendRequest request)
         {
             // should update the cached list after it's done
-            return Do<RemoveFriendRequest, RemoveFriendResult>(request, PlayFabClientAPI.RemoveFriendAsync);
+            return this.Do<RemoveFriendRequest, RemoveFriendResult>(request, PlayFabClientAPI.RemoveFriendAsync);
         }
 
         public UnityTask<GetFriendsListResult> Do(GetFriendsListRequest request)
         {
             // TODO [bgish] - should really cache this, and update friends list whenever add/remove.  If cached, then return the list instead of call this
-            return Do<GetFriendsListRequest, GetFriendsListResult>(request, PlayFabClientAPI.GetFriendsListAsync);
+            return this.Do<GetFriendsListRequest, GetFriendsListResult>(request, PlayFabClientAPI.GetFriendsListAsync);
         }
 
-        #endregion
-
-        #region Matchmaking Related Functions
+        //// Matchmaking Related Functions ------------------
 
         public UnityTask<CurrentGamesResult> Do(CurrentGamesRequest request)
         {
-            return Do<CurrentGamesRequest, CurrentGamesResult>(request, PlayFabClientAPI.GetCurrentGamesAsync);
+            return this.Do<CurrentGamesRequest, CurrentGamesResult>(request, PlayFabClientAPI.GetCurrentGamesAsync);
         }
 
         public UnityTask<MatchmakeResult> Do(MatchmakeRequest request)
         {
-            return Do<MatchmakeRequest, MatchmakeResult>(request, PlayFabClientAPI.MatchmakeAsync);
+            return this.Do<MatchmakeRequest, MatchmakeResult>(request, PlayFabClientAPI.MatchmakeAsync);
         }
 
         public UnityTask<StartGameResult> Do(StartGameRequest request)
         {
-            return Do<StartGameRequest, StartGameResult>(request, PlayFabClientAPI.StartGameAsync);
+            return this.Do<StartGameRequest, StartGameResult>(request, PlayFabClientAPI.StartGameAsync);
         }
 
-        #endregion
-
-        public UnityTask<Result> Do<Request, Result>(Request request, Func<Request, object, Dictionary<string, string>, Task<PlayFabResult<Result>>> playfabFunction)
-            where Request : PlayFabRequestCommon
-            where Result : PlayFabResultCommon
+        public UnityTask<TResult> Do<TRequest, TResult>(TRequest request, Func<TRequest, object, Dictionary<string, string>, Task<PlayFabResult<TResult>>> playfabFunction)
+            where TRequest : PlayFabRequestCommon
+            where TResult : PlayFabResultCommon
         {
-            return UnityTask<Result>.Run(DoIterator(request, playfabFunction));
+            return UnityTask<TResult>.Run(this.DoIterator(request, playfabFunction));
         }
 
-        public IEnumerator<Result> DoIterator<Request, Result>(Request request, Func<Request, object, Dictionary<string, string>, Task<PlayFabResult<Result>>> playfabFunction)
-            where Request : PlayFabRequestCommon
-            where Result : PlayFabResultCommon
+        public IEnumerator<TResult> DoIterator<TRequest, TResult>(TRequest request, Func<TRequest, object, Dictionary<string, string>, Task<PlayFabResult<TResult>>> playfabFunction)
+            where TRequest : PlayFabRequestCommon
+            where TResult : PlayFabResultCommon
         {
             var task = playfabFunction.Invoke(request, null, null);
 
@@ -388,7 +377,7 @@ namespace Lost.PlayFab
                 }
             }
 
-            GlobalPlayFabResultHandler?.Invoke(request, task.Result.Result);
+            this.GlobalPlayFabResultHandler?.Invoke(request, task.Result.Result);
 
             yield return task.Result.Result;
         }
@@ -437,33 +426,6 @@ namespace Lost.PlayFab
             {
                 this.ExecuteAtEndOfFrame(Bootloader.Reboot);
             }
-        }
-
-        public enum TitleDataSerializationMethod
-        {
-            PlayFab,
-            JsonDotNet,
-            Unity,
-        }
-
-        public interface ITitleData
-        {
-            string TitleDataKey { get; }
-
-            bool IsCompressed { get; }
-
-            bool LoadAtStartup { get; }
-
-            TitleDataSerializationMethod SerializationMethod { get; }
-        }
-
-        [Serializable]
-        public class TitleDataKeys
-        {
-            public string TitleDataKey;
-            public bool IsCompressed;
-            public bool LoadAtStartup;
-            public TitleDataSerializationMethod SerializationMethod;
         }
 
         [Serializable]

@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="RoomsCloudFunctions.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -11,17 +9,17 @@
 namespace Lost.CloudFunctions
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using System.Collections.Generic;
     using global::PlayFab;
     using global::PlayFab.MultiplayerModels;
 
     public static class RoomsCloudFunctions
     {
         // TODO [bgish]: This hash is temporary and will eventually be replaced by Redis
-        private static readonly Dictionary<string, RoomServerInfo> roomIdToServerInfoMap = new Dictionary<string, RoomServerInfo>();
-        private static readonly object serverInfosLock = new object();
+        private static readonly Dictionary<string, RoomServerInfo> RoomIdToServerInfoMap = new Dictionary<string, RoomServerInfo>();
+        private static readonly object ServerInfosLock = new object();
 
         private static readonly List<Room> Rooms = new List<Room>
         {
@@ -150,24 +148,24 @@ namespace Lost.CloudFunctions
         private static RoomServerInfo GetServerInfoForRoom(string roomId)
         {
             // TODO [bgish]: Need to make this a call to Redis
-            lock (serverInfosLock)
+            lock (ServerInfosLock)
             {
-                return roomIdToServerInfoMap.TryGetValue(roomId, out RoomServerInfo serverInfo) ? serverInfo : null;
+                return RoomIdToServerInfoMap.TryGetValue(roomId, out RoomServerInfo serverInfo) ? serverInfo : null;
             }
         }
 
         private static void DeleteServerInfoIfDataHasntChanged(string roomId, string sessonId, string region)
         {
             // TODO [bgish]: Need to make this a call to Redis
-            lock (serverInfosLock)
+            lock (ServerInfosLock)
             {
-                if (roomIdToServerInfoMap.TryGetValue(roomId, out RoomServerInfo serverInfo))
+                if (RoomIdToServerInfoMap.TryGetValue(roomId, out RoomServerInfo serverInfo))
                 {
                     if (serverInfo.RoomId == roomId &&
                         serverInfo.SessionId == sessonId &&
                         serverInfo.Region == region)
                     {
-                        roomIdToServerInfoMap.Remove(roomId);
+                        RoomIdToServerInfoMap.Remove(roomId);
                     }
                 }
             }
@@ -176,20 +174,20 @@ namespace Lost.CloudFunctions
         private static void UpdateServerInfo(RoomServerInfo serverInfo)
         {
             // TODO [bgish]: Need to make this a call to Redis
-            lock (serverInfosLock)
+            lock (ServerInfosLock)
             {
-                roomIdToServerInfoMap[serverInfo.RoomId] = serverInfo;
+                RoomIdToServerInfoMap[serverInfo.RoomId] = serverInfo;
             }
         }
 
         private static bool AddServerInfoIfDoesNotExist(RoomServerInfo serverInfo)
         {
             // TODO [bgish]: Need to make this a call to Redis
-            lock (serverInfosLock)
+            lock (ServerInfosLock)
             {
-                if (roomIdToServerInfoMap.ContainsKey(serverInfo.RoomId) == false)
+                if (RoomIdToServerInfoMap.ContainsKey(serverInfo.RoomId) == false)
                 {
-                    roomIdToServerInfoMap.Add(serverInfo.RoomId, serverInfo);
+                    RoomIdToServerInfoMap.Add(serverInfo.RoomId, serverInfo);
                     return true;
                 }
 

@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="TitleData.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -14,13 +12,14 @@ namespace Lost.PlayFab
     using UnityEngine;
 
     [Serializable]
-    public class TitleData<T> : ScriptableObject where T : new()
+    public class TitleData<T> : ScriptableObject
+        where T : new()
     {
         #if UNITY_EDITOR
         [SerializeField] private T data = new T();
         #endif
 
-        [SerializeField] private string titleDataKeyName = "";
+        [SerializeField] private string titleDataKeyName = string.Empty;
         [SerializeField] private bool serializeWithUnity = true;
         [SerializeField] private bool compressData = false;
 

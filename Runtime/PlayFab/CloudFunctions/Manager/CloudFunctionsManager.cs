@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="CloudFunctionsManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -78,7 +76,7 @@ namespace Lost.CloudFunctions
             return this.ExecutePlayFabCloudFunction(functionName, functionParameter);
         }
 
-        public Task<Result<T>> Execute<T>(string functionName, object functionParameter = null)
+        public Task<ResultT<T>> Execute<T>(string functionName, object functionParameter = null)
             where T : class
         {
             if (CloudFunctionsUtil.UseLocalhostFunctions)
@@ -119,7 +117,7 @@ namespace Lost.CloudFunctions
             }
         }
 
-        private async Task<Result<T>> ExecutePlayFabCloudFunction<T>(string functionName, object functionParameter)
+        private async Task<ResultT<T>> ExecutePlayFabCloudFunction<T>(string functionName, object functionParameter)
             where T : class
         {
             try
@@ -136,20 +134,20 @@ namespace Lost.CloudFunctions
                     // NOTE [bgish]: Even though our cloud functions return strings, PlayFab converts them to objects, so lets convert them back to a string
                     string resultJson = JsonUtil.Serialize(execute.Result.FunctionResult);
 
-                    return Result<T>.Ok(JsonUtil.Deserialize<T>(resultJson));
+                    return ResultT<T>.Ok(JsonUtil.Deserialize<T>(resultJson));
                 }
                 else
                 {
                     var exception = new PlayFabException(execute.Error);
                     UnityEngine.Debug.LogException(exception);
-                    return Result<T>.Failure(exception);
+                    return ResultT<T>.Failure(exception);
                 }
             }
             catch (Exception ex)
             {
                 UnityEngine.Debug.LogError($"Exception occured when calling Function {functionName}");
                 UnityEngine.Debug.LogException(ex);
-                return Result<T>.Failure(ex);
+                return ResultT<T>.Failure(ex);
             }
         }
 
@@ -202,7 +200,7 @@ namespace Lost.CloudFunctions
             public string StringResult { get; set; }
         }
 
-        private async Task<Result<T>> ExecuteLocalhostCloudFuntion<T>(string functionName, object functionParameter)
+        private async Task<ResultT<T>> ExecuteLocalhostCloudFuntion<T>(string functionName, object functionParameter)
             where T : class
         {
 #if UNITY_EDITOR
@@ -225,24 +223,24 @@ namespace Lost.CloudFunctions
                     using (Stream responseStream = response.GetResponseStream())
                     using (StreamReader responseReader = new StreamReader(responseStream))
                     {
-                        return Result<T>.Ok(JsonUtil.Deserialize<T>(responseReader.ReadToEnd()));
+                        return ResultT<T>.Ok(JsonUtil.Deserialize<T>(responseReader.ReadToEnd()));
                     }
                 }
                 else
                 {
                     var exception = new Exception($"Bad Server Response from Function {functionName}: {response.StatusCode}");
                     UnityEngine.Debug.LogException(exception);
-                    return Result<T>.Failure(exception);
+                    return ResultT<T>.Failure(exception);
                 }
             }
             catch (Exception ex)
             {
                 UnityEngine.Debug.LogError($"Exception occured when calling Function {functionName}");
                 UnityEngine.Debug.LogException(ex);
-                return Result<T>.Failure(ex);
+                return ResultT<T>.Failure(ex);
             }
 #else
-            return await Task.FromResult<Result<T>>(default(Result<T>));
+            return await Task.FromResult<ResultT<T>>(default(ResultT<T>));
 #endif
         }
     }

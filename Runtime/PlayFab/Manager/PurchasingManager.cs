@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="PurchasingManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -17,10 +15,10 @@ namespace Lost.PlayFab
     using System;
     using System.Collections.Generic;
     using System.Text;
-    using Lost.BuildConfig;
-    using Lost.IAP;
     using global::PlayFab;
     using global::PlayFab.ClientModels;
+    using Lost.BuildConfig;
+    using Lost.IAP;
     using UnityEngine;
 
 #if PURCHASING_ENABLED
@@ -35,13 +33,13 @@ namespace Lost.PlayFab
         private bool isInitializationRunning;
         private string catalogVersion;
 
-        public bool IsInitialized { get; private set; }
-
         public PurchasingManager(PlayFabManager playfabManager, string catalogVersion)
         {
             this.playfabManager = playfabManager;
             this.catalogVersion = catalogVersion;
         }
+
+        public bool IsInitialized { get; private set; }
 
         public UnityTask<bool> Initialize()
         {
@@ -449,38 +447,38 @@ namespace Lost.PlayFab
 
             switch (e.purchasedProduct.metadata.isoCurrencyCode)
             {
-                // https://en.wikipedia.org/wiki/List_of_circulating_currencies
-                //
-                // case "BHD": // Bahrain
-                // case "IQD": // Iraq
-                // case "KWD": // Kuwait
-                // case "LYD": // Libya
-                // case "OMR": // Oman
-                // case "TND": // Tunisia
-                //     {
-                //         fractionalUnit = 1000;
-                //         break;
-                //     }
-                //
-                // case "MGA": // Madagascar
-                // case "MRU": // Mauritania, Sahrawi Republic (Mauritanian ouguiya)
-                //     {
-                //         fractionalUnit = 5;
-                //         break;
-                //     }
-                //
-                // case "VUV": // Vanuatu
-                //     {
-                //         fractionalUnit = 1;
-                //         break;
-                //     }
-                //
-                // NOTE [bgish]: May need this for IAP to work in Vietname
-                // case "VND": // Vietname
-                //     {
-                //         fractionalUnit = 10;
-                //         break;
-                //     }
+                //// https://en.wikipedia.org/wiki/List_of_circulating_currencies
+                ////
+                //// case "BHD": // Bahrain
+                //// case "IQD": // Iraq
+                //// case "KWD": // Kuwait
+                //// case "LYD": // Libya
+                //// case "OMR": // Oman
+                //// case "TND": // Tunisia
+                ////     {
+                ////         fractionalUnit = 1000;
+                ////         break;
+                ////     }
+                ////
+                //// case "MGA": // Madagascar
+                //// case "MRU": // Mauritania, Sahrawi Republic (Mauritanian ouguiya)
+                ////     {
+                ////         fractionalUnit = 5;
+                ////         break;
+                ////     }
+                ////
+                //// case "VUV": // Vanuatu
+                ////     {
+                ////         fractionalUnit = 1;
+                ////         break;
+                ////     }
+                ////
+                //// NOTE [bgish]: May need this for IAP to work in Vietname
+                //// case "VND": // Vietname
+                ////     {
+                ////         fractionalUnit = 10;
+                ////         break;
+                ////     }
 
                 default:
                 {

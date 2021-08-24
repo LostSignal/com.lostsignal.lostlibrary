@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="VersionedTitleData.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -23,16 +21,9 @@ namespace Lost.PlayFab
         #endif
 
         [SerializeField] private List<string> versions = new List<string> { "1.0" };
-        [SerializeField] private string titleDataKeyName = "";
+        [SerializeField] private string titleDataKeyName = string.Empty;
         [SerializeField] private bool serializeWithUnity = true;
         [SerializeField] private bool compressData = false;
-
-        public Lost.UnityTask<T> Load(string version)
-        {
-            // Take key name and the verison and load from title data using PF class
-            // If it's compressed, then decompress it
-            return null;
-        }
 
         #if UNITY_EDITOR
         public List<T> Data
@@ -62,6 +53,13 @@ namespace Lost.PlayFab
         {
             get { return this.compressData; }
             set { this.compressData = value; }
+        }
+
+        public Lost.UnityTask<T> Load(string version)
+        {
+            // Take key name and the verison and load from title data using PF class
+            // If it's compressed, then decompress it
+            return null;
         }
     }
 }

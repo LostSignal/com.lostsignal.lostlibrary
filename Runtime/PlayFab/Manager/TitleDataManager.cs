@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="TitleDataManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -53,7 +51,8 @@ namespace Lost.PlayFab
             }
         }
 
-        public UnityTask<T> GetTitleData<T>(string titleDataKey) where T : class
+        public UnityTask<T> GetTitleData<T>(string titleDataKey)
+            where T : class
         {
             if (this.titleDataObjectCache.TryGetValue(titleDataKey, out object obj))
             {

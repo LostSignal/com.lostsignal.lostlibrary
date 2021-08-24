@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="VirtualCurrencyManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -22,19 +20,15 @@ namespace Lost.PlayFab
         private Dictionary<string, int> virtualCurrencyRechargeTimes = new Dictionary<string, int>();
         private PlayFabManager playfabManager;
 
-        public delegate void OnVirtualCurrencyChangedDelegate();
-        public event OnVirtualCurrencyChangedDelegate VirtualCurrencyChanged;
-
         public VirtualCurrencyManager(PlayFabManager playfabManager, Dictionary<string, int> virtualCurrency)
         {
             this.playfabManager = playfabManager;
             this.playfabManager.GlobalPlayFabResultHandler += this.OnGlobalPlayFabResultHandler;
         }
 
-        public UnityTask<GetUserInventoryResult> RefreshVirtualCurrency()
-        {
-            return this.playfabManager.Do(new GetUserInventoryRequest());
-        }
+        public delegate void OnVirtualCurrencyChangedDelegate();
+
+        public event OnVirtualCurrencyChangedDelegate VirtualCurrencyChanged;
 
         public int this[string virtualCurrencyId]
         {
@@ -48,6 +42,11 @@ namespace Lost.PlayFab
 
                 return -1;
             }
+        }
+
+        public UnityTask<GetUserInventoryResult> RefreshVirtualCurrency()
+        {
+            return this.playfabManager.Do(new GetUserInventoryRequest());
         }
 
         public int GetSecondsToRecharge(string virtualCurrencyId)

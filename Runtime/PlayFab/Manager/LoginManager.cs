@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="LoginManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -32,6 +30,14 @@ namespace Lost.PlayFab
         private PlayFabManager playfabManager;
         private LoginResult loginResult;
         private bool forceRelogin;
+
+        public LoginManager(PlayFabManager playfabManager)
+        {
+            this.playfabManager = playfabManager;
+
+            playfabManager.GlobalPlayFabResultHandler += this.OnGlobalPlayFabResultHandler;
+            PlayFabSettings.GlobalErrorHandler += this.PlayfabEvents_OnGlobalErrorEvent;
+        }
 
         public string SessionTicket => this.loginResult?.SessionTicket;
 
@@ -74,14 +80,6 @@ namespace Lost.PlayFab
 #if USING_FACEBOOK_SDK
         public Facebook.Unity.ILoginResult FacebookLoginResult { get; private set; }
 #endif
-
-        public LoginManager(PlayFabManager playfabManager)
-        {
-            this.playfabManager = playfabManager;
-
-            playfabManager.GlobalPlayFabResultHandler += this.OnGlobalPlayFabResultHandler;
-            PlayFabSettings.GlobalErrorHandler += this.PlayfabEvents_OnGlobalErrorEvent;
-        }
 
         public string GetEmailCustomId(string email)
         {

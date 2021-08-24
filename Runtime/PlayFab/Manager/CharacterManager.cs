@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="CharacterManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -70,22 +68,24 @@ namespace Lost.PlayFab
         public UnityTask<GetCharacterDataResult> GetCharacterData(string playfabId, string characterId, List<string> keys)
         {
             // TODO [bgish]: Eventually cache this data
-            return this.playfabManager.Do<GetCharacterDataRequest, GetCharacterDataResult>(new GetCharacterDataRequest
-            {
-                PlayFabId = playfabId,
-                CharacterId = characterId,
-                Keys = keys,
-            },
+            return this.playfabManager.Do<GetCharacterDataRequest, GetCharacterDataResult>(
+                new GetCharacterDataRequest
+                {
+                    PlayFabId = playfabId,
+                    CharacterId = characterId,
+                    Keys = keys,
+                },
                 PlayFabClientAPI.GetCharacterDataAsync);
         }
 
         public UnityTask<UpdateCharacterDataResult> UpdateCharacterData(string characterId, Dictionary<string, string> data)
         {
-            return this.playfabManager.Do<UpdateCharacterDataRequest, UpdateCharacterDataResult>(new UpdateCharacterDataRequest
-            {
-                CharacterId = characterId,
-                Data = data,
-            },
+            return this.playfabManager.Do<UpdateCharacterDataRequest, UpdateCharacterDataResult>(
+                new UpdateCharacterDataRequest
+                {
+                    CharacterId = characterId,
+                    Data = data,
+                },
                 PlayFabClientAPI.UpdateCharacterDataAsync);
         }
     }

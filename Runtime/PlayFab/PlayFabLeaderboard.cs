@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="PlayFabLeaderboard.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -10,12 +8,13 @@
 
 namespace Lost.PlayFab
 {
-    using global::PlayFab.ClientModels;
     using System.Collections;
     using System.Collections.Generic;
+    using global::PlayFab.ClientModels;
     using UnityEngine;
 
-    public abstract class PlayFabLeaderboard<T> : VirtualizedScrollRect<T> where T : MonoBehaviour
+    public abstract class PlayFabLeaderboard<T> : VirtualizedScrollRect<T>
+        where T : MonoBehaviour
     {
         private static readonly int ProgressHash = Animator.StringToHash("Progress");
 
@@ -161,8 +160,8 @@ namespace Lost.PlayFab
 
         private void ShowItem(T item, int index)
         {
-            PlayerLeaderboardEntry entry = entries[index];
-            ShowLeaderboardEntry(item, entry, entry.PlayFabId == PlayFab.PlayFabManager.Instance.User.PlayFabId);
+            PlayerLeaderboardEntry entry = this.entries[index];
+            this.ShowLeaderboardEntry(item, entry, entry.PlayFabId == PlayFab.PlayFabManager.Instance.User.PlayFabId);
         }
 
         private IEnumerator RefreshLeaderboardCoroutine(int? startPosition)
