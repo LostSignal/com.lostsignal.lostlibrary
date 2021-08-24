@@ -153,7 +153,7 @@ namespace Lost
                         {
                             for (i = 0; i < context_numBits; i++)
                             {
-                                context_data_val = context_data_val << 1;
+                                context_data_val <<= 1;
                                 if (context_data_position == bitsPerChar - 1)
                                 {
                                     context_data_position = 0;
@@ -181,7 +181,7 @@ namespace Lost
                                     context_data_position++;
                                 }
 
-                                value = value >> 1;
+                                value >>= 1;
                             }
                         }
                         else
@@ -219,7 +219,7 @@ namespace Lost
                                     context_data_position++;
                                 }
 
-                                value = value >> 1;
+                                value >>= 1;
                             }
                         }
 
@@ -249,7 +249,7 @@ namespace Lost
                                 context_data_position++;
                             }
 
-                            value = value >> 1;
+                            value >>= 1;
                         }
                     }
 
@@ -275,7 +275,7 @@ namespace Lost
                     {
                         for (i = 0; i < context_numBits; i++)
                         {
-                            context_data_val = context_data_val << 1;
+                            context_data_val <<= 1;
                             if (context_data_position == bitsPerChar - 1)
                             {
                                 context_data_position = 0;
@@ -303,7 +303,7 @@ namespace Lost
                                 context_data_position++;
                             }
 
-                            value = value >> 1;
+                            value >>= 1;
                         }
                     }
                     else
@@ -341,7 +341,7 @@ namespace Lost
                                 context_data_position++;
                             }
 
-                            value = value >> 1;
+                            value >>= 1;
                         }
                     }
 
@@ -371,7 +371,7 @@ namespace Lost
                             context_data_position++;
                         }
 
-                        value = value >> 1;
+                        value >>= 1;
                     }
                 }
 
@@ -399,13 +399,13 @@ namespace Lost
                     context_data_position++;
                 }
 
-                value = value >> 1;
+                value >>= 1;
             }
 
             // Flush the last char
             while (true)
             {
-                context_data_val = context_data_val << 1;
+                context_data_val <<= 1;
                 if (context_data_position == bitsPerChar - 1)
                 {
                     context_data.Append(getCharFromInt(context_data_val));

@@ -292,12 +292,7 @@ namespace Lost
 
             this.contentOffset = this.GetUpperLeftCornerOfItemContainer() - this.itemContainerStartPosition;
 
-            int newActiveTopRow = 0;
-            int newActiveBottomRow = 0;
-            int newActiveLeftColumn = 0;
-            int newActiveRightColumn = 0;
-
-            this.GetActiveRowsAndColumns(out newActiveTopRow, out newActiveBottomRow, out newActiveLeftColumn, out newActiveRightColumn);
+            this.GetActiveRowsAndColumns(out int newActiveTopRow, out int newActiveBottomRow, out int newActiveLeftColumn, out int newActiveRightColumn);
 
             if (newActiveTopRow == this.activeTopRow && newActiveBottomRow == this.activeBottomRow && newActiveLeftColumn == this.activeLeftColumn && newActiveRightColumn == this.activeRightColumn)
             {

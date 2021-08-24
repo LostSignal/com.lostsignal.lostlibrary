@@ -93,7 +93,7 @@ namespace Lost
 
         private void OnValidate()
         {
-            this.validators = this.validators ?? new List<Validator>();
+            this.validators ??= new List<Validator>();
 
             var validatorClassTypes = UnityEditor.TypeCache.GetTypesDerivedFrom<Validator>();
 

@@ -112,13 +112,13 @@ namespace Lost
             this.IsDirty = false;
 
             // Making sure everything is initialized
-            this.intData = this.intData ?? new Dictionary<string, int>();
-            this.enumData = this.enumData ?? new Dictionary<string, int>();
-            this.boolData = this.boolData ?? new Dictionary<string, bool>();
-            this.longData = this.longData ?? new Dictionary<string, long>();
-            this.stringData = this.stringData ?? new Dictionary<string, string>();
-            this.byteArrayData = this.byteArrayData ?? new Dictionary<string, byte[]>();
-            this.dateTimeData = this.dateTimeData ?? new Dictionary<string, DateTime>();
+            this.intData ??= new Dictionary<string, int>();
+            this.enumData ??= new Dictionary<string, int>();
+            this.boolData ??= new Dictionary<string, bool>();
+            this.longData ??= new Dictionary<string, long>();
+            this.stringData ??= new Dictionary<string, string>();
+            this.byteArrayData ??= new Dictionary<string, byte[]>();
+            this.dateTimeData ??= new Dictionary<string, DateTime>();
 
             // Make sure everything is cleared
             this.intData.Clear();

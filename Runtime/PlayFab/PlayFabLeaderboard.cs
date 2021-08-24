@@ -201,7 +201,7 @@ namespace Lost.PlayFab
                         IncludeSteamFriends = this.includeSteamFriends,
                         MaxResultsCount = this.maxResultsCount,
                         StatisticName = this.leaderboardName,
-                        StartPosition = startPosition.HasValue ? startPosition.Value : 0,
+                        StartPosition = startPosition ?? 0,
                         ProfileConstraints = this.profileContraints,
                     });
 
@@ -231,7 +231,7 @@ namespace Lost.PlayFab
                     {
                         MaxResultsCount = this.maxResultsCount,
                         StatisticName = this.leaderboardName,
-                        StartPosition = startPosition.HasValue ? startPosition.Value : 0,
+                        StartPosition = startPosition ?? 0,
                         ProfileConstraints = this.profileContraints,
                     });
 

@@ -66,9 +66,7 @@ namespace Lost.Networking
 
         public Message GetMessage(short messageId)
         {
-            List<Message> pool = null;
-
-            if (this.messagePools.TryGetValue(messageId, out pool) == false)
+            if (this.messagePools.TryGetValue(messageId, out List<Message> pool) == false)
             {
                 Debug.LogError($"Tried to get Message Id {messageId} without registering it!");
                 return null;
@@ -83,8 +81,7 @@ namespace Lost.Networking
             }
             else
             {
-                Type roomMessageType = null;
-                if (this.messageTypes.TryGetValue(messageId, out roomMessageType))
+                if (this.messageTypes.TryGetValue(messageId, out Type roomMessageType))
                 {
                     return (Message)Activator.CreateInstance(roomMessageType);
                 }

@@ -34,8 +34,7 @@ namespace Lost.PlayFab
         {
             get
             {
-                int value;
-                if (this.virtualCurrencies.TryGetValue(virtualCurrencyId, out value))
+                if (this.virtualCurrencies.TryGetValue(virtualCurrencyId, out int value))
                 {
                     return value;
                 }
@@ -56,9 +55,7 @@ namespace Lost.PlayFab
                 return 0;
             }
 
-            int rechargeFinishedTime = 0;
-
-            if (this.virtualCurrencyRechargeTimes.TryGetValue(virtualCurrencyId, out rechargeFinishedTime))
+            if (this.virtualCurrencyRechargeTimes.TryGetValue(virtualCurrencyId, out int rechargeFinishedTime))
             {
                 return Math.Max(0, rechargeFinishedTime - (int)Time.realtimeSinceStartup);
             }

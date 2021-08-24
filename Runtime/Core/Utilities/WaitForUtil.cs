@@ -20,9 +20,7 @@ namespace Lost
 
         public static WaitForSeconds Seconds(float time)
         {
-            WaitForSeconds waitForSeconds = null;
-
-            if (waitForSecondsCache.TryGetValue(time, out waitForSeconds) == false)
+            if (waitForSecondsCache.TryGetValue(time, out WaitForSeconds waitForSeconds) == false)
             {
                 waitForSeconds = new WaitForSeconds(time);
                 waitForSecondsCache.Add(time, waitForSeconds);
@@ -33,9 +31,7 @@ namespace Lost
 
         public static WaitForSecondsRealtime RealtimeSeconds(float time)
         {
-            WaitForSecondsRealtime waitForSecondsRealtime = null;
-
-            if (waitForSecondsRealtimeCache.TryGetValue(time, out waitForSecondsRealtime) == false)
+            if (waitForSecondsRealtimeCache.TryGetValue(time, out WaitForSecondsRealtime waitForSecondsRealtime) == false)
             {
                 waitForSecondsRealtime = new WaitForSecondsRealtime(time);
                 waitForSecondsRealtimeCache.Add(time, waitForSecondsRealtime);

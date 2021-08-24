@@ -90,9 +90,7 @@ namespace HavenXR
         {
             if (this.previousHitVector == InvalidVector && input.InputState == InputState.Pressed)
             {
-                RaycastHit hit;
-
-                if (collider.Raycast(camera.ScreenPointToRay(input.CurrentPosition), out hit, float.MaxValue))
+                if (collider.Raycast(camera.ScreenPointToRay(input.CurrentPosition), out RaycastHit hit, float.MaxValue))
                 {
                     this.previousHitVector = (hit.point - collider.transform.position).normalized;
                     return;
@@ -128,8 +126,7 @@ namespace HavenXR
 
             Ray inputRay = camera.ScreenPointToRay(input.CurrentPosition);
 
-            float enter;
-            if (interactablePlane.Raycast(inputRay, out enter) == false)
+            if (interactablePlane.Raycast(inputRay, out float enter) == false)
             {
                 // if we didnt' hit the plane
                 this.rotationalVelocity = this.useRotationalVelocity ? this.previousVelocity : 0.0f;

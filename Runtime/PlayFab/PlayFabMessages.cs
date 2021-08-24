@@ -114,9 +114,9 @@ namespace Lost.PlayFab
             UnityTask<OkResult> result = null;
 
             #if PURCHASING_ENABLED
-            result = result ?? HandlePurchasingError(exception as PurchasingException);
-            result = result ?? HandlePurchasingInitializationError(exception as PurchasingInitializationException);
-            result = result ?? HandlePurchasingInitializationTimeOutError(exception as PurchasingInitializationTimeOutException);
+            result ??= HandlePurchasingError(exception as PurchasingException);
+            result ??= HandlePurchasingInitializationError(exception as PurchasingInitializationException);
+            result ??= HandlePurchasingInitializationTimeOutError(exception as PurchasingInitializationTimeOutException);
             #endif
 
             return result ?? HandlePlayFabError(exception as PlayFab.PlayFabException);

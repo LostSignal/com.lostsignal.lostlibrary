@@ -745,7 +745,7 @@ namespace Lost.PlayFab
 
         private GetPlayerCombinedInfoRequestParams GetCombinedInfoRequest(GetPlayerCombinedInfoRequestParams request)
         {
-            request = request ?? new GetPlayerCombinedInfoRequestParams();
+            request ??= new GetPlayerCombinedInfoRequestParams();
             request.GetUserVirtualCurrency = true;
             request.GetUserInventory = true;
             request.GetUserAccountInfo = true;

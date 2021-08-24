@@ -28,9 +28,7 @@ namespace HavenXR
         {
             if (input.InputState == InputState.Released)
             {
-                RaycastHit hit;
-
-                if (this.tappedEvent != null && collider.Raycast(camera.ScreenPointToRay(input.CurrentPosition), out hit, float.MaxValue))
+                if (this.tappedEvent != null && collider.Raycast(camera.ScreenPointToRay(input.CurrentPosition), out RaycastHit hit, float.MaxValue))
                 {
                     this.tappedEvent.Invoke(hit);
                 }

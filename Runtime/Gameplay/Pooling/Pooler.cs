@@ -48,9 +48,8 @@ namespace Lost
         public static UnityEngine.GameObject Instantiate(UnityEngine.GameObject prefab, Transform parent, bool reset)
         {
             int instanceId = prefab.GetInstanceID();
-            Pool pool = null;
-
-            if (pools.TryGetValue(instanceId, out pool))
+            
+            if (pools.TryGetValue(instanceId, out Pool pool))
             {
                 var result = pool.GetObjectFromPool(prefab, parent);
 
@@ -96,9 +95,8 @@ namespace Lost
             where T : UnityEngine.MonoBehaviour
         {
             int instanceId = prefab.gameObject.GetInstanceID();
-            Pool pool = null;
 
-            if (pools.TryGetValue(instanceId, out pool))
+            if (pools.TryGetValue(instanceId, out Pool pool))
             {
                 var obj = pool.GetObjectFromPool(prefab.gameObject, parent).GetComponent<T>();
 

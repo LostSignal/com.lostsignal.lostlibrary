@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="AudioBlock.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -84,7 +84,7 @@ namespace Lost
                 else if (this.playType == PlayType.RoundRobin)
                 {
                     AudioClip audioClip = this.audioClips[this.roundRobinIndex++];
-                    this.roundRobinIndex = this.roundRobinIndex % this.audioClips.Length;
+                    this.roundRobinIndex %= this.audioClips.Length;
                     return audioClip;
                 }
                 else

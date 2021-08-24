@@ -30,7 +30,7 @@ namespace Lost
         {
             if (str.EndsWith(value) == false)
             {
-                str = str + value;
+                str += value;
             }
 
             return str;

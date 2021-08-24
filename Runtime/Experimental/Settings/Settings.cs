@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="Settings.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -230,8 +230,7 @@ namespace Lost
 
             protected T GetValue(int key, T defaultValue)
             {
-                T foundValue;
-                if (this.settings.TryGetValue(key, out foundValue))
+                if (this.settings.TryGetValue(key, out T foundValue))
                 {
                     return foundValue;
                 }

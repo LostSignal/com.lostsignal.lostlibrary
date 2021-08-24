@@ -260,9 +260,7 @@ namespace Lost.Analytics
 
         public static string Get(ScreenName screenName)
         {
-            string enumString;
-
-            if (screenNameCache.TryGetValue(screenName, out enumString) == false)
+            if (screenNameCache.TryGetValue(screenName, out string enumString) == false)
             {
                 enumString = screenName.ToString();
                 screenNameCache.Add(screenName, enumString);
@@ -273,9 +271,7 @@ namespace Lost.Analytics
 
         public static string Get(AdvertisingNetwork advertisingNetwork)
         {
-            string enumString;
-
-            if (advertisingNetworkCache.TryGetValue(advertisingNetwork, out enumString) == false)
+            if (advertisingNetworkCache.TryGetValue(advertisingNetwork, out string enumString) == false)
             {
                 enumString = advertisingNetwork.ToString();
                 advertisingNetworkCache.Add(advertisingNetwork, enumString);
@@ -286,9 +282,7 @@ namespace Lost.Analytics
 
         public static string Get(AcquisitionType acquisitionType)
         {
-            string enumString;
-
-            if (acquisitionTypeCache.TryGetValue(acquisitionType, out enumString) == false)
+            if (acquisitionTypeCache.TryGetValue(acquisitionType, out string enumString) == false)
             {
                 enumString = acquisitionType.ToString();
                 acquisitionTypeCache.Add(acquisitionType, enumString);
@@ -299,9 +293,7 @@ namespace Lost.Analytics
 
         public static string Get(ShareType shareType)
         {
-            string enumString;
-
-            if (shareTypeCache.TryGetValue(shareType, out enumString) == false)
+            if (shareTypeCache.TryGetValue(shareType, out string enumString) == false)
             {
                 enumString = shareType.ToString();
                 shareTypeCache.Add(shareType, enumString);
@@ -312,9 +304,7 @@ namespace Lost.Analytics
 
         public static string Get(SocialNetwork socialNetwork)
         {
-            string enumString;
-
-            if (socialNetworkCache.TryGetValue(socialNetwork, out enumString) == false)
+            if (socialNetworkCache.TryGetValue(socialNetwork, out string enumString) == false)
             {
                 enumString = socialNetwork.ToString();
                 socialNetworkCache.Add(socialNetwork, enumString);
@@ -325,9 +315,7 @@ namespace Lost.Analytics
 
         public static string Get(StoreType storeType)
         {
-            string enumString;
-
-            if (storeTypeCache.TryGetValue(storeType, out enumString) == false)
+            if (storeTypeCache.TryGetValue(storeType, out string enumString) == false)
             {
                 enumString = storeType.ToString();
                 storeTypeCache.Add(storeType, enumString);
@@ -338,9 +326,7 @@ namespace Lost.Analytics
 
         public static string Get(AuthorizationNetwork authorizationNetwork)
         {
-            string enumString;
-
-            if (authorizationNetworkCache.TryGetValue(authorizationNetwork, out enumString) == false)
+            if (authorizationNetworkCache.TryGetValue(authorizationNetwork, out string enumString) == false)
             {
                 enumString = authorizationNetwork.ToString();
                 authorizationNetworkCache.Add(authorizationNetwork, enumString);
