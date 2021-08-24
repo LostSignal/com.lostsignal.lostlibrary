@@ -13,7 +13,6 @@ namespace Lost
     using UnityEngine;
     using UnityEngine.UI;
 
-    [Serializable]
     [RequireComponent(typeof(ScrollRect))]
     public abstract class VirtualizedScrollRect<T> : MonoBehaviour
         where T : MonoBehaviour

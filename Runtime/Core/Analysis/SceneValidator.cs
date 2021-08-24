@@ -77,6 +77,7 @@ namespace Lost
             this.PrintErrors(errors);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Used by Unity")]
         [EditorEvents.OnProcessScene]
         private static void OnProcessScene(Scene scene)
         {
@@ -139,12 +140,12 @@ namespace Lost
         [Serializable]
         public abstract class Validator
         {
-            #pragma warning disable 0649
+            #pragma warning disable 0649, CA2235
             [ReadOnly]
             [SerializeField] private SceneValidator parent;
             [SerializeField] private bool isActive;
             [SerializeField] private List<GameObject> objectsToIgnore;
-            #pragma warning restore 0649
+            #pragma warning restore 0649, CA2235
 
             public abstract string DisplayName { get; }
 

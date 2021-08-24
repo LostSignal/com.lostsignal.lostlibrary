@@ -182,11 +182,11 @@ namespace Lost
         [Serializable]
         private class VRMap
         {
-            #pragma warning disable 0649
+            #pragma warning disable 0649, CA2235
             [SerializeField] private Transform rigTarget;
             [SerializeField] private Vector3 trackingPositionOffset;
             [SerializeField] private Vector3 trackingRotationOffset;
-            #pragma warning restore 0649
+            #pragma warning restore 0649, CA2235
 
             public Transform RigTarget
             {

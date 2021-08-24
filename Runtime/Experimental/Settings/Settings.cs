@@ -134,45 +134,57 @@ namespace Lost
         /// <summary>
         /// Internal class for storing all our settings data.
         /// </summary>
-        [Serializable]
         private class SettingsData
         {
-#pragma warning disable 0649
-            [SerializeField] private Dictionary<int, bool> booleanValues = new Dictionary<int, bool>();
-            [SerializeField] private Dictionary<int, string> stringValues = new Dictionary<int, string>();
-            [SerializeField] private Dictionary<int, int> intValues = new Dictionary<int, int>();
-            [SerializeField] private Dictionary<int, float> floatValues = new Dictionary<int, float>();
-            [SerializeField] private Dictionary<int, DateTime> dateTimeValues = new Dictionary<int, DateTime>();
-#pragma warning restore 0649
+            private Dictionary<int, bool> booleanValues = new Dictionary<int, bool>();
+            private Dictionary<int, string> stringValues = new Dictionary<int, string>();
+            private Dictionary<int, int> intValues = new Dictionary<int, int>();
+            private Dictionary<int, float> floatValues = new Dictionary<int, float>();
+            private Dictionary<int, DateTime> dateTimeValues = new Dictionary<int, DateTime>();
 
             public Dictionary<int, bool> BooleanValues
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 get => this.booleanValues;
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                set => this.booleanValues = value;
             }
 
             public Dictionary<int, string> StringValues
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 get => this.stringValues;
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                set => this.stringValues = value;
             }
 
             public Dictionary<int, int> IntValues
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 get => this.intValues;
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                set => this.intValues = value;
             }
 
             public Dictionary<int, float> FloatValues
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 get => this.floatValues;
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                set => this.floatValues = value;
             }
 
             public Dictionary<int, DateTime> DateTimeValues
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 get => this.dateTimeValues;
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                set => this.dateTimeValues = value;
             }
         }
 

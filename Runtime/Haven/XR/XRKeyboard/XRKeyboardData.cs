@@ -15,14 +15,16 @@ namespace Lost
     [CreateAssetMenu(menuName = "Lost/XR Keyboard Data")]
     public class XRKeyboardData : ScriptableObject
     {
-        [SerializeField] private List<Keyboard> keyboards = new List<Keyboard>();
+        #pragma warning disable 0649
+        [SerializeField] private List<Keyboard> keyboards;
+        #pragma warning restore 0649
 
         public Keyboard CurrentKeyboard => this.keyboards.IsNullOrEmpty() == false ? this.keyboards[0] : null;
 
         [Serializable]
         public class Keyboard
         {
-#pragma warning disable 0649
+            #pragma warning disable 0649, CA2235
             [SerializeField] private string name;
             [SerializeField] [Multiline(4)] private string lowerCaseText;
             [SerializeField] [Multiline(4)] private string upperCaseText;
@@ -30,7 +32,7 @@ namespace Lost
             [SerializeField] [Multiline(4)] private string symbolsText;
             [SerializeField] [Multiline(5)] private string keypadText;
             [SerializeField] private List<string> alternates = new List<string>();
-#pragma warning restore 0649
+            #pragma warning restore 0649, CA2235
 
             public string LowerCaseText => this.lowerCaseText;
 
@@ -60,15 +62,6 @@ namespace Lost
 
                 return null;
             }
-        }
-
-        [Serializable]
-        public class Key
-        {
-#pragma warning disable 0649
-            [SerializeField] private string key;
-            [SerializeField] private List<string> alternateKeys;
-#pragma warning restore 0649
         }
     }
 }

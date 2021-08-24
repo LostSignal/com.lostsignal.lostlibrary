@@ -35,7 +35,6 @@ namespace Lost
         Eraser,
     }
 
-    [System.Serializable]
     public class Input
     {
         public int Id
