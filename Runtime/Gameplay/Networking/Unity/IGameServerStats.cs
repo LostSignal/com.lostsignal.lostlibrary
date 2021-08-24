@@ -4,10 +4,9 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace Lost
+namespace Lost.Networking
 {
     using System;
-    using UnityEngine;
 
     public interface IGameServerStats
     {
