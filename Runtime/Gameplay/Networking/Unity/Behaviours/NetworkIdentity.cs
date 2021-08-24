@@ -15,14 +15,12 @@ namespace Lost.Networking
 
     public class NetworkIdentity : MonoBehaviour
     {
+        private static readonly NetworkIdentityUpdate UpdateNetworkIdentityMessageCache = new NetworkIdentityUpdate();
         private static readonly NetworkIdentityRequestUpdate NetworkIdentityRequestUpdateCache = new NetworkIdentityRequestUpdate();
         private static readonly NetworkIdentityOwnershipRequest NetworkIdentityOwnershipRequestCache = new NetworkIdentityOwnershipRequest();
         private static readonly NetworkIdentityReleaseOwnershipRequest NetworkIdentityReleaseOwnershipRequestCache = new NetworkIdentityReleaseOwnershipRequest();
 
-        public event NetworkUpdateDelegate NetworkUpdate;
-
-        private static readonly NetworkIdentityUpdate UpdateNetworkIdentityMessageCache = new NetworkIdentityUpdate();
-
+        private NetworkUpdateDelegate networkUpdate;
         private NetworkIdentityDestroyedDelegate destroyed;
         private NetworkOwnershipRequestedDelegate ownershipRequested;
         private NetworkOwnershipGrantedDelegate ownershipRequestGranted;
@@ -48,6 +46,12 @@ namespace Lost.Networking
         public delegate void NetworkOwnershipGrantedDelegate();
 
         public delegate void NetworkOwnershipFailedDelegate();
+
+        public event NetworkUpdateDelegate NetworkUpdate
+        {
+            add => this.networkUpdate += value;
+            remove => this.networkUpdate -= value;
+        }
 
         public event NetworkIdentityDestroyedDelegate Destroyed
         {
@@ -301,7 +305,7 @@ namespace Lost.Networking
 
         private void Update()
         {
-            this.NetworkUpdate?.Invoke();
+            this.networkUpdate?.Invoke();
         }
 
         private void SendUpdateNetworkIdentityMessage()

@@ -14,14 +14,14 @@ namespace Lost
     [UnitTitle("Periodic Update")]
     public sealed class PeriodicUpdateUnit : EventUnit<EmptyEventArgs>
     {
+        private GraphReference graphReference;
+        private float deltaTime;
+
         [DoNotSerialize] public ValueInput CallPerSecond { get; private set; }
 
         [DoNotSerialize] public ValueOutput DeltaTime { get; private set; }
 
         protected override bool register => false;
-
-        private GraphReference graphReference;
-        private float deltaTime;
 
         public override void Instantiate(GraphReference instance)
         {

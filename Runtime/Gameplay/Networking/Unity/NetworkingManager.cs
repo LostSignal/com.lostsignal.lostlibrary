@@ -18,16 +18,6 @@ namespace Lost.Networking
     using Lost.PlayFab;
     using UnityEngine;
 
-    public interface IGameServerFactory
-    {
-        GameServer CreateGameServerAndStart(int port);
-    }
-
-    public interface IGameClientFactory
-    {
-        GameClient CreateGameClientAndConnect(string ip, int port);
-    }
-
     public sealed class NetworkingManager : Manager<NetworkingManager>
     {
         private const string ValidMatchNameCharacters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";

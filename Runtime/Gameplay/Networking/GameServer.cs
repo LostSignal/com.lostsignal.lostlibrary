@@ -119,6 +119,23 @@ namespace Lost.Networking
             remove => this.serverShutdown -= value;
         }
 
+        public interface IServerStats
+        {
+            DateTime StartTime { get; }
+
+            DateTime ShutdownTime { get; }
+
+            uint MessagesSent { get; }
+
+            uint BytesSent { get; }
+
+            uint MaxConnectedUsers { get; }
+
+            uint NumberOfReconnects { get; }
+
+            uint NumberOfConnectionDrops { get; }
+        }
+
         public IServerStats Stats
         {
             get { return this.stats; }
@@ -636,39 +653,22 @@ namespace Lost.Networking
             this.SendMessageToConnection(connectionId, joinServerResponse);
             this.messageCollection.RecycleMessage(joinServerResponse);
         }
-    }
 
-    public interface IServerStats
-    {
-        DateTime StartTime { get; }
+        public class ServerStats : IServerStats
+        {
+            public DateTime StartTime { get; set; }
 
-        DateTime ShutdownTime { get; }
+            public DateTime ShutdownTime { get; set; }
 
-        uint MessagesSent { get; }
+            public uint MessagesSent { get; set; }
 
-        uint BytesSent { get; }
+            public uint BytesSent { get; set; }
 
-        uint MaxConnectedUsers { get; }
+            public uint MaxConnectedUsers { get; set; }
 
-        uint NumberOfReconnects { get; }
+            public uint NumberOfReconnects { get; set; }
 
-        uint NumberOfConnectionDrops { get; }
-    }
-
-    public class ServerStats : IServerStats
-    {
-        public DateTime StartTime { get; set; }
-
-        public DateTime ShutdownTime { get; set; }
-
-        public uint MessagesSent { get; set; }
-
-        public uint BytesSent { get; set; }
-
-        public uint MaxConnectedUsers { get; set; }
-
-        public uint NumberOfReconnects { get; set; }
-
-        public uint NumberOfConnectionDrops { get; set; }
+            public uint NumberOfConnectionDrops { get; set; }
+        }
     }
 }

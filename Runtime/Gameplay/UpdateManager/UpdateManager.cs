@@ -45,14 +45,7 @@ namespace Lost
     [DefaultExecutionOrder(-1000)]
     public sealed class UpdateManager : Manager<UpdateManager>
     {
-        public struct FunctionCall
-        {
-            public int CallFrequency;
-            public float LastCallTime;
-            public Action<float> Function;
-        }
-
-        private static List<FunctionCall> functions = new List<FunctionCall>();
+        private static readonly List<FunctionCall> Functions = new List<FunctionCall>();
 
 #pragma warning disable 0649
         [SerializeField] private List<UpdateChannel> channels = new List<UpdateChannel>();
@@ -123,7 +116,7 @@ namespace Lost
         {
             this.UnregisterFunction(function);
 
-            functions.Add(new FunctionCall
+            Functions.Add(new FunctionCall
             {
                 LastCallTime = Time.realtimeSinceStartup,
                 Function = function,
@@ -134,11 +127,11 @@ namespace Lost
         //// TODO [bgish]: Only PeriodicUpdate Bolt Node uses this, update it to use Channel system
         public void UnregisterFunction(Action<float> function)
         {
-            for (int i = 0; i < functions.Count; i++)
+            for (int i = 0; i < Functions.Count; i++)
             {
-                if (functions[i].Function == function)
+                if (Functions[i].Function == function)
                 {
-                    functions.RemoveAt(i);
+                    Functions.RemoveAt(i);
                     break;
                 }
             }
@@ -189,6 +182,13 @@ namespace Lost
                 channels[i].CustomSampler.End();
 #endif
             }
+        }
+
+        public struct FunctionCall
+        {
+            public int CallFrequency;
+            public float LastCallTime;
+            public Action<float> Function;
         }
     }
 }

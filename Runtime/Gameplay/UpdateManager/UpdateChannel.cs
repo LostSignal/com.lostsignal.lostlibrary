@@ -16,11 +16,6 @@ namespace Lost
     using UnityEngine;
     using UnityEngine.Profiling;
 
-    public interface IUpdate
-    {
-        void OnUpdate(float deltaTime);
-    }
-
     [Serializable]
     public class UpdateChannel
     {
@@ -85,7 +80,6 @@ namespace Lost
         }
 
         #endif
-
 
         public void Run(float deltaTime)
         {

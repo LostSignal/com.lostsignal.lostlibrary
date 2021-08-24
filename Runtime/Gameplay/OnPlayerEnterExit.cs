@@ -19,19 +19,6 @@ namespace Lost
 
         //// private static bool AreStaticsInitialized;
 
-        // Reset is called on reboot and leaving editor mode
-        static OnPlayerEnterExit()
-        {
-            Bootloader.OnReset += Reset;
-
-            void Reset()
-            {
-                highPriorityChannel = default(UpdateChannel);
-                lowPriorityChannel = default(UpdateChannel);
-                //// AreStaticsInitialized = false;
-            }
-        }
-
 #pragma warning disable 0649
         [SerializeField] private Bounds onEnterBounds;
         [SerializeField] private bool playerMustBeFacing;
@@ -47,6 +34,19 @@ namespace Lost
 
         private UpdateChannelReceipt receipt;
         private bool isPlayerInside;
+
+        // Reset is called on reboot and leaving editor mode
+        static OnPlayerEnterExit()
+        {
+            Bootloader.OnReset += Reset;
+
+            void Reset()
+            {
+                highPriorityChannel = default(UpdateChannel);
+                lowPriorityChannel = default(UpdateChannel);
+                //// AreStaticsInitialized = false;
+            }
+        }
 
         private UpdateChannel CurrentChannel
         {

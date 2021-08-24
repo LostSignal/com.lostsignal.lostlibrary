@@ -42,12 +42,6 @@ namespace Lost.Networking
 
     public class UnityGameServerSubsystem : IGameServerSubsystem
     {
-        public enum NotifyType
-        {
-            All,
-            AllOthers,
-        }
-
         private const long InvalidId = long.MinValue;
 
         private readonly NetworkReader reader = new NetworkReader(new byte[0]);
@@ -60,6 +54,12 @@ namespace Lost.Networking
 
         private GameServer gameServer;
         private long serverId = InvalidId;
+
+        public enum NotifyType
+        {
+            All,
+            AllOthers,
+        }
 
         public string Name => nameof(UnityGameServerSubsystem);
 

@@ -14,7 +14,7 @@ namespace Lost
     public class SetSleepThreshold : MonoBehaviour
     {
         #pragma warning disable 0649
-        [SerializeField, HideInInspector] private Rigidbody rigidBody;
+        [SerializeField] [HideInInspector] private Rigidbody rigidBody;
         [SerializeField] private float sleepThreshold = 0.00001f;
         #pragma warning restore 0649
 

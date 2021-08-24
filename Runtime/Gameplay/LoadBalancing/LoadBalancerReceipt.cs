@@ -12,6 +12,10 @@ namespace Lost
 
     public struct LoadBalancerReceipt
     {
+        private int index;
+        private UnityEngine.Object context;
+        private Action<int, UnityEngine.Object> cancelAction;
+
         public static LoadBalancerReceipt New(int index, UnityEngine.Object context, Action<int, UnityEngine.Object> cancelAction)
         {
             return new LoadBalancerReceipt
@@ -21,10 +25,6 @@ namespace Lost
                 cancelAction = cancelAction,
             };
         }
-
-        private int index;
-        private UnityEngine.Object context;
-        private Action<int, UnityEngine.Object> cancelAction;
 
         public void Cancel()
         {

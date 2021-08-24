@@ -12,13 +12,13 @@ namespace Lost
 
     public struct UpdateChannelReceipt
     {
+        private Action<int> cancelAction;
+        private int id;
+
         public static UpdateChannelReceipt New(int id, Action<int> cancelAction)
         {
             return new UpdateChannelReceipt { id = id, cancelAction = cancelAction };
         }
-
-        private Action<int> cancelAction;
-        private int id;
 
         public void Cancel()
         {
