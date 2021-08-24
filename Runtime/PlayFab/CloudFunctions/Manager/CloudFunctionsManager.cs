@@ -17,49 +17,9 @@ namespace Lost.CloudFunctions
 
     public sealed class CloudFunctionsManager : Manager<CloudFunctionsManager>
     {
-#if UNITY_EDITOR
-        private static string TitleEntityTokenCache = null;
-
-        private static async Task<string> GetTitleEntityToken()
-        {
-            if (PlayFabSecretKeyCheck() == false)
-            {
-                return null;
-            }
-
-            if (TitleEntityTokenCache.IsNullOrWhitespace())
-            {
-                var getEntityToken = await global::PlayFab.PlayFabAuthenticationAPI.GetEntityTokenAsync(new global::PlayFab.AuthenticationModels.GetEntityTokenRequest
-                {
-                    Entity = new global::PlayFab.AuthenticationModels.EntityKey
-                    {
-                        Id = global::PlayFab.PlayFabSettings.staticSettings.TitleId,
-                        Type = "title",
-                    }
-                });
-
-                TitleEntityTokenCache = getEntityToken.Result.EntityToken;
-            }
-
-            return TitleEntityTokenCache;
-        }
-
-        private static bool PlayFabSecretKeyCheck()
-        {
-            if (global::PlayFab.PlayFabSettings.staticSettings.TitleId.IsNullOrWhitespace() ||
-                global::PlayFab.PlayFabSettings.staticSettings.DeveloperSecretKey.IsNullOrWhitespace())
-            {
-                UnityEngine.Debug.LogError(
-                    "PlayFab Title Id and/or Developer Secret Key Not Set!  Localhost Azure Functions will not work. \n" +
-                    "Do you have an active BuildConfig with PlayFab Settings added and filled out?");
-
-                return false;
-            }
-
-            return true;
-        }
-
-#endif
+        #if UNITY_EDITOR
+        private static string titleEntityTokenCache = null;
+        #endif
 
         public override void Initialize()
         {
@@ -86,6 +46,49 @@ namespace Lost.CloudFunctions
 
             return this.ExecutePlayFabCloudFunction<T>(functionName, functionParameter);
         }
+
+#if UNITY_EDITOR
+
+        private static async Task<string> GetTitleEntityToken()
+        {
+            if (PlayFabSecretKeyCheck() == false)
+            {
+                return null;
+            }
+
+            if (titleEntityTokenCache.IsNullOrWhitespace())
+            {
+                var getEntityToken = await global::PlayFab.PlayFabAuthenticationAPI.GetEntityTokenAsync(new global::PlayFab.AuthenticationModels.GetEntityTokenRequest
+                {
+                    Entity = new global::PlayFab.AuthenticationModels.EntityKey
+                    {
+                        Id = global::PlayFab.PlayFabSettings.staticSettings.TitleId,
+                        Type = "title",
+                    },
+                });
+
+                titleEntityTokenCache = getEntityToken.Result.EntityToken;
+            }
+
+            return titleEntityTokenCache;
+        }
+
+        private static bool PlayFabSecretKeyCheck()
+        {
+            if (global::PlayFab.PlayFabSettings.staticSettings.TitleId.IsNullOrWhitespace() ||
+                global::PlayFab.PlayFabSettings.staticSettings.DeveloperSecretKey.IsNullOrWhitespace())
+            {
+                UnityEngine.Debug.LogError(
+                    "PlayFab Title Id and/or Developer Secret Key Not Set!  Localhost Azure Functions will not work. \n" +
+                    "Do you have an active BuildConfig with PlayFab Settings added and filled out?");
+
+                return false;
+            }
+
+            return true;
+        }
+
+#endif
 
         private async Task<Result> ExecutePlayFabCloudFunction(string functionName, object functionParameter)
         {
@@ -195,11 +198,6 @@ namespace Lost.CloudFunctions
 #endif
         }
 
-        public class FunctionResult
-        {
-            public string StringResult { get; set; }
-        }
-
         private async Task<ResultT<T>> ExecuteLocalhostCloudFuntion<T>(string functionName, object functionParameter)
             where T : class
         {
@@ -242,6 +240,11 @@ namespace Lost.CloudFunctions
 #else
             return await Task.FromResult<ResultT<T>>(default(ResultT<T>));
 #endif
+        }
+
+        public class FunctionResult
+        {
+            public string StringResult { get; set; }
         }
     }
 }

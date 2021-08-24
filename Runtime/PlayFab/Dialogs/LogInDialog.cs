@@ -41,17 +41,6 @@ namespace Lost.PlayFab
             this.Dialog.Show();
         }
 
-        private void OnValidate()
-        {
-            this.AssertNotNull(this.closeButton, nameof(this.closeButton));
-            this.AssertNotNull(this.emailInputField, nameof(this.emailInputField));
-            this.AssertNotNull(this.passwordInputField, nameof(this.passwordInputField));
-            this.AssertNotNull(this.autoLoginToggle, nameof(this.autoLoginToggle));
-            this.AssertNotNull(this.logInButton, nameof(this.logInButton));
-            this.AssertNotNull(this.forgotPasswordButton, nameof(this.forgotPasswordButton));
-            this.AssertNotNull(this.createNewAccountButton, nameof(this.createNewAccountButton));
-        }
-
         protected override void Awake()
         {
             base.Awake();
@@ -73,12 +62,6 @@ namespace Lost.PlayFab
             base.OnDestroy();
 
             PlayFabManager.OnInitialized -= this.OnPlayFabManagerInitialized;
-        }
-
-        private void OnPlayFabManagerInitialized()
-        {
-            this.emailInputField.text = PlayFabManager.Instance.Login.LastLoginEmail;
-            this.autoLoginToggle.isOn = PlayFabManager.Instance.Login.HasEverLoggedIn == false || PlayFabManager.Instance.Login.AutoLoginWithDeviceId;
         }
 
         protected override void OnBackButtonPressed()
@@ -112,6 +95,23 @@ namespace Lost.PlayFab
 
                 this.isLeaveGameCoroutineRunning = false;
             }
+        }
+
+        private void OnValidate()
+        {
+            this.AssertNotNull(this.closeButton, nameof(this.closeButton));
+            this.AssertNotNull(this.emailInputField, nameof(this.emailInputField));
+            this.AssertNotNull(this.passwordInputField, nameof(this.passwordInputField));
+            this.AssertNotNull(this.autoLoginToggle, nameof(this.autoLoginToggle));
+            this.AssertNotNull(this.logInButton, nameof(this.logInButton));
+            this.AssertNotNull(this.forgotPasswordButton, nameof(this.forgotPasswordButton));
+            this.AssertNotNull(this.createNewAccountButton, nameof(this.createNewAccountButton));
+        }
+
+        private void OnPlayFabManagerInitialized()
+        {
+            this.emailInputField.text = PlayFabManager.Instance.Login.LastLoginEmail;
+            this.autoLoginToggle.isOn = PlayFabManager.Instance.Login.HasEverLoggedIn == false || PlayFabManager.Instance.Login.AutoLoginWithDeviceId;
         }
 
         private void UpdateLogInButton(string newValue)
@@ -195,7 +195,7 @@ namespace Lost.PlayFab
 
                 if (forgot.Value == YesNoResult.Yes)
                 {
-                    var accountRecovery = loginManager.SendAccountRecoveryEmail(this.emailInputField.text, this.forgotEmailTemplateId);
+                    var accountRecovery = this.loginManager.SendAccountRecoveryEmail(this.emailInputField.text, this.forgotEmailTemplateId);
 
                     yield return accountRecovery;
 

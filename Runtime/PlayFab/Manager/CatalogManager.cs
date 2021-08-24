@@ -20,13 +20,13 @@ namespace Lost.PlayFab
         private List<CatalogItem> cachedCatalog;
         private PlayFabManager playfabManager;
 
-        private bool IsCatalogCached => this.cachedCatalog != null;
-
         public CatalogManager(PlayFabManager playfabManager, string catalogVersion)
         {
             this.playfabManager = playfabManager;
             this.getCatalogRequest.CatalogVersion = catalogVersion;
         }
+
+        private bool IsCatalogCached => this.cachedCatalog != null;
 
         public UnityTask<List<CatalogItem>> GetCatalog()
         {

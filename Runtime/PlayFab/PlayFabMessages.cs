@@ -82,118 +82,6 @@ namespace Lost.PlayFab
         private const string StoreFailedPurchasingUnavailableKey = "STORE-FAILED-PURCHASING-UNAVAILABLE";
         private const string StoreFailedConnectionTimeOutKey = "STORE-FAILED-CONNECTION-TIME-OUT";
 
-        // TODO [bgish]: Need to move all of this to a localization table
-        private static string Get(string localizationKey)
-        {
-            bool english = Localization.Localization.CurrentLanguage == Localization.Languages.English;
-
-            switch (localizationKey)
-            {
-                // Exit App Keys
-                case ExitAppTitleKey:
-                    return english ? "Exit?" : "";
-                case ExitAppBodyKey:
-                    return english ? "Are you sure you want to exit?" : "";
-
-                // Forgot Password Keys
-                case ForgotPasswordTitleKey:
-                    return english ? "Forgot Password" : "";
-                case ForgotPasswordBodyKey:
-                    return english ? "Are you sure you wish to send an account recovery email to \"{email}\"?" : "";
-
-                // Internal PlayFab Error Keys
-                case PlayFabErrorTitleKey:
-                    return english ? "Internal Error" : "";
-                case PlayFabErrorBodyKey:
-                    return english ? "We have encountered an internal error.  Please try again later." : "";
-
-                // Login Failure Keys
-                case LoginFailedTitleKey:
-                    return english ? "Login Failed" : "";
-                case AccountNotFoundKey:
-                    return english ? "The specified account could not be found." : "";
-                case InvalidEmailOrPasswordKey:
-                    return english ? "The given email address or password is incorrect." : "";
-
-                // Creating User Account
-                case CreateAccountTitleKey:
-                    return english ? "Create Account Failed" : "";
-                case CreateAccountEmailNotAvailableKey:
-                    return english ? "The specified email address is not available." : "";
-                case CreateAccountUsernameNotAvailableKey:
-                    return english ? "The specified username is not available." : "";
-                case CreateAccountInvalidEmailKey:
-                    return english ? "The specified email address is invalid." : "";
-                case CreateAccountInvalidPasswordKey:
-                    return english ? "The specified password is invalid.  Must be between 5 and 100 characters long." : "";
-                case CreateAccountInvalidUsernameKey:
-                    return english ? "The specified username is invalid.  Must be between 3 and 20 characters long." : "";
-
-                // No Contact Email
-                case ContactEmailNotFoundTitleKey:
-                    return english ? "Email Not Found" : "";
-                case ContactEmailNotFoundBodyKey:
-                    return english ? "The specified email address could not be found." : "";
-
-                // Changing Display Name
-                case ChangeNameTitleKey:
-                    return english ? "Display Name" : "Tên hiển thị";
-                case ChangeNameBodyKey:
-                    return english ? "Enter in your new display name." : "Nhập tên mới ...";
-                case ChangeNameFailedTitleKey:
-                    return english ? "Rename Failed" : "Lỗi khi đổi tên";
-                case ChangeNameFailedNotAvailableKey:
-                    return english ? "That name is currently not available." : "Tên mới không khả dụng";
-                case ChangeNameFailedProfaneKey:
-                    return english ? "That name contains profanity." : "Tên mới tồn tại tự thô tục.";
-
-                // Connecting To Store
-                case ConnectingToStoreBodyKey:
-                    return english ? "Connecting to store..." : "Đang kết tối tới Cửa Hàng...";
-
-                // Insufficient Currency
-                case InsufficientCurrencyTitleKey:
-                    return english ? "Not Enough Currency" : "Không đủ tiền tệ";
-                case InsufficientCurrencyBodyKey:
-                    return english ? "You'll need to buy more currency from the store.<br>Would you like to go there now?" : "Bạn cần thêm tiền từ Cửa Hàng? Đến Cửa Hàng ngay?";
-
-                // Purchasing
-                case PurchaseFailedTitleKey:
-                    return english ? "Purchase failed" : "Giao dịch thất bại";
-                case PurchaseFailedDuplicateTransactionKey:
-                    return english ? "We've encountered a duplicate transaction." : "Phát hiện giao dịch bị trùng lặp";
-                case PurchaseFailedExistingPurchasePendingKey:
-                    return english ? "An existing purchase is already pending." : "Giao dịch đã tồn tại và đang được xử lý.";
-                case PurchaseFailedPaymentDeclinedKey:
-                    return english ? "The payment has been declined." : "Giao dịch bị từ chối";
-                case PurchaseFailedProductUnavailableKey:
-                    return english ? "The product is unavailable." : "Sản phẩm không khả dụng";
-                case PurchaseFailedPurchasingUnavailableKey:
-                    return english ? "Purchasing is currenctly unavailable." : "Tạm thời không thực hiện được giao dịch";
-                case PurchaseFailedSignatureInvalidKey:
-                    return english ? "Signature was invalid." : "Chữ kí không có hợp lệ";
-                case PurchaseFailedUnknownKey:
-                    return english ? "Sorry we've encountered an unknown error." : "Xảy ra lỗi không xác định.";
-                case PurchaseFailedUnableToValidateReceiptKey:
-                    return english ? "Unable to validate receipt." : "Không thể xác nhận đơn hàng.";
-
-                // Store
-                case StoreFailedTitleKey:
-                    return english ? "Store Error" : "Lỗi Cửa hàng";
-                case StoreFailedAppNotKnownKey:
-                    return english ? "The store doesn't recognize this application." : "Ứng dụng không tồn tại trong Cửa hàng";
-                case StoreFailedNoProductsAvailableKey:
-                    return english ? "There are no valid products available for this application." : "Không tồn tại sản phẩm nào khả dụng cho ứng dụng này.";
-                case StoreFailedPurchasingUnavailableKey:
-                    return english ? "Unable to purchase.  Purchases have been turned off for this application." : "Không thể thực hiện thanh toán. Ứng dụng này đã bị tắt tính năng thanh toán.";
-                case StoreFailedConnectionTimeOutKey:
-                    return english ? "We timed out trying to connect to the store." : "Quá thời gian chờ phản hồi từ Cửa hàng";
-
-                default:
-                    return null;
-            }
-        }
-
         public static UnityTask<YesNoResult> ShowExitAppPrompt()
         {
             return MessageBox.Instance.ShowYesNo(Get(ExitAppTitleKey), Get(ExitAppBodyKey));
@@ -232,6 +120,77 @@ namespace Lost.PlayFab
             #endif
 
             return result ?? HandlePlayFabError(exception as PlayFab.PlayFabException);
+        }
+
+        // TODO [bgish]: Need to move all of this to a localization table
+        private static string Get(string localizationKey)
+        {
+            bool english = Localization.Localization.CurrentLanguage == Localization.Languages.English;
+
+            return localizationKey switch
+            {
+                // Exit App Keys
+                ExitAppTitleKey => english ? "Exit?" : string.Empty,
+                ExitAppBodyKey => english ? "Are you sure you want to exit?" : string.Empty,
+
+                // Forgot Password Keys
+                ForgotPasswordTitleKey => english ? "Forgot Password" : string.Empty,
+                ForgotPasswordBodyKey => english ? "Are you sure you wish to send an account recovery email to \"{email}\"?" : string.Empty,
+
+                // Internal PlayFab Error Keys
+                PlayFabErrorTitleKey => english ? "Internal Error" : string.Empty,
+                PlayFabErrorBodyKey => english ? "We have encountered an internal error.  Please try again later." : string.Empty,
+
+                // Login Failure Keys
+                LoginFailedTitleKey => english ? "Login Failed" : string.Empty,
+                AccountNotFoundKey => english ? "The specified account could not be found." : string.Empty,
+                InvalidEmailOrPasswordKey => english ? "The given email address or password is incorrect." : string.Empty,
+
+                // Creating User Account
+                CreateAccountTitleKey => english ? "Create Account Failed" : string.Empty,
+                CreateAccountEmailNotAvailableKey => english ? "The specified email address is not available." : string.Empty,
+                CreateAccountUsernameNotAvailableKey => english ? "The specified username is not available." : string.Empty,
+                CreateAccountInvalidEmailKey => english ? "The specified email address is invalid." : string.Empty,
+                CreateAccountInvalidPasswordKey => english ? "The specified password is invalid.  Must be between 5 and 100 characters long." : string.Empty,
+                CreateAccountInvalidUsernameKey => english ? "The specified username is invalid.  Must be between 3 and 20 characters long." : string.Empty,
+
+                // No Contact Email
+                ContactEmailNotFoundTitleKey => english ? "Email Not Found" : string.Empty,
+                ContactEmailNotFoundBodyKey => english ? "The specified email address could not be found." : string.Empty,
+
+                // Changing Display Name
+                ChangeNameTitleKey => english ? "Display Name" : "Tên hiển thị",
+                ChangeNameBodyKey => english ? "Enter in your new display name." : "Nhập tên mới ...",
+                ChangeNameFailedTitleKey => english ? "Rename Failed" : "Lỗi khi đổi tên",
+                ChangeNameFailedNotAvailableKey => english ? "That name is currently not available." : "Tên mới không khả dụng",
+                ChangeNameFailedProfaneKey => english ? "That name contains profanity." : "Tên mới tồn tại tự thô tục.",
+
+                // Connecting To Store
+                ConnectingToStoreBodyKey => english ? "Connecting to store..." : "Đang kết tối tới Cửa Hàng...",
+
+                // Insufficient Currency
+                InsufficientCurrencyTitleKey => english ? "Not Enough Currency" : "Không đủ tiền tệ",
+                InsufficientCurrencyBodyKey => english ? "You'll need to buy more currency from the store.<br>Would you like to go there now?" : "Bạn cần thêm tiền từ Cửa Hàng? Đến Cửa Hàng ngay?",
+
+                // Purchasing
+                PurchaseFailedTitleKey => english ? "Purchase failed" : "Giao dịch thất bại",
+                PurchaseFailedDuplicateTransactionKey => english ? "We've encountered a duplicate transaction." : "Phát hiện giao dịch bị trùng lặp",
+                PurchaseFailedExistingPurchasePendingKey => english ? "An existing purchase is already pending." : "Giao dịch đã tồn tại và đang được xử lý.",
+                PurchaseFailedPaymentDeclinedKey => english ? "The payment has been declined." : "Giao dịch bị từ chối",
+                PurchaseFailedProductUnavailableKey => english ? "The product is unavailable." : "Sản phẩm không khả dụng",
+                PurchaseFailedPurchasingUnavailableKey => english ? "Purchasing is currenctly unavailable." : "Tạm thời không thực hiện được giao dịch",
+                PurchaseFailedSignatureInvalidKey => english ? "Signature was invalid." : "Chữ kí không có hợp lệ",
+                PurchaseFailedUnknownKey => english ? "Sorry we've encountered an unknown error." : "Xảy ra lỗi không xác định.",
+                PurchaseFailedUnableToValidateReceiptKey => english ? "Unable to validate receipt." : "Không thể xác nhận đơn hàng.",
+
+                // Store
+                StoreFailedTitleKey => english ? "Store Error" : "Lỗi Cửa hàng",
+                StoreFailedAppNotKnownKey => english ? "The store doesn't recognize this application." : "Ứng dụng không tồn tại trong Cửa hàng",
+                StoreFailedNoProductsAvailableKey => english ? "There are no valid products available for this application." : "Không tồn tại sản phẩm nào khả dụng cho ứng dụng này.",
+                StoreFailedPurchasingUnavailableKey => english ? "Unable to purchase.  Purchases have been turned off for this application." : "Không thể thực hiện thanh toán. Ứng dụng này đã bị tắt tính năng thanh toán.",
+                StoreFailedConnectionTimeOutKey => english ? "We timed out trying to connect to the store." : "Quá thời gian chờ phản hồi từ Cửa hàng",
+                _ => null,
+            };
         }
 
         private static UnityTask<OkResult> HandlePlayFabError(PlayFab.PlayFabException playfabException)

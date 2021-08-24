@@ -39,17 +39,6 @@ namespace Lost.PlayFab
             this.Dialog.Show();
         }
 
-        private void OnValidate()
-        {
-            this.AssertNotNull(this.closeButton, nameof(this.closeButton));
-            this.AssertNotNull(this.emailInputField, nameof(this.emailInputField));
-            this.AssertNotNull(this.passwordInputField, nameof(this.passwordInputField));
-            this.AssertNotNull(this.confirmPasswordInputField, nameof(this.confirmPasswordInputField));
-            this.AssertNotNull(this.autoLoginToggle, nameof(this.autoLoginToggle));
-            this.AssertNotNull(this.alreadRegistedButton, nameof(this.alreadRegistedButton));
-            this.AssertNotNull(this.signUpButton, nameof(this.signUpButton));
-        }
-
         protected override void Awake()
         {
             base.Awake();
@@ -72,11 +61,6 @@ namespace Lost.PlayFab
             base.OnDestroy();
 
             PlayFab.PlayFabManager.OnInitialized -= this.OnPlayFabManagerInitialized;
-        }
-
-        private void OnPlayFabManagerInitialized()
-        {
-            this.autoLoginToggle.isOn = PlayFabManager.Instance.Login.HasEverLoggedIn == false || PlayFabManager.Instance.Login.AutoLoginWithDeviceId;
         }
 
         protected override void OnBackButtonPressed()
@@ -110,6 +94,22 @@ namespace Lost.PlayFab
 
                 this.isLeaveGameCoroutineRunning = false;
             }
+        }
+
+        private void OnValidate()
+        {
+            this.AssertNotNull(this.closeButton, nameof(this.closeButton));
+            this.AssertNotNull(this.emailInputField, nameof(this.emailInputField));
+            this.AssertNotNull(this.passwordInputField, nameof(this.passwordInputField));
+            this.AssertNotNull(this.confirmPasswordInputField, nameof(this.confirmPasswordInputField));
+            this.AssertNotNull(this.autoLoginToggle, nameof(this.autoLoginToggle));
+            this.AssertNotNull(this.alreadRegistedButton, nameof(this.alreadRegistedButton));
+            this.AssertNotNull(this.signUpButton, nameof(this.signUpButton));
+        }
+
+        private void OnPlayFabManagerInitialized()
+        {
+            this.autoLoginToggle.isOn = PlayFabManager.Instance.Login.HasEverLoggedIn == false || PlayFabManager.Instance.Login.AutoLoginWithDeviceId;
         }
 
         private void UpdateSignUpButton(string newValue)
