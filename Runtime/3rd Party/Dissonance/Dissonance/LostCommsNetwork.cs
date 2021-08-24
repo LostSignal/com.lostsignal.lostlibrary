@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="LostCommsNetwork.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -43,7 +43,7 @@ namespace Lost.DissonanceIntegration
                     if (this.hasClientStarted == false)
                     {
                         this.hasClientStarted = true;
-                        this.RunAsClient(default(Unit));
+                        this.RunAsClient(default);
                     }
                 }
                 else

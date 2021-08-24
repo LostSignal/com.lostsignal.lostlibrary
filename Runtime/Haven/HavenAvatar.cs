@@ -68,8 +68,7 @@ namespace Lost.Haven
 
             // Setting the avatar PRT
             this.avatarTransform.localScale = new Vector3(rigScale, rigScale, rigScale);
-            this.avatarTransform.position = rigPosition;
-            this.avatarTransform.rotation = rigRotation;
+            this.avatarTransform.SetPositionAndRotation(rigPosition, rigRotation);
 
             // Deserializing Visualization State (if it exists)
             bool hasVisuals = reader.ReadBoolean();

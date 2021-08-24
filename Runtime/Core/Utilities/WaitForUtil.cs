@@ -14,16 +14,15 @@ namespace Lost
     public static class WaitForUtil
     {
         public static readonly WaitForEndOfFrame EndOfFrame = new WaitForEndOfFrame();
-
-        private static Dictionary<float, WaitForSeconds> waitForSecondsCache = new Dictionary<float, WaitForSeconds>();
-        private static Dictionary<float, WaitForSecondsRealtime> waitForSecondsRealtimeCache = new Dictionary<float, WaitForSecondsRealtime>();
+        private static readonly Dictionary<float, WaitForSeconds> WaitForSecondsCache = new Dictionary<float, WaitForSeconds>();
+        private static readonly Dictionary<float, WaitForSecondsRealtime> WaitForSecondsRealtimeCache = new Dictionary<float, WaitForSecondsRealtime>();
 
         public static WaitForSeconds Seconds(float time)
         {
-            if (waitForSecondsCache.TryGetValue(time, out WaitForSeconds waitForSeconds) == false)
+            if (WaitForSecondsCache.TryGetValue(time, out WaitForSeconds waitForSeconds) == false)
             {
                 waitForSeconds = new WaitForSeconds(time);
-                waitForSecondsCache.Add(time, waitForSeconds);
+                WaitForSecondsCache.Add(time, waitForSeconds);
             }
 
             return waitForSeconds;
@@ -31,10 +30,10 @@ namespace Lost
 
         public static WaitForSecondsRealtime RealtimeSeconds(float time)
         {
-            if (waitForSecondsRealtimeCache.TryGetValue(time, out WaitForSecondsRealtime waitForSecondsRealtime) == false)
+            if (WaitForSecondsRealtimeCache.TryGetValue(time, out WaitForSecondsRealtime waitForSecondsRealtime) == false)
             {
                 waitForSecondsRealtime = new WaitForSecondsRealtime(time);
-                waitForSecondsRealtimeCache.Add(time, waitForSecondsRealtime);
+                WaitForSecondsRealtimeCache.Add(time, waitForSecondsRealtime);
             }
 
             return waitForSecondsRealtime;

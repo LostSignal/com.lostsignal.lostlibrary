@@ -212,13 +212,13 @@ namespace Lost.Analytics
     public static class AnalyticsEnums
     {
         // Enum Name Caching Dictionaries
-        private static Dictionary<ScreenName, string> screenNameCache = new Dictionary<ScreenName, string>();
-        private static Dictionary<AdvertisingNetwork, string> advertisingNetworkCache = new Dictionary<AdvertisingNetwork, string>();
-        private static Dictionary<AcquisitionType, string> acquisitionTypeCache = new Dictionary<AcquisitionType, string>();
-        private static Dictionary<ShareType, string> shareTypeCache = new Dictionary<ShareType, string>();
-        private static Dictionary<SocialNetwork, string> socialNetworkCache = new Dictionary<SocialNetwork, string>();
-        private static Dictionary<StoreType, string> storeTypeCache = new Dictionary<StoreType, string>();
-        private static Dictionary<AuthorizationNetwork, string> authorizationNetworkCache = new Dictionary<AuthorizationNetwork, string>();
+        private static readonly Dictionary<ScreenName, string> ScreenNameCache = new Dictionary<ScreenName, string>();
+        private static readonly Dictionary<AdvertisingNetwork, string> AdvertisingNetworkCache = new Dictionary<AdvertisingNetwork, string>();
+        private static readonly Dictionary<AcquisitionType, string> AcquisitionTypeCache = new Dictionary<AcquisitionType, string>();
+        private static readonly Dictionary<ShareType, string> ShareTypeCache = new Dictionary<ShareType, string>();
+        private static readonly Dictionary<SocialNetwork, string> SocialNetworkCache = new Dictionary<SocialNetwork, string>();
+        private static readonly Dictionary<StoreType, string> StoreTypeCache = new Dictionary<StoreType, string>();
+        private static readonly Dictionary<AuthorizationNetwork, string> AuthorizationNetworkCache = new Dictionary<AuthorizationNetwork, string>();
 
         static AnalyticsEnums()
         {
@@ -260,10 +260,10 @@ namespace Lost.Analytics
 
         public static string Get(ScreenName screenName)
         {
-            if (screenNameCache.TryGetValue(screenName, out string enumString) == false)
+            if (ScreenNameCache.TryGetValue(screenName, out string enumString) == false)
             {
                 enumString = screenName.ToString();
-                screenNameCache.Add(screenName, enumString);
+                ScreenNameCache.Add(screenName, enumString);
             }
 
             return enumString;
@@ -271,10 +271,10 @@ namespace Lost.Analytics
 
         public static string Get(AdvertisingNetwork advertisingNetwork)
         {
-            if (advertisingNetworkCache.TryGetValue(advertisingNetwork, out string enumString) == false)
+            if (AdvertisingNetworkCache.TryGetValue(advertisingNetwork, out string enumString) == false)
             {
                 enumString = advertisingNetwork.ToString();
-                advertisingNetworkCache.Add(advertisingNetwork, enumString);
+                AdvertisingNetworkCache.Add(advertisingNetwork, enumString);
             }
 
             return enumString;
@@ -282,10 +282,10 @@ namespace Lost.Analytics
 
         public static string Get(AcquisitionType acquisitionType)
         {
-            if (acquisitionTypeCache.TryGetValue(acquisitionType, out string enumString) == false)
+            if (AcquisitionTypeCache.TryGetValue(acquisitionType, out string enumString) == false)
             {
                 enumString = acquisitionType.ToString();
-                acquisitionTypeCache.Add(acquisitionType, enumString);
+                AcquisitionTypeCache.Add(acquisitionType, enumString);
             }
 
             return enumString;
@@ -293,10 +293,10 @@ namespace Lost.Analytics
 
         public static string Get(ShareType shareType)
         {
-            if (shareTypeCache.TryGetValue(shareType, out string enumString) == false)
+            if (ShareTypeCache.TryGetValue(shareType, out string enumString) == false)
             {
                 enumString = shareType.ToString();
-                shareTypeCache.Add(shareType, enumString);
+                ShareTypeCache.Add(shareType, enumString);
             }
 
             return enumString;
@@ -304,10 +304,10 @@ namespace Lost.Analytics
 
         public static string Get(SocialNetwork socialNetwork)
         {
-            if (socialNetworkCache.TryGetValue(socialNetwork, out string enumString) == false)
+            if (SocialNetworkCache.TryGetValue(socialNetwork, out string enumString) == false)
             {
                 enumString = socialNetwork.ToString();
-                socialNetworkCache.Add(socialNetwork, enumString);
+                SocialNetworkCache.Add(socialNetwork, enumString);
             }
 
             return enumString;
@@ -315,10 +315,10 @@ namespace Lost.Analytics
 
         public static string Get(StoreType storeType)
         {
-            if (storeTypeCache.TryGetValue(storeType, out string enumString) == false)
+            if (StoreTypeCache.TryGetValue(storeType, out string enumString) == false)
             {
                 enumString = storeType.ToString();
-                storeTypeCache.Add(storeType, enumString);
+                StoreTypeCache.Add(storeType, enumString);
             }
 
             return enumString;
@@ -326,10 +326,10 @@ namespace Lost.Analytics
 
         public static string Get(AuthorizationNetwork authorizationNetwork)
         {
-            if (authorizationNetworkCache.TryGetValue(authorizationNetwork, out string enumString) == false)
+            if (AuthorizationNetworkCache.TryGetValue(authorizationNetwork, out string enumString) == false)
             {
                 enumString = authorizationNetwork.ToString();
-                authorizationNetworkCache.Add(authorizationNetwork, enumString);
+                AuthorizationNetworkCache.Add(authorizationNetwork, enumString);
             }
 
             return enumString;
@@ -380,13 +380,14 @@ namespace Lost.Analytics
 #endif
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1813:Avoid unsealed attributes", Justification = "This is a copy of Unity's Enum")]
     public class AnalyticsEventAttribute : Attribute
     {
     }
 
-    public class EnumCase : AnalyticsEventAttribute
+    public sealed class EnumCase : AnalyticsEventAttribute
     {
-        private Styles style;
+        private readonly Styles style;
 
         public EnumCase(Styles style)
         {

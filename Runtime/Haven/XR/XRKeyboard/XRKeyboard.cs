@@ -30,12 +30,9 @@ namespace Lost
         [SerializeField] private Transform[] keypadRows;
 #pragma warning restore 0649
 
-        private bool isUpperCase;
-        private bool isShowingLetters = true;
-        private bool isShowingNumbers;
-        private bool isShowingSymbols;
-
         private System.Action<char, string> keyPressed;
+        private State state;
+        private bool isUpperCase;
 
         public event System.Action<char, string> KeyPressed
         {
@@ -43,9 +40,42 @@ namespace Lost
             remove => this.keyPressed -= value;
         }
 
+        private enum State
+        {
+            Letters,
+            Numbers,
+            Symbols,
+        }
+
         public XRKeyboardData.Keyboard CurrentKeyboard
         {
             get => this.keyboardData.CurrentKeyboard;
+        }
+
+        public void ToggleUppercase()
+        {
+            this.isUpperCase = !this.isUpperCase;
+            this.UpdateKeyboardVisuals();
+        }
+
+        public void SetLetters()
+        {
+            this.state = State.Letters;
+            this.UpdateKeyboardVisuals();
+        }
+
+        public void SetNumbers()
+        {
+            this.state = State.Numbers;
+            this.isUpperCase = false;
+            this.UpdateKeyboardVisuals();
+        }
+
+        public void SetSymbols()
+        {
+            this.state = State.Symbols;
+            this.isUpperCase = false;
+            this.UpdateKeyboardVisuals();
         }
 
         protected override void Awake()
@@ -141,10 +171,10 @@ namespace Lost
 
         private void UpdateKeyboardVisuals()
         {
-            this.lowerCaseLayout.SafeSetActive(this.isShowingLetters && this.isUpperCase == false);
-            this.upperCaseLayout.SafeSetActive(this.isShowingLetters && this.isUpperCase);
-            this.numbersLayout.SafeSetActive(this.isShowingNumbers);
-            this.symbolsLayout.SafeSetActive(this.isShowingSymbols);
+            this.lowerCaseLayout.SafeSetActive(this.state == State.Letters && this.isUpperCase == false);
+            this.upperCaseLayout.SafeSetActive(this.state == State.Letters && this.isUpperCase);
+            this.numbersLayout.SafeSetActive(this.state == State.Numbers);
+            this.symbolsLayout.SafeSetActive(this.state == State.Symbols);
         }
     }
 }

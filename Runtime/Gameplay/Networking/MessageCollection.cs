@@ -12,9 +12,9 @@ namespace Lost.Networking
 
     public class MessageCollection
     {
-        private Dictionary<short, Type> messageTypes = new Dictionary<short, Type>();
-        private Dictionary<short, List<Message>> messagePools = new Dictionary<short, List<Message>>();
-        private NetworkReader reader = new NetworkReader();
+        private readonly Dictionary<short, Type> messageTypes = new Dictionary<short, Type>();
+        private readonly Dictionary<short, List<Message>> messagePools = new Dictionary<short, List<Message>>();
+        private readonly NetworkReader reader = new NetworkReader();
 
         public static short GetMessageId(byte[] data)
         {

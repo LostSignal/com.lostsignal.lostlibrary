@@ -22,9 +22,9 @@ namespace Lost
     {
         // TODO [bgish] - make sure <uses-permission android:name="android.permission.VIBRATE"/> is in the AndroidManifest.xml file
         #if UNITY_ANDROID && !UNITY_EDITOR
-        private static AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-        private static AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-        private static AndroidJavaObject vibrator = currentActivity.Call<AndroidJavaObject>("getSystemService", "vibrator");
+        private static readonly AndroidJavaClass UnityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+        private static readonly AndroidJavaObject CurrentActivity = UnityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+        private static readonly AndroidJavaObject Vibrator = CurrentActivity.Call<AndroidJavaObject>("getSystemService", "vibrator");
         #endif
 
         public enum UnityEditorPlatform
@@ -202,7 +202,7 @@ namespace Lost
             {
                 case DevicePlatform.Android:
                     #if UNITY_ANDROID && !UNITY_EDITOR
-                    vibrator.Call("vibrate", milliseconds);
+                    Vibrator.Call("vibrate", milliseconds);
                     #endif
                     break;
 
@@ -219,14 +219,11 @@ namespace Lost
 
         public static string GetStreamingAssetsURL(string path)
         {
-            switch (CurrentDevicePlatform)
+            return CurrentDevicePlatform switch
             {
-                case DevicePlatform.Android:
-                    return Path.Combine(Application.streamingAssetsPath, path).Replace(@"\", "/");
-
-                default:
-                    return "file://" + Path.Combine(Application.streamingAssetsPath, path).Replace(@"\", "/");
-            }
+                DevicePlatform.Android => Path.Combine(Application.streamingAssetsPath, path).Replace(@"\", "/"),
+                _ => "file://" + Path.Combine(Application.streamingAssetsPath, path).Replace(@"\", "/"),
+            };
         }
 
         public static void GoToStore()

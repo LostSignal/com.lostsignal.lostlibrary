@@ -26,8 +26,9 @@ namespace Lost.PlayFab
 
     public class LoginManager
     {
-        private List<string> facebookPermissions = new List<string> { "public_profile", "email" };
-        private PlayFabManager playfabManager;
+        private readonly List<string> facebookPermissions = new List<string> { "public_profile", "email" };
+        private readonly PlayFabManager playfabManager;
+
         private LoginResult loginResult;
         private bool forceRelogin;
 
@@ -350,7 +351,7 @@ namespace Lost.PlayFab
 
                 while (accessToken.IsDone == false)
                 {
-                    yield return default(LinkFacebookAccountResult);
+                    yield return default;
                 }
 
                 var request = new LinkFacebookAccountRequest { AccessToken = accessToken.Value };
@@ -359,7 +360,7 @@ namespace Lost.PlayFab
 
                 while (link.IsDone == false)
                 {
-                    yield return default(LinkFacebookAccountResult);
+                    yield return default;
                 }
 
                 yield return link.Value;
@@ -597,7 +598,7 @@ namespace Lost.PlayFab
 
                 while (accessToken.IsDone == false)
                 {
-                    yield return default(LoginResult);
+                    yield return default;
                 }
 
                 var facebookLoginRequest = new LoginWithFacebookRequest
@@ -611,7 +612,7 @@ namespace Lost.PlayFab
 
                 while (facebookLogin.IsDone == false)
                 {
-                    yield return default(LoginResult);
+                    yield return default;
                 }
 
                 yield return facebookLogin.Value;

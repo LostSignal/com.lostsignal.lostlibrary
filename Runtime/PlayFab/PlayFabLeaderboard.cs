@@ -18,6 +18,8 @@ namespace Lost.PlayFab
     {
         private static readonly int ProgressHash = Animator.StringToHash("Progress");
 
+        private readonly PlayerProfileViewConstraints profileContraints = new PlayerProfileViewConstraints();
+
         #pragma warning disable 0649
         [Tooltip("This is how many entires that will be held in memory.")]
         [SerializeField] private int maxEntriesBeforeTrimming = 200;
@@ -41,8 +43,8 @@ namespace Lost.PlayFab
         [SerializeField] private bool includeSteamFriends;
         #pragma warning restore 0649
 
-        private PlayerProfileViewConstraints profileContraints = new PlayerProfileViewConstraints();
         private List<PlayerLeaderboardEntry> entries = new List<PlayerLeaderboardEntry>();
+
         private float lastTopDistance = 0.0f;
         private float lastBottomDistance = 0.0f;
         private bool moreTopEntiresExist = true;
@@ -316,7 +318,7 @@ namespace Lost.PlayFab
                 return;
             }
 
-            bool addToBeginningOfList = this.entries.Count == 0 ? false : leaderboardEntries[0].Position < this.entries[0].Position;
+            bool addToBeginningOfList = this.entries.Count != 0 && leaderboardEntries[0].Position < this.entries[0].Position;
 
             if (addToBeginningOfList)
             {

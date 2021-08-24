@@ -73,7 +73,7 @@ namespace HavenXR
             }
 
             Ray ray = this.mainCamera.ScreenPointToRay(input.CurrentPosition);
-            
+
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, this.layer))
             {
                 Interactable interactable = hit.collider.gameObject.GetComponentInParent<Interactable>();

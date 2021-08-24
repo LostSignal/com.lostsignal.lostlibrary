@@ -21,7 +21,6 @@ namespace Lost
         private static TMP_InputField currentTMPInputField;
         private static int lastKnownSelectionAnchorPosition;
         private static int lastKnownSelectionFocusPosition;
-        private static Coroutine coroutine;
 
         public static bool IsInputFieldSelected
         {

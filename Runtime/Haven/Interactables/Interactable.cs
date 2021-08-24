@@ -15,9 +15,8 @@ namespace HavenXR
     public abstract class Interactable : MonoBehaviour, InputHandler
     {
         public static readonly Vector3 InvalidVector = new Vector3(float.MinValue, float.MinValue, float.MinValue);
-
         public static readonly string LayerName = "Interactable";
-        private static List<Transform> children = new List<Transform>();
+        private static readonly List<Transform> Children = new List<Transform>();
 
         private Camera currentCamera;
         private Lost.Input currentInput;
@@ -88,13 +87,13 @@ namespace HavenXR
         {
             int interactableLayer = LayerMask.NameToLayer(LayerName);
 
-            this.GetComponentsInChildren<Transform>(true, children);
+            this.GetComponentsInChildren<Transform>(true, Children);
 
             bool hasInteractable = false;
 
-            for (int i = 0; i < children.Count; i++)
+            for (int i = 0; i < Children.Count; i++)
             {
-                hasInteractable |= children[i].gameObject.layer == interactableLayer;
+                hasInteractable |= Children[i].gameObject.layer == interactableLayer;
             }
 
             if (hasInteractable == false)
@@ -102,7 +101,7 @@ namespace HavenXR
                 Debug.LogErrorFormat(this, "Interactable \"{0}\" does not have an collider on the \"{1}\" layer and will not work!", this.name, LayerName);
             }
 
-            children.Clear();
+            Children.Clear();
         }
 
         private void ResetInputData()

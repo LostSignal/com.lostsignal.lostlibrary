@@ -32,7 +32,7 @@ namespace Lost.Haven
         {
             Bootloader.OnReset += Reset;
 
-            void Reset()
+            static void Reset()
             {
                 instance = null;
             }

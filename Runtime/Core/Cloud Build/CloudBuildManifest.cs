@@ -14,8 +14,8 @@ namespace Lost.CloudBuild
 
     public class CloudBuildManifest
     {
-        private Dictionary<string, object> dictionary;
-        private string json;
+        private readonly Dictionary<string, object> dictionary;
+        private readonly string json;
 
         private CloudBuildManifest(string json)
         {
@@ -98,9 +98,9 @@ namespace Lost.CloudBuild
         {
             if (this.dictionary.TryGetValue(key, out object value))
             {
-                if (value is string)
+                if (value is string stringValue)
                 {
-                    if (int.TryParse(value as string, out int result))
+                    if (int.TryParse(stringValue, out int result))
                     {
                         return result;
                     }
@@ -109,13 +109,13 @@ namespace Lost.CloudBuild
                         return defaultValue;
                     }
                 }
-                else if (value is long)
+                else if (value is long longValue)
                 {
-                    return (int)((long)value);
+                    return (int)longValue;
                 }
-                else if (value is int)
+                else if (value is int intValue)
                 {
-                    return (int)value;
+                    return intValue;
                 }
                 else
                 {

@@ -14,7 +14,7 @@ namespace Lost
     public static class Pooler
     {
         // TODO [bgish]: need to figure out how to add items to the pool (scriptable object?  components register object?)
-        private static Dictionary<int, Pool> pools = new Dictionary<int, Pool>();
+        private static readonly Dictionary<int, Pool> Pools = new Dictionary<int, Pool>();
 
         public static void PoolPrefab<T>(T prefab, int initialCount = 0)
             where T : MonoBehaviour
@@ -26,13 +26,13 @@ namespace Lost
         {
             int instanceId = prefab.GetInstanceID();
 
-            if (pools.ContainsKey(instanceId))
+            if (Pools.ContainsKey(instanceId))
             {
                 Debug.LogWarningFormat("Tried pooling the same Prefab \"{0}\"multiple times.", prefab.name);
                 return;
             }
 
-            pools.Add(instanceId, new Pool(prefab, initialCount));
+            Pools.Add(instanceId, new Pool(prefab, initialCount));
         }
 
         public static UnityEngine.GameObject Instantiate(UnityEngine.GameObject prefab)
@@ -42,14 +42,14 @@ namespace Lost
 
         public static UnityEngine.GameObject Instantiate(UnityEngine.GameObject prefab, Transform parent)
         {
-            return Instantiate(prefab, null, false);
+            return Instantiate(prefab, parent, false);
         }
 
         public static UnityEngine.GameObject Instantiate(UnityEngine.GameObject prefab, Transform parent, bool reset)
         {
             int instanceId = prefab.GetInstanceID();
-            
-            if (pools.TryGetValue(instanceId, out Pool pool))
+
+            if (Pools.TryGetValue(instanceId, out Pool pool))
             {
                 var result = pool.GetObjectFromPool(prefab, parent);
 
@@ -96,7 +96,7 @@ namespace Lost
         {
             int instanceId = prefab.gameObject.GetInstanceID();
 
-            if (pools.TryGetValue(instanceId, out Pool pool))
+            if (Pools.TryGetValue(instanceId, out Pool pool))
             {
                 var obj = pool.GetObjectFromPool(prefab.gameObject, parent).GetComponent<T>();
 

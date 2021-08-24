@@ -179,11 +179,12 @@ namespace Lost
         private abstract class Setting<T> : ISetting<T>, ISetting
             where T : System.IComparable<T>
         {
-            private Dictionary<int, T> settings;
-            private T defaultValue;
+            private readonly Dictionary<int, T> settings;
+            private readonly T defaultValue;
+            private readonly int key;
+
             private T currentValue;
             private bool isDirty;
-            private int key;
 
             public Setting(Dictionary<int, T> settings, int key, T defaultValue)
             {

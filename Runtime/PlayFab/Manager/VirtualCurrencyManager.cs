@@ -16,14 +16,22 @@ namespace Lost.PlayFab
 
     public class VirtualCurrencyManager
     {
-        private Dictionary<string, int> virtualCurrencies = new Dictionary<string, int>();
-        private Dictionary<string, int> virtualCurrencyRechargeTimes = new Dictionary<string, int>();
-        private PlayFabManager playfabManager;
+        private readonly Dictionary<string, int> virtualCurrencies = new Dictionary<string, int>();
+        private readonly Dictionary<string, int> virtualCurrencyRechargeTimes = new Dictionary<string, int>();
+        private readonly PlayFabManager playfabManager;
 
         public VirtualCurrencyManager(PlayFabManager playfabManager, Dictionary<string, int> virtualCurrency)
         {
             this.playfabManager = playfabManager;
             this.playfabManager.GlobalPlayFabResultHandler += this.OnGlobalPlayFabResultHandler;
+
+            if (virtualCurrency != null && virtualCurrency.Count > 0)
+            {
+                foreach (var currency in virtualCurrency)
+                {
+                    this.virtualCurrencies.AddOrOverwrite(currency.Key, currency.Value);
+                }
+            }
         }
 
         public delegate void OnVirtualCurrencyChangedDelegate();

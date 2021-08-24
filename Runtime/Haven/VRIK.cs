@@ -140,8 +140,7 @@ namespace Lost
                 {
                     childTransform = new GameObject(name).transform;
                     childTransform.SetParent(gameObject.transform);
-                    childTransform.position = Vector3.zero;
-                    childTransform.rotation = Quaternion.identity;
+                    childTransform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
                     childTransform.localScale = Vector3.one;
                 }
 
@@ -181,7 +180,7 @@ namespace Lost
         }
 
         [Serializable]
-        public class VRMap
+        private class VRMap
         {
             #pragma warning disable 0649
             [SerializeField] private Transform rigTarget;

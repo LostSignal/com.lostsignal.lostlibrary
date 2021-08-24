@@ -11,9 +11,10 @@ namespace Lost
 
     public class DataStore
     {
+        private const uint CurrentVersion = 1;
+
         private static readonly Networking.NetworkWriter Writer = new Networking.NetworkWriter((byte[])null);
         private static readonly Networking.NetworkReader Reader = new Networking.NetworkReader((byte[])null);
-        private static readonly uint CurrentVersion = 1;
 
         private Dictionary<string, int> intData;
         private Dictionary<string, int> enumData;
@@ -164,7 +165,7 @@ namespace Lost
         // Gets
         public int GetInt(string key, int defaultValue = 0) => this.GetKey(this.intData, key, defaultValue);
 
-        public T GetEnumt<T>(string key, T defaultValue = default(T)) => (T)Enum.ToObject(typeof(T), this.GetKey(this.enumData, key, Convert.ToInt32(defaultValue)));
+        public T GetEnumt<T>(string key, T defaultValue = default) => (T)Enum.ToObject(typeof(T), this.GetKey(this.enumData, key, Convert.ToInt32(defaultValue)));
 
         public bool GetBool(string key, bool defaultValue = false) => this.GetKey(this.boolData, key, defaultValue);
 

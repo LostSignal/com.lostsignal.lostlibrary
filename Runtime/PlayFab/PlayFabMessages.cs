@@ -357,36 +357,18 @@ namespace Lost.PlayFab
 
             string title = Get(PurchaseFailedTitleKey);
 
-            switch (purchasingException.FailureReason)
+            return purchasingException.FailureReason switch
             {
-                case PurchaseFailureReason.DuplicateTransaction:
-                    return MessageBox.Instance.ShowOk(title, Get(PurchaseFailedDuplicateTransactionKey));
-
-                case PurchaseFailureReason.ExistingPurchasePending:
-                    return MessageBox.Instance.ShowOk(title, Get(PurchaseFailedExistingPurchasePendingKey));
-
-                case PurchaseFailureReason.PaymentDeclined:
-                    return MessageBox.Instance.ShowOk(title, Get(PurchaseFailedPaymentDeclinedKey));
-
-                case PurchaseFailureReason.ProductUnavailable:
-                    return MessageBox.Instance.ShowOk(title, Get(PurchaseFailedProductUnavailableKey));
-
-                case PurchaseFailureReason.PurchasingUnavailable:
-                    return MessageBox.Instance.ShowOk(title, Get(PurchaseFailedPurchasingUnavailableKey));
-
-                case PurchaseFailureReason.SignatureInvalid:
-                    return MessageBox.Instance.ShowOk(title, Get(PurchaseFailedSignatureInvalidKey));
-
-                case PurchaseFailureReason.Unknown:
-                    return MessageBox.Instance.ShowOk(title, Get(PurchaseFailedUnknownKey));
-
-                case PurchaseFailureReason.UserCancelled:
-                    // Do nothing, they know they canceled it
-                    return null;
-
-                default:
-                    return null;
-            }
+                PurchaseFailureReason.DuplicateTransaction => MessageBox.Instance.ShowOk(title, Get(PurchaseFailedDuplicateTransactionKey)),
+                PurchaseFailureReason.ExistingPurchasePending => MessageBox.Instance.ShowOk(title, Get(PurchaseFailedExistingPurchasePendingKey)),
+                PurchaseFailureReason.PaymentDeclined => MessageBox.Instance.ShowOk(title, Get(PurchaseFailedPaymentDeclinedKey)),
+                PurchaseFailureReason.ProductUnavailable => MessageBox.Instance.ShowOk(title, Get(PurchaseFailedProductUnavailableKey)),
+                PurchaseFailureReason.PurchasingUnavailable => MessageBox.Instance.ShowOk(title, Get(PurchaseFailedPurchasingUnavailableKey)),
+                PurchaseFailureReason.SignatureInvalid => MessageBox.Instance.ShowOk(title, Get(PurchaseFailedSignatureInvalidKey)),
+                PurchaseFailureReason.Unknown => MessageBox.Instance.ShowOk(title, Get(PurchaseFailedUnknownKey)),
+                PurchaseFailureReason.UserCancelled => null, // Do nothing, they know they canceled it
+                _ => null,
+            };
         }
 
         #endif

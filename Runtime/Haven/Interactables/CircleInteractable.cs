@@ -121,7 +121,7 @@ namespace HavenXR
             else
             {
                 Debug.LogError($"CircleInteractable found unknown rotationalAxis {this.rotationalAxis}", this);
-                interactablePlane = default(Plane);
+                interactablePlane = default;
             }
 
             Ray inputRay = camera.ScreenPointToRay(input.CurrentPosition);

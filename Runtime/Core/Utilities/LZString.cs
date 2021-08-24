@@ -15,7 +15,7 @@ namespace Lost
     /// Converted from lz-string 1.4.4
     /// https://github.com/pieroxy/lz-string/blob/c58a22021000ac2d99377cc0bf9ac193a12563c5/libs/lz-string.js.
     /// </summary>
-    public class LZString
+    public static class LZString
     {
         private const string KeyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
         private const string KeyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
@@ -30,14 +30,15 @@ namespace Lost
             }
 
             var res = Compress(input, 6, code => KeyStrBase64[code]);
-            switch (res.Length % 4)
+
+            return (res.Length % 4) switch
             {
-                default: throw new InvalidOperationException("When could this happen ?");
-                case 0: return res;
-                case 1: return res + "===";
-                case 2: return res + "==";
-                case 3: return res + "=";
-            }
+                0 => res,
+                1 => res + "===",
+                2 => res + "==",
+                3 => res + "=",
+                _ => throw new InvalidOperationException("When could this happen ?"),
+            };
         }
 
         public static string DecompressFromBase64(string input)
@@ -113,6 +114,7 @@ namespace Lost
             return dict;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification = "This source was taken from internet and want to keep it as intact as possible.")]
         private static string Compress(string uncompressed, int bitsPerChar, Func<int, char> getCharFromInt)
         {
             if (uncompressed == null)
@@ -123,8 +125,10 @@ namespace Lost
             int i, value;
             var context_dictionary = new Dictionary<string, int>();
             var context_dictionaryToCreate = new Dictionary<string, bool>();
-            var context_wc = string.Empty;
-            var context_w = string.Empty;
+
+            string context_wc;
+            string context_w = string.Empty;
+
             var context_enlargeIn = 2; // Compensate for the first entry which should not count
             var context_dictSize = 3;
             var context_numBits = 2;
@@ -267,7 +271,7 @@ namespace Lost
             }
 
             // Output the code for w.
-            if (context_w != string.Empty)
+            if (context_w.Length > 0)
             {
                 if (context_dictionaryToCreate.ContainsKey(context_w))
                 {

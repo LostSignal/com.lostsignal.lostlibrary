@@ -18,6 +18,9 @@ namespace Lost
     public abstract class VirtualizedScrollRect<T> : MonoBehaviour
         where T : MonoBehaviour
     {
+        private readonly List<T> inactivePool = new List<T>();
+        private readonly List<T> activePool = new List<T>();
+
         #pragma warning disable 0649
         [SerializeField] private GrowType growType;
         [SerializeField] private Vector2 cellSize;
@@ -41,10 +44,6 @@ namespace Lost
         private Vector3 cellStartPosition;
         private Vector3 upperRightBounds;
         private Vector3 lowerLeftBounds;
-
-        private List<T> inactivePool = new List<T>();
-        private List<T> activePool = new List<T>();
-
         private Vector3 contentOffset;
 
         private int activeTopRow = -1;
@@ -311,7 +310,7 @@ namespace Lost
                 return;
             }
 
-            T newItem = null;
+            T newItem;
 
             if (this.inactivePool.Count == 0)
             {
@@ -328,10 +327,7 @@ namespace Lost
             newItem.transform.Reset();
             newItem.transform.localPosition = localPosition;
 
-            if (this.OnShowItem != null)
-            {
-                this.OnShowItem(newItem, index);
-            }
+            this.OnShowItem?.Invoke(newItem, index);
         }
 
         private void ForceInitialize()
