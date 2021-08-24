@@ -14,6 +14,7 @@ namespace Lost
     using Lost.PlayFab;
     using UnityEngine;
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2235:Mark all non-serializable fields", Justification = "Using Unity Serialization")]
     [Serializable]
     public class Release
     {

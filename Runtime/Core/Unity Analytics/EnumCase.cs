@@ -12,12 +12,11 @@
 
 namespace Lost
 {
-    using UnityEngine;
     using UnityEngine.Analytics;
 
-    public class EnumCase : AnalyticsEventAttribute
+    public sealed class EnumCase : AnalyticsEventAttribute
     {
-        private Styles style;
+        private readonly Styles style;
 
         public EnumCase(Styles style)
         {

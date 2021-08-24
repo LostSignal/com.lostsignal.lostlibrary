@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="TwoParamEvent.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -11,7 +11,7 @@ namespace Lost
 
     public class TwoParamEvent<TParam1, TParam2>
     {
-        private List<Action<TParam1, TParam2>> actions = new List<Action<TParam1, TParam2>>();
+        private readonly List<Action<TParam1, TParam2>> actions = new List<Action<TParam1, TParam2>>();
 
         public void Subscribe(Action<TParam1, TParam2> action)
         {

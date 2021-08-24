@@ -14,11 +14,12 @@ namespace Lost.PlayFab
 
     public class CatalogManager
     {
-        private GetCatalogItemsRequest getCatalogRequest = new GetCatalogItemsRequest();
-        private Dictionary<string, CatalogItem> catalogItemDictionary = new Dictionary<string, CatalogItem>();
-        private Dictionary<string, Dictionary<string, string>> customDataCache = new Dictionary<string, Dictionary<string, string>>();
+        private readonly GetCatalogItemsRequest getCatalogRequest = new GetCatalogItemsRequest();
+        private readonly Dictionary<string, CatalogItem> catalogItemDictionary = new Dictionary<string, CatalogItem>();
+        private readonly Dictionary<string, Dictionary<string, string>> customDataCache = new Dictionary<string, Dictionary<string, string>>();
+        private readonly PlayFabManager playfabManager;
+
         private List<CatalogItem> cachedCatalog;
-        private PlayFabManager playfabManager;
 
         public CatalogManager(PlayFabManager playfabManager, string catalogVersion)
         {

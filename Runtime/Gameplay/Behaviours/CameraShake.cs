@@ -15,8 +15,9 @@ namespace Lost
     ////
     public sealed class CameraShake : LoadBalancedMonoBehaviour
     {
+        private const string CameraShakeUpdateChannel = "CameraShake";
+
         private static readonly ObjectTracker<CameraShake> Shakers = new ObjectTracker<CameraShake>(5);
-        private static readonly string CameraShakeUpdateChannel = "CameraShake";
 
 #pragma warning disable 0649
         [SerializeField] private float shakeTime = 0.25f;

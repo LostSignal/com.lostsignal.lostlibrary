@@ -26,7 +26,7 @@ namespace Lost
                 }
                 else
                 {
-                    output = default(T);
+                    output = default;
                     return false;
                 }
             }

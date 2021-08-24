@@ -17,14 +17,14 @@ namespace Lost
     {
         private const int LetterCount = 26;
 
+        private readonly int[] availableCharacterCounts = new int[LetterCount];
+        private readonly int[] wordCharacterCounts = new int[LetterCount];
+
 #pragma warning disable 0649
         [HideInInspector]
         [SerializeField]
         private string[] words;
 #pragma warning restore 0649
-
-        private int[] availableCharacterCounts = new int[LetterCount];
-        private int[] wordCharacterCounts = new int[LetterCount];
 
         public int WordCount
         {

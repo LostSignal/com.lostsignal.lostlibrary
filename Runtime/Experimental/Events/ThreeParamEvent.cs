@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="ThreeParamEvent.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -11,7 +11,7 @@ namespace Lost
 
     public class ThreeParamEvent<TParam1, TParam2, TParam3>
     {
-        private List<Action<TParam1, TParam2, TParam3>> actions = new List<Action<TParam1, TParam2, TParam3>>();
+        private readonly List<Action<TParam1, TParam2, TParam3>> actions = new List<Action<TParam1, TParam2, TParam3>>();
 
         public void Subscribe(Action<TParam1, TParam2, TParam3> action)
         {

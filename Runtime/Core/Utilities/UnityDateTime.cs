@@ -11,6 +11,7 @@ namespace Lost
     using System;
     using UnityEngine;
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2235:Mark all non-serializable fields", Justification = "Using Unity Serialization")]
     [Serializable]
     public struct UnityDateTime : ISerializationCallbackReceiver
     {

@@ -47,7 +47,7 @@ namespace Lost
         private void UpdateUnit(float deltaTime)
         {
             this.deltaTime = deltaTime;
-            this.Trigger(this.graphReference, default(EmptyEventArgs));
+            this.Trigger(this.graphReference, default);
         }
 
         private float GetDeltaTime(Flow flow) => this.deltaTime;

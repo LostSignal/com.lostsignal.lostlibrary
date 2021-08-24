@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="GuidManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -18,13 +18,8 @@ namespace Lost
         // Singleton interface
         private static GuidManager instance;
 
-        // instance data
-        private Dictionary<System.Guid, GuidInfo> guidToObjectMap;
-
-        private GuidManager()
-        {
-            this.guidToObjectMap = new Dictionary<System.Guid, GuidInfo>();
-        }
+        // Instance data
+        private readonly Dictionary<System.Guid, GuidInfo> guidToObjectMap = new Dictionary<System.Guid, GuidInfo>();
 
         // All the public API is static so you need not worry about creating an instance
         public static bool Add(GuidComponent guidComponent)

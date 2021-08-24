@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="LocLanguage.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -43,20 +43,20 @@ namespace Lost
 
         public static LocLanguage GetCurrentOSLanguage()
         {
-            switch (Application.systemLanguage)
+            return Application.systemLanguage switch
             {
-                case SystemLanguage.English: return English;
-                case SystemLanguage.French: return French;
-                case SystemLanguage.Italian: return Italian;
-                case SystemLanguage.German: return German;
-                case SystemLanguage.Spanish: return Spanish;
-                case SystemLanguage.Chinese: return ChineseManderin;
-                case SystemLanguage.Japanese: return Japanese;
-                case SystemLanguage.Korean: return Korean;
-                case SystemLanguage.Russian: return Russian;
-                case SystemLanguage.Portuguese: return Portuguese;
-                default: return English;
-            }
+                SystemLanguage.English => English,
+                SystemLanguage.French => French,
+                SystemLanguage.Italian => Italian,
+                SystemLanguage.German => German,
+                SystemLanguage.Spanish => Spanish,
+                SystemLanguage.Chinese => ChineseManderin,
+                SystemLanguage.Japanese => Japanese,
+                SystemLanguage.Korean => Korean,
+                SystemLanguage.Russian => Russian,
+                SystemLanguage.Portuguese => Portuguese,
+                _ => English,
+            };
         }
 
         private static LocLanguage CreateLocLanguage(ushort id, string name, string shortName)

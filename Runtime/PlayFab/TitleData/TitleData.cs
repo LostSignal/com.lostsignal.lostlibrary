@@ -11,7 +11,6 @@ namespace Lost.PlayFab
     using System;
     using UnityEngine;
 
-    [Serializable]
     public class TitleData<T> : ScriptableObject
         where T : new()
     {

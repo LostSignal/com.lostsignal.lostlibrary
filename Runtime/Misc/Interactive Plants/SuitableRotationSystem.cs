@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="SuitableRotationSystem.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -18,12 +18,12 @@ namespace Lost.PlantGenerator
         /// <summary>
         /// Stores whether or not a specific integer angle is already taken (0 -> 359).
         /// </summary>
-        private bool[] suitableRotation = new bool[360];
+        private readonly bool[] suitableRotation = new bool[360];
 
         /// <summary>
         /// The random instance to use when generating random values.
         /// </summary>
-        private System.Random random;
+        private readonly System.Random random;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SuitableRotationSystem"/> class.

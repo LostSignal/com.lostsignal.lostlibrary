@@ -6,7 +6,7 @@
 
 namespace Lost
 {
-    public class ShowEditorErrorAttribute : System.Attribute
+    public sealed class ShowEditorErrorAttribute : System.Attribute
     {
         public ShowEditorErrorAttribute(string text) => this.Text = text;
 

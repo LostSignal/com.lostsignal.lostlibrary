@@ -76,7 +76,7 @@ namespace Lost
                         this.delayedActions[i] = this.delayedActions[lastIndex];
                     }
 
-                    this.delayedActions[lastIndex] = default(DelayedAction);
+                    this.delayedActions[lastIndex] = default;
 
                     currentTime = Time.realtimeSinceStartup;
                     this.count--;

@@ -13,9 +13,9 @@ namespace Lost
 
     public class Pool
     {
-        private List<GameObject> active = new List<GameObject>();
-        private List<GameObject> inactive = new List<GameObject>();
-        private Transform inactivePoolParent;
+        private readonly List<GameObject> active = new List<GameObject>();
+        private readonly List<GameObject> inactive = new List<GameObject>();
+        private readonly Transform inactivePoolParent;
 
         public Pool(GameObject prefab, int initialCount = 0)
         {

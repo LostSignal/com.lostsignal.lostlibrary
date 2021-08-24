@@ -16,10 +16,11 @@ namespace Lost
 
     public sealed class UnityAnalyticsManager : Manager<UnityAnalyticsManager>
     {
-        private static readonly string AnonymousIdKey = "AnnonymousId";
-        private static readonly float NewSessionWaitTimeInSeconds = 30.0f;
+        private const string AnonymousIdKey = "AnnonymousId";
+        private const float NewSessionWaitTimeInSeconds = 30.0f;
 
-        private List<IAnalyticsProvider> analyticsProviders = new List<IAnalyticsProvider>();
+        private readonly List<IAnalyticsProvider> analyticsProviders = new List<IAnalyticsProvider>();
+
         private float lostFocusTime = -1.0f;
         private bool pauseFlushing;
         private string anonymousId;

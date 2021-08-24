@@ -16,10 +16,13 @@ namespace Lost
     using UnityEngine;
     using UnityEngine.Profiling;
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2235:Mark all non-serializable fields", Justification = "Using Unity Serialization")]
     [Serializable]
     public class UpdateChannel
     {
         private static readonly Callback DefaultCallback = default;
+
+        private readonly Dictionary<int, int> idToIndexMap = new Dictionary<int, int>();
 
         #pragma warning disable 0649
         [SerializeField] private string name;
@@ -32,7 +35,6 @@ namespace Lost
         private CustomSampler customSampler;
         #endif
 
-        private Dictionary<int, int> idToIndexMap = new Dictionary<int, int>();
         private Callback[] callbacks;
         private int currentId;
         private int count;

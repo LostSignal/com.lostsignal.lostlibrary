@@ -28,13 +28,13 @@ namespace Lost
         public void OnAwake()
         {
             this.LoadBalancedAwake();
-            this.awakeReceipt = default(LoadBalancerReceipt);
+            this.awakeReceipt = default;
         }
 
         public void OnStart()
         {
             this.LoadBalancedStart();
-            this.startReceipt = default(LoadBalancerReceipt);
+            this.startReceipt = default;
         }
 
         protected virtual void Awake()

@@ -67,9 +67,8 @@ namespace Lost.Haven
 
                     Vector3 worldAxisStart = this.syncTransform.TransformDirection(this.localAxisStart);
                     Vector3 worldRotationAxis = this.syncTransform.TransformDirection(this.localRotationAxis);
-
-                    float angle = 0.0f;
-                    Vector3 newRight = worldAxisStart;
+                    Vector3 newRight;
+                    float angle;
 
                     if (this.dialType == InteractionType.ControllerRotation)
                     {
@@ -182,13 +181,11 @@ namespace Lost.Haven
 
             if (this.rotatingRigidbody != null)
             {
-                this.syncTransform.rotation = this.rotatingRigidbody.transform.rotation;
-                this.syncTransform.position = this.rotatingRigidbody.position;
+                this.syncTransform.SetPositionAndRotation(this.rotatingRigidbody.position, this.rotatingRigidbody.rotation);
             }
             else
             {
-                this.syncTransform.rotation = this.transform.rotation;
-                this.syncTransform.position = this.transform.position;
+                this.syncTransform.SetPositionAndRotation(this.transform.position, this.transform.rotation);
             }
 
             base.OnSelectEntered(selectEnterEventArgs);

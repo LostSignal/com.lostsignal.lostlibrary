@@ -14,9 +14,9 @@ namespace Lost.PlayFab
 
     public class StoreManager
     {
-        private GetStoreItemsRequest getStoreRequest = new GetStoreItemsRequest();
-        private Dictionary<string, List<StoreItem>> cachedStores = new Dictionary<string, List<StoreItem>>();
-        private PlayFabManager playfabManager;
+        private readonly GetStoreItemsRequest getStoreRequest = new GetStoreItemsRequest();
+        private readonly Dictionary<string, List<StoreItem>> cachedStores = new Dictionary<string, List<StoreItem>>();
+        private readonly PlayFabManager playfabManager;
 
         public StoreManager(PlayFabManager playfabManager, string catalogVersion)
         {

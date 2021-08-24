@@ -12,7 +12,6 @@ namespace Lost.PlayFab
     using System.Collections.Generic;
     using UnityEngine;
 
-    [Serializable]
     public class VersionedTitleData<T> : ScriptableObject
         where T : new()
     {

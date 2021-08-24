@@ -14,11 +14,12 @@ namespace Lost.Networking
     {
         private static Transform anchorTransform;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1810:Initialize reference type static fields inline", Justification = "Must register for events.")]
         static NetworkTransformAnchor()
         {
             Bootloader.OnReset += Reset;
 
-            void Reset()
+            static void Reset()
             {
                 anchorTransform = null;
             }

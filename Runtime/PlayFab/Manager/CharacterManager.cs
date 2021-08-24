@@ -14,8 +14,8 @@ namespace Lost.PlayFab
 
     public class CharacterManager
     {
+        private readonly PlayFabManager playfabManager;
         private List<CharacterResult> characterCache;
-        private PlayFabManager playfabManager;
 
         public CharacterManager(PlayFabManager playfabManager, List<CharacterResult> characters)
         {

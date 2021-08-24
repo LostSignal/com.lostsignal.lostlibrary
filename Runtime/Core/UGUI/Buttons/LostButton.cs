@@ -15,8 +15,9 @@ namespace Lost
 
     public class LostButton : Button
     {
+        private readonly List<UIAction> actions = new List<UIAction>();
+
         private SelectionState selectionState = SelectionState.Normal;
-        private List<UIAction> actions = new List<UIAction>();
         private bool isFirstStateChange = true;
         private RectTransform rectTransform;
         private bool isInitialized = false;

@@ -10,7 +10,7 @@ namespace Lost.PlayFab
 {
     public class TitleNewsManager
     {
-        private PlayFabManager playfabManager;
+        private readonly PlayFabManager playfabManager;
 
         public TitleNewsManager(PlayFabManager playfabManager)
         {

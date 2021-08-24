@@ -239,19 +239,14 @@ namespace Lost
 
         private TMP_Text GetCornerText(Corner corner)
         {
-            switch (corner)
+            return corner switch
             {
-                case Corner.LowerLeft:
-                    return this.lowerLeftText;
-                case Corner.LowerRight:
-                    return this.lowerRightText;
-                case Corner.UpperLeft:
-                    return this.upperLeftText;
-                case Corner.UpperRight:
-                    return this.upperRightText;
-                default:
-                    return null;
-            }
+                Corner.LowerLeft => this.lowerLeftText,
+                Corner.LowerRight => this.lowerRightText,
+                Corner.UpperLeft => this.upperLeftText,
+                Corner.UpperRight => this.upperRightText,
+                _ => null,
+            };
         }
 
         private int GetDecimalPoint(float num)

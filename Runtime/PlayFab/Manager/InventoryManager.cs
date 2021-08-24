@@ -14,13 +14,15 @@ namespace Lost.PlayFab
 
     public class InventoryManager
     {
-        private List<ItemInstance> usersInventory = null;
+        private readonly PlayFabManager playfabManager;
+
+        private List<ItemInstance> usersInventoryCache;
         private bool getInventoryCoroutineRunning;
-        private PlayFabManager playfabManager;
 
         public InventoryManager(PlayFabManager playfabManager, List<ItemInstance> userInventory)
         {
             this.playfabManager = playfabManager;
+            this.usersInventoryCache = userInventory;
         }
 
         public delegate void OnInventoryChangedDelegate();
@@ -36,16 +38,16 @@ namespace Lost.PlayFab
         {
             if (this.getInventoryCoroutineRunning == false)
             {
-                this.usersInventory = null;
+                this.usersInventoryCache = null;
                 this.InventoryChanged?.Invoke();
             }
         }
 
         public UnityTask<List<ItemInstance>> GetInventoryItems()
         {
-            if (this.usersInventory != null)
+            if (this.usersInventoryCache != null)
             {
-                return UnityTask<List<ItemInstance>>.Empty(this.usersInventory);
+                return UnityTask<List<ItemInstance>>.Empty(this.usersInventoryCache);
             }
             else
             {
@@ -59,10 +61,10 @@ namespace Lost.PlayFab
                 {
                     while (this.getInventoryCoroutineRunning)
                     {
-                        yield return default(List<ItemInstance>);
+                        yield return default;
                     }
 
-                    yield return this.usersInventory;
+                    yield return this.usersInventoryCache;
                     yield break;
                 }
 
@@ -72,12 +74,12 @@ namespace Lost.PlayFab
 
                 while (playfabGetInventory.IsDone == false)
                 {
-                    yield return default(List<ItemInstance>);
+                    yield return default;
                 }
 
                 this.getInventoryCoroutineRunning = false;
 
-                yield return this.usersInventory;
+                yield return this.usersInventoryCache;
             }
         }
 
@@ -91,7 +93,7 @@ namespace Lost.PlayFab
 
                 while (inventory.IsDone == false)
                 {
-                    yield return default(int);
+                    yield return default;
                 }
 
                 int count = 0;
@@ -136,18 +138,18 @@ namespace Lost.PlayFab
 
         private void UpdateInventory(List<ItemInstance> inventory)
         {
-            if (this.usersInventory == null)
+            if (this.usersInventoryCache == null)
             {
-                this.usersInventory = new List<ItemInstance>();
+                this.usersInventoryCache = new List<ItemInstance>();
             }
             else
             {
-                this.usersInventory.Clear();
+                this.usersInventoryCache.Clear();
             }
 
             if (inventory.IsNullOrEmpty() == false)
             {
-                this.usersInventory.AddRange(inventory);
+                this.usersInventoryCache.AddRange(inventory);
                 this.InventoryChanged?.Invoke();
             }
         }

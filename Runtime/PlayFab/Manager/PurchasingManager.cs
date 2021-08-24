@@ -29,9 +29,10 @@ namespace Lost.PlayFab
 
     public class PurchasingManager
     {
-        private PlayFabManager playfabManager;
+        private readonly PlayFabManager playfabManager;
+        private readonly string catalogVersion;
+
         private bool isInitializationRunning;
-        private string catalogVersion;
 
         public PurchasingManager(PlayFabManager playfabManager, string catalogVersion)
         {
@@ -58,7 +59,7 @@ namespace Lost.PlayFab
                 {
                     while (this.isInitializationRunning)
                     {
-                        yield return default(bool);
+                        yield return default;
                     }
 
                     yield return this.IsInitialized;
@@ -72,7 +73,7 @@ namespace Lost.PlayFab
 
                 while (getCatalog.IsDone == false)
                 {
-                    yield return default(bool);
+                    yield return default;
                 }
 
 #if PURCHASING_ENABLED
@@ -93,7 +94,7 @@ namespace Lost.PlayFab
                     // Waiting for initialization to finish
                     while (initializeUnityIap.IsDone == false)
                     {
-                        yield return default(bool);
+                        yield return default;
                     }
                 }
 #endif
@@ -137,7 +138,7 @@ namespace Lost.PlayFab
 
                         while (initialize.IsDone == false)
                         {
-                            yield return default(bool);
+                            yield return default;
                         }
 
                         // Early out if initialization failed
@@ -180,7 +181,7 @@ namespace Lost.PlayFab
 
                 while (iapPurchaseItem.IsDone == false)
                 {
-                    yield return default(bool);
+                    yield return default;
                 }
 
                 if (iapPurchaseItem.HasError)
@@ -195,7 +196,7 @@ namespace Lost.PlayFab
 
                         while (purchase.IsDone == false)
                         {
-                            yield return default(bool);
+                            yield return default;
                         }
 
                         yield return purchase.Value;
@@ -206,7 +207,7 @@ namespace Lost.PlayFab
 
                         while (purchase.IsDone == false)
                         {
-                            yield return default(bool);
+                            yield return default;
                         }
 
                         yield return purchase.Value;
@@ -245,7 +246,7 @@ namespace Lost.PlayFab
 
                     while (messageBoxDialog.IsDone == false)
                     {
-                        yield return default(bool);
+                        yield return default;
                     }
 
                     if (messageBoxDialog.Value == YesNoResult.Yes)
@@ -266,7 +267,7 @@ namespace Lost.PlayFab
 
                 while (coroutine.keepWaiting)
                 {
-                    yield return default(bool);
+                    yield return default;
                 }
 
                 bool isSuccessful = coroutine.Value != null;
@@ -291,7 +292,7 @@ namespace Lost.PlayFab
 
                 while (coroutine.keepWaiting)
                 {
-                    yield return default(bool);
+                    yield return default;
                 }
 
                 if (coroutine.Value != null)
@@ -300,7 +301,7 @@ namespace Lost.PlayFab
 
                     while (getCatalogItem.IsDone == false)
                     {
-                        yield return default(bool);
+                        yield return default;
                     }
 
                     if (getCatalogItem.Value != null)
@@ -321,7 +322,7 @@ namespace Lost.PlayFab
 
                 while (getCatalogItem.IsDone == false)
                 {
-                    yield return default(bool);
+                    yield return default;
                 }
 
                 var catalogItem = getCatalogItem.Value;
@@ -355,7 +356,7 @@ namespace Lost.PlayFab
 
                     while (validate.IsDone == false)
                     {
-                        yield return default(bool);
+                        yield return default;
                     }
 
                     if (validate.HasError)
@@ -392,7 +393,7 @@ namespace Lost.PlayFab
 
                     while (validate.IsDone == false)
                     {
-                        yield return default(bool);
+                        yield return default;
                     }
 
                     if (validate.HasError)

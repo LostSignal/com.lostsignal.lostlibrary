@@ -133,11 +133,10 @@ namespace Lost.Addressables
             string messageSignature = messageSignatureBuilder.ToString();
             byte[] signatureBytes = Encoding.UTF8.GetBytes(messageSignature);
 
-            using (HMACSHA256 sha256 = new HMACSHA256(Convert.FromBase64String(config.StorageAccountKey)))
-            {
-                // Adding the final Authorization header
-                headers.Add("Authorization", "SharedKey " + config.StorageAccountName + ":" + Convert.ToBase64String(sha256.ComputeHash(signatureBytes)));
-            }
+            using var sha256 = new HMACSHA256(Convert.FromBase64String(config.StorageAccountKey));
+
+            // Adding the final Authorization header
+            headers.Add("Authorization", "SharedKey " + config.StorageAccountName + ":" + Convert.ToBase64String(sha256.ComputeHash(signatureBytes)));
         }
 
         private static string SendWithHttpWebRequest(string uri, Dictionary<string, string> headers, byte[] data)
@@ -162,12 +161,11 @@ namespace Lost.Addressables
                 rquestStream.Close();
             }
 
-            using (WebResponse webResponse = webRequest.GetResponse())
-            using (Stream responseStream = webResponse.GetResponseStream())
-            using (StreamReader streamReader = new StreamReader(responseStream))
-            {
-                return streamReader.ReadToEnd();
-            }
+            using WebResponse webResponse = webRequest.GetResponse();
+            using Stream responseStream = webResponse.GetResponseStream();
+            using StreamReader streamReader = new StreamReader(responseStream);
+
+            return streamReader.ReadToEnd();
         }
 
         public class Config

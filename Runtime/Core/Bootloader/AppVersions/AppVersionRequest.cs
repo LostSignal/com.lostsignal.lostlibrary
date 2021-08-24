@@ -6,7 +6,6 @@
 
 namespace Lost
 {
-    [System.Serializable]
     public class AppVersionRequest
     {
         public string CurrentVersion { get; set; }

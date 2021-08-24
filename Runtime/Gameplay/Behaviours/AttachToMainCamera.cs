@@ -23,8 +23,7 @@ namespace Lost
 
             if (this.mainCamera)
             {
-                this.transform.position = this.mainCamera.transform.position;
-                this.transform.rotation = this.mainCamera.transform.rotation;
+                this.transform.SetPositionAndRotation(this.mainCamera.transform.position, this.mainCamera.transform.rotation);
             }
         }
     }

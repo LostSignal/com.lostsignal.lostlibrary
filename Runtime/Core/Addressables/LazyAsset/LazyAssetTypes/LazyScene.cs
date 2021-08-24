@@ -14,6 +14,7 @@ namespace Lost
     using UnityEngine.SceneManagement;
     #endif
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2235:Mark all non-serializable fields", Justification = "Using Unity Serialization")]
     [Serializable]
     public class LazyScene : LazyAsset, ILazyScene
     {
@@ -36,7 +37,7 @@ namespace Lost
             }
 
             UnityEngine.AddressableAssets.Addressables.Release(this.operation);
-            this.operation = default(AsyncOperationHandle);
+            this.operation = default;
         }
 
         #endif

@@ -36,14 +36,15 @@ namespace Lost
         private bool isPlayerInside;
 
         // Reset is called on reboot and leaving editor mode
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1810:Initialize reference type static fields inline", Justification = "Must register for events.")]
         static OnPlayerEnterExit()
         {
             Bootloader.OnReset += Reset;
 
-            void Reset()
+            static void Reset()
             {
-                highPriorityChannel = default(UpdateChannel);
-                lowPriorityChannel = default(UpdateChannel);
+                highPriorityChannel = default;
+                lowPriorityChannel = default;
                 //// AreStaticsInitialized = false;
             }
         }

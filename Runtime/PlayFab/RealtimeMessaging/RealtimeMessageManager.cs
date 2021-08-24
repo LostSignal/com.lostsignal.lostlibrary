@@ -25,15 +25,18 @@ namespace Lost
 
     public sealed class RealtimeMessageManager : Manager<RealtimeMessageManager>
     {
+        #if USING_ABLY
+        private readonly Dictionary<string, Type> messageTypes = new Dictionary<string, Type>();
+        private readonly HashSet<string> subscribedChannels = new HashSet<string>();
+        #endif
+
         #pragma warning disable 0649
         [SerializeField] private bool printDebugOutput;
         #pragma warning restore 0649
 
-#if USING_ABLY
-        private Dictionary<string, Type> messageTypes = new Dictionary<string, Type>();
-        private HashSet<string> subscribedChannels = new HashSet<string>();
+        #if USING_ABLY
         private AblyRealtime ably;
-#endif
+        #endif
 
         public override void Initialize()
         {
@@ -107,7 +110,7 @@ namespace Lost
         private void MessageReceived(Message message)
         {
             string json = message.Data as string;
-            JObject javaObject = null;
+            JObject javaObject;
 
             try
             {
@@ -153,10 +156,10 @@ namespace Lost
         [Serializable]
         public class Settings
         {
-#pragma warning disable 0649
+#pragma warning disable 0649, CA2235
             [SerializeField] private bool isEnabled;
             [SerializeField] private string ablyClientKey;
-#pragma warning restore 0649
+#pragma warning restore 0649, CA2235
 
             public bool IsEnabled
             {

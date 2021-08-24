@@ -47,15 +47,14 @@ namespace Lost
     {
         private static readonly List<FunctionCall> Functions = new List<FunctionCall>();
 
+        private readonly Dictionary<string, UpdateChannel> channelMap = new Dictionary<string, UpdateChannel>();
+        private readonly List<UpdateChannel> updateChannels = new List<UpdateChannel>(50);
+        private readonly List<UpdateChannel> fixedUpdateChannels = new List<UpdateChannel>(50);
+        private readonly List<UpdateChannel> lateUpdateChannels = new List<UpdateChannel>(50);
+
 #pragma warning disable 0649
         [SerializeField] private List<UpdateChannel> channels = new List<UpdateChannel>();
 #pragma warning restore 0649
-
-        private Dictionary<string, UpdateChannel> channelMap = new Dictionary<string, UpdateChannel>();
-
-        private List<UpdateChannel> updateChannels = new List<UpdateChannel>(50);
-        private List<UpdateChannel> fixedUpdateChannels = new List<UpdateChannel>(50);
-        private List<UpdateChannel> lateUpdateChannels = new List<UpdateChannel>(50);
 
         public override void Initialize()
         {

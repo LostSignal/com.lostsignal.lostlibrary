@@ -76,7 +76,7 @@ namespace Lost
             }
 
             // Making sure onClick isn't null
-            this.onClick = this.onClick == null ? new UnityEvent() : this.onClick;
+            this.onClick ??= new UnityEvent();
 
             // Setting up initial values
             this.canvasRenderer.cullTransparentMesh = true;

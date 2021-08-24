@@ -13,11 +13,11 @@ namespace Lost
 
     public class FlagManager : Manager<FlagManager>
     {
+        private readonly List<FlagCollection> activeFlagCollections = new List<FlagCollection>();
+
 #pragma warning disable 0649
         [SerializeField] private bool printDebugOutput;
 #pragma warning restore 0649
-
-        private List<FlagCollection> activeFlagCollections = new List<FlagCollection>();
 
         public bool PrintDebugOutput => this.printDebugOutput;
 

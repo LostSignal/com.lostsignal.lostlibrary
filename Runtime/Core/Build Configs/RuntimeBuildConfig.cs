@@ -14,6 +14,7 @@ namespace Lost.BuildConfig
     using UnityEngine;
     using UnityEngine.Serialization;
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2235:Mark all non-serializable fields", Justification = "Using Unity Serialization")]
     [Serializable]
     public class RuntimeBuildConfig
     {
@@ -22,6 +23,7 @@ namespace Lost.BuildConfig
 
         private static RuntimeBuildConfig instance;
 
+        #pragma warning disable 0649
         [FormerlySerializedAs("appConfigGuid")]
         [SerializeField] private string buildConfigGuid;
 
@@ -29,6 +31,7 @@ namespace Lost.BuildConfig
         [SerializeField] private string buildConfigName;
 
         [SerializeField] private List<KeyValuePair> keyValuePairs;
+        #pragma warning restore 0649
 
         private bool isInitialized = false;
         private Dictionary<string, string> values;

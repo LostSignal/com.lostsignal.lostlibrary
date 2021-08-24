@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="AudioManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -13,6 +13,8 @@ namespace Lost
 
     public sealed class AudioManager : Manager<AudioManager>
     {
+        private readonly HashSet<int> audioChannelsIntanceIds = new HashSet<int>();
+
 #pragma warning disable 0649
         [SerializeField] private Transform audioPool;
         [SerializeField] private int audioSourcePoolGrowSize = 10;
@@ -20,8 +22,6 @@ namespace Lost
         [SerializeField] private AudioSource audioSourcePrefab;
         [SerializeField] private List<AudioChannel> audioChannels;
 #pragma warning restore 0649
-
-        private HashSet<int> audioChannelsIntanceIds = new HashSet<int>();
 
         public override void Initialize()
         {

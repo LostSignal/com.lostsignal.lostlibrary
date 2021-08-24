@@ -14,14 +14,14 @@ namespace Lost
 
     public sealed class DialogManager : Manager<DialogManager>
     {
+        private readonly Dictionary<System.Type, DialogLogic> dialogTypes = new Dictionary<System.Type, DialogLogic>();
+        private readonly LinkedList<Dialog> dialogs = new LinkedList<Dialog>();
+        private readonly List<DialogLogic> instantiatedDialogs = new List<DialogLogic>();
+
         //// TODO [bgish]: Update GetDialog to look out for these types and create them on the fly if needed
 #pragma warning disable 0649
         [SerializeField] private DialogLogic[] onDemandDialogs;
 #pragma warning restore 0649
-
-        private Dictionary<System.Type, DialogLogic> dialogTypes = new Dictionary<System.Type, DialogLogic>();
-        private LinkedList<Dialog> dialogs = new LinkedList<Dialog>();
-        private List<DialogLogic> instantiatedDialogs = new List<DialogLogic>();
 
         public static void RegisterDialog(DialogLogic dialogLogic)
         {

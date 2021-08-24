@@ -431,7 +431,7 @@ namespace Lost.PlayFab
         [Serializable]
         public class Settings
         {
-#pragma warning disable 0649
+#pragma warning disable 0649, CA2235
             [SerializeField] private string catalogVersion = "1.0";
             [SerializeField] private List<string> facebookPermissions = new List<string> { "public_profile", "email", "user_friends" };
             [SerializeField] private List<string> loadTitleDataKeys;
@@ -443,7 +443,7 @@ namespace Lost.PlayFab
             [SerializeField] private bool loadCharacters;
             [SerializeField] private bool loadPurchasing;
             [SerializeField] private bool registerIosPushNotificationsAtStartup;
-#pragma warning restore 0649
+#pragma warning restore 0649, CA2235
 
             public string CatalogVersion
             {

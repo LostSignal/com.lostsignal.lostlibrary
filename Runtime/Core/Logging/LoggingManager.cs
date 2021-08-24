@@ -21,18 +21,17 @@ namespace Lost
         private const string HashCodeName = "hash_code";
         private const string CallstackName = "callstack";
 
-        private List<ILoggingProvider> loggingProviders = new List<ILoggingProvider>();
-        private HashSet<int> sentLogs = new HashSet<int>();
-        private Settings settings;
+        private readonly List<ILoggingProvider> loggingProviders = new List<ILoggingProvider>();
+        private readonly HashSet<int> sentLogs = new HashSet<int>();
 
-        private Dictionary<string, object> eventArgsCache = new Dictionary<string, object>()
+        private readonly Dictionary<string, object> eventArgsCache = new Dictionary<string, object>()
         {
             { LogTypeName, string.Empty },
             { ConditionName, string.Empty },
             { HashCodeName, 0 },
         };
 
-        private Dictionary<LogType, string> logTypeCache = new Dictionary<LogType, string>
+        private readonly Dictionary<LogType, string> logTypeCache = new Dictionary<LogType, string>
         {
             { LogType.Assert, "Assert" },
             { LogType.Error, "Error" },
@@ -40,6 +39,8 @@ namespace Lost
             { LogType.Log, "Log" },
             { LogType.Warning, "Warning" },
         };
+
+        private Settings settings;
 
         public override void Initialize()
         {
@@ -129,6 +130,7 @@ namespace Lost
             return false;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2235:Mark all non-serializable fields", Justification = "Using Unity Serialization")]
         [Serializable]
         public class Settings
         {

@@ -11,7 +11,7 @@ namespace Lost
 
     public class Queue<T>
     {
-        private static readonly T DefaultElement = default(T);
+        private static readonly T DefaultElement = default;
 
         private T[] elements;
         private int capacity;

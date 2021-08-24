@@ -21,8 +21,7 @@ namespace Lost
         {
             if (this.objectsRigidbody == null)
             {
-                this.transform.position = this.startingPosition;
-                this.transform.rotation = this.startingRotation;
+                this.transform.SetPositionAndRotation(this.startingPosition, this.startingRotation);
             }
             else
             {
@@ -37,8 +36,7 @@ namespace Lost
         {
             if (this.objectsRigidbody == null)
             {
-                this.transform.position = respawnTransform.transform.position;
-                this.transform.rotation = respawnTransform.transform.rotation;
+                this.transform.SetPositionAndRotation(respawnTransform.transform.position, respawnTransform.transform.rotation);
             }
             else
             {

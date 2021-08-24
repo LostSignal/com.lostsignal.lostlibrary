@@ -67,7 +67,7 @@ namespace Lost
             }
 
             Debug.LogError($"{nameof(PerformanceManager)} Found Unknown Category Type {category}");
-            return default(ProfilerCategory);
+            return default;
         }
 
         //// * Sends Stats/Analytics

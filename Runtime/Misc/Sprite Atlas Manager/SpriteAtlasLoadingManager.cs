@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="SpriteAtlasLoadingManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -16,7 +16,7 @@ namespace Lost
 
     public sealed class SpriteAtlasLoadingManager : Manager<SpriteAtlasLoadingManager>
     {
-        private Dictionary<string, Action<SpriteAtlas>> unknownAtlasRequests = new Dictionary<string, Action<SpriteAtlas>>();
+        private readonly Dictionary<string, Action<SpriteAtlas>> unknownAtlasRequests = new Dictionary<string, Action<SpriteAtlas>>();
         private Dictionary<string, Atlas> atlasesMap = null;
         private Settings settings;
 
@@ -138,6 +138,7 @@ namespace Lost
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2235:Mark all non-serializable fields", Justification = "Using Unity Serialization")]
         [Serializable]
         public class Atlas
         {
@@ -165,6 +166,7 @@ namespace Lost
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2235:Mark all non-serializable fields", Justification = "Using Unity Serialization")]
         [Serializable]
         public class Settings
         {

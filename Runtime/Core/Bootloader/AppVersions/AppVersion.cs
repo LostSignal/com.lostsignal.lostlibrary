@@ -10,6 +10,7 @@ namespace Lost
     using System.Collections.Generic;
     using UnityEngine;
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2235:Mark all non-serializable fields", Justification = "Using Unity Serialization")]
     [Serializable]
     public class AppVersion
     {
@@ -97,7 +98,7 @@ namespace Lost
         }
 
         [Serializable]
-        public class WhatsNew
+        private class WhatsNew
         {
             [SerializeField] private string language;
             [SerializeField] private string summary;

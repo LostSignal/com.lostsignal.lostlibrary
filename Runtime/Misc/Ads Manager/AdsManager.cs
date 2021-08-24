@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="AdsManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -17,7 +17,7 @@ namespace Lost
 
         public string CurrentProviderName
         {
-            get { return this.provider != null ? this.provider.ProviderName : null; }
+            get => this.provider?.ProviderName;
         }
 
         public bool AreAdsSupported
@@ -42,38 +42,26 @@ namespace Lost
 
         public bool IsAdReady(string placementId)
         {
-            return this.provider != null ? this.provider.IsAdReady(placementId) : false;
+            return this.provider != null && this.provider.IsAdReady(placementId);
         }
 
         public void ShowAd(string placementId, bool isRewarded, Action<AdWatchedResult> watchResultCallback = null, IDictionary<string, object> eventData = null)
         {
             if (this.provider == null)
             {
-                if (watchResultCallback != null)
-                {
-                    watchResultCallback(AdWatchedResult.ProviderNotset);
-                }
+                watchResultCallback?.Invoke(AdWatchedResult.ProviderNotset);
             }
             else if (this.AreAdsSupported == false)
             {
-                if (watchResultCallback != null)
-                {
-                    watchResultCallback(AdWatchedResult.AdsNotSupported);
-                }
+                watchResultCallback?.Invoke(AdWatchedResult.AdsNotSupported);
             }
             else if (this.AreAdsInitialized == false)
             {
-                if (watchResultCallback != null)
-                {
-                    watchResultCallback(AdWatchedResult.AdsNotInitialized);
-                }
+                watchResultCallback?.Invoke(AdWatchedResult.AdsNotInitialized);
             }
             else if (this.IsAdReady(placementId) == false)
             {
-                if (watchResultCallback != null)
-                {
-                    watchResultCallback(AdWatchedResult.AdNotReady);
-                }
+                watchResultCallback?.Invoke(AdWatchedResult.AdNotReady);
             }
             else
             {

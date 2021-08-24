@@ -14,10 +14,11 @@ namespace Lost
 
     public static class SingletonUtil
     {
-        private static readonly string RootSingletonName = "Singletons";
+        private const string RootSingletonName = "Singletons";
 
-        private static Dictionary<Type, object> instances = new Dictionary<Type, object>();
-        private static object instancesLock = new object();
+        private static readonly Dictionary<Type, object> Instances = new Dictionary<Type, object>();
+        private static readonly object InstancesLock = new object();
+
         private static GameObject singletonRoot = null;
 
         /// <summary>
@@ -31,14 +32,14 @@ namespace Lost
         public static T GetInstance<T>(Func<T> creator)
             where T : class
         {
-            lock (instancesLock)
+            lock (InstancesLock)
             {
-                if (instances.ContainsKey(typeof(T)) == false)
+                if (Instances.ContainsKey(typeof(T)) == false)
                 {
-                    instances.Add(typeof(T), creator.Invoke());
+                    Instances.Add(typeof(T), creator.Invoke());
                 }
 
-                return instances[typeof(T)] as T;
+                return Instances[typeof(T)] as T;
             }
         }
 
@@ -46,7 +47,14 @@ namespace Lost
         {
             if (singletonRoot == null)
             {
-                singletonRoot = GameObject.Find("/" + RootSingletonName) ?? new GameObject(RootSingletonName);
+                var rootSingletonGameObject = GameObject.Find("/" + RootSingletonName);
+
+                if (rootSingletonGameObject == null)
+                {
+                    rootSingletonGameObject = new GameObject(RootSingletonName);
+                }
+
+                singletonRoot = rootSingletonGameObject;
                 GameObject.DontDestroyOnLoad(singletonRoot);
             }
 

@@ -22,6 +22,8 @@ namespace Lost.Networking
     {
         private const string ValidMatchNameCharacters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
+        private readonly ReadOnlyCollection<UserInfo> emptyConnectedUsersList = new ReadOnlyCollection<UserInfo>(new List<UserInfo>());
+
 #pragma warning disable 0649
         [Header("Mode")]
         [SerializeField] private NetworkingMode networkingMode;
@@ -39,7 +41,6 @@ namespace Lost.Networking
         [SerializeField] private bool printDebugOutput;
 #pragma warning restore 0649
 
-        private ReadOnlyCollection<UserInfo> emptyConnectedUsersList = new ReadOnlyCollection<UserInfo>(new List<UserInfo>());
         private ConnectedUsersUpdatedDelegate onConnectedUsersUpdated;
 
         private bool originalRunInBackground;
@@ -67,7 +68,7 @@ namespace Lost.Networking
             RunClientAndCloudServer,
         }
 
-        public static bool PrintDebugOutput => IsInitialized ? Instance.printDebugOutput : false;
+        public static bool PrintDebugOutput => IsInitialized && Instance.printDebugOutput;
 
         public NetworkingMode Mode
         {
@@ -474,7 +475,7 @@ namespace Lost.Networking
 
                 while (this.gameServer.IsStarting)
                 {
-                    yield return default(bool);
+                    yield return default;
                 }
 
                 yield return this.gameServer.IsRunning;
@@ -503,7 +504,7 @@ namespace Lost.Networking
 
                 while (this.gameClient.IsConnecting)
                 {
-                    yield return default(bool);
+                    yield return default;
                 }
 
                 yield return this.gameClient.IsConnected;

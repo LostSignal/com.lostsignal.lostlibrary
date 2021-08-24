@@ -18,6 +18,8 @@ namespace HavenXR
 
     public class CombinationLock : CircleInteractable
     {
+        private readonly List<int> recentNumbers = new List<int>();
+
         #pragma warning disable 0649
         [Header("Combo Lock")]
         [SerializeField] private Transform comboLockTransform;
@@ -36,7 +38,6 @@ namespace HavenXR
         [SerializeField] private Animator effectAnimator;
         #pragma warning restore 0649
 
-        private List<int> recentNumbers = new List<int>();
         private float degreesPerNumber;
         private float halfDegreesPerNumber;
         private bool isLockSolved;
@@ -106,8 +107,6 @@ namespace HavenXR
         protected override void Update()
         {
             base.Update();
-
-            float currentRotation = this.Rotation;
 
             if (this.isFingerDown)
             {

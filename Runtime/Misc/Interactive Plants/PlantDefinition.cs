@@ -65,6 +65,7 @@ namespace Lost.PlantGenerator
         /// <summary>
         /// Parameters associated with creating a group of branches.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2235:Mark all non-serializable fields", Justification = "Using Unity Serialization")]
         [Serializable]
         public class BranchGroupParameters
         {

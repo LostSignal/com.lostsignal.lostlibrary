@@ -35,7 +35,7 @@ namespace Lost
                 }
                 else
                 {
-                    t = default(T);
+                    t = default;
                     return false;
                 }
             }

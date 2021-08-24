@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="OneParamEvent.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -11,7 +11,7 @@ namespace Lost
 
     public class OneParamEvent<T>
     {
-        private List<Action<T>> actions = new List<Action<T>>();
+        private readonly List<Action<T>> actions = new List<Action<T>>();
 
         public void Subscribe(Action<T> action)
         {

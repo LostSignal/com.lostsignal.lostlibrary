@@ -10,7 +10,18 @@ namespace Lost.PlayFab
 
     public class CloudScriptException : Exception
     {
+        public CloudScriptException()
+        {
+        }
+
         public CloudScriptException(string cloudScriptError)
+            : base(cloudScriptError)
+        {
+            this.CloudScriptError = cloudScriptError;
+        }
+
+        public CloudScriptException(string cloudScriptError, Exception innerException)
+            : base(cloudScriptError, innerException)
         {
             this.CloudScriptError = cloudScriptError;
         }

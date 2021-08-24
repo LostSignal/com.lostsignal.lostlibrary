@@ -107,7 +107,7 @@ namespace Lost.Analytics
         private const string EventColumnMonetizationStoreType = "type";
         private const string EventColumnMonetizationItemName = "item_name";
 
-        private static Dictionary<string, object> eventDataCache = new Dictionary<string, object>();
+        private static readonly Dictionary<string, object> EventDataCache = new Dictionary<string, object>();
 
         public static Action<string, IDictionary<string, object>> CustomEventFired { get; set; }
 
@@ -866,8 +866,8 @@ namespace Lost.Analytics
         {
             if (eventData == null)
             {
-                eventDataCache.Clear();
-                eventData = eventDataCache;
+                EventDataCache.Clear();
+                eventData = EventDataCache;
             }
 
             if (eventData.ContainsKey(key) == false)

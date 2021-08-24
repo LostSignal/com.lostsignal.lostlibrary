@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="S3.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -17,7 +17,7 @@ namespace Lost.Addressables
     using System.Security.Cryptography;
     using System.Text;
 
-    public class S3
+    public static class S3
     {
         private const string ContentType = "application/octet-stream";
         private const string Method = "PUT";
@@ -46,9 +46,11 @@ namespace Lost.Addressables
             string authHeader = "AWS " + config.AccessKeyId + ":" + encodedCanonical;
             string uri = "http://" + config.BucketName + ".s3.amazonaws.com/" + key;
 
-            Dictionary<string, string> headers = new Dictionary<string, string>();
-            headers.Add("Authorization", authHeader);
-            headers.Add("x-amz-date", today);
+            Dictionary<string, string> headers = new Dictionary<string, string>
+            {
+                { "Authorization", authHeader },
+                { "x-amz-date", today },
+            };
 
             if (useUnityWebRequest)
             {
@@ -87,36 +89,35 @@ namespace Lost.Addressables
         #if UNITY_2018_3_OR_NEWER
         private static void SendWithUnityWebRequest(string uri, Dictionary<string, string> headers, byte[] data)
         {
-            using (var www = UnityEngine.Networking.UnityWebRequest.Put(uri, data))
+            using var www = UnityEngine.Networking.UnityWebRequest.Put(uri, data);
+
+            // setting the headers
+            foreach (var pair in headers)
             {
-                // setting the headers
-                foreach (var pair in headers)
-                {
-                    www.SetRequestHeader(pair.Key, pair.Value);
-                }
+                www.SetRequestHeader(pair.Key, pair.Value);
+            }
 
-                #pragma warning disable
-                var s = www.Send();
-                #pragma warning restore
+            #pragma warning disable
+            var s = www.Send();
+            #pragma warning restore
 
-                long startTick = DateTime.UtcNow.Ticks;
-                while (!s.isDone)
+            long startTick = DateTime.UtcNow.Ticks;
+            while (s.isDone == false)
+            {
+                if (DateTime.UtcNow.Ticks > startTick + (10L * 10000000L))
                 {
-                    if (DateTime.UtcNow.Ticks > startTick + (10L * 10000000L))
-                    {
-                        UnityEngine.Debug.LogWarning("Timeout");
-                        break;
-                    }
+                    UnityEngine.Debug.LogWarning("Timeout");
+                    break;
                 }
+            }
 
-                if (string.IsNullOrEmpty(www.error))
-                {
-                    UnityEngine.Debug.Log("Successful!");
-                }
-                else
-                {
-                    UnityEngine.Debug.LogWarning("Error : " + www.error);
-                }
+            if (string.IsNullOrEmpty(www.error))
+            {
+                UnityEngine.Debug.Log("Successful!");
+            }
+            else
+            {
+                UnityEngine.Debug.LogWarning("Error : " + www.error);
             }
         }
 

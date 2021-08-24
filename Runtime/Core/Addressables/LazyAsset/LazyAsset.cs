@@ -12,9 +12,9 @@ namespace Lost
     [Serializable]
     public class LazyAsset
     {
-#pragma warning disable 0649
+#pragma warning disable 0649, CA2235
         [SerializeField] private string assetGuid;
-#pragma warning restore 0649
+#pragma warning restore 0649, CA2235
 
         public LazyAsset()
         {

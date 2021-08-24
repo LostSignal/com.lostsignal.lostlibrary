@@ -44,7 +44,7 @@ namespace Lost.Networking
     {
         private const long InvalidId = long.MinValue;
 
-        private readonly NetworkReader reader = new NetworkReader(new byte[0]);
+        private readonly NetworkReader reader = new NetworkReader(Array.Empty<byte>());
         private readonly ServerState serverState = new ServerState();
 
         // Message Cache

@@ -14,17 +14,15 @@ namespace Lost
         private const int ByteObfuscatorLength = 4 * 1024; // 4 kilobytes
         private const int ByteSeed = 830378379;
 
-        private static List<byte> byteObfuscatorList;
+        private static readonly List<byte> ByteObfuscatorList = new List<byte>(ByteObfuscatorLength);
 
         static Obfuscator()
         {
             var random = new System.Random(ByteSeed);
-            int byteCount = ByteObfuscatorLength;
-            byteObfuscatorList = new List<byte>(byteCount);
 
-            for (int i = 0; i < byteCount; i++)
+            for (int i = 0; i < ByteObfuscatorLength; i++)
             {
-                byteObfuscatorList.Add((byte)random.Next(0, 255));
+                ByteObfuscatorList.Add((byte)random.Next(0, 255));
             }
         }
 
@@ -34,7 +32,7 @@ namespace Lost
 
             for (int i = 0; i < sourceStringBytes.Length; i++)
             {
-                sourceStringBytes[i] ^= byteObfuscatorList[i % ByteObfuscatorLength];
+                sourceStringBytes[i] ^= ByteObfuscatorList[i % ByteObfuscatorLength];
             }
 
             return Convert.ToBase64String(sourceStringBytes);
@@ -46,7 +44,7 @@ namespace Lost
 
             for (int i = 0; i < obfuscatedStringBytes.Length; i++)
             {
-                obfuscatedStringBytes[i] ^= byteObfuscatorList[i % ByteObfuscatorLength];
+                obfuscatedStringBytes[i] ^= ByteObfuscatorList[i % ByteObfuscatorLength];
             }
 
             return System.Text.Encoding.UTF8.GetString(obfuscatedStringBytes);

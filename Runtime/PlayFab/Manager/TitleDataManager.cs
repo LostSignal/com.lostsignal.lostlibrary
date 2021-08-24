@@ -12,9 +12,9 @@ namespace Lost.PlayFab
 
     public class TitleDataManager
     {
-        private Dictionary<string, string> titleDataCache = new Dictionary<string, string>();
-        private Dictionary<string, object> titleDataObjectCache = new Dictionary<string, object>();
-        private PlayFabManager playfabManager;
+        private readonly Dictionary<string, string> titleDataCache = new Dictionary<string, string>();
+        private readonly Dictionary<string, object> titleDataObjectCache = new Dictionary<string, object>();
+        private readonly PlayFabManager playfabManager;
 
         public TitleDataManager(PlayFabManager playfabManager, Dictionary<string, string> titleData)
         {
@@ -63,7 +63,7 @@ namespace Lost.PlayFab
                 return UnityTask<T>.Run(FetchTitleDataObject());
             }
 
-            IEnumerator<T> FetchTitleDataObject()
+            static IEnumerator<T> FetchTitleDataObject()
             {
                 // TODO [bgish]: Get the string, parse as T, cache and return
                 yield return null;

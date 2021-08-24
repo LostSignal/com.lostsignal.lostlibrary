@@ -19,9 +19,9 @@ namespace Lost.Networking
 
     public abstract class NetworkBehaviour : MonoBehaviour
     {
-        private static NetworkBehaviourDataMessage behaviourDataMessage = new NetworkBehaviourDataMessage();
-        private static NetworkBehaviourMessage behaviourMessage = new NetworkBehaviourMessage();
-        private static NetworkWriter writer = new NetworkWriter();
+        private static readonly NetworkBehaviourDataMessage BehaviourDataMessage = new NetworkBehaviourDataMessage();
+        private static readonly NetworkBehaviourMessage BehaviourMessage = new NetworkBehaviourMessage();
+        private static readonly NetworkWriter Writer = new NetworkWriter();
 
 #pragma warning disable 0649
         [SerializeField] private NetworkIdentity networkIdentity;
@@ -46,29 +46,29 @@ namespace Lost.Networking
 
         public void SendNetworkData(string key, string value, NetworkBehaviourDataSendType sendType = NetworkBehaviourDataSendType.All)
         {
-            behaviourDataMessage.NetworkId = this.NetworkId;
-            behaviourDataMessage.BehaviourIndex = this.BehaviourIndex;
-            behaviourDataMessage.SendType = sendType;
-            behaviourDataMessage.DataKey = key;
-            behaviourDataMessage.DataValue = value;
+            BehaviourDataMessage.NetworkId = this.NetworkId;
+            BehaviourDataMessage.BehaviourIndex = this.BehaviourIndex;
+            BehaviourDataMessage.SendType = sendType;
+            BehaviourDataMessage.DataKey = key;
+            BehaviourDataMessage.DataValue = value;
 
-            this.Identity.SendNetworkMessage(behaviourDataMessage, this.sendConfig.SendReliable);
+            this.Identity.SendNetworkMessage(BehaviourDataMessage, this.sendConfig.SendReliable);
         }
 
         public void SendNetworkBehaviourMessage(bool forceReliable = false)
         {
             if (this.IsOwner)
             {
-                behaviourMessage.NetworkId = this.NetworkId;
-                behaviourMessage.BehaviourIndex = this.BehaviourIndex;
+                BehaviourMessage.NetworkId = this.NetworkId;
+                BehaviourMessage.BehaviourIndex = this.BehaviourIndex;
 
-                writer.SeekZero();
-                this.Serialize(writer);
+                Writer.SeekZero();
+                this.Serialize(Writer);
 
-                behaviourMessage.DataLength = writer.Position;
-                behaviourMessage.DataBytes = writer.RawBuffer;
+                BehaviourMessage.DataLength = Writer.Position;
+                BehaviourMessage.DataBytes = Writer.RawBuffer;
 
-                this.Identity.SendNetworkMessage(behaviourMessage, forceReliable ? true : this.sendConfig.SendReliable);
+                this.Identity.SendNetworkMessage(BehaviourMessage, forceReliable || this.sendConfig.SendReliable);
             }
         }
 

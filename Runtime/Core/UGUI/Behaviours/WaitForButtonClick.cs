@@ -13,7 +13,7 @@ namespace Lost
 
     public class WaitForButtonClick : CustomYieldInstruction
     {
-        private Button button;
+        private readonly Button button;
         private bool isDone;
 
         public WaitForButtonClick(Button button)

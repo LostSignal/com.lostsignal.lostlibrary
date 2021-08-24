@@ -70,10 +70,11 @@ namespace Lost
             // Making sure the mesh is created and set to the sharedMesh
             if (this.meshFilter.sharedMesh == null)
             {
-                this.meshFilter.sharedMesh = new Mesh();
-
-                // This makes sure they're never saved out and don't dirty up the scene every time the scene loads
-                this.meshFilter.sharedMesh.hideFlags = HideFlags.HideAndDontSave;
+                this.meshFilter.sharedMesh = new Mesh
+                {
+                    // This makes sure they're never saved out and don't dirty up the scene every time the scene loads
+                    hideFlags = HideFlags.HideAndDontSave,
+                };
             }
 
             Mesh mesh = this.meshFilter.sharedMesh;

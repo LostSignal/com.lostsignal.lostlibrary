@@ -15,11 +15,11 @@ namespace Lost
     {
         private const int InputCacheSize = 20;
 
-        private List<InputHandler> handlers = new List<InputHandler>();
-
-        private List<Input> fingerInputs = new List<Input>(10);
-        private Dictionary<int, Input> fingerIdToInputMap = new Dictionary<int, Input>();
-        private HashSet<int> activeFingerIdsCache = new HashSet<int>();
+        private readonly List<InputHandler> handlers = new List<InputHandler>();
+        private readonly List<Input> fingerInputs = new List<Input>(10);
+        private readonly Dictionary<int, Input> fingerIdToInputMap = new Dictionary<int, Input>();
+        private readonly HashSet<int> activeFingerIdsCache = new HashSet<int>();
+        private readonly List<Input> inputCache = new List<Input>(InputCacheSize);
 
         private Input mouseInput = null;
         private Input penInput = null;
@@ -28,7 +28,6 @@ namespace Lost
         private bool useMouseInput;
         private bool usePenInput;
 
-        private List<Input> inputCache = new List<Input>(InputCacheSize);
         private int inputIdCounter = 0;
 
         public void AddHandler(InputHandler handler)

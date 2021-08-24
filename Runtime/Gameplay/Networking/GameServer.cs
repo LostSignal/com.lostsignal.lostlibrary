@@ -10,22 +10,35 @@ namespace Lost.Networking
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using UnityEngine;
 
     public class GameServer
     {
-        private IServerTransportLayer transportLayer;
-        private MessageCollection messageCollection;
+        private readonly IServerTransportLayer transportLayer;
+        private readonly MessageCollection messageCollection;
 
         // Used for serializing messages to a byte buffer
-        private NetworkWriter messageWriter = new NetworkWriter();
+        private readonly NetworkWriter messageWriter = new NetworkWriter();
 
         // User management
-        private Dictionary<long, UserInfo> connectionIdToUserInfoMap = new Dictionary<long, UserInfo>();
-        private List<UserInfo> users = new List<UserInfo>();
-        private HashSet<long> knownUserIds = new HashSet<long>();
-        private ReadOnlyCollection<UserInfo> readonlyUsersList;
+        private readonly Dictionary<long, UserInfo> connectionIdToUserInfoMap = new Dictionary<long, UserInfo>();
+        private readonly List<UserInfo> users = new List<UserInfo>();
+        private readonly HashSet<long> knownUserIds = new HashSet<long>();
+        private readonly ReadOnlyCollection<UserInfo> readonlyUsersList;
+
+        // Subsystem Tracking
+        private readonly List<IGameServerSubsystem> subsystems = new List<IGameServerSubsystem>();
+
+        private readonly ConcurrentList<UserInfo> failedJoinConnectionIds = new ConcurrentList<UserInfo>(20);
+        private readonly List<UserInfo> failed = new List<UserInfo>();
+
+        private readonly ConcurrentList<UserInfo> successfulJoinUserInfos = new ConcurrentList<UserInfo>(20);
+        private readonly List<UserInfo> successes = new List<UserInfo>();
+
+        // Tracking data
+        private readonly ServerStats stats = new ServerStats();
 
         // Events
         private ServerUserConnectedDelegate serverUserConnected;
@@ -36,22 +49,11 @@ namespace Lost.Networking
         private ServerStartedDelegate serverUpdated;
         private ServerShutdownDelegate serverShutdown;
 
-        // Subsystem Tracking
-        private List<IGameServerSubsystem> subsystems = new List<IGameServerSubsystem>();
-
-        private ConcurrentList<UserInfo> failedJoinConnectionIds = new ConcurrentList<UserInfo>(20);
-        private List<UserInfo> failed = new List<UserInfo>();
-
-        private ConcurrentList<UserInfo> successfulJoinUserInfos = new ConcurrentList<UserInfo>(20);
-        private List<UserInfo> successes = new List<UserInfo>();
-
-        // Tracking data
-        private ServerStats stats = new ServerStats();
-
         public GameServer(IServerTransportLayer transportLayer)
         {
             this.transportLayer = transportLayer;
             this.messageCollection = new MessageCollection();
+            this.readonlyUsersList = new ReadOnlyCollection<UserInfo>(this.users);
 
             // client to server
             this.messageCollection.RegisterMessage<JoinServerRequestMessage>();
@@ -119,24 +121,7 @@ namespace Lost.Networking
             remove => this.serverShutdown -= value;
         }
 
-        public interface IServerStats
-        {
-            DateTime StartTime { get; }
-
-            DateTime ShutdownTime { get; }
-
-            uint MessagesSent { get; }
-
-            uint BytesSent { get; }
-
-            uint MaxConnectedUsers { get; }
-
-            uint NumberOfReconnects { get; }
-
-            uint NumberOfConnectionDrops { get; }
-        }
-
-        public IServerStats Stats
+        public IGameServerStats Stats
         {
             get { return this.stats; }
         }
@@ -153,15 +138,8 @@ namespace Lost.Networking
 
         public ReadOnlyCollection<UserInfo> ConnectedUsers
         {
-            get
-            {
-                if (this.readonlyUsersList == null)
-                {
-                    this.readonlyUsersList = new ReadOnlyCollection<UserInfo>(this.users);
-                }
-
-                return this.readonlyUsersList;
-            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => this.readonlyUsersList;
         }
 
         public void RegisterSubsystem<T>()
@@ -608,7 +586,7 @@ namespace Lost.Networking
 
             await Task.WhenAll(runs);
 
-            return runs.Any(x => x.Result == false) ? false : true;
+            return runs.Any(x => x.Result == false) == false;
         }
 
         private Task StopSubsystems()
@@ -654,7 +632,7 @@ namespace Lost.Networking
             this.messageCollection.RecycleMessage(joinServerResponse);
         }
 
-        public class ServerStats : IServerStats
+        private class ServerStats : IGameServerStats
         {
             public DateTime StartTime { get; set; }
 

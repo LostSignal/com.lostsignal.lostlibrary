@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="WrapDissonanceFilesInUnityDefine.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -16,7 +16,7 @@ namespace Lost.DissonanceIntegration
 
     public static class WrapDissonanceFilesInUnityDefine
     {
-        private static HashSet<string> nonUnitySpecificFiles = new HashSet<string>
+        private static readonly HashSet<string> NonUnitySpecificFiles = new HashSet<string>
         {
             "Log.cs",
             "LogCategory.cs",
@@ -32,14 +32,14 @@ namespace Lost.DissonanceIntegration
             "RoomIdConversion.cs",
         };
 
-        private static HashSet<string> unitySpecificFiles = new HashSet<string>()
+        private static readonly HashSet<string> UnitySpecificFiles = new HashSet<string>()
         {
             "VoiceSettings.cs",
             "BaseCommsNetwork.cs",
             "Preferences.cs",
         };
 
-        private static HashSet<string> nonUnitySpecificFolders = new HashSet<string>
+        private static readonly HashSet<string> NonUnitySpecificFolders = new HashSet<string>
         {
             "Networking",
             "Extensions",
@@ -64,21 +64,21 @@ namespace Lost.DissonanceIntegration
                 var fileName = Path.GetFileName(file);
 
                 // If we know this is a unity file, then add the ifdef
-                if (unitySpecificFiles.Contains(fileName))
+                if (UnitySpecificFiles.Contains(fileName))
                 {
                     AddIfDef(file);
                     continue;
                 }
 
                 // Skipping NonUnity Files
-                if (nonUnitySpecificFiles.Contains(fileName))
+                if (NonUnitySpecificFiles.Contains(fileName))
                 {
                     continue;
                 }
 
                 // Skipping NonUnity Folders
                 bool isNonUnityFolder = false;
-                foreach (var nonUnityFolder in nonUnitySpecificFolders)
+                foreach (var nonUnityFolder in NonUnitySpecificFolders)
                 {
                     if (fullPath.Contains($"/{nonUnityFolder}/"))
                     {

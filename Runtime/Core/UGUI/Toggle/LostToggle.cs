@@ -15,8 +15,9 @@ namespace Lost
 
     public class LostToggle : Toggle
     {
+        private readonly List<UIAction> actions = new List<UIAction>();
+
         private SelectionState selectionState = SelectionState.Normal;
-        private List<UIAction> actions = new List<UIAction>();
         private bool isFirstStateChange = true;
         private RectTransform rectTransform;
 

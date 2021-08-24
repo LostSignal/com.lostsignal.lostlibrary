@@ -14,8 +14,8 @@ namespace Lost.PlayFab
 
     public class UserManager
     {
-        private UserAccountInfo userAccountInfo;
-        private PlayFabManager playfabManager;
+        private readonly UserAccountInfo userAccountInfo;
+        private readonly PlayFabManager playfabManager;
 
         public UserManager(PlayFabManager playfabManager, LoginResult loginResult)
         {
@@ -63,7 +63,7 @@ namespace Lost.PlayFab
 
                 while (updateDisplayName.IsDone == false)
                 {
-                    yield return default(bool);
+                    yield return default;
                 }
 
                 // Early out if we got an error
@@ -92,7 +92,7 @@ namespace Lost.PlayFab
 
                 while (stringInputBox.IsDone == false)
                 {
-                    yield return default(bool);
+                    yield return default;
                 }
 
                 if (stringInputBox.Value.Result == StringInputResult.InputResult.Cancel)
@@ -108,7 +108,7 @@ namespace Lost.PlayFab
 
                 while (updateDisplayName.IsDone == false)
                 {
-                    yield return default(bool);
+                    yield return default;
                 }
 
                 // Early out if we got an error

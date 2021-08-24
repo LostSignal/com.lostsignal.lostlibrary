@@ -6,7 +6,7 @@
 
 namespace Lost.CloudFunctions
 {
-    public class CloudFunctionAttribute : System.Attribute
+    public sealed class CloudFunctionAttribute : System.Attribute
     {
         public CloudFunctionAttribute(string category, string name)
         {

@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="GuidReference.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -21,6 +21,7 @@ namespace Lost
     // or other methods to track down the specific objects need by any given system
 
     // Ideally this would be a struct, but we need the ISerializationCallbackReciever
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2235:Mark all non-serializable fields", Justification = "Using Unity Serialization")]
     [System.Serializable]
     public class GuidReference : ISerializationCallbackReceiver
     {

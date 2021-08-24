@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="VoidEvent.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -11,7 +11,7 @@ namespace Lost
 
     public class VoidEvent
     {
-        private List<Action> actions = new List<Action>();
+        private readonly List<Action> actions = new List<Action>();
 
         public void Subscribe(Action action)
         {

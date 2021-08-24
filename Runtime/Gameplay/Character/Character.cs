@@ -15,8 +15,8 @@ namespace Lost
 
     public class Character : MonoBehaviour
     {
-        private static readonly List<Character> Characters;
-        private static readonly ReadOnlyCollection<Character> CharactersReadOnly;
+        private static readonly List<Character> Characters = new List<Character>(50);
+        private static readonly ReadOnlyCollection<Character> CharactersReadOnly = new ReadOnlyCollection<Character>(Characters);
 
 #pragma warning disable 0649
         [SerializeField] private bool isMainCharacter;
@@ -25,12 +25,7 @@ namespace Lost
 
         private Transform characterTransform;
 
-        static Character()
-        {
-            Characters = new List<Character>(50);
-            CharactersReadOnly = new ReadOnlyCollection<Character>(Characters);
-            Bootloader.OnReset += Characters.Clear;
-        }
+        static Character() => Bootloader.OnReset += Characters.Clear;
 
         public static ReadOnlyCollection<Character> AllCharacters
         {

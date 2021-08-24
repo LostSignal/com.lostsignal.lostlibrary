@@ -37,9 +37,9 @@ namespace Lost.Networking
         public override void Serialize(NetworkWriter writer)
         {
             bool sendPhysics = this.rigidBody != null;
-            bool useGravity = sendPhysics ? this.rigidBody.useGravity : false;
-            bool freezeRotation = sendPhysics ? this.rigidBody.freezeRotation : false;
-            bool isKinematic = sendPhysics ? this.rigidBody.isKinematic : false;
+            bool useGravity = sendPhysics && this.rigidBody.useGravity;
+            bool freezeRotation = sendPhysics && this.rigidBody.freezeRotation;
+            bool isKinematic = sendPhysics && this.rigidBody.isKinematic;
 
             int sent = 0;
             NetworkUtil.SetBit(ref sent, 0, this.sendPosition);

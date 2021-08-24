@@ -105,13 +105,13 @@ namespace Lost
             // Waiting for it to start showing
             while (this.Dialog.IsShowing == false)
             {
-                yield return default(OkResult);
+                yield return default;
             }
 
             // Waiting for it to return to the hidden state
             while (this.Dialog.IsHidden == false)
             {
-                yield return default(OkResult);
+                yield return default;
             }
         }
 
@@ -126,13 +126,13 @@ namespace Lost
             // Waiting for it to start showing
             while (this.Dialog.IsShowing == false)
             {
-                yield return default(YesNoResult);
+                yield return default;
             }
 
             // Waiting for it to return to the hidden state
             while (this.Dialog.IsHidden == false)
             {
-                yield return default(YesNoResult);
+                yield return default;
             }
 
             if (this.result == LeftRightResult.Left)
@@ -169,13 +169,13 @@ namespace Lost
             // waiting for it to start showing
             while (this.Dialog.IsShowing == false)
             {
-                yield return default(LeftRightResult);
+                yield return default;
             }
 
             // waiting for it to return to the hidden state
             while (this.Dialog.IsHidden == false)
             {
-                yield return default(LeftRightResult);
+                yield return default;
             }
 
             yield return this.result;

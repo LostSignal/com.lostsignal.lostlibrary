@@ -17,15 +17,15 @@ namespace Lost.Networking
         private static readonly NetworkReader Reader = new NetworkReader(System.Array.Empty<byte>());
 
         // private static readonly NetworkIdentityUpdate updateNetworkIdentityCache = new NetworkIdentityUpdate();
-        private static Dictionary<string, NetworkIdentity> resourcePrefabCache = new Dictionary<string, NetworkIdentity>();
+        private static readonly Dictionary<string, NetworkIdentity> ResourcePrefabCache = new Dictionary<string, NetworkIdentity>();
 
         // Dynamic Network Object Tracking
-        private Dictionary<long, NetworkIdentity> dynamicNetworkObjectsHash = new Dictionary<long, NetworkIdentity>();
-        private List<NetworkIdentity> dynamicNetworkObjectsList = new List<NetworkIdentity>();
+        private readonly Dictionary<long, NetworkIdentity> dynamicNetworkObjectsHash = new Dictionary<long, NetworkIdentity>();
+        private readonly List<NetworkIdentity> dynamicNetworkObjectsList = new List<NetworkIdentity>();
+        private readonly Dictionary<long, NetworkIdentity> sceneNetworkObjectsHash = new Dictionary<long, NetworkIdentity>();
+        private readonly List<NetworkIdentity> sceneNetworkObjectsList = new List<NetworkIdentity>();
+        private readonly List<NetworkIdentity> onSceneLoadIdentitiesCache = new List<NetworkIdentity>();
 
-        private Dictionary<long, NetworkIdentity> sceneNetworkObjectsHash = new Dictionary<long, NetworkIdentity>();
-        private List<NetworkIdentity> sceneNetworkObjectsList = new List<NetworkIdentity>();
-        private List<NetworkIdentity> onSceneLoadIdentitiesCache = new List<NetworkIdentity>();
         private GameClient gameClient;
         private bool isConnected;
 
@@ -211,10 +211,10 @@ namespace Lost.Networking
 
         public NetworkIdentity CreateDynamicNetworkIdentity(string resourceName, long networkId, long ownerId, Vector3 position, Quaternion rotation)
         {
-            if (resourcePrefabCache.TryGetValue(resourceName, out NetworkIdentity networkIdentityPrefab) == false)
+            if (ResourcePrefabCache.TryGetValue(resourceName, out NetworkIdentity networkIdentityPrefab) == false)
             {
                 networkIdentityPrefab = Resources.Load<NetworkIdentity>(resourceName);
-                resourcePrefabCache.Add(resourceName, networkIdentityPrefab);
+                ResourcePrefabCache.Add(resourceName, networkIdentityPrefab);
             }
 
             var newNetworkIdentity = Pooler.Instantiate(networkIdentityPrefab);

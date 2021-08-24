@@ -17,15 +17,15 @@ namespace HavenXR
     [Serializable]
     public class Experience
     {
-        #pragma warning disable 0649
-        private string name;
-        private string description;
-        //// private LazySprite icon;
-        //// private LazySprite[] images;
-        private LazyScene[] scenes;
-        private LazyScene[] pcScenes;
-        private LazyScene[] arMobileScenes;
-        #pragma warning restore 0649
+        //// #pragma warning disable 0649
+        //// private string name;
+        //// private string description;
+        //// //// private LazySprite icon;
+        //// //// private LazySprite[] images;
+        //// private LazyScene[] scenes;
+        //// private LazyScene[] pcScenes;
+        //// private LazyScene[] arMobileScenes;
+        //// #pragma warning restore 0649
     }
 }
 

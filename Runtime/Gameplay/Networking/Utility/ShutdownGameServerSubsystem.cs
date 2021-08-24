@@ -75,6 +75,8 @@ namespace Lost.Networking
                 this.hasShutdownServer == false &&
                 DateTime.UtcNow.Subtract(this.noUsersDateTime).TotalMinutes > 1)
             {
+                this.hasShutdownServer = true;
+
                 UnityEngine.Debug.Log("ShutdownServerSubsystem has detected no users for one minute.  Shutting down the server!");
                 this.gameServer.Shutdown();
             }

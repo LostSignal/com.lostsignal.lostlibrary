@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="LostServer.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -16,12 +16,12 @@ namespace Lost.DissonanceIntegration
 
     public class LostServer : BaseServer<LostServer, LostClient, LostConn>
     {
-        private ConcurrentList<DissonanceMessage> messages = new ConcurrentList<DissonanceMessage>(50);
-        private GameServer gameServer;
+        private readonly ConcurrentList<DissonanceMessage> messages = new ConcurrentList<DissonanceMessage>(50);
+        private readonly GameServer gameServer;
 
         // Temp Data
-        private List<DissonanceMessage> tempMessages = new List<DissonanceMessage>();
-        private DissonanceMessage tempMessage = new DissonanceMessage();
+        private readonly List<DissonanceMessage> tempMessages = new List<DissonanceMessage>();
+        private readonly DissonanceMessage tempMessage = new DissonanceMessage();
 
         public LostServer(GameServer gameServer)
         {

@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="PurchasingInitializationTimeOutException.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -12,8 +12,24 @@
 
 namespace Lost
 {
-    public class PurchasingInitializationTimeOutException : System.Exception
+    using System;
+
+    public class PurchasingInitializationTimeOutException : Exception
     {
+        public PurchasingInitializationTimeOutException()
+            : base()
+        {
+        }
+
+        public PurchasingInitializationTimeOutException(string message)
+            : base(message)
+        {
+        }
+
+        public PurchasingInitializationTimeOutException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
     }
 }
 

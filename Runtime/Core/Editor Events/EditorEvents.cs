@@ -6,7 +6,8 @@
 
 namespace Lost
 {
-    public class EditorEvents
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Nesting for better discoverability.")]
+    public static class EditorEvents
     {
         public sealed class OnDomainReloadAttribute : System.Attribute
         {

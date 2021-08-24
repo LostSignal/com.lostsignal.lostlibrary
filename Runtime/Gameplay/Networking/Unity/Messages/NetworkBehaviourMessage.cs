@@ -6,11 +6,13 @@
 
 namespace Lost.Networking
 {
+    using System;
+
     public class NetworkBehaviourMessage : Message
     {
         public const short Id = 201;
 
-        private static readonly NetworkReader Reader = new NetworkReader(new byte[0]);
+        private static readonly NetworkReader Reader = new NetworkReader(Array.Empty<byte>());
 
         public long NetworkId { get; set; }
 

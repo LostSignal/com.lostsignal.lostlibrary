@@ -20,8 +20,8 @@ namespace Lost
     /// <typeparam name="T">The return type of the task.</typeparam>
     public class UnityTask<T> : CustomYieldInstruction, IUnityTask
     {
-        private double timeoutInSeconds;
-        private double startTime;
+        private readonly double timeoutInSeconds;
+        private readonly double startTime;
         private T value;
 
         private UnityTask(MonoBehaviour gameObject, IEnumerator<T> coroutine, double timeoutInSeconds)

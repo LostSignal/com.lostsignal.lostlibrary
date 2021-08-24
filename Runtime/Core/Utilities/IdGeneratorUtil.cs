@@ -11,7 +11,7 @@ namespace Lost
 
     public static class IdGeneratorUtil
     {
-        private static Random rand = new Random((int)System.DateTime.Now.ToFileTimeUtc());
+        private static readonly Random Random = new Random((int)System.DateTime.Now.ToFileTimeUtc());
 
         public static ushort GenerateUniqueUshort(HashSet<ushort> taken)
         {
@@ -25,7 +25,7 @@ namespace Lost
                 }
             }
 
-            return valid[(int)(valid.Count * rand.NextDouble())];
+            return valid[(int)(valid.Count * Random.NextDouble())];
         }
     }
 }

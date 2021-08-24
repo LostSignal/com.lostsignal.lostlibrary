@@ -10,13 +10,24 @@
 
 #if PURCHASING_ENABLED
 
+// Implement standard exception constructors (Ignore this so the user is force to give a InitializationFailureReason)
+#pragma warning disable CA1032
+
 namespace Lost
 {
+    using System;
     using UnityEngine.Purchasing;
 
-    public class PurchasingInitializationException : System.Exception
+    public class PurchasingInitializationException : Exception
     {
         public PurchasingInitializationException(InitializationFailureReason failureReason)
+            : base(failureReason.ToString())
+        {
+            this.FailureReason = failureReason;
+        }
+
+        public PurchasingInitializationException(InitializationFailureReason failureReason, Exception innerException)
+            : base(failureReason.ToString(), innerException)
         {
             this.FailureReason = failureReason;
         }

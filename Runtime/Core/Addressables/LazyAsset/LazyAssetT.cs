@@ -14,6 +14,7 @@ namespace Lost
     using UnityEngine;
     using UnityEngine.ResourceManagement.AsyncOperations;
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2235:Mark all non-serializable fields", Justification = "Using Unity Serialization")]
     [Serializable]
     public class LazyAssetT<T> : LazyAsset, ILazyAsset, IValidate
         where T : UnityEngine.Object
@@ -72,8 +73,9 @@ namespace Lost
                 return this.cachedEditorAsset;
             }
         }
-        #endif
+#endif
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Type Safety", "UNT0014:Invalid type for call to GetComponent", Justification = "I specifically check for Type Component before calling.")]
         public UnityTask<T> Load()
         {
             #if UNITY_EDITOR
@@ -105,13 +107,13 @@ namespace Lost
 
                 while (this.operation.IsDone == false && this.operation.Status != AsyncOperationStatus.Failed)
                 {
-                    yield return default(T);
+                    yield return default;
                 }
 
                 if (this.operation.Status == AsyncOperationStatus.Failed)
                 {
                     Debug.LogErrorFormat("Unable to successfully load asset {0} of type {1}", this.AssetGuid, typeof(T).Name);
-                    yield return default(T);
+                    yield return default;
                     yield break;
                 }
 
@@ -127,7 +129,7 @@ namespace Lost
                         yield break;
                     }
 
-                    value = gameObject?.GetComponent<T>();
+                    value = gameObject.GetComponent<T>();
 
                     if (value == null)
                     {
@@ -151,6 +153,7 @@ namespace Lost
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Type Safety", "UNT0014:Invalid type for call to GetComponent", Justification = "I specifically check for Type Component before calling.")]
         public UnityTask<T> Instantiate(Transform parent = null, bool reset = true)
         {
             #if UNITY_EDITOR
@@ -168,13 +171,13 @@ namespace Lost
 
                 while (instantiateOperation.IsDone == false && instantiateOperation.Status != AsyncOperationStatus.Failed)
                 {
-                    yield return default(T);
+                    yield return default;
                 }
 
                 if (instantiateOperation.Status == AsyncOperationStatus.Failed)
                 {
                     Debug.LogErrorFormat("Unable to successfully instantiate asset {0} of type {1}", this.AssetGuid, typeof(T).Name);
-                    yield return default(T);
+                    yield return default;
                     yield break;
                 }
 
@@ -197,7 +200,7 @@ namespace Lost
                         yield break;
                     }
 
-                    var component = gameObject?.GetComponent<T>();
+                    var component = gameObject.GetComponent<T>();
 
                     if (component == null)
                     {
@@ -223,7 +226,7 @@ namespace Lost
             }
 
             UnityEngine.AddressableAssets.Addressables.Release(this.operation);
-            this.operation = default(AsyncOperationHandle);
+            this.operation = default;
             this.cachedTask = null;
         }
 

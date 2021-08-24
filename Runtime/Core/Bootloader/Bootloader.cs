@@ -178,7 +178,7 @@ namespace Lost
                 }
             }
 
-            bool ShouldRunBootloader()
+            static bool ShouldRunBootloader()
             {
                 var ignoreSceneNamesString = RuntimeBuildConfig.Instance.GetString(BootloaderIgnoreSceneNames);
                 var ignoreScenes = string.IsNullOrWhiteSpace(ignoreSceneNamesString) ? Array.Empty<string>() : ignoreSceneNamesString.Split(';');

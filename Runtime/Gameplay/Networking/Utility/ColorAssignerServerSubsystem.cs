@@ -30,10 +30,11 @@ namespace Lost.Networking
             "9A008F",
         };
 
-        private System.Random random = new System.Random();
-        private Dictionary<long, string> userColorMap = new Dictionary<long, string>();
-        private List<string> colorPool = new List<string>();
-        private object colorLock = new object();
+        private readonly System.Random random = new System.Random();
+        private readonly Dictionary<long, string> userColorMap = new Dictionary<long, string>();
+        private readonly List<string> colorPool = new List<string>();
+        private readonly object colorLock = new object();
+
         private GameServer gameServer = null;
 
         public string Name => nameof(ColorAssignerServerSubsystem);

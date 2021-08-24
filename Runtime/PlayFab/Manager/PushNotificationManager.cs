@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="PushNotificationManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -14,7 +14,6 @@ namespace Lost.PlayFab
 
     public delegate void OnReceivePushNotificationDelegate();
 
-    [Serializable]
     public class PushNotificationManager
     {
         //// TODO [bgish]: Have an option to register at startup, or from a call
@@ -27,13 +26,12 @@ namespace Lost.PlayFab
         private const float RetryWaitTime = 1.0f;
         private const int RetryCountMax = 10;
 
-        private Queue<PushNotification> pushNotifications = new Queue<PushNotification>();
+        private readonly Queue<PushNotification> pushNotifications = new Queue<PushNotification>();
+        private readonly PlayFabManager playfabManager;
 
 #if (UNITY_ANDROID && USING_ANDROID_FIREBASE_MESSAGING) || UNITY_IOS
         private string deviceToken = null;
 #endif
-
-        private PlayFabManager playfabManager;
 
         public PushNotificationManager(PlayFabManager playfabManager)
         {

@@ -6,7 +6,7 @@
 
 namespace Lost
 {
-    public class ExposeInEditorAttribute : System.Attribute
+    public sealed class ExposeInEditorAttribute : System.Attribute
     {
         public ExposeInEditorAttribute(string name)
         {

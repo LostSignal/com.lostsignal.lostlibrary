@@ -10,7 +10,18 @@ namespace Lost.PlayFab
 
     public class FacebookException : Exception
     {
+        public FacebookException()
+        {
+        }
+
         public FacebookException(string error)
+            : base(error)
+        {
+            this.Error = error;
+        }
+
+        public FacebookException(string error, Exception innerException)
+            : base(error, innerException)
         {
             this.Error = error;
         }

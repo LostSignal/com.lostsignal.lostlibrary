@@ -28,7 +28,7 @@ namespace Lost.CloudFunctions
             {
                 Success = false,
                 Exception = ex,
-                ResultObject = default(T),
+                ResultObject = default,
             };
         }
     }

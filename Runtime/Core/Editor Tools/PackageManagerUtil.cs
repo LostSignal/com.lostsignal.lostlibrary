@@ -16,13 +16,13 @@ namespace Lost
 
     public static class PackageManagerUtil
     {
-        private static List<string> packageIdsToAdd = new List<string>();
+        private static readonly List<string> PackageIdsToAdd = new List<string>();
         private static AddRequest addRequest = null;
         private static bool isProcessing = false;
 
         public static void Add(string packageId)
         {
-            packageIdsToAdd.Add(packageId);
+            PackageIdsToAdd.Add(packageId);
 
             if (isProcessing == false)
             {
@@ -33,10 +33,10 @@ namespace Lost
 
         private static void ProcessList()
         {
-            if (packageIdsToAdd.Count > 0 && addRequest == null)
+            if (PackageIdsToAdd.Count > 0 && addRequest == null)
             {
-                var packageId = packageIdsToAdd[0];
-                packageIdsToAdd.RemoveAt(0);
+                var packageId = PackageIdsToAdd[0];
+                PackageIdsToAdd.RemoveAt(0);
                 addRequest = Client.Add(packageId);
             }
             else if (addRequest.IsCompleted)
@@ -53,7 +53,7 @@ namespace Lost
                 addRequest = null;
             }
 
-            if (packageIdsToAdd.Count == 0 && addRequest == null)
+            if (PackageIdsToAdd.Count == 0 && addRequest == null)
             {
                 EditorApplication.update -= ProcessList;
                 isProcessing = false;

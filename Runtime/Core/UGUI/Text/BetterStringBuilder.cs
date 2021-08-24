@@ -31,7 +31,7 @@ namespace Lost
         public static BetterStringBuilder New()
         {
             currentLength = 0;
-            return default(BetterStringBuilder);
+            return default;
         }
 
         public BetterStringBuilder Append(string value)

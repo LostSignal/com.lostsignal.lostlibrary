@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="UnityPurchasingManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -120,7 +120,7 @@ namespace Lost.IAP
 
                 while (this.initializationState == InitializationState.Initializing)
                 {
-                    yield return default(bool);
+                    yield return default;
 
                     if (Time.realtimeSinceStartup - startTime > 5.0f)
                     {
@@ -204,7 +204,7 @@ namespace Lost.IAP
 
             while (this.purchasingState == PurchasingState.Purchasing)
             {
-                yield return default(PurchaseEventArgs);
+                yield return default;
             }
 
             bool wasSuccessful = this.purchasingState == PurchasingState.PurchasingSucceeded;

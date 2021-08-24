@@ -133,7 +133,7 @@ namespace Lost
 
                         while (insufficientFundsMessage.IsDone == false)
                         {
-                            yield return default(PurchaseResult);
+                            yield return default;
                         }
 
                         if (insufficientFundsMessage.Value == YesNoResult.Yes)
@@ -162,13 +162,13 @@ namespace Lost
                 // waiting for it to start showing
                 while (this.Dialog.IsShowing == false)
                 {
-                    yield return default(PurchaseResult);
+                    yield return default;
                 }
 
                 // waiting for it to return to the hidden state
                 while (this.Dialog.IsHidden == false)
                 {
-                    yield return default(PurchaseResult);
+                    yield return default;
                 }
 
                 yield return this.result;
@@ -225,6 +225,7 @@ namespace Lost
             return this.virtualCurrencyIcons.First(x => x.Id == virtualCurrencyId).Icon;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2235:Mark all non-serializable fields", Justification = "Using Unity Serialization")]
         [Serializable]
         private class VirtualCurrencyIcon
         {

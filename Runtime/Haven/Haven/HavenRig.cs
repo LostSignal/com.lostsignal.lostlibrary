@@ -28,6 +28,7 @@ namespace Lost.Haven
         [SerializeField] private PancakeController pancakeController;
 #pragma warning restore 0649
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1810:Initialize reference type static fields inline", Justification = "Must register for events.")]
         static HavenRig()
         {
             Bootloader.OnReset += Reset;

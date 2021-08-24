@@ -9,6 +9,7 @@ namespace Lost.Networking
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Runtime.CompilerServices;
     using UnityEngine;
 
     //// TODO [bgish]: Keep a bool called isConnectedToServer and turn it on/off where appropiate
@@ -16,24 +17,24 @@ namespace Lost.Networking
 
     public class GameClient
     {
-        private string lastKnownConnectionString = null;
-        private IClientTransportLayer transportLayer;
-        private MessageCollection messageCollection;
-        private UserInfo myUserInfo;
-        private bool printDebugOutput;
+        private readonly IClientTransportLayer transportLayer;
+        private readonly MessageCollection messageCollection;
+        private readonly UserInfo myUserInfo;
+        private readonly bool printDebugOutput;
 
-        // used for serializing messages to a byte buffer
-        private NetworkWriter messageWriter = new NetworkWriter();
+        // Used for serializing messages to a byte buffer
+        private readonly NetworkWriter messageWriter = new NetworkWriter();
 
-        // user/connection management
-        private Dictionary<long, UserInfo> userIdToUserInfoMap = new Dictionary<long, UserInfo>();
-        private HashSet<long> knownUserIds = new HashSet<long>();
-        private List<UserInfo> users = new List<UserInfo>();
-
-        private ReadOnlyCollection<UserInfo> readonlyUsersList;
+        // User/connection management
+        private readonly Dictionary<long, UserInfo> userIdToUserInfoMap = new Dictionary<long, UserInfo>();
+        private readonly HashSet<long> knownUserIds = new HashSet<long>();
+        private readonly List<UserInfo> users = new List<UserInfo>();
+        private readonly ReadOnlyCollection<UserInfo> readonlyUsersList;
 
         // Subsystem Tracking
-        private List<IGameClientSubsystem> subsystems = new List<IGameClientSubsystem>();
+        private readonly List<IGameClientSubsystem> subsystems = new List<IGameClientSubsystem>();
+
+        private string lastKnownConnectionString = null;
 
         // Delegate Events
         private ClientUserConnectedDelegate clientUserConnected;
@@ -51,6 +52,7 @@ namespace Lost.Networking
             this.transportLayer = transportLayer;
             this.UserId = userInfo.UserId;
             this.printDebugOutput = printDebugOutput;
+            this.readonlyUsersList = new ReadOnlyCollection<UserInfo>(this.users);
 
             this.myUserInfo = new UserInfo();
             this.myUserInfo.CopyFrom(userInfo);
@@ -143,15 +145,8 @@ namespace Lost.Networking
 
         public ReadOnlyCollection<UserInfo> ConnectedUsers
         {
-            get
-            {
-                if (this.readonlyUsersList == null)
-                {
-                    this.readonlyUsersList = new ReadOnlyCollection<UserInfo>(this.users);
-                }
-
-                return this.readonlyUsersList;
-            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => this.readonlyUsersList;
         }
 
         public long UserId { get; private set; }
@@ -189,13 +184,13 @@ namespace Lost.Networking
         {
             foreach (var subsystem in this.subsystems)
             {
-                if (subsystem is T)
+                if (subsystem is T subsystemT)
                 {
-                    return (T)subsystem;
+                    return subsystemT;
                 }
             }
 
-            return default(T);
+            return default;
         }
 
         public void Connect(string connectionString)
