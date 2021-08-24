@@ -19,6 +19,15 @@ namespace Lost.Haven
 
         private static HavenRig instance;
 
+#pragma warning disable 0649
+        [Header("Rigs")]
+        [SerializeField] private XRRig genericXRRig;
+        [SerializeField] private Camera rigCamera;
+        [SerializeField] private Transform leftController;
+        [SerializeField] private Transform rightController;
+        [SerializeField] private PancakeController pancakeController;
+#pragma warning restore 0649
+
         static HavenRig()
         {
             Bootloader.OnReset += Reset;
@@ -29,14 +38,13 @@ namespace Lost.Haven
             }
         }
 
-#pragma warning disable 0649
-        [Header("Rigs")]
-        [SerializeField] private XRRig genericXRRig;
-        [SerializeField] private Camera rigCamera;
-        [SerializeField] private Transform leftController;
-        [SerializeField] private Transform rightController;
-        [SerializeField] private PancakeController pancakeController;
-#pragma warning restore 0649
+        public Camera RigCamera => this.rigCamera;
+
+        public Transform LeftController => this.leftController;
+
+        public Transform RightController => this.rightController;
+
+        public float RigScale => this.genericXRRig.transform.localScale.x;
 
         public static IEnumerator WaitForRig()
         {
@@ -50,14 +58,6 @@ namespace Lost.Haven
         {
             return instance;
         }
-
-        public Camera RigCamera => this.rigCamera;
-
-        public Transform LeftController => this.leftController;
-
-        public Transform RightController => this.rightController;
-
-        public float RigScale => this.genericXRRig.transform.localScale.x;
 
         public void SetScale(float scale)
         {

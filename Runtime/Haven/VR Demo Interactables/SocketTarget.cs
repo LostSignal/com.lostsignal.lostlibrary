@@ -1,4 +1,4 @@
-﻿#pragma warning disable
+#pragma warning disable
 
 #pragma warning disable
 
@@ -36,7 +36,7 @@ public class SocketTarget : MonoBehaviour
         if (socketInteractor == null)
             return;
 
-        if (SocketType != socketInteractor.acceptedType)
+        if (SocketType != socketInteractor.AcceptedType)
             return;
 
         if (DisableSocketOnSocketed)

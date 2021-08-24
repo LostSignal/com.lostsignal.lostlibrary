@@ -13,8 +13,10 @@ namespace Lost.Haven
     //// NOTE [bgish]: This is a temporary class that will be replaced by lost actions.  Purely using this for testing purposes only
     public class HavenSetMaterialColor : MonoBehaviour
     {
-        public Renderer rendererToSet;
-        public Color color;
+        #pragma warning disable 0649
+        [SerializeField] private Renderer rendererToSet;
+        [SerializeField] private Color color;
+        #pragma warning restore 0649
 
         public void SetColor()
         {

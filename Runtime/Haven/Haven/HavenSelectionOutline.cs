@@ -21,19 +21,6 @@ namespace Lost.Haven
         private MaterialPropertyBlock block;
         private int highlightActiveID;
 
-        private void Start()
-        {
-            if (this.selectionRenderer == null)
-            {
-                this.selectionRenderer = this.GetComponent<Renderer>();
-            }
-
-            this.highlightActiveID = Shader.PropertyToID("HighlightActive");
-            this.block = new MaterialPropertyBlock();
-            this.block.SetFloat(this.highlightActiveID, this.highlighted);
-            this.selectionRenderer.SetPropertyBlock(this.block);
-        }
-
         public void Highlight()
         {
             this.highlighted = 1.0f;
@@ -48,6 +35,19 @@ namespace Lost.Haven
             this.highlighted = 0.0f;
 
             this.selectionRenderer.GetPropertyBlock(this.block);
+            this.block.SetFloat(this.highlightActiveID, this.highlighted);
+            this.selectionRenderer.SetPropertyBlock(this.block);
+        }
+
+        private void Start()
+        {
+            if (this.selectionRenderer == null)
+            {
+                this.selectionRenderer = this.GetComponent<Renderer>();
+            }
+
+            this.highlightActiveID = Shader.PropertyToID("HighlightActive");
+            this.block = new MaterialPropertyBlock();
             this.block.SetFloat(this.highlightActiveID, this.highlighted);
             this.selectionRenderer.SetPropertyBlock(this.block);
         }

@@ -52,7 +52,7 @@ namespace Lost.Haven
             this.xrGrabInteractable.selectExited.AddListener(this.OnSelectExited);
         }
 
-        private void OnSelectEntered(SelectEnterEventArgs _)
+        private void OnSelectEntered(SelectEnterEventArgs selectEnterEventArgs)
         {
             if (Time.realtimeSinceStartup - this.awakeTime > 1.0f)
             {
@@ -60,7 +60,7 @@ namespace Lost.Haven
             }
         }
 
-        private void OnSelectExited(SelectExitEventArgs _)
+        private void OnSelectExited(SelectExitEventArgs selectExitEventArgs)
         {
             if (Time.realtimeSinceStartup - this.awakeTime > 1.0f)
             {

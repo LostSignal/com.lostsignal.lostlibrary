@@ -14,14 +14,6 @@ namespace HavenXR
 
     public class MoveInteractable : Interactable
     {
-        [Flags]
-        public enum Axis
-        {
-            X = 1 << 1,
-            Y = 1 << 2,
-            Z = 1 << 3,
-        }
-
         #pragma warning disable 0649
         [Tooltip("If null, it will move this object.")]
         [SerializeField] private Transform objectToMove;
@@ -35,6 +27,14 @@ namespace HavenXR
         // cached values
         [NonSerialized]
         private float minimumPixelMovementSquared;
+
+        [Flags]
+        public enum Axis
+        {
+            X = 1 << 1,
+            Y = 1 << 2,
+            Z = 1 << 3,
+        }
 
         protected override void Awake()
         {

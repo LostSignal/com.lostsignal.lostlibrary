@@ -24,18 +24,22 @@ namespace Lost
         {
 #pragma warning disable 0649
             [SerializeField] private string name;
-            [SerializeField][Multiline(4)] private string lowerCaseText;
-            [SerializeField][Multiline(4)] private string upperCaseText;
-            [SerializeField][Multiline(4)] private string numbersText;
-            [SerializeField][Multiline(4)] private string symbolsText;
-            [SerializeField][Multiline(5)] private string keypadText;
+            [SerializeField] [Multiline(4)] private string lowerCaseText;
+            [SerializeField] [Multiline(4)] private string upperCaseText;
+            [SerializeField] [Multiline(4)] private string numbersText;
+            [SerializeField] [Multiline(4)] private string symbolsText;
+            [SerializeField] [Multiline(5)] private string keypadText;
             [SerializeField] private List<string> alternates = new List<string>();
 #pragma warning restore 0649
 
             public string LowerCaseText => this.lowerCaseText;
+
             public string UpperCaseText => this.upperCaseText;
+
             public string NumbersText => this.numbersText;
+
             public string SymbolsText => this.symbolsText;
+
             public string KeypadText => this.keypadText;
 
             public string GetSeconardyKeys(char c)

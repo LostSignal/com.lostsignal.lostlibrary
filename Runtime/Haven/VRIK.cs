@@ -4,6 +4,9 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+//// NOTE [bgish]: There is a bug in StyleCop that thinks that Local Functions need this prefix, so turning it off.
+#pragma warning disable SA1101
+
 namespace Lost
 {
     using System;
@@ -21,12 +24,12 @@ namespace Lost
 
         [SerializeField] private VRMap head = new VRMap
         {
-            trackingPositionOffset = new Vector3(0.0f, -0.23f, -0.18f),
-            trackingRotationOffset = new Vector3(180.0f, 90.0f, 90.0f),
+            TrackingPositionOffset = new Vector3(0.0f, -0.23f, -0.18f),
+            TrackingRotationOffset = new Vector3(180.0f, 90.0f, 90.0f),
         };
 
-        [SerializeField] private VRMap leftHand = new VRMap { trackingRotationOffset = new Vector3(-90.0f, 90.0f, 0.0f) };
-        [SerializeField] private VRMap rightHand = new VRMap { trackingRotationOffset = new Vector3(90.0f, -90.0f, 0.0f) };
+        [SerializeField] private VRMap leftHand = new VRMap { TrackingRotationOffset = new Vector3(-90.0f, 90.0f, 0.0f) };
+        [SerializeField] private VRMap rightHand = new VRMap { TrackingRotationOffset = new Vector3(90.0f, -90.0f, 0.0f) };
         #pragma warning restore 0649
 
         private Vector3 headBodyOffset;
@@ -113,7 +116,7 @@ namespace Lost
                 armIkConstraint.data.hint = hint.transform;
 
                 // Updating VR Map object
-                vrMap.rigTarget = target.transform;
+                vrMap.RigTarget = target.transform;
             }
 
             T GetOrAddComponentToGameObject<T>(GameObject gameObject)
@@ -180,14 +183,35 @@ namespace Lost
         [Serializable]
         public class VRMap
         {
-            public Transform rigTarget;
-            public Vector3 trackingPositionOffset;
-            public Vector3 trackingRotationOffset;
+            #pragma warning disable 0649
+            [SerializeField] private Transform rigTarget;
+            [SerializeField] private Vector3 trackingPositionOffset;
+            [SerializeField] private Vector3 trackingRotationOffset;
+            #pragma warning restore 0649
+
+            public Transform RigTarget
+            {
+                get => this.rigTarget;
+                set => this.rigTarget = value;
+            }
+
+            public Vector3 TrackingPositionOffset
+            {
+                get => this.trackingPositionOffset;
+                set => this.trackingPositionOffset = value;
+            }
+
+            public Vector3 TrackingRotationOffset
+            {
+                get => this.trackingRotationOffset;
+                set => this.trackingRotationOffset = value;
+            }
 
             public void Map(Transform targetTransform)
             {
-                this.rigTarget.position = targetTransform.TransformPoint(this.trackingPositionOffset);
-                this.rigTarget.rotation = targetTransform.rotation * Quaternion.Euler(this.trackingRotationOffset);
+                this.rigTarget.SetPositionAndRotation(
+                    targetTransform.TransformPoint(this.trackingPositionOffset),
+                    targetTransform.rotation * Quaternion.Euler(this.trackingRotationOffset));
             }
         }
     }

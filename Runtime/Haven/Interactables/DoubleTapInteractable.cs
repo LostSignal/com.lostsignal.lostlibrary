@@ -20,12 +20,12 @@ namespace HavenXR
         [SerializeField] private float doubleTapTimeLength = 0.33f;
         #pragma warning restore 0649
 
+        private float lastTapTimeSinceStartup;
+
         public UnityEvent<RaycastHit> DoubleTappedEvent
         {
             get { return this.doubleTappedEvent; }
         }
-
-        private float lastTapTimeSinceStartup;
 
         protected override void OnInput(Lost.Input input, Collider collider, Camera camera)
         {

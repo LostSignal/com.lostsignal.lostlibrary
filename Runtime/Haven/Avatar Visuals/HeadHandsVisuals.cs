@@ -30,6 +30,27 @@ namespace Lost.Haven
         private Vector3 desiredRightHandLocalPosition;
         private Quaternion desiredRightHandLocalRotation;
 
+        public override void Serialize(NetworkWriter writer)
+        {
+            writer.Write(this.rig.RigCamera.transform.localPosition);
+            writer.Write(this.rig.RigCamera.transform.localRotation);
+            writer.Write(this.rig.LeftController.localPosition);
+            writer.Write(this.rig.LeftController.localRotation);
+            writer.Write(this.rig.RightController.localPosition);
+            writer.Write(this.rig.RightController.localRotation);
+        }
+
+        public override void Deserialize(NetworkReader reader)
+        {
+            this.desiredValuesSet = true;
+            this.desiredHeadLocalPosition = reader.ReadVector3();
+            this.desiredHeadLocalRotation = reader.ReadQuaternion();
+            this.desiredLeftHandLocalPosition = reader.ReadVector3();
+            this.desiredLeftHandLocalRotation = reader.ReadQuaternion();
+            this.desiredRightHandLocalPosition = reader.ReadVector3();
+            this.desiredRightHandLocalRotation = reader.ReadQuaternion();
+        }
+
         private void Start()
         {
             if (this.IsOwner)
@@ -52,27 +73,6 @@ namespace Lost.Haven
                 this.rightHand.localPosition = Vector3.Lerp(this.rightHand.localPosition, this.desiredRightHandLocalPosition, Time.deltaTime);
                 this.rightHand.localRotation = Quaternion.Slerp(this.rightHand.localRotation, this.desiredRightHandLocalRotation, 5.0f);
             }
-        }
-
-        public override void Serialize(NetworkWriter writer)
-        {
-            writer.Write(this.rig.RigCamera.transform.localPosition);
-            writer.Write(this.rig.RigCamera.transform.localRotation);
-            writer.Write(this.rig.LeftController.localPosition);
-            writer.Write(this.rig.LeftController.localRotation);
-            writer.Write(this.rig.RightController.localPosition);
-            writer.Write(this.rig.RightController.localRotation);
-        }
-
-        public override void Deserialize(NetworkReader reader)
-        {
-            this.desiredValuesSet = true;
-            this.desiredHeadLocalPosition = reader.ReadVector3();
-            this.desiredHeadLocalRotation = reader.ReadQuaternion();
-            this.desiredLeftHandLocalPosition = reader.ReadVector3();
-            this.desiredLeftHandLocalRotation = reader.ReadQuaternion();
-            this.desiredRightHandLocalPosition = reader.ReadVector3();
-            this.desiredRightHandLocalRotation = reader.ReadQuaternion();
         }
     }
 }

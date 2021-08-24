@@ -5,8 +5,7 @@ using UnityEngine.Serialization;
 using UnityEngine.XR.Interaction.Toolkit;
 
 /// <summary>
-/// Subclass of the classic Socket Interactor from the Interaction toolkit that will only accept object with the right
-/// SocketTarget
+/// Subclass of the classic Socket Interactor from the Interaction toolkit that will only accept object with the right.
 /// </summary>
 public class XRExclusiveSocketInteractor : XRSocketInteractor
 {
@@ -15,6 +14,8 @@ public class XRExclusiveSocketInteractor : XRSocketInteractor
     [FormerlySerializedAs("AcceptedType")]
     private string acceptedType;
     #pragma warning restore 0649
+
+    public string AcceptedType => this.acceptedType;
 
     public override bool CanSelect(XRBaseInteractable interactable)
     {

@@ -310,26 +310,28 @@ namespace Lost.Haven
         private void UpdateControllerPositionAndRotations()
         {
             this.leftHand.transform.rotation = this.headTransform.rotation;
-            this.rightHand.transform.position = this.headTransform.position + (this.headTransform.rotation * this.teleportControllerOffset);
-            this.rightHand.transform.rotation = this.headTransform.rotation * Quaternion.LookRotation(this.teleportLookAtForward);
+
+            this.rightHand.transform.SetPositionAndRotation(
+                this.headTransform.position + (this.headTransform.rotation * this.teleportControllerOffset),
+                this.headTransform.rotation * Quaternion.LookRotation(this.teleportLookAtForward));
         }
 
-        private void HoverEntered(HoverEnterEventArgs _)
+        private void HoverEntered(HoverEnterEventArgs hoverEnterEventArgs)
         {
             this.reticleImage.color = this.reticleEnabledColor;
         }
 
-        private void HoverExited(HoverExitEventArgs _)
+        private void HoverExited(HoverExitEventArgs hoverExitEventArgs)
         {
             this.reticleImage.color = this.reticleDisabledColor;
         }
 
-        private void SelectEntered(SelectEnterEventArgs _)
+        private void SelectEntered(SelectEnterEventArgs selectEnterEventArgs)
         {
             this.reticleCanvas.enabled = false;
         }
 
-        private void SelectExited(SelectExitEventArgs _)
+        private void SelectExited(SelectExitEventArgs selectExitEventArgs)
         {
             this.reticleCanvas.enabled = true;
         }

@@ -35,12 +35,18 @@ namespace Lost
         private bool isShowingNumbers;
         private bool isShowingSymbols;
 
+        private System.Action<char, string> keyPressed;
+
+        public event System.Action<char, string> KeyPressed
+        {
+            add => this.keyPressed += value;
+            remove => this.keyPressed -= value;
+        }
+
         public XRKeyboardData.Keyboard CurrentKeyboard
         {
             get => this.keyboardData.CurrentKeyboard;
         }
-
-        public System.Action<char, string> KeyPressed;
 
         protected override void Awake()
         {
@@ -51,7 +57,7 @@ namespace Lost
 
         private void OnKeyPressed(char keyChar, string keyString)
         {
-            this.KeyPressed?.Invoke(keyChar, keyString);
+            this.keyPressed?.Invoke(keyChar, keyString);
 
             var inputField = InputFieldTracker.GetCurrentInputField();
             var tmpInputField = InputFieldTracker.GetCurrentTMPInputField();

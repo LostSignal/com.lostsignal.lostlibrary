@@ -32,7 +32,7 @@ namespace Lost
             }
         }
 
-        public static InputField GetCurrentInputField() =>  currentInputField;
+        public static InputField GetCurrentInputField() => currentInputField;
 
         public static TMP_InputField GetCurrentTMPInputField() => currentTMPInputField;
 

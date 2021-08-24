@@ -15,27 +15,26 @@ namespace Lost
     using UnityEngine.XR.Interaction.Toolkit.UI;
 #endif
 
-    // Right now the PancakeDevice.Awake (line 47) sets "Cursor.lockState = CursorLockMode.Locked;"
-    // Should this be a part of the XRManager
-    // Whenever a Dialog is shown that has "RequireMouseInPancakeMode", it will turn the mouse back on?????
+    //// Right now the PancakeDevice.Awake (line 47) sets "Cursor.lockState = CursorLockMode.Locked;"
+    //// Should this be a part of the XRManager
+    //// Whenever a Dialog is shown that has "RequireMouseInPancakeMode", it will turn the mouse back on?????
 
-    // XR Manager
-    //   Cursor / Mouse Icon
+    //// XR Manager
+    ////   Cursor / Mouse Icon
 
-    // XR Settings
-    //     bool DoesFollowUser
-    //         float canvasDistanceForwards;
-    //         float canvasDistanceUpwards = 0.0f;
-    //         float positionLerpSpeed = 2.0f;
-    //         float rotationLerpSpeed = 10.0f;
-    //
-    //     bool isManipulableByUser;
-    //         float min/max distance;
-    //
-    //     bool requiresMouseInPancakeMode;
-    //
-    //     bool staticWorldSpace;
-
+    //// XR Settings
+    ////     bool DoesFollowUser
+    ////         float canvasDistanceForwards;
+    ////         float canvasDistanceUpwards = 0.0f;
+    ////         float positionLerpSpeed = 2.0f;
+    ////         float rotationLerpSpeed = 10.0f;
+    ////
+    ////     bool isManipulableByUser;
+    ////         float min/max distance;
+    ////
+    ////     bool requiresMouseInPancakeMode;
+    ////
+    ////     bool staticWorldSpace;
 
     [RequireComponent(typeof(Dialog))]
     public class XRDialog : MonoBehaviour

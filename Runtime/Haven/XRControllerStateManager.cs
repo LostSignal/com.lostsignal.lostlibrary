@@ -13,13 +13,6 @@ namespace HavenXR
 
     public class XRControllerStateManager : MonoBehaviour
     {
-        private enum State
-        {
-            None,
-            Interact,
-            Teleport,
-        }
-
 #pragma warning disable 0649
         [Header("Interact / UI Controllers")]
         [SerializeField] private XRController interactXRController;
@@ -28,6 +21,13 @@ namespace HavenXR
         [Header("Teleport Controller")]
         [SerializeField] private XRController teleportXRController;
 #pragma warning restore 0649
+
+        private enum State
+        {
+            None,
+            Interact,
+            Teleport,
+        }
 
         public void SetControllerModel(Transform controllerModelPrefab)
         {

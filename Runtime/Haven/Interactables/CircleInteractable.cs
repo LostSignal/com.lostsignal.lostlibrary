@@ -14,13 +14,6 @@ namespace HavenXR
 
     public class CircleInteractable : Interactable
     {
-        public enum Axis
-        {
-            X,
-            Y,
-            Z,
-        }
-
         #pragma warning disable 0649
         [SerializeField] private Transform spinningTransform;
         [SerializeField] private Axis rotationalAxis = Axis.Z;
@@ -37,9 +30,16 @@ namespace HavenXR
         private float previousVelocity;
         private float rotation;
 
-        // cached values
+        // Cached values
         [NonSerialized]
         private float minimumPixelMovementSquared;
+
+        public enum Axis
+        {
+            X,
+            Y,
+            Z,
+        }
 
         public float Rotation
         {

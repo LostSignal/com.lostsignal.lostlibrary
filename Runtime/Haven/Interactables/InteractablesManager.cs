@@ -28,6 +28,17 @@ namespace HavenXR
             this.SetInstance(this);
         }
 
+        void InputHandler.HandleInputs(List<Lost.Input> touches, Lost.Input mouse, Lost.Input pen)
+        {
+            this.OnInput(mouse);
+            this.OnInput(pen);
+
+            for (int i = 0; i < touches.Count; i++)
+            {
+                this.OnInput(touches[i]);
+            }
+        }
+
         protected override void Awake()
         {
             base.Awake();
@@ -76,17 +87,6 @@ namespace HavenXR
                 {
                     Debug.LogErrorFormat(hit.collider, "GameObject {0} has a collider on the {1} layer, but not Interactable component!", hit.collider.gameObject.name, Interactable.LayerName);
                 }
-            }
-        }
-
-        void InputHandler.HandleInputs(List<Lost.Input> touches, Lost.Input mouse, Lost.Input pen)
-        {
-            this.OnInput(mouse);
-            this.OnInput(pen);
-
-            for (int i = 0; i < touches.Count; i++)
-            {
-                this.OnInput(touches[i]);
             }
         }
     }

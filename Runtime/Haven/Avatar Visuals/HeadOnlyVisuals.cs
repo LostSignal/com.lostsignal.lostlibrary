@@ -24,6 +24,19 @@ namespace Lost.Haven
         private Vector3 desiredHeadLocalPosition;
         private Quaternion desiredHeadLocalRotation;
 
+        public override void Serialize(NetworkWriter writer)
+        {
+            writer.Write(this.rig.RigCamera.transform.localPosition);
+            writer.Write(this.rig.RigCamera.transform.localRotation);
+        }
+
+        public override void Deserialize(NetworkReader reader)
+        {
+            this.desiredValuesSet = true;
+            this.desiredHeadLocalPosition = reader.ReadVector3();
+            this.desiredHeadLocalRotation = reader.ReadQuaternion();
+        }
+
         private void Start()
         {
             if (this.IsOwner)
@@ -40,19 +53,6 @@ namespace Lost.Haven
                 this.head.localPosition = Vector3.Lerp(this.head.localPosition, this.desiredHeadLocalPosition, Time.deltaTime);
                 this.head.localRotation = Quaternion.Slerp(this.head.localRotation, this.desiredHeadLocalRotation, 5.0f);
             }
-        }
-
-        public override void Serialize(NetworkWriter writer)
-        {
-            writer.Write(this.rig.RigCamera.transform.localPosition);
-            writer.Write(this.rig.RigCamera.transform.localRotation);
-        }
-
-        public override void Deserialize(NetworkReader reader)
-        {
-            this.desiredValuesSet = true;
-            this.desiredHeadLocalPosition = reader.ReadVector3();
-            this.desiredHeadLocalRotation = reader.ReadQuaternion();
         }
     }
 }

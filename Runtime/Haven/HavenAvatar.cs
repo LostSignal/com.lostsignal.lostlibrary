@@ -24,7 +24,7 @@ namespace Lost.Haven
     [RequireComponent(typeof(NetworkIdentity))]
     public class HavenAvatar : NetworkBehaviour
     {
-        public static ObjectTracker<HavenAvatar> Avatars = new ObjectTracker<HavenAvatar>(20);
+        public static readonly ObjectTracker<HavenAvatar> Avatars = new ObjectTracker<HavenAvatar>(20);
 
 #pragma warning disable 0649
         [SerializeField] private DissonancePlayerTracker dissonancePlayerTracker;
@@ -39,6 +39,11 @@ namespace Lost.Haven
 
         private HavenAvatarVisuals currentAvatarVisuals;
         private HavenRig havenRig;
+
+        //// public static ObjectTracker<HavenAvatar> Avatars
+        //// {
+        ////     get => avatars;
+        //// }
 
         public override void Serialize(NetworkWriter writer)
         {
@@ -87,6 +92,16 @@ namespace Lost.Haven
             base.Awake();
 
             this.OnValidate();
+        }
+
+        protected override SendConfig GetInitialSendConfig()
+        {
+            return new SendConfig
+            {
+                NetworkUpdateType = NetworkUpdateType.Tick,
+                SendReliable = false,
+                UpdateFrequency = 0.1f,
+            };
         }
 
         private void OnEnable()
@@ -150,16 +165,6 @@ namespace Lost.Haven
 
                 yield return null;
             }
-        }
-
-        protected override SendConfig GetInitialSendConfig()
-        {
-            return new SendConfig
-            {
-                NetworkUpdateType = NetworkUpdateType.Tick,
-                SendReliable = false,
-                UpdateFrequency = 0.1f,
-            };
         }
     }
 }

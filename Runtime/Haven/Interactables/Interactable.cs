@@ -47,6 +47,33 @@ namespace HavenXR
             }
         }
 
+        public void SetInputData(Lost.Input input, Collider collider, Camera camera)
+        {
+            if (input.InputState != InputState.Pressed || this.currentInput != null || this.isInteractable == false)
+            {
+                return;
+            }
+
+            this.currentCamera = camera;
+            this.currentInput = input;
+            this.currentCollider = collider;
+            InputManager.Instance.AddHandler(this);
+
+            this.OnInput(input, collider, camera);
+        }
+
+        void InputHandler.HandleInputs(List<Lost.Input> touches, Lost.Input mouse, Lost.Input pen)
+        {
+            this.OnInput(this.currentInput, this.currentCollider, this.currentCamera);
+
+            if (this.currentInput != null && this.currentInput.InputState == InputState.Released)
+            {
+                this.ResetInputData();
+            }
+        }
+
+        protected abstract void OnInput(Lost.Input input, Collider collider, Camera camera);
+
         protected virtual void Awake()
         {
             InteractablesManager.OnInitialized += this.Initialize;
@@ -78,39 +105,12 @@ namespace HavenXR
             children.Clear();
         }
 
-        public void SetInputData(Lost.Input input, Collider collider, Camera camera)
-        {
-            if (input.InputState != InputState.Pressed || this.currentInput != null || this.isInteractable == false)
-            {
-                return;
-            }
-
-            this.currentCamera = camera;
-            this.currentInput = input;
-            this.currentCollider = collider;
-            InputManager.Instance.AddHandler(this);
-
-            this.OnInput(input, collider, camera);
-        }
-
-        protected abstract void OnInput(Lost.Input input, Collider collider, Camera camera);
-
         private void ResetInputData()
         {
             this.currentCamera = null;
             this.currentCollider = null;
             this.currentInput = null;
             InputManager.Instance.RemoveHandler(this);
-        }
-
-        void InputHandler.HandleInputs(List<Lost.Input> touches, Lost.Input mouse, Lost.Input pen)
-        {
-            this.OnInput(this.currentInput, this.currentCollider, this.currentCamera);
-
-            if (this.currentInput != null && this.currentInput.InputState == InputState.Released)
-            {
-                this.ResetInputData();
-            }
         }
     }
 }
