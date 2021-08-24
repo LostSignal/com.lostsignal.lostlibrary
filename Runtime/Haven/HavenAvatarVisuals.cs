@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="HavenAvatarVisuals.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -10,9 +8,9 @@
 
 namespace Lost.Haven
 {
+    using System.Runtime.CompilerServices;
     using Lost;
     using Lost.Networking;
-    using System.Runtime.CompilerServices;
     using TMPro;
     using UnityEngine;
     using UnityEngine.UI;

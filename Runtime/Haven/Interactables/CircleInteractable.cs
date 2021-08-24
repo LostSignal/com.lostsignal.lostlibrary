@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="CircleInteractable.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -156,7 +154,7 @@ namespace HavenXR
             //               Debug.Log("0x3F800001 = " + Mathf.Acos(BitConverter.ToSingle(BitConverter.GetBytes(0x3F800001), 0)));  // 0x3F800001 = NaN
             if (cosTheta < 0.999999f)
             {
-                bool didFingerMove = (input.PreviousPosition - input.CurrentPosition).sqrMagnitude > minimumPixelMovementSquared;
+                bool didFingerMove = (input.PreviousPosition - input.CurrentPosition).sqrMagnitude > this.minimumPixelMovementSquared;
 
                 if (didFingerMove)
                 {

@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="XRDialog.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -131,7 +129,7 @@ namespace Lost
 
         private void OnShow()
         {
-            // TODO [bgish]: Do some calculations to spawn this dialog in front of the user
+            //// TODO [bgish]: Do some calculations to spawn this dialog in front of the user
 
             this.isPancakeMode = XRManager.IsInitialized == false || XRManager.Instance.IsPancakeMode;
 

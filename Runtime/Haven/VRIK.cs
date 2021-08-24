@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="VRIK.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -8,9 +6,9 @@
 
 namespace Lost
 {
-    using Lost.Haven;
     using System;
     using System.Collections.Generic;
+    using Lost.Haven;
     using UnityEngine;
     using UnityEngine.Animations.Rigging;
 
@@ -42,7 +40,7 @@ namespace Lost
             var humanNameToBoneName = new Dictionary<string, string>();
 
             // Making a quick dictionary lookup for transforms and their names
-            foreach (var transform in root.GetComponentsInChildren<Transform>())
+            foreach (var transform in this.root.GetComponentsInChildren<Transform>())
             {
                 rigNameToTransform.Add(transform.name, transform);
             }
@@ -84,7 +82,7 @@ namespace Lost
             multiParentConstraint.data.constrainedObject = headBone;
             multiParentConstraint.data.sourceObjects = new WeightedTransformArray
             {
-                new WeightedTransform { transform = headConstraint.transform, weight = 1.0f }
+                new WeightedTransform { transform = headConstraint.transform, weight = 1.0f },
             };
 
             // Storing Head Constraint for Start/LateUpdate function
@@ -118,7 +116,8 @@ namespace Lost
                 vrMap.rigTarget = target.transform;
             }
 
-            T GetOrAddComponentToGameObject<T>(GameObject gameObject) where T : Component
+            T GetOrAddComponentToGameObject<T>(GameObject gameObject)
+                where T : Component
             {
                 var component = gameObject.GetComponent<T>();
 
@@ -169,7 +168,7 @@ namespace Lost
             this.transform.position = this.headConstraint.position + this.headBodyOffset;
 
             this.transform.forward = Vector3.Lerp(
-                transform.forward,
+                this.transform.forward,
                 Vector3.ProjectOnPlane(this.headConstraint.up, Vector3.up).normalized,
                 Time.deltaTime * this.turnSmoothness);
 

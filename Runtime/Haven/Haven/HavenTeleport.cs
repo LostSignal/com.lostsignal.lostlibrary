@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="HavenTeleport.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -92,7 +90,7 @@ namespace Lost.Haven
             if (this.type == TeleportType.Area)
             {
                 teleportRequest.destinationPosition = raycastHit.point;
-                teleportRequest.destinationRotation = transform.rotation;
+                teleportRequest.destinationRotation = this.transform.rotation;
             }
             else if (this.type == TeleportType.Anchor)
             {

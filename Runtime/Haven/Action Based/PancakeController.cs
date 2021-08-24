@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="PancakeController.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -145,10 +143,10 @@ namespace Lost.Haven
                 this.rightHandBase.modelPrefab = null;
                 this.rightHandTeleport.modelPrefab = null;
 
-                DestoryControllerModel(leftHandBase);
-                DestoryControllerModel(leftHandTeleport);
-                DestoryControllerModel(rightHandBase);
-                DestoryControllerModel(rightHandTeleport);
+                DestoryControllerModel(this.leftHandBase);
+                DestoryControllerModel(this.leftHandTeleport);
+                DestoryControllerModel(this.rightHandBase);
+                DestoryControllerModel(this.rightHandTeleport);
             }
 
             // Making sure the main xr ray interactor doesn't have a line renderer

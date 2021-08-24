@@ -1,8 +1,7 @@
-﻿#pragma warning disable
-
 #if UNITY && USING_UNITY_XR_INTERACTION_TOOLKIT
 
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.XR.Interaction.Toolkit;
 
 /// <summary>
@@ -11,21 +10,27 @@ using UnityEngine.XR.Interaction.Toolkit;
 /// </summary>
 public class XRExclusiveSocketInteractor : XRSocketInteractor
 {
-    public string AcceptedType;
+    #pragma warning disable 0649
+    [SerializeField]
+    [FormerlySerializedAs("AcceptedType")]
+    private string acceptedType;
+    #pragma warning restore 0649
 
     public override bool CanSelect(XRBaseInteractable interactable)
     {
         SocketTarget socketTarget = interactable.GetComponent<SocketTarget>();
 
         if (socketTarget == null)
+        {
             return false;
+        }
 
-        return base.CanSelect(interactable) && (socketTarget.SocketType == AcceptedType);
+        return base.CanSelect(interactable) && (socketTarget.SocketType == this.acceptedType);
     }
 
     public override bool CanHover(XRBaseInteractable interactable)
     {
-        return CanSelect(interactable);
+        return this.CanSelect(interactable);
     }
 }
 

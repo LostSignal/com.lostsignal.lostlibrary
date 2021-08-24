@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="HavenOffsetGrabbable.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -10,7 +8,7 @@
 
 namespace Lost.Haven
 {
-    using Networking;
+    using Lost.Networking;
     using UnityEngine;
     using UnityEngine.Events;
     using UnityEngine.XR.Interaction.Toolkit;
@@ -59,7 +57,7 @@ namespace Lost.Haven
         public override bool IsSelectableBy(XRBaseInteractor interactor)
         {
             int interactorLayerMask = 1 << interactor.gameObject.layer;
-            return base.IsSelectableBy(interactor) && (interactionLayerMask.value & interactorLayerMask) != 0;
+            return base.IsSelectableBy(interactor) && (this.interactionLayerMask.value & interactorLayerMask) != 0;
         }
 
         protected override void Awake()

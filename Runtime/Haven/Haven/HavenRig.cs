@@ -1,5 +1,3 @@
-﻿#pragma warning disable
-
 //-----------------------------------------------------------------------
 // <copyright file="HavenRig.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
@@ -10,8 +8,8 @@
 
 namespace Lost.Haven
 {
-    using Lost;
     using System.Collections;
+    using Lost;
     using UnityEngine;
     using UnityEngine.XR.Interaction.Toolkit;
 

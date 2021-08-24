@@ -1,4 +1,10 @@
-﻿#pragma warning disable
+//-----------------------------------------------------------------------
+// <copyright file="ActionBasedControllerManager.cs" company="Lost Signal LLC">
+//     Copyright (c) Lost Signal LLC. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+#pragma warning disable
 
 #if UNITY && USING_UNITY_XR_INTERACTION_TOOLKIT
 

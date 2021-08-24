@@ -36,7 +36,7 @@ public class SocketTarget : MonoBehaviour
         if (socketInteractor == null)
             return;
 
-        if (SocketType != socketInteractor.AcceptedType)
+        if (SocketType != socketInteractor.acceptedType)
             return;
 
         if (DisableSocketOnSocketed)
