@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 namespace Lost
 {
     using Lost.Networking;
@@ -76,3 +78,5 @@ namespace Lost
         }
     }
 }
+
+#endif

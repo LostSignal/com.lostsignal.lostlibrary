@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 namespace Lost.CloudFunctions.Friends
 {
     public class Friend
@@ -13,3 +15,5 @@ namespace Lost.CloudFunctions.Friends
         public string DisplayName { get; set; }
     }
 }
+
+#endif

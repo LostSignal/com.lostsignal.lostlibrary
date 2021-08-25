@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 namespace Lost.CloudFunctions.Common
 {
     using System.Collections.Generic;
@@ -21,3 +23,5 @@ namespace Lost.CloudFunctions.Common
         public List<string> BuildTargets { get; set; }
     }
 }
+
+#endif

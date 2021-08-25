@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if UNITY
+#if USING_PLAYFAB
 
 #if USING_UNITY_PURCHASING && !UNITY_XBOXONE && !UNITY_LUMIN
 #define PURCHASING_ENABLED

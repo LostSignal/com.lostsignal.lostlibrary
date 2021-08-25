@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 namespace Lost.CloudFunctions.Debug
 {
     public class DebugPurchaseItemRequest
@@ -11,3 +13,5 @@ namespace Lost.CloudFunctions.Debug
         public string ItemId { get; set; }
     }
 }
+
+#endif

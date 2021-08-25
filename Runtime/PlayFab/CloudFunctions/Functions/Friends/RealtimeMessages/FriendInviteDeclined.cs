@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 namespace Lost.CloudFunctions.Friends
 {
     public sealed class FriendInviteDeclined : RealtimeMessage
@@ -11,3 +13,5 @@ namespace Lost.CloudFunctions.Friends
         public override string Type => nameof(FriendInviteDeclined);
     }
 }
+
+#endif

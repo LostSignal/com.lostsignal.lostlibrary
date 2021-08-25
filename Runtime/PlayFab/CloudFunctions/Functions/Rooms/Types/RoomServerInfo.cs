@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 namespace Lost.CloudFunctions
 {
     using System.Collections.Generic;
@@ -26,3 +28,5 @@ namespace Lost.CloudFunctions
         public List<Port> Ports { get; set; }
     }
 }
+
+#endif

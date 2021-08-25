@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 namespace Lost.CloudFunctions
 {
     public sealed class CloudFunctionAttribute : System.Attribute
@@ -19,3 +21,5 @@ namespace Lost.CloudFunctions
         public string Name { get; private set; }
     }
 }
+
+#endif

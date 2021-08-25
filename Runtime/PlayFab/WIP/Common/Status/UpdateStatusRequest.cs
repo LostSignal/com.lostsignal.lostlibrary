@@ -4,9 +4,13 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 namespace Lost
 {
     public class UpdateStatusRequest
     {
     }
 }
+
+#endif

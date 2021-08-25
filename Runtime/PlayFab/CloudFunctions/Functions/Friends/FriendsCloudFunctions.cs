@@ -4,9 +4,13 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY
+
 namespace Lost.CloudFunctions.Friends
 {
     public static class FriendsCloudFunctions
     {
     }
 }
+
+#endif

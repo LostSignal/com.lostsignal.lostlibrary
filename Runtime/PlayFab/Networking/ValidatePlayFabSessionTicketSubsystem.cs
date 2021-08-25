@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 namespace Lost
 {
     using System.Threading.Tasks;
@@ -91,3 +93,5 @@ namespace Lost
         }
     }
 }
+
+#endif

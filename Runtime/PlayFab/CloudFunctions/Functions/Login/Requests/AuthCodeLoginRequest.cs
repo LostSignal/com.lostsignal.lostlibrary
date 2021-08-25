@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 namespace Lost.CloudFunctions.Login
 {
     public class AuthCodeLoginRequest
@@ -13,3 +15,5 @@ namespace Lost.CloudFunctions.Login
         public string AuthCode { get; set; }
     }
 }
+
+#endif

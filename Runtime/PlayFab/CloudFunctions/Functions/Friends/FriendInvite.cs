@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 namespace Lost.CloudFunctions.Friends
 {
     public class FriendInvite
@@ -13,3 +15,5 @@ namespace Lost.CloudFunctions.Friends
         public bool IsRead { get; set; }
     }
 }
+
+#endif

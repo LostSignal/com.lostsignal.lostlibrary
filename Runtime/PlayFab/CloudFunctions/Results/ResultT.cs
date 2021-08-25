@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 namespace Lost.CloudFunctions
 {
     using System;
@@ -33,3 +35,5 @@ namespace Lost.CloudFunctions
         }
     }
 }
+
+#endif

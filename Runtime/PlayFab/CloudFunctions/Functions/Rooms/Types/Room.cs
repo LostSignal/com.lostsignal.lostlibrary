@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 namespace Lost.CloudFunctions
 {
     public enum RoomVisibility
@@ -26,3 +28,5 @@ namespace Lost.CloudFunctions
         public RoomVisibility Visibility { get; set; }
     }
 }
+
+#endif

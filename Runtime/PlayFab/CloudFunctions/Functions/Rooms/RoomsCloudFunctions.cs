@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if UNITY_EDITOR || !UNITY_2019_4_OR_NEWER
+#if !UNITY
 
 namespace Lost.CloudFunctions
 {
@@ -23,11 +23,11 @@ namespace Lost.CloudFunctions
 
         private static readonly List<Room> Rooms = new List<Room>
         {
-            new Room { Id = "GCXR_classroom1", Info = new RoomInfo { Name = "Classroom 1" }, Visibility = RoomVisibility.Public },
-            new Room { Id = "GCXR_classroom2", Info = new RoomInfo { Name = "Classroom 2" }, Visibility = RoomVisibility.Public },
-            new Room { Id = "GCXR_classroom3", Info = new RoomInfo { Name = "Classroom 3" }, Visibility = RoomVisibility.Public },
-            new Room { Id = "GCXR_classroom4", Info = new RoomInfo { Name = "Classroom 4" }, Visibility = RoomVisibility.Public },
-            new Room { Id = "GCXR_classroom5", Info = new RoomInfo { Name = "Classroom 5" }, Visibility = RoomVisibility.Public },
+            new Room { Id = "Room1", Info = new RoomInfo { Name = "Room 1" }, Visibility = RoomVisibility.Public },
+            new Room { Id = "Room2", Info = new RoomInfo { Name = "Room 2" }, Visibility = RoomVisibility.Public },
+            new Room { Id = "Room3", Info = new RoomInfo { Name = "Room 3" }, Visibility = RoomVisibility.Public },
+            new Room { Id = "Room4", Info = new RoomInfo { Name = "Room 4" }, Visibility = RoomVisibility.Public },
+            new Room { Id = "Room5", Info = new RoomInfo { Name = "Room 5" }, Visibility = RoomVisibility.Public },
         };
 
         [CloudFunction("Rooms", "GetPublicRooms")]

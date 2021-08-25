@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 namespace Lost
 {
     public abstract class RealtimeMessage
@@ -11,3 +13,5 @@ namespace Lost
         public abstract string Type { get; }
     }
 }
+
+#endif

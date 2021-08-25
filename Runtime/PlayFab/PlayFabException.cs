@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 // Implement standard exception constructors (Ignore this so the user is force to give a PlayFabError)
 #pragma warning disable CA1032
 
@@ -33,3 +35,5 @@ namespace Lost.PlayFab
         public PlayFabError Error { get; private set; }
     }
 }
+
+#endif

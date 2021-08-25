@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if USING_PLAYFAB
+
 namespace Lost
 {
     public struct PushNotification
@@ -17,3 +19,5 @@ namespace Lost
         public int ApplicationIconBadgeNumber { get; set; }
     }
 }
+
+#endif

@@ -9,14 +9,18 @@
 namespace Lost.PlayFab
 {
     using System.Collections;
+
+    #if USING_PLAYFAB
     using global::PlayFab.ClientModels;
+    #endif
+
     using TMPro;
     using UnityEngine;
     using UnityEngine.UI;
 
     public class SignUpDialog : DialogLogic
     {
-#pragma warning disable 0649
+        #pragma warning disable 0649
         [SerializeField] private LostButton closeButton;
         [SerializeField] private TMP_InputField emailInputField;
         [SerializeField] private TMP_InputField passwordInputField;
@@ -24,7 +28,9 @@ namespace Lost.PlayFab
         [SerializeField] private Toggle autoLoginToggle;
         [SerializeField] private LostButton alreadRegistedButton;
         [SerializeField] private LostButton signUpButton;
-#pragma warning restore 0649
+        #pragma warning restore 0649
+
+        #if USING_PLAYFAB
 
         private LoginManager loginManager;
         private GetPlayerCombinedInfoRequestParams infoRequestParams;
@@ -197,6 +203,8 @@ namespace Lost.PlayFab
                 DialogManager.GetDialog<LogInDialog>().Show(this.loginManager, this.infoRequestParams, this.emailInputField.text);
             });
         }
+
+        #endif
     }
 }
 

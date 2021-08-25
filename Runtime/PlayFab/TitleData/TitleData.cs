@@ -4,11 +4,10 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if UNITY
+#if USING_PLAYFAB
 
 namespace Lost.PlayFab
 {
-    using System;
     using UnityEngine;
 
     public class TitleData<T> : ScriptableObject

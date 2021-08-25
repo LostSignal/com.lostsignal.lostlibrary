@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 namespace Lost.PlayFab
 {
     using System;
@@ -29,3 +31,5 @@ namespace Lost.PlayFab
         public string Error { get; private set; }
     }
 }
+
+#endif

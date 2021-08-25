@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if UNITY
+#if UNITY && USING_PLAYFAB
 
 namespace Lost
 {

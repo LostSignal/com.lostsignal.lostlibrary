@@ -4,11 +4,10 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if UNITY
+#if USING_PLAYFAB
 
 namespace Lost.PlayFab
 {
-    using System;
     using System.Collections.Generic;
     using UnityEngine;
 
@@ -54,7 +53,7 @@ namespace Lost.PlayFab
             set { this.compressData = value; }
         }
 
-        public Lost.UnityTask<T> Load(string version)
+        public UnityTask<T> Load(string version)
         {
             // Take key name and the verison and load from title data using PF class
             // If it's compressed, then decompress it

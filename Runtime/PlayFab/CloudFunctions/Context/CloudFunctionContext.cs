@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY
+
 namespace Lost.CloudFunctions
 {
     using System;
@@ -63,3 +65,5 @@ namespace Lost.CloudFunctions
         }
     }
 }
+
+#endif

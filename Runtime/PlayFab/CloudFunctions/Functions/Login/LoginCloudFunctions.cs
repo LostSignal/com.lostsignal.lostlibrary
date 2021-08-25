@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY
+
 namespace Lost.CloudFunctions.Login
 {
     using System;
@@ -24,3 +26,5 @@ namespace Lost.CloudFunctions.Login
         }
     }
 }
+
+#endif

@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 namespace Lost.CloudFunctions.Debug
 {
     public class DebugGiveCurrencyRequest
@@ -13,3 +15,5 @@ namespace Lost.CloudFunctions.Debug
         public int Amount { get; set; }
     }
 }
+
+#endif

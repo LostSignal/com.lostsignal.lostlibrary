@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+#if !UNITY || USING_PLAYFAB
+
 namespace Lost.CloudFunctions
 {
     using System.Collections.Generic;
@@ -17,3 +19,5 @@ namespace Lost.CloudFunctions
         public List<string> ImageUrls { get; set; }
     }
 }
+
+#endif
