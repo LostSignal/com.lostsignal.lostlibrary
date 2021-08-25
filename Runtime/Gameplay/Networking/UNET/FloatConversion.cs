@@ -11,23 +11,23 @@ namespace Lost.Networking
         public static float ToSingle(uint value)
         {
             UIntFloat uf = default;
-            uf.intValue = value;
-            return uf.floatValue;
+            uf.IntValue = value;
+            return uf.FloatValue;
         }
 
         public static double ToDouble(ulong value)
         {
             UIntFloat uf = default;
-            uf.longValue = value;
-            return uf.doubleValue;
+            uf.LongValue = value;
+            return uf.DoubleValue;
         }
 
         public static decimal ToDecimal(ulong value1, ulong value2)
         {
             UIntDecimal uf = default;
-            uf.longValue1 = value1;
-            uf.longValue2 = value2;
-            return uf.decimalValue;
+            uf.LongValue1 = value1;
+            uf.LongValue2 = value2;
+            return uf.DecimalValue;
         }
     }
 }

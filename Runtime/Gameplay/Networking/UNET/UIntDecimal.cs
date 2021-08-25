@@ -12,12 +12,12 @@ namespace Lost.Networking
     internal struct UIntDecimal
     {
         [FieldOffset(0)]
-        public ulong longValue1;
+        public ulong LongValue1;
 
         [FieldOffset(8)]
-        public ulong longValue2;
+        public ulong LongValue2;
 
         [FieldOffset(0)]
-        public decimal decimalValue;
+        public decimal DecimalValue;
     }
 }

@@ -60,7 +60,7 @@ namespace Lost
         {
             return this.StartCoroutine(Coroutine());
 
-            IEnumerator Coroutine()
+            static IEnumerator Coroutine()
             {
                 // TODO [bgish]: Implement
                 yield break;

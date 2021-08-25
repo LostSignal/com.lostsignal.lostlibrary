@@ -273,14 +273,14 @@ namespace Lost.Networking
 
         public void Write(float value)
         {
-            floatConverter.floatValue = value;
-            this.Write(floatConverter.intValue);
+            floatConverter.FloatValue = value;
+            this.Write(floatConverter.IntValue);
         }
 
         public void Write(double value)
         {
-            floatConverter.doubleValue = value;
-            this.Write(floatConverter.longValue);
+            floatConverter.DoubleValue = value;
+            this.Write(floatConverter.LongValue);
         }
 
         public void Write(decimal value)

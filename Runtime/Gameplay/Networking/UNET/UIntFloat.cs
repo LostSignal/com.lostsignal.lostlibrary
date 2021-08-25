@@ -13,15 +13,15 @@ namespace Lost.Networking
     internal struct UIntFloat
     {
         [FieldOffset(0)]
-        public float floatValue;
+        public float FloatValue;
 
         [FieldOffset(0)]
-        public uint intValue;
+        public uint IntValue;
 
         [FieldOffset(0)]
-        public double doubleValue;
+        public double DoubleValue;
 
         [FieldOffset(0)]
-        public ulong longValue;
+        public ulong LongValue;
     }
 }

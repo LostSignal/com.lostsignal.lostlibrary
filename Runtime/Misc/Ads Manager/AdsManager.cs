@@ -88,10 +88,7 @@ namespace Lost
                             break;
                     }
 
-                    if (watchResultCallback != null)
-                    {
-                        watchResultCallback(result);
-                    }
+                    watchResultCallback?.Invoke(result);
                 });
             }
         }

@@ -124,7 +124,7 @@ namespace Lost
         }
 
         [Serializable]
-        public class CustomDataItem
+        private class CustomDataItem
         {
             [SerializeField] private string key;
             [SerializeField] private string value;

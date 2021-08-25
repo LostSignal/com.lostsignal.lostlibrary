@@ -100,6 +100,11 @@
             "name": "com.unity.cinemachine",
             "expression": "0.0.0",
             "define": "USING_CINEMACHINE"
+        },
+        {
+            "name": "com.microsoft.playfab",
+            "expression": "0.0.0",
+            "define": "USING_PLAYFAB"
         }
     ],
     "noEngineReferences": false

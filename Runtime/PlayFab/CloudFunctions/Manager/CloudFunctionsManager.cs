@@ -194,7 +194,7 @@ namespace Lost.CloudFunctions
                 return Result.Failure(ex);
             }
 #else
-            return await Task.FromResult<Result>(default(Result));
+            return await Task.FromResult<Result>(default);
 #endif
         }
 
@@ -218,11 +218,9 @@ namespace Lost.CloudFunctions
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    using (Stream responseStream = response.GetResponseStream())
-                    using (StreamReader responseReader = new StreamReader(responseStream))
-                    {
-                        return ResultT<T>.Ok(JsonUtil.Deserialize<T>(responseReader.ReadToEnd()));
-                    }
+                    using Stream responseStream = response.GetResponseStream();
+                    using StreamReader responseReader = new StreamReader(responseStream);
+                    return ResultT<T>.Ok(JsonUtil.Deserialize<T>(responseReader.ReadToEnd()));
                 }
                 else
                 {
@@ -238,7 +236,7 @@ namespace Lost.CloudFunctions
                 return ResultT<T>.Failure(ex);
             }
 #else
-            return await Task.FromResult<ResultT<T>>(default(ResultT<T>));
+            return await Task.FromResult<ResultT<T>>(default);
 #endif
         }
 

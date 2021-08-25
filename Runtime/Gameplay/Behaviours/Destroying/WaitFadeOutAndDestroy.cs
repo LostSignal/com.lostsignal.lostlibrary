@@ -43,7 +43,7 @@ namespace Lost
             yield return WaitForUtil.Seconds(this.waitTime);
 
             var meshRenderer = this.GetComponent<MeshRenderer>();
-            var material = meshRenderer?.material;
+            var material = meshRenderer != null ? meshRenderer.material : null;
 
             if (this.transparentMaterial == null)
             {

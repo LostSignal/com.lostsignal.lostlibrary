@@ -6,12 +6,11 @@
 
 namespace Lost.Addressables
 {
-    using System;
     using System.IO;
     using System.Net;
     using UnityEngine;
 
-    public class Ftp
+    public static class Ftp
     {
         public static void UploadDirectory(string assetBundleRelativeDirectory, string ftpUrl, string username, string password)
         {
@@ -51,10 +50,8 @@ namespace Lost.Addressables
 
             try
             {
-                using (var resp = (FtpWebResponse)request.GetResponse())
-                {
-                    return resp.StatusCode;
-                }
+                using var resp = (FtpWebResponse)request.GetResponse();
+                return resp.StatusCode;
             }
             catch (WebException webException)
             {
@@ -97,17 +94,16 @@ namespace Lost.Addressables
             }
 
             // create a stream to the FTP server
-            using (Stream reqStream = request.GetRequestStream())
+            using Stream reqStream = request.GetRequestStream();
+
+            // Write the local stream to the FTP stream, 2 kb at a time
+            int offset = 0;
+            int chunk = (buffer.Length > 2048) ? 2048 : buffer.Length;
+            while (offset < buffer.Length)
             {
-                // Write the local stream to the FTP stream, 2 kb at a time
-                int offset = 0;
-                int chunk = (buffer.Length > 2048) ? 2048 : buffer.Length;
-                while (offset < buffer.Length)
-                {
-                    reqStream.Write(buffer, offset, chunk);
-                    offset += chunk;
-                    chunk = (buffer.Length - offset < chunk) ? (buffer.Length - offset) : chunk;
-                }
+                reqStream.Write(buffer, offset, chunk);
+                offset += chunk;
+                chunk = (buffer.Length - offset < chunk) ? (buffer.Length - offset) : chunk;
             }
         }
     }

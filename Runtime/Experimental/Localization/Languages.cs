@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="Languages.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -12,7 +12,7 @@ namespace Lost.Localization
     using System.Collections.ObjectModel;
     using UnityEngine;
 
-    public class Languages
+    public static class Languages
     {
         public static readonly Language English = new Language("English", "English", "en", SystemLanguage.English, ",", ".", "Yes", "No");
         public static readonly Language Vietnamese = new Language("Vietnamese", "Tiếng Việt", "vi", SystemLanguage.Vietnamese, ".", ",", "Có", "Không");

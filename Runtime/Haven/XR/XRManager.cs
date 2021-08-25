@@ -77,7 +77,8 @@ namespace Lost
 
                         for (int i = 0; i < loaders.Count; i++)
                         {
-                            Debug.Log("XRManager: XR Loader - " + loaders[i]?.name ?? "NULL");
+                            string loaderName = loaders[i] != null ? loaders[i].name : "NULL";
+                            Debug.Log($"XRManager: XR Loader - {loaderName}");
                         }
                     }
                 }
@@ -281,7 +282,7 @@ namespace Lost
                 {
                     try
                     {
-                        if (xrLoaders[i]?.name == loaderName)
+                        if (xrLoaders != null && xrLoaders[i].name == loaderName)
                         {
                             if (xrLoaders[i].Start())
                             {

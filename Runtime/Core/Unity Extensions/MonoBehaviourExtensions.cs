@@ -181,7 +181,7 @@ namespace Lost
             {
                 string parentName = GetFullName(gameObject.transform.parent.gameObject);
 
-                return parentName == string.Empty ? gameObject.name : parentName + "/" + gameObject.name;
+                return string.IsNullOrEmpty(parentName) ? gameObject.name : parentName + "/" + gameObject.name;
             }
         }
     }
