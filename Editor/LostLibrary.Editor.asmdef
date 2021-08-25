@@ -26,6 +26,11 @@
     "defineConstraints": [],
     "versionDefines": [
         {
+            "name": "Unity",
+            "expression": "0.0.0",
+            "define": "UNITY"
+        },
+        {
             "name": "com.placeholder-software.dissonance",
             "expression": "0.0.0",
             "define": "USING_DISSONANCE"
@@ -34,6 +39,11 @@
             "name": "com.unity.xr.interaction.toolkit",
             "expression": "0.0.0",
             "define": "USING_HAVEN"
+        },
+        {
+            "name": "com.microsoft.playfab",
+            "expression": "0.0.0",
+            "define": "USING_PLAYFAB"
         }
     ],
     "noEngineReferences": false

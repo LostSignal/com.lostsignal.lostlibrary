@@ -308,7 +308,7 @@ namespace Lost.Networking
 
         public void ServerUserConnected(UserInfo userInfo, bool isReconnect)
         {
-            Debug.Log("SERVER: User Connected - " + userInfo.GetDisplayName() + " - " + userInfo.GetPlayFabId());
+            Debug.Log($"SERVER: User Connected - {userInfo.UserHexId} - {userInfo.DisplayName}");
 
             // Detecting if we're Migrating the server state to this new user
             if (this.serverId == InvalidId)
@@ -327,7 +327,7 @@ namespace Lost.Networking
 
         public void ServerUserDisconnected(UserInfo userInfo, bool wasConnectionLost)
         {
-            Debug.Log("SERVER: User Disconnected - " + userInfo.GetDisplayName() + " - " + userInfo.GetPlayFabId());
+            Debug.Log($"SERVER: User Connected - {userInfo.UserHexId} - {userInfo.DisplayName}");
 
             // Making sure to destroy all object this user owns, but DestoryOnDisconnect is true
             this.networkBehaviourDestoryed.DestroyedNetworkIds.Clear();

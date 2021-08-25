@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="DissonancePlayerTracker.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -75,7 +75,7 @@ namespace Lost.DissonanceIntegration
 
                     if (userInfo != null)
                     {
-                        this.PlayerId = userInfo.GetPlayFabId();
+                        this.PlayerId = userInfo.UserHexId;
                         this.IsTracking = true;
 
                         DissonanceManager.Instance.DissonanceComms.TrackPlayerPosition(this);

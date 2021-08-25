@@ -1,10 +1,12 @@
-﻿#pragma warning disable
+#pragma warning disable
 
 //-----------------------------------------------------------------------
 // <copyright file="PlayFabSettingsHelper.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
+#if !UNITY || USING_PLAYFAB
 
 namespace Lost.PlayFab
 {
@@ -14,7 +16,7 @@ namespace Lost.PlayFab
 
     public static class PlayFabSettingsHelper
     {
-        #if UNITY_2018_3_OR_NEWER
+        #if UNITY
 
         public static void Initialize()
         {
@@ -24,13 +26,16 @@ namespace Lost.PlayFab
                 {
                     Type t = assembly.GetType("PlayFab.PlayFabSettings");
 
-                    // Setting the DeveloperSecretKey
-                    FieldInfo developerSecretKeyField = t.GetField("DeveloperSecretKey", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-                    developerSecretKeyField.SetValue(null, EditorBuildConfigs.ActiveBuildConfig.GetSettings<PlayFabSettings>().SecretKey);
+                    if (t != null)
+                    {
+                        // Setting the DeveloperSecretKey
+                        FieldInfo developerSecretKeyField = t.GetField("DeveloperSecretKey", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                        developerSecretKeyField.SetValue(null, EditorBuildConfigs.ActiveBuildConfig.GetSettings<PlayFabSettings>().SecretKey);
 
-                    // Setting the TitleId
-                    FieldInfo titleIdField = t.GetField("TitleId", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-                    titleIdField.SetValue(null, EditorBuildConfigs.ActiveBuildConfig.GetSettings<PlayFabSettings>().TitleId);
+                        // Setting the TitleId
+                        FieldInfo titleIdField = t.GetField("TitleId", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                        titleIdField.SetValue(null, EditorBuildConfigs.ActiveBuildConfig.GetSettings<PlayFabSettings>().TitleId);
+                    }
                 }
             }
         }
@@ -46,3 +51,5 @@ namespace Lost.PlayFab
         #endif
     }
 }
+
+#endif

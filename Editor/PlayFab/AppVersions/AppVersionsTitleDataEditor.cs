@@ -1,10 +1,12 @@
-﻿#pragma warning disable
+#pragma warning disable
 
 //-----------------------------------------------------------------------
 // <copyright file="AppVersionsTitleDataEditor.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
+#if USING_PLAYFAB
 
 namespace Lost.PlayFab
 {
@@ -27,3 +29,5 @@ namespace Lost.PlayFab
         }
     }
 }
+
+#endif

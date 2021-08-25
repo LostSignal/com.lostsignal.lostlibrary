@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright file="DissonanceManager.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
@@ -41,7 +41,7 @@ namespace Lost.DissonanceIntegration
             System.Collections.IEnumerator Coroutine()
             {
                 yield return ReleasesManager.WaitForInitialization();
-                yield return PlayFabManager.WaitForInitialization();
+                yield return UserInfoManager.WaitForInitialization();
 
                 var settings = ReleasesManager.Instance.CurrentRelease.DissonanceManagerSettings;
 
@@ -70,7 +70,7 @@ namespace Lost.DissonanceIntegration
                     }
                     else
                     {
-                        this.DissonanceComms.LocalPlayerName = PlayFabManager.Instance.User.PlayFabId;
+                        this.DissonanceComms.LocalPlayerName = UserInfoManager.Instance.UserHexId;
                         this.DissonanceComms.gameObject.name = "Dissonance Comms";
                         this.DissonanceComms.gameObject.SetActive(true);
                     }

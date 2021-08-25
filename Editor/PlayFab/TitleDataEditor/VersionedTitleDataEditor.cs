@@ -1,10 +1,12 @@
-﻿#pragma warning disable
+#pragma warning disable
 
 //-----------------------------------------------------------------------
 // <copyright file="VersionedTitleDataEditor.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
+#if USING_PLAYFAB
 
 namespace Lost.PlayFab
 {
@@ -183,3 +185,5 @@ namespace Lost.PlayFab
         protected abstract void DrawData(BaseType item, SerializedObject serializedObject, SerializedProperty serializedProperty);
     }
 }
+
+#endif

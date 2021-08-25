@@ -13,9 +13,13 @@ namespace Lost.Networking
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+
+    #if USING_PLAYFAB
     using global::PlayFab.ClientModels;
     using Lost.CloudFunctions;
     using Lost.PlayFab;
+    #endif
+
     using UnityEngine;
 
     public sealed class NetworkingManager : Manager<NetworkingManager>
@@ -45,7 +49,6 @@ namespace Lost.Networking
 
         private bool originalRunInBackground;
         private bool isConnected;
-        private long playerId;
 
         private IGameServerFactory gameServerFactory;
         private IGameClientFactory gameClientFactory;
@@ -112,13 +115,7 @@ namespace Lost.Networking
 
             IEnumerator Coroutine()
             {
-                // TODO [bgish]: Wrap this code in if USING_PLAYFAB and generate a random id if not using PlayFab
-                yield return PlayFabManager.WaitForInitialization();
-                this.playerId = PlayFab.PlayFabManager.Instance.User.PlayFabNumericId;
-
-                //// TODO [bgish]: Use this if not using playfab
-                //// this.playerId = ((long)UnityEngine.Random.Range(int.MinValue, int.MaxValue) << 32) & ((long)UnityEngine.Random.Range(int.MinValue, int.MaxValue));
-
+                yield return UserInfoManager.WaitForInitialization();
                 this.SetInstance(this);
             }
         }
@@ -146,7 +143,13 @@ namespace Lost.Networking
         public NetworkIdentity InstantiateNetworkIdentity(string resourceName, Vector3 position, Quaternion rotation)
         {
             var subsystem = this.gameClient.GetSubsystem<UnityGameClientSubsystem>();
-            return subsystem.CreateDynamicNetworkIdentity(resourceName, NetworkIdentity.NewId(), this.playerId, position, rotation);
+
+            return subsystem.CreateDynamicNetworkIdentity(
+                resourceName,
+                NetworkIdentity.NewId(),
+                UserInfoManager.Instance.UserId,
+                position,
+                rotation);
         }
 
         public UserInfo GetUserInfo(long playerId)
@@ -324,6 +327,8 @@ namespace Lost.Networking
                 }
                 else if (this.Mode == NetworkingMode.RunClientAndCloudServer)
                 {
+                    #if USING_PLAYFAB
+
                     var enterRoom = CloudFunctionsManager.Instance.Rooms_EnterRoom(roomId);
 
                     // Waiting for enterRoom to finish
@@ -347,6 +352,14 @@ namespace Lost.Networking
                     {
                         Debug.Log($"Connecting to Sever {roomServerInfo.FQDN}, Port = {port}, Room Id = {roomServerInfo.RoomId}, Session Id = {roomServerInfo.SessionId}, Server Id = {roomServerInfo.ServerId}");
                     }
+
+                    #else
+
+                    Debug.LogError("Unable to choose Networking Mode NetworkingMode.RunClientAndCloudServer.  This mode requires PlayFab package.", this);
+                    yield return false;
+                    yield break;
+
+                    #endif
                 }
                 else
                 {
@@ -434,6 +447,8 @@ namespace Lost.Networking
             }
         }
 
+        #if USING_PLAYFAB
+
         private MatchmakeRequest GetMatchmakeRequest(GameServerInfo info, bool startNewIfNoneFound)
         {
             var request = new MatchmakeRequest
@@ -463,6 +478,8 @@ namespace Lost.Networking
 
             return request;
         }
+
+        #endif
 
         private UnityTask<bool> StartEditorLocalServer()
         {
@@ -547,7 +564,9 @@ namespace Lost.Networking
 
             public string BuildVersion { get; set; }
 
+            #if USING_PLAYFAB
             public Region Region { get; set; }
+            #endif
 
             public string RoomName { get; set; }
         }

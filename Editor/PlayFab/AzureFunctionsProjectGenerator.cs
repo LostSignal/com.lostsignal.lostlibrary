@@ -13,7 +13,11 @@ namespace Lost
     using System.Linq;
     using System.Text;
     using Lost.BuildConfig;
+
+    #if USING_PLAYFAB
     using Lost.PlayFab;
+    #endif
+
     using UnityEditor;
     using UnityEngine;
 
@@ -28,6 +32,8 @@ namespace Lost
             "Lost.CloudFunctions.Login",
         };
 #pragma warning restore 0649
+
+#if USING_PLAYFAB
 
         private string azureFunctionsUsingsCSharp;
         private string functionsCSharp;
@@ -433,5 +439,7 @@ namespace Lost
                 get => $"{this.Category}_{this.Name}";
             }
         }
+
+#endif
     }
 }

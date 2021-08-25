@@ -12,16 +12,6 @@ namespace Lost
 
     public static class PlayFabUserInfoExtensions
     {
-        public static string GetPlayFabId(this UserInfo userInfo)
-        {
-            return GetValue(userInfo, "PlayFabId");
-        }
-
-        public static void SetPlayFabId(this UserInfo userInfo, string playFabId)
-        {
-            SetValue(userInfo, "PlayFabId", playFabId);
-        }
-
         public static string GetCharacterId(this UserInfo userInfo)
         {
             return GetValue(userInfo, "CharacterId");
@@ -40,16 +30,6 @@ namespace Lost
         public static void SetUsername(this UserInfo userInfo, string username)
         {
             SetValue(userInfo, "Username", username);
-        }
-
-        public static string GetDisplayName(this UserInfo userInfo)
-        {
-            return GetValue(userInfo, "DisplayName");
-        }
-
-        public static void SetDisplayName(this UserInfo userInfo, string displayName)
-        {
-            SetValue(userInfo, "DisplayName", displayName);
         }
 
         public static string GetSessionTicket(this UserInfo userInfo)

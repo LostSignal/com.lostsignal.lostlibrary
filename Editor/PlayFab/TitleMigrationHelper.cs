@@ -1,10 +1,12 @@
-﻿#pragma warning disable
+#pragma warning disable
 
 //-----------------------------------------------------------------------
 // <copyright file="TitleMigrationHelper.cs" company="Lost Signal LLC">
 //     Copyright (c) Lost Signal LLC. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
+#if USING_PLAYFAB
 
 namespace Lost
 {
@@ -128,3 +130,5 @@ namespace Lost
         }
     }
 }
+
+#endif

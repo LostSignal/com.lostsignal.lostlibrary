@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6171084065571904156}
   - component: {fileID: 8459564295990321592}
   - component: {fileID: 696681455555970861}
+  - component: {fileID: 3311210450274514572}
   - component: {fileID: 7240969118053476222}
   m_Layer: 0
   m_Name: Gameplay Managers
@@ -61,6 +62,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initialCapacity: 250
   maxMilliseconds: 0.10000000149011612
+--- !u!114 &3311210450274514572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6171084065571904157}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b821a18b2cc98cf4aa38f666aa8da128, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7240969118053476222
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -73,7 +86,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5a303fc09f032d4cb8e90060703a696, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playfabManager: {fileID: 0}
   networkingMode: 2
   editorNetworkingMode: 2
   editorServerIp: 127.0.0.1

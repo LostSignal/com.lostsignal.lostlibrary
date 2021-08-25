@@ -1,4 +1,4 @@
-﻿#pragma warning disable
+#pragma warning disable
 
 //-----------------------------------------------------------------------
 // <copyright file="PlayFabSettings.cs" company="Lost Signal LLC">
@@ -75,7 +75,9 @@ namespace Lost.PlayFab
                 return;
             }
 
+            #if USING_PLAYFAB
             LostLibrary.AzureFunctionsProjectGenerator.UploadFunctionsToPlayFab();
+            #endif
 
             //// TODO [bgish]: If Platform.IsUnityCloudBuild, check if Upload was successful and fail the build if it wasn't
         }
@@ -90,8 +92,10 @@ namespace Lost.PlayFab
                 return;
             }
 
+            #if USING_PLAYFAB
             global::PlayFab.PlayFabSettings.staticSettings.TitleId = playfabSettings.titleId;
             global::PlayFab.PlayFabSettings.staticSettings.DeveloperSecretKey = playfabSettings.secretKey;
+            #endif
 
             if (LostLibrary.AzureFunctionsProjectGenerator != null)
             {

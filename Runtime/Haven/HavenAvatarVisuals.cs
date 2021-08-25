@@ -63,16 +63,16 @@ namespace Lost.Haven
 
         public virtual void SetAvatarName(UserInfo userInfo)
         {
-            string displayName = userInfo.GetDisplayName();
+            string avatarName = userInfo.DisplayName;
 
-            if (string.IsNullOrWhiteSpace(displayName))
+            if (string.IsNullOrWhiteSpace(avatarName))
             {
-                displayName = $"Player{userInfo.GetPlayFabId().Substring(0, 4)}";
+                avatarName = $"Player{userInfo.UserHexId.Substring(0, System.Math.Min(4, userInfo.UserHexId.Length))}";
             }
 
             if (this.displayName)
             {
-                this.displayName.text = displayName;
+                this.displayName.text = avatarName;
             }
         }
 

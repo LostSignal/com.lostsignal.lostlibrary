@@ -29,12 +29,18 @@ namespace Lost.Networking
 
         public long UserId { get; set; }
 
+        public string UserHexId { get; set; }
+
+        public string DisplayName { get; set; }
+
         public Dictionary<string, string> CustomData { get; set; }
 
         public void Deserialize(NetworkReader reader)
         {
             this.ConnectionId = reader.ReadInt64();
             this.UserId = reader.ReadInt64();
+            this.UserHexId = reader.ReadString();
+            this.DisplayName = reader.ReadString();
 
             // CustomData
             this.CustomData.Clear();
@@ -54,6 +60,8 @@ namespace Lost.Networking
         {
             writer.Write(this.ConnectionId);
             writer.Write(this.UserId);
+            writer.Write(this.UserHexId);
+            writer.Write(this.DisplayName);
 
             // CustomData
             writer.Write((byte)this.CustomData.Count);

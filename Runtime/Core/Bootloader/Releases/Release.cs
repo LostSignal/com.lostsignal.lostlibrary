@@ -27,8 +27,12 @@ namespace Lost
         [Header("Manager Settings")]
         [SerializeField] private DissonanceManager.Settings dissonanceManagerSettings = new DissonanceManager.Settings();
         [SerializeField] private LoggingManager.Settings loggingManagerSettings = new LoggingManager.Settings();
+
+        #if USING_PLAYFAB
         [SerializeField] private PlayFabManager.Settings playfabManagerSettings = new PlayFabManager.Settings();
         [SerializeField] private RealtimeMessageManager.Settings realtimeMessageManagerSettings = new RealtimeMessageManager.Settings();
+        #endif
+
         [SerializeField] private ScreenSizeManager.Settings screenSizeManagerSettings = new ScreenSizeManager.Settings();
         [SerializeField] private SpriteAtlasLoadingManager.Settings spriteAtlasLoadingManagerSettings = new SpriteAtlasLoadingManager.Settings();
         [SerializeField] private UnityPurchasingManager.Settings unityPurchasingManagerSettings = new UnityPurchasingManager.Settings();
@@ -58,6 +62,8 @@ namespace Lost
             set => this.isXRApp = value;
         }
 
+        #if USING_PLAYFAB
+
         public PlayFabManager.Settings PlayfabManagerSettings
         {
             get => this.playfabManagerSettings;
@@ -69,6 +75,8 @@ namespace Lost
             get => this.realtimeMessageManagerSettings;
             set => this.realtimeMessageManagerSettings = value;
         }
+
+        #endif
 
         public SpriteAtlasLoadingManager.Settings SpriteAtlasLoadingManagerSettings
         {

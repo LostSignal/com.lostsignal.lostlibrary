@@ -4,8 +4,6 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if USING_PLAYFAB
-
 namespace Lost.PlayFab
 {
     using Lost.BuildConfig;
@@ -20,5 +18,3 @@ namespace Lost.PlayFab
         }
     }
 }
-
-#endif

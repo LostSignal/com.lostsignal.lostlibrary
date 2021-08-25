@@ -4,8 +4,6 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-#if UNITY
-
 #if USING_UNITY_PURCHASING && !UNITY_XBOXONE && !UNITY_LUMIN
 #define PURCHASING_ENABLED
 #endif
@@ -15,8 +13,12 @@ namespace Lost
     using System;
     using System.Collections.Generic;
     using System.Linq;
+
+    #if USING_PLAYFAB
     using global::PlayFab.ClientModels;
     using Lost.PlayFab;
+    #endif
+
     using TMPro;
     using UnityEngine;
     using UnityEngine.UI;
@@ -50,6 +52,8 @@ namespace Lost
         [Header("Virtual Currencies")]
         [SerializeField] private VirtualCurrencyIcon[] virtualCurrencyIcons;
         #pragma warning restore 0649
+
+        #if USING_PLAYFAB
 
         private string storeId;
         private StoreItem storeItem;
@@ -225,6 +229,8 @@ namespace Lost
             return this.virtualCurrencyIcons.First(x => x.Id == virtualCurrencyId).Icon;
         }
 
+        #endif
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2235:Mark all non-serializable fields", Justification = "Using Unity Serialization")]
         [Serializable]
         private class VirtualCurrencyIcon
@@ -246,5 +252,3 @@ namespace Lost
         }
     }
 }
-
-#endif

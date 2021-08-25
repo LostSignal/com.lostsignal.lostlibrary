@@ -9,8 +9,12 @@
 namespace Lost
 {
     using System.Collections;
+
+    #if USING_PLAYFAB
     using global::PlayFab.ClientModels;
     using global::PlayFab.Internal;
+    #endif
+
     using Lost.BuildConfig;
     using UnityEngine;
 
@@ -59,13 +63,19 @@ namespace Lost
 
                 if (this.showPlayFabIdInLowerRight)
                 {
+                    #if USING_PLAYFAB
+
                     PlayFab.PlayFabManager.OnInitialized += () =>
                     {
                         if (PlayFab.PlayFabManager.Instance.Login.IsLoggedIn)
                         {
-                            SetPlayFabId();
+                            var debugMenu = DialogManager.GetDialog<DebugMenu>();
+                            var playfabId = PlayFab.PlayFabManager.Instance.Login.IsLoggedIn ? PlayFab.PlayFabManager.Instance.User.PlayFabId : "Login Error!";
+                            debugMenu.SetText(Corner.LowerRight, playfabId);
                         }
                     };
+
+                    #endif
                 }
 
                 if (this.showTestAd)
@@ -92,19 +102,6 @@ namespace Lost
 
                 this.SetInstance(this);
             }
-        }
-
-        private static void OnGlobalPlayFabResultHandler(PlayFabRequestCommon request, PlayFabResultCommon result)
-        {
-            if (result is LoginResult)
-            {
-                SetPlayFabId();
-            }
-        }
-
-        private static void SetPlayFabId()
-        {
-            DialogManager.GetDialog<DebugMenu>().SetText(Corner.LowerRight, PlayFab.PlayFabManager.Instance.Login.IsLoggedIn ? PlayFab.PlayFabManager.Instance.User.PlayFabId : "Login Error!");
         }
 
         private static void ShowTestAd()
