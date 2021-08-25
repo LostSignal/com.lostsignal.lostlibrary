@@ -53,12 +53,12 @@ namespace Lost
             set { this.isDataOnlyVersion = value; }
         }
 
-        public List<CustomDataItem> CustomData
-        {
-            get { return this.customData; }
-            set { this.customData = value; }
-        }
-
+        //// public List<CustomDataItem> CustomData
+        //// {
+        ////     get { return this.customData; }
+        ////     set { this.customData = value; }
+        //// }
+        ////
         //// public List<WhatsNew> WhatsNew
         //// {
         ////     get { return this.whatsNew; }
