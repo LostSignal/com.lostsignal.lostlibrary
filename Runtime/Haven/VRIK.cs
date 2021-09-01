@@ -7,6 +7,8 @@
 //// NOTE [bgish]: There is a bug in StyleCop that thinks that Local Functions need this prefix, so turning it off.
 #pragma warning disable SA1101
 
+#if USING_UNITY_XR_INTERACTION_TOOLKIT
+
 namespace Lost
 {
     using System;
@@ -17,7 +19,7 @@ namespace Lost
 
     public class VRIK : MonoBehaviour
     {
-        #pragma warning disable 0649
+#pragma warning disable 0649
         [SerializeField] private Transform root;
         [SerializeField] private Transform headConstraint;
         [SerializeField] private float turnSmoothness = 5.0f;
@@ -30,7 +32,7 @@ namespace Lost
 
         [SerializeField] private VRMap leftHand = new VRMap { TrackingRotationOffset = new Vector3(-90.0f, 90.0f, 0.0f) };
         [SerializeField] private VRMap rightHand = new VRMap { TrackingRotationOffset = new Vector3(90.0f, -90.0f, 0.0f) };
-        #pragma warning restore 0649
+#pragma warning restore 0649
 
         private Vector3 headBodyOffset;
         private HavenRig rig;
@@ -182,11 +184,11 @@ namespace Lost
         [Serializable]
         private class VRMap
         {
-            #pragma warning disable 0649, CA2235
+#pragma warning disable 0649, CA2235
             [SerializeField] private Transform rigTarget;
             [SerializeField] private Vector3 trackingPositionOffset;
             [SerializeField] private Vector3 trackingRotationOffset;
-            #pragma warning restore 0649, CA2235
+#pragma warning restore 0649, CA2235
 
             public Transform RigTarget
             {
@@ -215,3 +217,5 @@ namespace Lost
         }
     }
 }
+
+#endif

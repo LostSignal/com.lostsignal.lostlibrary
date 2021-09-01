@@ -14,10 +14,7 @@ namespace Lost
     using System.Linq;
     using Lost.Haven;
     using UnityEngine;
-
-#if USING_UNITY_XR_INTERACTION_TOOLKIT
     using UnityEngine.InputSystem.UI;
-#endif
 
     public sealed class XRManager : Manager<XRManager>
     {

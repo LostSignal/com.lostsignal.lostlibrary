@@ -171,12 +171,14 @@ namespace Lost.Networking
             this.messageCollection.RegisterMessage<T>();
         }
 
-        public void RegisterSubsystem<T>()
+        public GameClient RegisterSubsystem<T>()
             where T : IGameClientSubsystem, new()
         {
             var subsystem = new T();
             subsystem.Initialize(this);
             this.subsystems.Add(subsystem);
+
+            return this;
         }
 
         public T GetSubsystem<T>()

@@ -142,12 +142,14 @@ namespace Lost.Networking
             get => this.readonlyUsersList;
         }
 
-        public void RegisterSubsystem<T>()
+        public GameServer RegisterSubsystem<T>()
             where T : IGameServerSubsystem, new()
         {
             var subsystem = new T();
             subsystem.Initialize(this);
             this.subsystems.Add(subsystem);
+
+            return this;
         }
 
         public void RegisterMessage<T>()
