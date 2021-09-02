@@ -1,4 +1,4 @@
-﻿#pragma warning disable
+#pragma warning disable
 
 //-----------------------------------------------------------------------
 // <copyright file="Releases.cs" company="Lost Signal LLC">
@@ -42,7 +42,9 @@ namespace Lost
         [EditorEvents.OnPreprocessBuild]
         public static void SaveCurrentReleaseToResources()
         {
-            File.WriteAllText($"Assets/Resources/{ReleaseLocator.ReleasesResourcesName}.json", JsonUtil.Serialize(LostLibrary.Releases.CurrentRelease));
+            string path = $"Assets/Resources/{ReleaseLocator.ReleasesResourcesName}.json";
+            File.WriteAllText(path, JsonUtil.Serialize(LostLibrary.Releases.CurrentRelease));
+            UnityEditor.AssetDatabase.ImportAsset(path);
         }
     }
 }
