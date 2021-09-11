@@ -30,3 +30,21 @@
     * Possibly register for Debug.LogError/LogWarning events and throw build exceptions if those things happen?
   * Presets References in folder meta files are valid
   * Validate On Play Mode Start????
+  
+* Example Issues
+  * Bad GUIDs
+  * Base File Casing
+  * Bad Colliders
+  * Finding PSDs in Project (using PNGs isntead)
+  * Track Unused Assets List
+  * Track Unused Assets Size
+  * Track Existence Resource Files (They should not exist)
+  * Materials referencing normal map textures that aren't marked as normal maps in import settings
+  * Materials that are being reference that are not in our "Approved" folder
+  * Code Warnings
+  * Very big audio files that aren't marked as Streaming
+  * Scenes
+    * Negative / Non-Uniform Scaling on Objects
+    * Too Many Graphics Raycasters
+
+  

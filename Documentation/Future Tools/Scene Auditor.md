@@ -47,4 +47,7 @@
   * Active Animators, Timelines, Skined Mesh Renderers
   * Physics
     * Active Rigidbodies (non-kinematic)
-
+  * Garbage Collected
+  * Garbage Created
+  * Debug.Log, LogWarning, LogError, LogException, LogAssert
+  * Level Activation times for chunks
